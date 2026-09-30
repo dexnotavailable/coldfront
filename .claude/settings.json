@@ -1,0 +1,45 @@
+{
+  "ultracode": true,
+  "effortLevel": "xhigh",
+  "worktree": {
+    "baseRef": "head"
+  },
+  "permissions": {
+    "allow": [
+      "Workflow",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(node *)",
+      "Bash(python3 *)",
+      "Bash(git *)",
+      "Bash(gh pr *)"
+    ],
+    "deny": [
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git push -uf*)",
+      "Bash(git push -fu*)",
+      "Bash(git push +*)",
+      "Bash(git push * --force*)",
+      "Bash(git push * -f*)",
+      "Bash(git push * -uf*)",
+      "Bash(git push * -fu*)",
+      "Bash(git push * +*)",
+      "Bash(gh pr merge*)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "timeout": 600,
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && if [ \"$CLAUDE_CODE_REMOTE\" = \"true\" ] && [ -f package-lock.json ] && [ ! -d node_modules ]; then if npm ci --no-audit --no-fund > /tmp/session-npm-ci.log 2>&1; then echo \"Start-up hook: npm ci finished.\"; else echo \"Start-up hook: npm ci failed (log: /tmp/session-npm-ci.log). Run npm ci yourself.\"; fi; fi; exit 0"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+# Dependencies and build output
+node_modules/
+dist/
+packages/*/dist/
+
+# Generated scratch output: atlas, slices, iteration postcards, bench results
+out/
+
+# Test and coverage output
+test-results/
+playwright-report/
+coverage/
+
+# Claude Code: personal settings and the worktrees helper agents work in
+.claude/settings.local.json
+.claude/worktrees/
+
+# Local secrets (none are needed; this is a safety net)
+.env
+.env.*
+!.env.example
+
+# Logs and OS clutter
+*.log
+.DS_Store
+Thumbs.db

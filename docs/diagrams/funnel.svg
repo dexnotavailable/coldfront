@@ -1,0 +1,95 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1240 760' width='1240' height='760'>
+<rect width='1240' height='760' fill='#f4f6f8'/>
+<rect x='114.66666666666667' y='314.0' width='1060.6666666666665' height='329.0' fill='#3a3f47'/>
+<rect x='114.66666666666667' y='643.0' width='1060.6666666666665' height='7.0' fill='#111317'/>
+<rect x='238.0' y='324.5' width='246.7' height='70.0' fill='#7d8793' rx='6'/>
+<rect x='805.3' y='324.5' width='246.7' height='70.0' fill='#7d8793' rx='6'/>
+<rect x='361.3' y='401.5' width='197.3' height='70.0' fill='#6b7482' rx='6'/>
+<rect x='731.3' y='401.5' width='197.3' height='70.0' fill='#6b7482' rx='6'/>
+<rect x='472.3' y='478.5' width='123.3' height='70.0' fill='#6a5f68' rx='6'/>
+<rect x='694.3' y='478.5' width='123.3' height='70.0' fill='#6a5f68' rx='6'/>
+<rect x='590.7' y='555.5' width='108.5' height='87.5' fill='#5a3b3b' rx='10'/>
+<circle cx='645.0' cy='624.6' r='16' fill='#ffd98a' opacity='0.9'/><circle cx='645.0' cy='624.6' r='30' fill='#ffd98a' opacity='0.25'/>
+<rect x='378.6' y='401.5' width='138.1' height='70.0' fill='#8ea3b8' rx='6'/>
+<polygon points='90.0,178.4 114.7,174.0 131.9,222.1 151.7,300.9 188.7,311.4 275.0,313.1 324.3,312.2 326.8,309.6 361.3,307.4 383.5,308.5 388.5,401.5 474.8,401.5 479.7,307.4 492.1,305.2 494.5,314.0 497.0,357.8 516.7,359.9 519.2,314.0 521.7,279.0 571.0,270.2 615.4,261.5 632.7,244.0 657.3,244.0 674.6,261.5 719.0,268.1 768.3,276.8 770.8,314.0 773.3,362.1 793.0,359.9 795.5,314.0 797.9,300.9 867.0,296.5 941.0,294.3 963.2,287.8 990.3,230.9 1015.0,134.6 1034.7,200.2 1054.5,121.5 1076.7,213.4 1101.3,160.9 1126.0,248.4 1150.7,287.8 1163.0,222.1 1175.3,174.0 1200.0,178.4 1200.0,324.5 90.0,324.5' fill='#8b7f6e'/>
+<rect x='494.5' y='314.0' width='24.7' height='44.8' fill='#1d2b38'/>
+<rect x='770.8' y='314.0' width='24.7' height='44.8' fill='#1d2b38'/>
+<rect x='388.5' y='305.2' width='86.3' height='96.7' fill='#c7d3de'/>
+<path d='M 387.2 200.2 L 409.4 200.2 L 398.3 231.8 Z' fill='#8e9aa6'/><rect x='387.2' y='197.2' width='22.2' height='4' fill='#6f8d58'/>
+<path d='M 420.5 248.4 L 435.3 248.4 L 427.9 269.4 Z' fill='#8e9aa6'/><rect x='420.5' y='245.4' width='14.8' height='4' fill='#6f8d58'/>
+<path d='M 436.6 147.8 L 463.7 147.8 L 450.1 186.2 Z' fill='#8e9aa6'/><rect x='436.6' y='144.8' width='27.1' height='4' fill='#6f8d58'/>
+<path d='M 461.2 274.6 L 473.6 274.6 L 467.4 292.1 Z' fill='#8e9aa6'/><rect x='461.2' y='271.6' width='12.3' height='4' fill='#6f8d58'/>
+<path d='M 407.0 121.5 L 419.3 121.5 L 413.1 139.0 Z' fill='#8e9aa6'/><rect x='407.0' y='118.5' width='12.3' height='4' fill='#6f8d58'/>
+<rect x='641.5' y='244.0' width='6.9' height='332.5' fill='#1a1014' stroke='#c9a24a' stroke-width='1.5'/>
+<path d='M 629.0 244.0 L 629.0 218.0 L 637.0 218.0 L 637.0 204.0 L 645.0 192.0 L 653.0 204.0 L 653.0 218.0 L 661.0 218.0 L 661.0 244.0 Z' fill='#0b0b0e' stroke='#c9a24a' stroke-width='1.5'/>
+<path d='M 891.7 361.0 L 906.5 369.8 L 891.7 378.5 L 906.5 387.3 L 891.7 396.0 L 906.5 404.8 L 891.7 413.5 L 906.5 422.3 L 891.7 431.0' fill='none' stroke='#ffe6a6' stroke-width='2' stroke-dasharray='4 3'/>
+<text x='82' y='94.0' text-anchor='end' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11'  fill='#374151'>+1,024</text>
+<line x1='86' y1='90.0' x2='90' y2='90.0' stroke='#374151'/>
+<text x='82' y='143.0' text-anchor='end' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11'  fill='#374151'>+800</text>
+<line x1='86' y1='139.0' x2='90' y2='139.0' stroke='#374151'/>
+<text x='82' y='248.0' text-anchor='end' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11'  fill='#374151'>+320</text>
+<line x1='86' y1='244.0' x2='90' y2='244.0' stroke='#374151'/>
+<text x='82' y='318.0' text-anchor='end' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11'  fill='#374151'>0</text>
+<line x1='86' y1='314.0' x2='90' y2='314.0' stroke='#374151'/>
+<text x='82' y='405.5' text-anchor='end' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11'  fill='#374151'>-400</text>
+<line x1='86' y1='401.5' x2='90' y2='401.5' stroke='#374151'/>
+<text x='82' y='482.5' text-anchor='end' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11'  fill='#374151'>-752</text>
+<line x1='86' y1='478.5' x2='90' y2='478.5' stroke='#374151'/>
+<text x='82' y='559.5' text-anchor='end' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11'  fill='#374151'>-1,104</text>
+<line x1='86' y1='555.5' x2='90' y2='555.5' stroke='#374151'/>
+<text x='82' y='647.0' text-anchor='end' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11'  fill='#374151'>-1,504</text>
+<line x1='86' y1='643.0' x2='90' y2='643.0' stroke='#374151'/>
+<text x='645.0' y='587.4' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='12' font-weight='700' fill='#ffe9c2'>NARAKU (the Pit) · the Throne</text>
+<text x='669.7' y='625.5' text-anchor='start' font-family='Inter, Helvetica, Arial, sans-serif' font-size='10' font-weight='700' fill='#ffe9c2'>the Wellspring</text>
+<text x='176.3' y='349.5' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='12' font-weight='700' fill='#e5e7eb'>Layer 1</text>
+<text x='176.3' y='363.5' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='12' font-weight='700' fill='#e5e7eb'>the Upper Deep</text>
+<text x='176.3' y='377.5' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='10' font-weight='400' fill='#9ca3af'>y -48 to -368</text>
+<text x='242.9' y='434.5' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='12' font-weight='700' fill='#e5e7eb'>Layer 2 · the Undercrown</text>
+<text x='242.9' y='450.5' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='10' font-weight='400' fill='#9ca3af'>y -400 to -720</text>
+<text x='349.0' y='511.5' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='12' font-weight='700' fill='#e5e7eb'>Layer 3 · the Maw</text>
+<text x='349.0' y='527.5' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='10' font-weight='400' fill='#9ca3af'>y -752 to -1,072</text>
+<text x='447.7' y='445.2' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='12' font-weight='700' fill='#0f1720'>the Hollow Sky</text>
+<text x='807.8' y='454.0' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11' font-weight='700' fill='#ffe6a6'>Buried City</text>
+<text x='1005.1' y='346.8' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11' font-weight='700' fill='#ffe6a6'>Old Workings</text>
+<text x='867.0' y='346.8' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11' font-weight='600' fill='#f8fafc'>Kagami Grottos</text>
+<text x='916.3' y='416.8' text-anchor='start' font-family='Inter, Helvetica, Arial, sans-serif' font-size='10' font-weight='600' fill='#ffe6a6'>Delvers' Road</text>
+<text x='304.6' y='359.9' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11' font-weight='600' fill='#f8fafc'>Sporewood</text>
+<text x='534.0' y='515.2' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11' font-weight='600' fill='#f8fafc'>Yomi (Ash Sea)</text>
+<text x='756.0' y='515.2' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11' font-weight='600' fill='#f8fafc'>Deep Forges</text>
+<text x='432.9' y='292.1' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11' font-weight='700' fill='#1f2937'>the Sundering</text>
+<text x='432.9' y='104.0' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='12' font-weight='700' fill='#1f2937'>Sundered Isles</text>
+<text x='250.3' y='287.8' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='12' font-weight='700' fill='#1f2937'>Sallows</text>
+<text x='1052.0' y='104.0' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='12' font-weight='700' fill='#1f2937'>Kurogane</text>
+<text x='879.3' y='270.2' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='12' font-weight='700' fill='#1f2937'>Hoshikuzu</text>
+<text x='645.0' y='178.4' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='12' font-weight='700' fill='#1f2937'>Nadir Keep</text>
+<text x='667.2' y='379.6' text-anchor='start' font-family='Inter, Helvetica, Arial, sans-serif' font-size='10' font-weight='700' fill='#e2c77e'>the Nadir Stair</text>
+<text x='506.9' y='370.9' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='10' font-weight='600' fill='#cbd5e1'>Blackwater</text>
+<text x='783.1' y='370.9' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='10' font-weight='600' fill='#cbd5e1'>Blackwater</text>
+<text x='188.7' y='510.9' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='12' font-weight='600' fill='#9ca3af'>deeprock</text>
+<text x='1101.3' y='510.9' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='12' font-weight='600' fill='#9ca3af'>deeprock</text>
+<text x='104.8' y='147.8' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11' font-weight='700' fill='#1f2937'>Rim</text>
+<text x='1185.2' y='147.8' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11' font-weight='700' fill='#1f2937'>Rim</text>
+<line x1='114.7' y1='680' x2='1175.3' y2='680' stroke='#374151'/>
+<line x1='151.7' y1='676' x2='151.7' y2='684' stroke='#374151'/>
+<text x='151.7' y='700.0' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11' font-weight='400' fill='#374151'>20 km</text>
+<line x1='275.0' y1='676' x2='275.0' y2='684' stroke='#374151'/>
+<text x='275.0' y='700.0' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11' font-weight='400' fill='#374151'>15 km</text>
+<line x1='398.3' y1='676' x2='398.3' y2='684' stroke='#374151'/>
+<text x='398.3' y='700.0' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11' font-weight='400' fill='#374151'>10 km</text>
+<line x1='521.7' y1='676' x2='521.7' y2='684' stroke='#374151'/>
+<text x='521.7' y='700.0' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11' font-weight='400' fill='#374151'>5 km</text>
+<line x1='645.0' y1='676' x2='645.0' y2='684' stroke='#374151'/>
+<text x='645.0' y='700.0' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11' font-weight='400' fill='#374151'>0 km</text>
+<line x1='768.3' y1='676' x2='768.3' y2='684' stroke='#374151'/>
+<text x='768.3' y='700.0' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11' font-weight='400' fill='#374151'>5 km</text>
+<line x1='891.7' y1='676' x2='891.7' y2='684' stroke='#374151'/>
+<text x='891.7' y='700.0' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11' font-weight='400' fill='#374151'>10 km</text>
+<line x1='1015.0' y1='676' x2='1015.0' y2='684' stroke='#374151'/>
+<text x='1015.0' y='700.0' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11' font-weight='400' fill='#374151'>15 km</text>
+<line x1='1138.3' y1='676' x2='1138.3' y2='684' stroke='#374151'/>
+<text x='1138.3' y='700.0' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='11' font-weight='400' fill='#374151'>20 km</text>
+<text x='114.7' y='722.0' text-anchor='start' font-family='Inter, Helvetica, Arial, sans-serif' font-size='12' font-weight='700' fill='#374151'>← SW (bearing 225°)</text>
+<text x='1175.3' y='722.0' text-anchor='end' font-family='Inter, Helvetica, Arial, sans-serif' font-size='12' font-weight='700' fill='#374151'>NE (bearing 45°) →</text>
+<text x='620.0' y='36.0' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='20' font-weight='700' fill='#0e1116'>Kaldmark · the funnel (side view through the centre, SW–NE)</text>
+<text x='620.0' y='60.0' text-anchor='middle' font-family='Inter, Helvetica, Arial, sans-serif' font-size='12' font-weight='400' fill='#4b5563'>Schematic, vertical exaggeration ≈ 8×. Each layer's open footprint shrinks toward the Pit; outside it is deeprock.</text>
+</svg>
