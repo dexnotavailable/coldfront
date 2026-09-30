@@ -11,9 +11,10 @@ This repository starts as **design docs only**. AI coding sessions build the gam
 | `docs/01-vision.md` … `docs/10-prior-art.md` | The design: vision, world, lore, terrain spec, systems, UI and art, architecture, roadmap, open questions, and the audit of open-source code we can reuse |
 | `docs/progress.md` | The live progress log. Read this after each session. |
 | `docs/diagrams/` | The world map and funnel diagrams (and the script that draws them) |
-| `.claude/settings.json` | Session settings: turns on ultracode at the highest reasoning effort, pre-approves routine commands (npm, git, node…), blocks force-pushes and merges as a safety net, and installs the project's packages when a session starts |
+| `.claude/settings.json` | Session settings: turns on ultracode at the highest reasoning effort, pre-approves routine commands (npm scripts, git), blocks force-pushes, pushes to `main` and merges as a safety net, and installs the project's packages when a cloud session starts |
 | `.github/workflows/ci.yml` | The automatic check GitHub runs on every pull request (the green tick or red cross) |
 | `.gitignore` | Tells git which generated files never to save |
+| `.gitattributes` | Keeps line endings identical on Windows, Mac and Linux |
 
 ---
 
@@ -23,6 +24,7 @@ This repository starts as **design docs only**. AI coding sessions build the gam
 - A **Claude** plan with cloud coding sessions (your Max plan includes them)
 - A free **Cloudflare** account, for playable preview links
 - A desktop browser (Chrome, Edge or Firefox) on a computer with a decent graphics chip, for playtesting
+- *Optional:* a Windows or Mac computer you can leave on, if you'd rather run sessions there than in the cloud (Part B2)
 
 ---
 
@@ -34,15 +36,18 @@ This repository starts as **design docs only**. AI coding sessions build the gam
    - Leave "Add a README", ".gitignore" and "license" **unchecked**. The repo must start empty.
    - Click **Create repository**.
 2. On the empty repo page, click **"uploading an existing file"**.
-3. Drag in **everything** from this folder, including the three hidden items whose names start with a dot: `.claude`, `.github` and `.gitignore`. Your computer hides them by default:
+3. Drag in **everything** from this folder, including the hidden items whose names start with a dot: `.claude`, `.github`, `.gitattributes` and `.gitignore`. Your computer hides them by default:
    - **Mac:** in Finder, press **Cmd + Shift + .** (full stop) to show them.
    - **Windows:** in File Explorer, choose **View → Show → Hidden items**.
 
    Then click **Commit changes**.
-4. **Check the upload.** The repo's front page should list `.claude`, `.github`, `docs`, `.gitignore`, `CLAUDE.md`, `PROMPTS.md` and `README.md`. If `.claude` or `.github` is missing, add its file by hand: **Add file → Create new file**, type the path as the name (`.claude/settings.json` or `.github/workflows/ci.yml`; typing each `/` creates a folder), paste the file's contents, and click **Commit changes**.
+4. **Check the upload.** The repo's front page should list `.claude`, `.github`, `docs`, `.gitattributes`, `.gitignore`, `CLAUDE.md`, `PROMPTS.md` and `README.md`. If `.claude` or `.github` is missing, add its file by hand: **Add file → Create new file**, type the path as the name (`.claude/settings.json` or `.github/workflows/ci.yml`; typing each `/` creates a folder), paste the file's contents, and click **Commit changes**.
 5. Because the repo is private, install the Claude GitHub app on it: open **github.com/apps/claude**, click **Install** (or **Configure**), choose **Only select repositories**, and pick `coldfront`.
 
-## Part B · Start the first build session (about 5 minutes)
+## Part B · Start the first build session in the cloud (about 5 minutes)
+
+Sessions can run in the cloud (this part) or on your own computer (Part B2). Both use your Claude plan the same way. The cloud keeps working while your computer is off; your own computer lets you play each build the moment it's ready.
+
 
 1. Go to **claude.ai/code** and sign in. Connect GitHub if it asks.
 2. The **Default** environment it offers is fine. Its network setting ("Trusted") lets the agent install the tools it needs.
@@ -58,6 +63,38 @@ This repository starts as **design docs only**. AI coding sessions build the gam
 8. Open `PROMPTS.md`, copy **prompt 1 (Kickoff)**, paste it in and press Enter.
 
 The session can run for a long time. **You can close the tab**; it keeps working, and you can check in from your phone.
+
+## Part B2 · Or run sessions on your own computer
+
+Your computer must stay on and awake while a session runs: a sleeping computer pauses it. Everything else (branches, pull requests, Cloudflare links) works the same as in the cloud.
+
+**Install once** (Windows; Mac differences in brackets):
+1. **Git:** download Git for Windows from **git-scm.com** and install it with the default options. It also gives Claude Code the "Git Bash" shell the project's commands expect. *(Mac: usually installed already; typing `git` in Terminal offers to install it if not.)*
+2. **Node.js 22:** from **nodejs.org**, install the 22.x LTS version. The game is built with it.
+3. **GitHub CLI:** install it from **cli.github.com**. Then open PowerShell *(Mac: Terminal)*, run `gh auth login`, and choose **GitHub.com**, **HTTPS**, then **Login with a web browser**. This lets the agent open pull requests and fetch preview links for you.
+4. **Claude Code:** use the Claude desktop app's **Code** tab, or install the terminal version: in PowerShell, run `irm https://claude.ai/install.ps1 | iex` *(Mac: `curl -fsSL https://claude.ai/install.sh | bash`)*.
+
+**Get the project** (once). In PowerShell or Terminal, run these two lines (use your own GitHub username):
+```
+cd ~/Documents
+git clone https://github.com/<your-username>/coldfront
+```
+
+**Start a session:**
+1. Plug the computer in and stop it sleeping while plugged in *(Windows: Settings → System → Power, sleep "Never"; Mac: System Settings → Battery → Options, prevent automatic sleeping on power adapter)*.
+2. Open Claude Code in the `coldfront` folder:
+   - **Desktop app:** Code tab → **Local** → choose the `coldfront` folder. Leave the worktree option off.
+   - **Terminal:** run `cd ~/Documents/coldfront`, then `claude`.
+3. **Model:** Opus 5.5 (`/model` in the terminal). **Mode:** Auto (the terminal version starts in it; in the app, pick it from the mode menu).
+4. Type `/effort ultracode` and press Enter.
+5. *(Optional)* Type `/remote-control` to follow and steer the session from your phone (the Claude app) or claude.ai/code.
+6. Paste **prompt 1 (Kickoff)** from `PROMPTS.md`.
+
+**While it runs,** leave the computer on and Claude Code open. To play a build before Cloudflare has it, ask the session: "Start the dev server and give me the local link."
+
+**Next sessions:** open the folder the same way and paste prompt 2. You don't pick a branch; the agent finds the right one.
+
+**Session stopped** (a usage limit, a closed window, a restart): open the folder again. In the terminal, run `claude --continue` to pick up the last conversation; in the app, reopen the session from the list. Then send prompt 2b.
 
 ## Part C · Get playable links (about 10 minutes, once; do it while the first session runs)
 
@@ -89,12 +126,12 @@ The session can run for a long time. **You can close the tab**; it keeps working
    - **Specific spots:** leave comments on lines in the session's diff view.
    - **After playing:** use **prompt 3** in `PROMPTS.md`. Say what you saw, *where* (region, and the F3 coordinates if you can), and what you expected.
 6. **Happy with it?** Merge the pull request into `main` (on GitHub: **Merge pull request**). Then start the next session on `main` with **prompt 2 (Continue)**.
-7. **Not happy, or the phase isn't finished?** Don't merge. Either tell the same session what to change, or start a new session **on that pull request's branch** (not `main`) with prompt 2, so it continues from the latest work. The new session pushes to a branch of its own and opens its own pull request, which includes the old one's work: merge the newest pull request and close the older one.
+7. **Not happy, or the phase isn't finished?** Don't merge. Either tell the same session what to change, or start a new session **on that pull request's branch** (not `main`) with prompt 2, so it continues from the latest work. The new session pushes to a branch of its own and opens its own pull request, which includes the old one's work: merge the newest pull request and close the older one. On your own computer, just start the next session in the `coldfront` folder: the agent continues on the open pull request's branch by itself.
 
 ## Part E · Everyday tips
 
 - **Session rhythm:** early phases take one session; the big terrain phases (1.3–1.9) usually take 2–4. New sessions read `docs/progress.md`, so they don't need the old chat.
-- **If you hit your usage limit mid-session:** the session stops where it is. Once your limit resets, open the same session at claude.ai/code and send prompt 2b from `PROMPTS.md` (or just type `continue`). If that session is gone, start a new one **on its pull request's branch** with prompt 2. The agent pushes after every step, so at most a few minutes of work is lost.
+- **If you hit your usage limit mid-session:** the session stops where it is. Once your limit resets, open the same session at claude.ai/code and send prompt 2b from `PROMPTS.md` (or just type `continue`). If that session is gone, start a new one **on its pull request's branch** with prompt 2. The agent pushes after every step, so at most a few minutes of work is lost. On your own computer, see the end of Part B2.
 - **Let it run to a finish line.** For a long phase you can give the session a goal with `/goal`, and it keeps working until the goal is met. Copy one from `PROMPTS.md` §6. `/goal` alone shows progress; `/goal clear` stops it.
 - **Show it what you like (optional).** Put screenshots of terrain you love (from Big Globe, other games, art) in `docs/references/<region>/`, for example `docs/references/hellscape/`. The agent's reviewers compare its work against them. They're for guidance only, never used in the game.
 - **`main` is your "last good build".** Only merge what you've played.

@@ -22,7 +22,7 @@ How to work:
 - Terrain quality is the whole point of this milestone. My last attempt with another model died on primitive terrain: the hellscape spikes were plain cones. Build 1.1 so later phases can reach the quality bar in docs/04-terrain.md §1–2: the deterministic math and noise library (with derivatives and measured quantiles, and the forbidden-token test), pointwise generation that LOD can reuse, and the review tools (atlas, slice, postcards).
 - Push a playable build and open a draft pull request as soon as step 3 of phase 1.1 works, so I get a link early.
 - Reuse before you reinvent: port what docs/10-prior-art.md lists for this phase (the bitwise greedy mesher, the lighting queues, OpenSimplex2; psrdnoise comes in 1.2), within its licence rules.
-- Automatic workflows are on. Use them where parallel agents help (reviews, audits, disjoint features in isolated copies), never for rendering or benchmarks on this 4-core machine. See the workflows section in CLAUDE.md.
+- Automatic workflows are on. Use them where parallel agents help (reviews, audits, disjoint features in isolated copies), never for rendering or benchmarks. See the workflows section in CLAUDE.md.
 - Don't ask me technical questions. If a design question comes up that the docs don't answer, pick what fits the pillars, log it in docs/09-open-questions.md, and keep going.
 
 Before you finish:
@@ -36,7 +36,7 @@ Before you finish:
 
 ## 2. Continue (every session after the first)
 
-Start the session on **`main`** if you merged the last pull request. If you didn't merge it (for example, the phase isn't finished yet), pick **that pull request's branch** instead, so the new session starts from the latest work.
+Start the session on **`main`** if you merged the last pull request. If you didn't merge it (for example, the phase isn't finished yet), pick **that pull request's branch** instead, so the new session starts from the latest work. On your own computer, skip this: open the `coldfront` folder and paste the prompt, and the agent picks the right branch itself.
 
 ```
 Continue COLDFRONT. Read CLAUDE.md, then docs/progress.md to see where we are, then the docs the next phase needs.
@@ -52,7 +52,7 @@ Finish the way CLAUDE.md says: tests, check and build pass; postcards re-rendere
 
 ## 2b. Pick up after a usage limit (same session)
 
-When your limit resets, open the session that stopped and send:
+When your limit resets, open the session that stopped and send the prompt below. On your own computer, if you closed the window, open a terminal in the `coldfront` folder and run `claude --continue` first (or reopen the session in the desktop app).
 
 ```
 Continue where you stopped. Check git log, git status and docs/progress.md first, and don't redo work that's already committed.

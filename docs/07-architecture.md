@@ -44,6 +44,7 @@ Nothing loads from a CDN at runtime. Every dependency comes from npm and is bund
 ├─ .claude/settings.json  shipped by the owner: ultracode, worktrees from HEAD, pre-approved routine commands, the SessionStart `npm ci` hook. The agent never edits it
 ├─ .github/workflows/ci.yml shipped by the owner: check, test, build, cross-browser golden hashes. The agent never edits it
 ├─ .gitignore
+├─ .gitattributes       LF line endings on every platform
 ├─ THIRD_PARTY_NOTICES.md notices for every ported or copied third-party file (10-prior-art.md §1)
 ├─ README.md            owner's guide
 ├─ PROMPTS.md           prompts the owner pastes into sessions
