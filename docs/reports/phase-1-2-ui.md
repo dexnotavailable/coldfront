@@ -6,7 +6,7 @@ The original full run captured 96 states × three profiles. It correctly remains
 
 Files live under `D:/Dex/Projects/coldfront/out/ui/`. Exact image, source, keyboard-file and supporting-receipt SHA256 bindings are in `phase12-ui-final.receipt.json` beside this report. The author performed saved-image review only; no browser, render, benchmark, production input or publication was launched from this verification lane.
 
-Gallery route after publication: [COLDFRONT interface gallery](https://dex.place/coldfront/?gallery). This is the owner-controlled destination, not a claim that the locally reviewed phase 1.2 build has already been published. Root owns publication and the final [contact sheet](../postcards/wip/ui.jpg).
+Gallery route: [COLDFRONT interface gallery](https://dex.place/coldfront/?gallery). Root published the reviewed phase 1.2 increment as `5a9f26b` after its clean Node22 build and verified public metadata, assets and isolation headers. Public browser gameplay remains a separate unavailable check. [Contact sheet](../postcards/wip/ui.jpg).
 
 ## A7 result
 
@@ -259,3 +259,5 @@ Root reports 290 tests plus check/build passing before this final visual review;
 ## Publication refresh
 
 After the far-camera sky correction, the coordinator regenerated both actual HUD captures, integrated their source-bound manifests and opened both JPEGs. Outline/ghost SHA256: `deebc1ee509ff0899d486bfe801ee78eb886e6280885c9feb3d4a875ce273a7f`; silhouette: `a5dcf31ed5f347cab0f10a4595f3a91feee22fdced492c4009cb0352e0f6795d`. The first shows the avatar and block outline over stepped grass; the second shows the pale avatar silhouette through the stone wall. This refresh supersedes the earlier HUD file hashes, not the historical gallery run. Current canonical validation passes 292 tests, check, build and the local smoke/drive. The original palette failure and successful three-profile repair remain separate receipts.
+
+An independent Astra reviewer reopened both final JPEGs, verified their hashes against the current manifest, and accepted the three required HUD rows. These pixels match the already accepted HUD appearance; the new source-bound capture is not additional proof of the sky correction. The distant-camera probe owns that separate claim.

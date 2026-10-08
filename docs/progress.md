@@ -2,7 +2,7 @@
 
 **Current milestone:** 1 · The World
 **Current phase:** 1.2 · World plan (in progress)
-**Playable link:** [dex.place/coldfront](https://dex.place/coldfront/) · [Interface gallery](https://dex.place/coldfront/?gallery) · [Foundation completion PR #3](https://github.com/dexnotavailable/coldfront/pull/3). Live game commit: `d4c4c49`. The unrelated `coldfront.pages.dev` site is not this game's preview.
+**Playable link:** [dex.place/coldfront](https://dex.place/coldfront/) · [Interface gallery](https://dex.place/coldfront/?gallery) · [World-plan PR #4](https://github.com/dexnotavailable/coldfront/pull/4). Live game commit: `5a9f26b`. The unrelated `coldfront.pages.dev` site is not this game's preview.
 **Agent guide:** `AGENTS.md` (Codex and Claude Code both follow it). **Interface:** only what `docs/11-interface-catalogue.md` lists.
 
 ## Status board
@@ -23,7 +23,7 @@
 ## Current session
 **9 October 2026 · Codex · `codex/phase-1-2-world-plan`**
 
-The integrated phase 1.2 candidate makes Kaldmark explorable: the full WorldPlan, first-pass surface terrain and owned water, main/test selection, real map, region travel and discovery cards. The [phase plan](plans/phase-1-2.md) defines the shared context and world/session boundaries. Decisions 102–108 cover missing Frost content, separate world identity, first-entry memory, map/water travel and readable discovery text. The public site still serves phase 1.1 until this candidate is published.
+The published phase 1.2 increment makes Kaldmark explorable: the full WorldPlan, first-pass surface terrain and owned water, main/test selection, real map, region travel and discovery cards. The [phase plan](plans/phase-1-2.md) defines the shared context and world/session boundaries. Decisions 102–108 cover missing Frost content, separate world identity, first-entry memory, map/water travel and readable discovery text. Release `5a9f26b` passed the clean Node 22.23.3/npm 10.9.8 install/build and was published through the existing checksummed mount. Public HTTP200, exact version/build identity, entry assets and COOP/COEP headers pass. The draft PR is open; CI is pending. Public gameplay remains unverified after the earlier browser-action rejection.
 
 **Current checks:** `npm test` passes 292 tests across 49 files; `npm run check`, `npm run build` and the local browser smoke/drive pass. Complete UI lint covers 96 gallery states with zero current rows missing and 23 input bindings. All 300 chunk baselines match in Node, Chromium and WebKit; the original 150 test-world records are byte-for-byte unchanged. Firefox is absent locally and remains an explicit CI check. The full UI capture produced 288 profiles; its one failure was an old palette test expecting three stone names while the real registry supplies eight. The assertion now checks the exact ordered registry names; all three repaired palette profiles pass. The original failed receipt remains available.
 
@@ -33,7 +33,7 @@ The integrated phase 1.2 candidate makes Kaldmark explorable: the full WorldPlan
 
 **Map response:** skipping 3D draws behind the opaque map reduced an observed 541² raster request from 25.054 s to 2.791 s under SwiftShader, with identical resolution. Sampling took 2.178 s and yield waits 0.612 s in the repaired run. World clocks and map input continue; this is a local software-renderer observation, not a hardware-FPS benchmark.
 
-The all-region main-world benchmark passed; measured generation meets its target, while lighting and meshing remain work for phase 1.10. Sixteen ungraded regional postcards are being implemented through the existing camera resolver and capture path; the tour's HUD images are not substitutes. UI review is accepted, including 294 freshly opened images and explicitly reused unchanged primitives. A distant-camera test caught the sky box remaining at the origin: it now follows the camera, with two regressions and a separately opened far-camera capture. Both actual HUD captures were regenerated after that correction and opened again. A clean Node22 build and CI remain publication gates. Phase 1.2 stays in progress until the postcard and final review requirements hold.
+The all-region main-world benchmark passed; measured generation meets its target, while lighting and meshing remain work for phase 1.10. Sixteen ungraded regional postcards are being implemented through the existing camera resolver and capture path; the tour's HUD images are not substitutes. UI review is accepted, including 294 freshly opened images and explicitly reused unchanged primitives. A distant-camera test caught the sky box remaining at the origin: it now follows the camera, with two regressions and a separately opened far-camera capture. Both actual HUD captures were regenerated after that correction and opened again by the coordinator and independent Astra reviewer. The clean Node22 build passed; CI remains the merge gate. Phase 1.2 stays in progress until the postcard and final review requirements hold.
 
 **Parallel content work requested by the owner:** separate Astra lanes are authoring one Ibara thorn cluster and grounded arch, one Hearthlands house and one Selva giant tree. Each uses isolated files, actual voxel captures, and independent image review before integration. These are prototypes, not content already present in the live world. The [terrain reference audit](reports/terrain-reference-audit.md) compares seven primary mod projects and maps their useful ideas to our underground plan. Decisions 109–111 record the research boundary and future topology rules. Avatar, Frostwolf and smithy briefs are queued for a later scouting wave; they are not running yet.
 The following startup/recovery record describes the completed foundation work.
@@ -101,27 +101,30 @@ The following records describe the completed phase 1.1 tooling and acceptance.
 ## Known issues and next
 
 - First playable commit f8f9d95 is pushed and published at [dex.place/coldfront](https://dex.place/coldfront/), with [PR #2](https://github.com/dexnotavailable/coldfront/pull/2) merged as the working step-3 increment. GitHub CI and the clean Node 22.23.3/npm 10.9.8 checkout build pass. Public version, HTTP200 and isolation headers are verified.
-- Next: publish the verified phase 1.2 runtime increment, complete sixteen ungraded regional postcards, and record the full main-world benchmark and final phase report.
-- The upcoming main-world release uses generation version 2. As specified for Milestone 1, generation/registry changes invalidate prior saves: old phase 1.1 records remain stored but will not load into the new generation. Within version 2, main/test worlds, seeds and discovery memory are kept separate; Clear my edits affects only the current world's edits.
+- Next: complete sixteen ungraded regional postcards, finish the phase report and merge the verified increment after CI. Continue isolated asset work with explicit review before integration.
+- The current main-world release uses generation version 2. As specified for Milestone 1, generation/registry changes invalidate prior saves: old phase 1.1 records remain stored but will not load into the new generation. Within version 2, main/test worlds, seeds and discovery memory are kept separate; Clear my edits affects only the current world's edits.
 - Save/transition corrections are published in d4c4c49: 11 targeted regressions, independent source review, and local production checks of a visible placed block through immediate Quit/Play and reload/Play. Reads and writes are ordered; failed reads cannot erase prior saves, storage errors do not poison later writes, and Clear cannot race new edits or another world. Queued Play readiness and postcard Escape routing have regressions too. Existing save keys/schema and worldgen cache identity are unchanged.
 - GPU uploads currently cap eight chunk results per frame, rather than eight individual meshes. CPU mesh arrays remain for context restoration; freeing them after upload is still pending. Postcards currently record total duration, not aggregated worker-stage durations.
 - Local production browser checks prove exact seed restoration and retained block edits after reload. Automatic approval review rejected launching the public-site browser check without giving a detailed reason. No public browser started; public gameplay verification remains unavailable. That action was not retried through another route.
-- The build reports a large main chunk (about 873 kB, 218 kB gzip); optimization follows measurements. Biome has 27 warnings and two information notes, with no errors. Most warnings are controlled test/gallery assertions and motion CSS overrides.
+- The build reports a large main chunk (about 944 kB, 243 kB gzip); optimization follows measurements. Biome has 54 warnings and two information notes, with no errors. Most warnings are controlled test/gallery assertions and motion CSS overrides.
 - The documented Pages name was corrected: coldfront.pages.dev belongs to another website. Ordinary build remains compatible with Pages; the actual release uses the owner's existing site mount.
 
-## Try this (first playable build)
+## Try this (current world-plan build)
 
-1. Open [COLDFRONT](https://dex.place/coldfront/) and press **Play**. Walk with **W A S D**; zoom with the wheel, turn with **← →**, and tilt with **↑ ↓**.
+1. Open [COLDFRONT](https://dex.place/coldfront/), choose **Kaldmark** and press **Play**. Walk with **W A S D**; zoom with the wheel, turn with **← →**, and tilt with **↑ ↓**.
 2. Double-tap **Space** to fly. Use **Space** to rise and **Shift** to descend. Double-tap **W** to sprint when playing in a window.
 3. Choose a hotbar block with **1–9**. Left-click to break, right-click to place; open the block palette with **E**.
 4. Dig below the surface to try the automatic overhead cut. Press **F3** for debug information and **F4** for time of day, fog, shadows and fly speed.
 5. Press **Esc** to pause or return to the title; **F2** saves a screenshot and **F11** toggles fullscreen. Browse the [interface gallery](https://dex.place/coldfront/?gallery).
 6. Leave a placed block in the world, reload, and press **Play** with the same seed to check your saved edits.
+7. Open the map with **M**, choose a spot and travel. In **F4**, use **Go to region** to compare Shirogane, Kurogane and the Sundered Isles. Discovery cards appear once per saved world identity. Switch to the test world from the title for the smaller sandbox.
 
 Local development: run **npm ci**, then **npm run dev** and open the printed address.
 
 ## Session log (newest first)
 *(Date, phase, summary, PR link.)*
+
+- **2026-10-09 · 1.2 working increment · [PR #4](https://github.com/dexnotavailable/coldfront/pull/4).** Published `5a9f26b`: deterministic main WorldPlan, owned water, map, safe region travel and discoveries. 292 tests, check/build, clean Node22 build and local browser journeys pass. Public version/assets/isolation match. Three-seed atlas/slices and 300 local browser goldens accepted; CI and sixteen true regional postcards remain. Owner-requested terrain reference audit completed; isolated Ibara, house and giant-tree lanes continue.
 
 - **2026-10-09 · 1.1 complete · [PR #3](https://github.com/dexnotavailable/coldfront/pull/3).** Shipped real atlas/slice tools, 150-case browser goldens and measured benchmarks; fixed save/lifecycle races and regenerated source-bound HUD/postcard proof. 190 tests, checks/build, clean Node22 build and Chromium/Firefox/WebKit CI all pass. Live release d4c4c49 verified by public metadata/headers. Public gameplay automation remains unavailable after the recorded approval-review rejection; local production save/reload behavior passed.
 
