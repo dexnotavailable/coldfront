@@ -137,7 +137,7 @@ Kuon was a good king. He wanted to save his people from the Frost, and he gave t
 - First stores (tutorial): "Food left in the open feeds the crows. Build a store."
 - First night: "Keep the fires lit. The dark here is not empty."
 - First winter: "The cold is patient. Be more patient."
-- First rival sighted (tutorial): "Another crown walks these lands. Watch his riders."
+- First rival sighted (tutorial): "Another crown walks these lands. Watch its riders."
 - First descent: "Down is easy. Remember that."
 - Deep (Layer 2+): "It is warm down here. It should not be."
 - To the next king, after a king's death: "Another crown. Walk with me."
@@ -177,7 +177,7 @@ The oath is deliberately ambiguous. Which throne? A king who reaches the Throne 
 2. **The Steward's lines** at milestones (§7). Never more than one line at a time.
 3. **Descriptions.** Rare items, resources and blocks get one or two lines of flavour in their tooltip.
 4. **Ruins and inscriptions.** Old Crown ruins in the Hearthlands hills, the Old Workings and the Buried City carry short inscriptions and murals.
-5. **Wardens.** A title card when a Warden is engaged ("SHIMOTSUKI · THE HOARFATHER", then "Warden of Shirogane"; layout in `06-ui-art.md` §3), and one line of last words when it dies.
+5. **Wardens.** A title card when a Warden is engaged ("SHIMOTSUKI · THE HOARFATHER", then "Warden of Shirogane"; layout in `11-interface-catalogue.md` D9), and one line of last words when it dies.
 6. **The Ledger.** An in-game codex that fills as you discover regions, Wardens, resources and inscriptions.
 7. **The Chronicle.** An auto-written history of the server's season. Examples: "Week 3: Queen Aoi of Kiritani is the first to reach the Upper Deep." "Week 9: King Ivar of Brennvik and Livia of Solvara break Iwakura, the Mountain That Walks."
 8. **The Frost.** The season-end event, and the Ledger of Kings.

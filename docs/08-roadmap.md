@@ -4,6 +4,8 @@ Every phase ends in a **playable link** plus a short **"try this" list** for the
 
 **Postcards that won't pass** follow the timebox rule (`04-terrain.md` §14.4 and §14.6): after 4 fix-and-re-render cycles without a +2 gain, a postcard whose score of record is at most 2 below its bar, with no 0 on R1–R4, stops blocking. The phase is then "done with known issues", and phase 1.10 clears them. HELL-1 and HELL-2 must always pass.
 
+**The interface in every phase** is exactly the rows marked with that phase in `11-interface-catalogue.md` (its Part F lists them phase by phase). A phase builds those rows, puts their states in the gallery, and checks them from screenshots (its A7). Every phase's "Done when" includes `npm run ui:lint -- --complete` passing for its rows. Nothing on screen is invented outside that doc.
+
 Milestone 1 is planned in detail. Later milestones are outlines. **At the start of each later milestone, the agent drafts its detailed phase plan, adds it to this file, and asks the owner to approve it in the PR** before building past its first phase.
 
 ---
@@ -15,17 +17,18 @@ The goal: Big Globe-class terrain for the whole of Kaldmark, walkable in the bro
 ### 1.1 Foundations
 - **Build, in this order** (push a playable build at the end of step 3, so the owner has a link early):
   1. Monorepo scaffold (npm workspaces, Vite, TS strict, Biome, Vitest, `.node-version`); constants; deterministic math (`det.ts`) and the forbidden-token test; hashes and OpenSimplex2 noise, with measured quantiles and tests; the test world (rolling plains with a pond at y = 0, placeholder trees).
-  2. Block registry and the first ~30 texture recipes; chunk store; worker pool; the bitwise greedy mesher with AO (ported, `10-prior-art.md` §2); the renderer: `SunLight` shadows, three's `Sky`, fog, pmndrs postprocessing; sky light (seeded from column heightmaps, then the ported light queues; coloured block light waits for 1.3); time of day (the cycle, a slider, a fixed postcard time); the player controller: first person, Minecraft's controls, and Minecraft's movement constants at a fixed 20 Hz (walk, sprint, sneak, jump, step-up 0.6 m, fly); break and place with a hotbar.
-  3. COOP/COEP headers (Pages `_headers`, and the Vite dev and preview servers); a build that works on Cloudflare Pages; the "WebGL2 unavailable" screen; the screenshot pipeline and TEST-1. **Push a playable build and open the draft PR.**
+  2. **The interface foundation, before the first screen** (`11-interface-catalogue.md` A3, A6, A7): `tokens.css`, the components the 1.1 screens use, the string table (`ui:strings`), the gallery (`/?gallery`), and `ui:lint` inside `npm run check`. Then: block registry and the first ~30 texture recipes; chunk store; worker pool; the bitwise greedy mesher with AO (ported, `10-prior-art.md` §2); the renderer: `SunLight` shadows, three's `Sky`, fog, pmndrs postprocessing; sky light (seeded from column heightmaps, then the ported light queues; coloured block light waits for 1.3); time of day (the cycle, a slider, a fixed postcard time); the player controller: first person, Minecraft's controls, and Minecraft's movement constants at a fixed 20 Hz (walk, sprint, sneak, jump, step-up 0.6 m, fly); break and place with a hotbar; the title screen, the loading bar and the menu (the rows marked 1.1).
+  3. COOP/COEP headers (Pages `_headers`, and the Vite dev and preview servers); a build that works on Cloudflare Pages; the "WebGL2 unavailable" screen; the screenshot pipeline, TEST-1, and `ui:shots` for the gallery. **Push a playable build and open the draft PR.**
   4. Golden test and `golden:update`; atlas and slice (on the test world, `height` mode); postcards; `bench:gen`; the shipped CI workflow passing, with `test:golden:browsers` defined.
-  5. Edits saved in IndexedDB; the F3 overlay; the remaining textures; `THIRD_PARTY_NOTICES.md`.
+  5. Edits saved in IndexedDB; the F3 overlay, the Tools panel (F4) and the block palette; the remaining textures; `THIRD_PARTY_NOTICES.md`.
 - **Owner tries:**
   1. Open the link and walk around. (Click to play: the game goes fullscreen and locks the keyboard so Ctrl-sprint works; without that, sprint is double-tap W.)
   2. Double-tap Space to fly (like Minecraft creative mode).
   3. Break and place blocks.
-  4. Press F3 to see the debug info.
+  4. Press F3 to see the debug info, and F4 for the tools (time of day, fog, fly speed).
   5. Reload: your edits are still there.
-- **Done when:** tests, check and build pass; the tools produce images; **TEST-1 ≥ 12/20** (self-scored). Step 5 items and the CI's cross-browser job may slip into 1.2 if the session runs out; say so in the report.
+  6. Open `<link>/?gallery` to see every interface screen built so far.
+- **Done when:** tests, check and build pass; the tools produce images; **TEST-1 ≥ 12/20** (self-scored); the 1.1 screens pass the checklist in `11-interface-catalogue.md` A7 from their screenshots, and `npm run ui:lint -- --complete` passes. Step 5 items and the CI's cross-browser job may slip into 1.2 if the session runs out; say so in the report.
 
 ### 1.2 World plan
 - **Build:**
@@ -34,7 +37,7 @@ The goal: Big Globe-class terrain for the whole of Kaldmark, walkable in the bro
   - static surface water (the Grey Mere, the Blackwater, the Sallows, ponds; no open sea)
   - one ungraded first-pass postcard per region, so the owner can see every region early
   - streaming across the whole world
-  - map (M) with teleport; discovery cards
+  - map (M) with teleport; discovery cards; the World select and "Go to region" (the rows marked 1.2)
 - **Owner tries:**
   1. Open the map and teleport into several regions.
   2. Walk across a border and watch it blend.
@@ -71,11 +74,11 @@ The goal: Big Globe-class terrain for the whole of Kaldmark, walkable in the bro
   - feature LOD policies
   - far shadows (horizon map); depth-precision setup; floating origin
   - per-region sky and atmosphere; takram aerial perspective for the far haze
-  - king's-view camera (Tab)
-  - settings: render distance, LOD reach, FOV, sensitivity, shadows, bloom
+  - the Command camera as king's view, on Tab (`11-interface-catalogue.md` C1, C6), with its tests (C7)
+  - settings: the rows marked 1.4 (render distance, far terrain, FOV, shadows, bloom, haze, sensitivity, invert look, fullscreen on play, interface size)
 - **Owner tries:**
   1. Climb a high point in Ibara and look at the colossal thorns far away.
-  2. Press Tab and zoom out to ~3 km.
+  2. Press Tab and zoom out to ~3 km. Pan with W A S D, turn with a right-drag, grab the ground with a middle-drag.
   3. Look across the Blackwater at the Nadir.
   4. Note the FPS from F3 on your laptop.
 - **Done when:** HELL-3, HELL-4, VISTA-1, MTN-2 and KING-1 show ≥ 5 km of real terrain with no LOD artifacts (rings, terraces, cracks, flattened peaks). Kurogane can still be first-pass here.
@@ -122,14 +125,17 @@ The goal: Big Globe-class terrain for the whole of Kaldmark, walkable in the bro
   - descents from the surface
   - underground light (ambient, fog in-scatter, region lights)
   - aquifers
+  - **the cut** (`11-interface-catalogue.md` C2): king's view can look underground. Its keys, the depth gauge, and the map's layer tabs (the rows marked 1.8)
 - **Owner tries:**
   1. Find a cave mouth and follow it down.
   2. Go down a cenote or lava tube into Layer 1.
   3. Visit two Layer 1 regions.
+  4. Press Tab inside a cavern, then step the view down and up with PageDown and PageUp.
 - **Done when:**
   - the Layer 1 postcards and CAVE-1 pass
   - in the slices, shelves are solid except at descents, caverns appear only inside their band and footprint, and there is no floating or stepped water
   - a path test in the terrain report confirms every surface → Layer 1 descent reaches its region
+  - the cut's tests pass (`11-interface-catalogue.md` C7), and you have looked at a cavern through it in a screenshot
 
 ### 1.9 The deep
 - **Build:**
@@ -147,7 +153,7 @@ The goal: Big Globe-class terrain for the whole of Kaldmark, walkable in the bro
 - **Build:**
   - meet the budgets
   - revisit the timeboxed Known issues
-  - loading screen and complete settings
+  - the interface rows marked 1.10: the complete settings
   - final postcard runs on seeds 1–3
   - a milestone summary in `progress.md`
 - **Owner tries:** a full tour, then sign off (or send notes).
@@ -166,13 +172,13 @@ The simulation runs in a worker using `shared` code, standing in for the future 
 - Templates (house, stockpile, farm, workshop) built block by block; freeform validation for 2–3 building types.
 - Command view (select, blueprints, zones) and possession (Minecraft controls; break and place using real items).
 - Tier-1 needs, the calendar and a first winter.
-- The inspector and command-bar UI.
+- The interface rows marked M2 in `11-interface-catalogue.md`: the top bar, alerts, minimap, the command bar, Build and Zones, the inspector, Realm, the Ledger, Find, the key list, inventories, the Dig tool, the death screen, and the cut's rule that you see underground only where your people have been (its C2).
 
 ## Milestone 3 · Production and logistics
 - Medium chains (bread, tools, iron, weapons) and workstations; tool wear, quality, spoilage and preservation.
 - Carts, roads, routes (drawn and auto-generated) and the Quartermaster; several settlements.
 - Money: mint, wages, markets, taxes, treasury, pay chests.
-- Needs tiers 2–3; more officials.
+- Needs tiers 2–3 and loyalty; more officials.
 - Wanderers, neutral villages, reputation.
 
 ## Milestone 4 · A hostile world
@@ -186,7 +192,7 @@ The simulation runs in a worker using `shared` code, standing in for the future 
 ## Milestone 5 · Multiplayer
 - The authoritative, self-hosted server (Node 24 LTS, `ws`, better-sqlite3): protocol, persistence, Discord login (redirect flow).
 - Many kings; interest management; simulation tiers T0–T3 (`05-systems.md` §22).
-- PvP, morale and surrender, capture, swaying people.
+- PvP, morale and surrender, capture, swaying people; Marshals and armies; siege engines.
 - Market board and trading posts; diplomacy.
 - Self-hosting guide and Docker setup; a 10–20 player playtest.
 

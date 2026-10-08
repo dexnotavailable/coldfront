@@ -46,19 +46,22 @@ Milestones 2–8 build these systems. Milestone 1 builds none of them, but its a
 ## 3. Two modes: Command and Possess
 
 **Command view** (the king's view) is top-down and RTS-style:
-- camera: pan, zoom from 20 m to 6 km altitude, rotate
+- camera: pan, zoom from 24 m out to 6 km, turn and tilt, and a **cut** that opens the view into the underground (`11-interface-catalogue.md` Part C)
 - place blueprints (templates or freeform), paint zones (farms, stockpiles, housing, forbidden)
+- mark ground to be dug: pits and foundations, levelling, and mines and tunnels laid out on the cut
 - draw routes
 - appoint officials; set policies (wages, taxes, rations, stock targets)
 - command companies and armies
 - trade and diplomacy panels, the map, the Ledger
 - data overlays (see `06-ui-art.md` §4)
 
+Every screen, control and key of both modes is listed in `11-interface-catalogue.md`.
+
 You see live information only inside your connected network coverage. Outside it is fog, with stale last-seen markers.
 
 **Possess mode is Minecraft.** The owner's rule: possessing a unit should feel exactly like controlling a Minecraft player.
 - First person by default; F5 for third person.
-- Minecraft's controls (`06-ui-art.md` §6) and movement feel: walk, sprint, sneak, jump, swim, climb, fall damage, the same player box and eye height.
+- Minecraft's controls (`11-interface-catalogue.md` B3–B4) and movement feel: walk, sprint, sneak, jump, swim, climb, fall damage, the same player box and eye height.
 - Breaking a block takes time set by the block's hardness and the tool in hand; placing uses real items from the unit's inventory.
 - Attack, use, interact and manage inventory as in Minecraft; shields block with the right mouse button. Learned abilities sit on Z, X, C, V, R and G: one or two for anyone who trained them, up to six for a hero (§9).
 
@@ -66,13 +69,13 @@ The unit's own stats apply on top: a strong miner digs faster, and a clumsy cler
 
 **One unit model.** Every unit, AI-driven or possessed, runs the same code path. A controller produces the same input a human produces (movement keys, look direction, and an optional action such as dig, place, use, attack, equip or craft), and one shared physics step and one shared action system consume it. AI controllers and the possessing player's controller are interchangeable: possessing a unit just swaps its controller. See `07-architecture.md` §5 (entities) and §9 (the server), and `10-prior-art.md` §3.
 
-**Possessing an official** also opens that official's management panel, so you can reassign jobs and roles in their jurisdiction.
+**Possessing an official** gives you that official's **office** (K): the Realm panel limited to their jurisdiction, so you can reassign jobs and roles there.
 
-**Officers have a command radius.** While you possess a Captain (radius ~64 m) or a Marshal (~160 m) *(tune)*, you order that officer's company or army directly within the radius, with **no network delay**: follow me, charge that target, hold here, ride them down. This is the middle rung of the king → officer → soldier ladder, and it's how a human-led raid outpaces the AI. For example: take a mounted troop, chase down the messengers riding for help, then hit the settlement before its reinforcements hear.
+**Officers have a command radius.** While you possess a Captain (radius ~64 m) or a Marshal (~160 m) *(tune)*, you order that officer's company or army directly within the radius, with **no network delay**: follow me, charge that target, hold here, ride them down (the order wheel, hold B). This is the middle rung of the king → officer → soldier ladder, and it's how a human-led raid outpaces the AI. For example: take a mounted troop, chase down the messengers riding for help, then hit the settlement before its reinforcements hear.
 
 **Why possession matters.** A possessed unit acts with *player skill*: timing, aim, precise building, scouting, chasing a messenger. AI-controlled units use simpler tactics. Abilities are designed for manual play (the AI uses a subset). The intended habit is to invest in a few people (a hero, a band) and play them often.
 
-**Switching.** Tab toggles modes; click a unit in Command view to possess it; a hotkey returns you to the king. While you possess someone else, the king's body is AI-controlled. Only units inside your connected coverage (§4) can be possessed.
+**Switching.** Tab toggles modes: in Command view it possesses the selected person (or the last one possessed, or the king), and a person's inspector has a Possess button. Home returns you to the king. While you possess someone else, the king's body is AI-controlled. Only units inside your connected coverage (§4) can be possessed.
 
 ---
 
@@ -98,7 +101,7 @@ The network is your eyes, voice and reach. **It defines your territory.**
   - Inside connected coverage, news moves along the links: instantly across overlapping local nodes, ~20 s per signal-tower hop (fog, night and storms cut range), near-instantly across relays (each message costs mana; mana storms disrupt them).
   - Between places that aren't connected (early game, frontier outposts, cut-off areas), news travels by **rider**, physically along roads (~10 m/s on roads, 6 off-road), changing horses at rider posts. A rider can be killed, and then the news is lost.
 - **Reactions wait for news.** Garrisons, officials and the offline king react only when news arrives. Units react instantly to what they *see* themselves.
-- **Orders travel outward** the same way. The UI shows each order in transit with an ETA.
+- **Orders travel outward** the same way: along the links inside connected coverage, and by rider to a place that is cut off. The UI shows each order in transit with an ETA (`11-interface-catalogue.md` A4).
 - **Messenger raids are a core tactic:** cut a tower, run down the riders, and the defender reacts too late. You see enemy riders when they're inside your coverage.
 
 ---

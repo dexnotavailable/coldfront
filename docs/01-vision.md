@@ -40,7 +40,7 @@ You win the long game by expanding your **front**: territory, logistics and indu
 - **Scarcity creates politics.** Key resources exist in one region only. Whoever holds the gold and silver mints the money; whoever holds skystone controls the fast way down.
 - **Depth costs.** Each layer down is harsher, and climbing back up hurts more.
 - **Loyalty is the glue.** People pledge to kings. War is won by breaking loyalty as much as by killing.
-- **The world is the interface.** The UI stays quiet, clean and organised (`06-ui-art.md`).
+- **The world is the interface.** The UI stays quiet, clean and organised (`06-ui-art.md`), and holds nothing that isn't listed in `11-interface-catalogue.md`.
 
 ---
 
@@ -178,12 +178,13 @@ These are settled. Don't re-open them without the owner. Unmarked items are the 
 - Setting: grounded high fantasy, arcane-industrial; the name evokes the coldness of steel.
 - Story and lore are fleshed out (`03-lore.md`).
 - UI is clean, minimal, uncluttered and organised (`06-ui-art.md`).
+- **No filler text in the interface.** No subtitles or helper lines: an explanation is reworded into the label or moved into a tooltip. **Every screen, button, menu, slider, key and sentence is listed in `11-interface-catalogue.md` before it is built, and nothing else gets invented.**
 - Blocky voxel art, produced by code.
 - Desktop browser, mouse and keyboard (default).
 - **The first milestone is the world:** terrain generation at Big Globe quality. The owner's previous attempt with another model failed on primitive-looking hellscape spikes.
 - The owner self-hosts the multiplayer server for now. Build previews are free static hosting (default).
 - **Stack** (TypeScript, Three.js, shared browser/server code, Rust/WASM only if needed) (default). A licence-checked audit of open-source prior art confirmed it and adjusted details (`10-prior-art.md`, `07-architecture.md`).
-- **The owner builds with Claude Opus 5.5 in Claude Code cloud sessions, with ultracode on** (xhigh reasoning effort plus automatic workflows).
+- **The owner builds with coding agents:** OpenAI's Codex from October 2026, after starting the docs with Claude Code. Both read the same guide, `AGENTS.md`, so either can pick the work up (`12-sessions.md`).
 - **Names are diverse:** Japanese/anime-styled names (regions, characters, bosses) alongside the European fantasy names, drawn from the world's three tongues (`03-lore.md` §8 and §12). Code uses stable IDs, so names can change freely.
 
 ---
@@ -196,6 +197,8 @@ These are settled. Don't re-open them without the owner. Unmarked items are the 
 | **King** | A player's avatar and life. Dies → the kingdom collapses |
 | **The Steward** | The mysterious tutorial guide every king gets. Can't be controlled; never fights |
 | **Command view / Possess** | The two play modes |
+| **The cut** | Command view's way of seeing underground: a level slice that hides everything above it (`11-interface-catalogue.md` C2) |
+| **The catalogue** | `11-interface-catalogue.md`: the complete list of what the interface contains. If it isn't there, it isn't in the game |
 | **Network** | Watchtowers, signal towers and mana relays. Its *connected* coverage is where you can see, command and possess |
 | **News** | Any report or order; it travels physically through the network or by rider |
 | **Reeve · Quartermaster · Captain · Marshal · Magister · Treasurer · Envoy** | Officials: town · supply · company · army · mana and mages · coin · trade and diplomacy |

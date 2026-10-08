@@ -22,7 +22,7 @@ The technical plan. The agent owns technical decisions. Where this doc is silent
 | Runtime and packages | Node 22 for builds and tools (the cloud VM's default; `engines: >=22.12`, and a `.node-version` file containing `22`); the server targets **Node 24 LTS** (Node 22 reaches end of life in April 2027). **npm workspaces** |
 | Client build | Vite |
 | Rendering | three.js **r186, pinned to an exact version**, `WebGLRenderer` (WebGL2). Terrain material = `MeshLambertMaterial` extended via `onBeforeCompile` in one module, with `customProgramCacheKey` overridden (keeps three's shadows and fog). Shadows: `SunLight` (two cascades; in r186 imported from `three/addons/lights/SunLight.js`). Post: **pmndrs `postprocessing`** (`EffectPass`, bloom, tone mapping). Sky: three's `Sky` and fog first; **`@takram/three-atmosphere`** aerial perspective from phase 1.4. |
-| UI | Preact + `@preact/signals` (pin the major version), plain CSS with tokens (`06-ui-art.md` §5), `@fontsource` fonts, icons from the framework-free `lucide` package (avoids peer-version clashes with Preact) |
+| UI | Preact + `@preact/signals` (pin the major version), plain CSS with tokens (`06-ui-art.md` §5), `@fontsource` fonts, icons from the framework-free `lucide` package (avoids peer-version clashes with Preact). Every screen, control and string comes from `11-interface-catalogue.md` through a generated string table (§6) |
 | Threads | Module Web Workers with a typed message protocol and transferables. `SharedArrayBuffer` is an optimisation used when `crossOriginIsolated`; everything must work without it. |
 | Tools | Node CLIs run with `tsx`; `pngjs` for images; Playwright (version pinned to match the installed browser) for postcards and smoke tests; contact sheets by screenshotting an HTML grid page; `stats-gl` and Spector.js for profiling |
 | Tests | Vitest; Playwright for end-to-end smoke tests |
@@ -40,7 +40,8 @@ Nothing loads from a CDN at runtime. Every dependency comes from npm and is bund
 
 ```
 /
-├─ CLAUDE.md            agent rules (read every session)
+├─ AGENTS.md            the agent guide (read every session; Codex reads it directly)
+├─ CLAUDE.md            imports AGENTS.md and adds the notes only Claude Code needs
 ├─ .claude/settings.json  shipped by the owner: ultracode, worktrees from HEAD, pre-approved routine commands, the SessionStart `npm ci` hook. The agent never edits it
 ├─ .github/workflows/ci.yml shipped by the owner: check, test, build, cross-browser golden hashes. The agent never edits it
 ├─ .gitignore
@@ -49,6 +50,7 @@ Nothing loads from a CDN at runtime. Every dependency comes from npm and is bund
 ├─ README.md            owner's guide
 ├─ PROMPTS.md           prompts the owner pastes into sessions
 ├─ docs/                design docs, diagrams, committed postcards, progress log, owner references
+│  └─ tools/ui-catalogue.mjs  checks the interface catalogue's tables and prints them as JSON (no dependencies)
 ├─ packages/
 │  ├─ shared/           pure TS: constants, math, noise, sdf, worldgen, blocks (later: sim, items, protocol)
 │  │  ├─ src/world/constants.ts
@@ -63,11 +65,12 @@ Nothing loads from a CDN at runtime. Every dependency comes from npm and is bund
 │  │  └─ test/          unit tests, golden/worldgen.json, forbidden-tokens.test.ts
 │  ├─ client/           the game (Vite)
 │  │  ├─ src/engine/    renderer, chunk store, streaming, lod (3D chunk grid + column-tile quadtree), workers (gen, light, mesh), sky, water, post
-│  │  ├─ src/game/      player controller, physics, camera modes, edits persistence
-│  │  ├─ src/ui/        tokens.css, components/, hud/, screens/
-│  │  ├─ src/dev/       F3 overlay, teleports, view modes, postcard mode, lil-gui (?dev)
+│  │  ├─ src/game/      player controller, physics, input (bindings, pointer lock, fullscreen), cameras (command, possess, free), edits persistence
+│  │  ├─ src/ui/        tokens.css, components/ (one file per catalogue component), screens/, hud/, gallery/,
+│  │  │                 strings.gen.json (generated from the catalogue; never edited by hand), t.ts, phase.ts (UI_PHASE)
+│  │  ├─ src/dev/       the logic behind the owner tools: teleports, view modes, postcard mode, lil-gui (?dev). Their screens live in src/ui like any other
 │  │  └─ public/_headers
-│  ├─ tools/            atlas, slice, postcards (+ cameras/), terrain-report, bench, golden
+│  ├─ tools/            atlas, slice, postcards (+ cameras/), terrain-report, bench, golden, ui-strings, ui-lint, ui-shots
 │  └─ server/           (M5+)
 └─ out/                 generated scratch output (gitignored)
 ```
@@ -163,19 +166,26 @@ As specified in `04-terrain.md` §13:
 pmndrs `postprocessing`: `RenderPass → EffectPass(Bloom with threshold, ACES tone mapping, optional FXAA)`. From phase 1.4, takram's aerial perspective joins the chain.
 
 **Game layer (M1)**
-- Pointer lock (`unadjustedMovement: true`); click-to-play enters fullscreen and calls `navigator.keyboard.lock()` where supported, so Ctrl-sprint doesn't trigger Ctrl+W (close tab); where it isn't (Firefox, Safari), sprint is double-tap W and a `beforeunload` guard asks before the tab closes. An AABB player controller; DDA raycast for block picking; camera modes: first person, king's view (RTS), and third person (F5).
-- **The player controller is the Minecraft controller** (the owner's rule): first person, Minecraft's controls (`06-ui-art.md` §6) and movement feel. From Milestone 2 the M1 controller is replaced by the shared unit physics (the prismarine-physics port), so the player and every NPC move identically.
+- **Input follows `11-interface-catalogue.md` Part B.** Pointer lock (`unadjustedMovement: true`, retried without it where that isn't supported). Entering the world goes fullscreen with the keyboard locked where the browser allows, so Ctrl-sprint doesn't trigger Ctrl+W (close tab). In a window on Windows and Linux, Left Ctrl is switched off and sprint is double-tap W. A `beforeunload` guard is on whenever the player is in the world. Keys are read by position (`KeyboardEvent.code`) through one binding table that the key list edits.
+- **Cameras follow Part C.** First person and third person (F5) from phase 1.1; the Command camera, as king's view, from phase 1.4; the cut from Milestone 2 (leave room for a clip height in the terrain material from phase 1.4). The camera maths is pure and unit-tested (Part C7).
+- An AABB player controller; DDA raycast for block picking.
+- **The player controller is the Minecraft controller** (the owner's rule): first person, Minecraft's controls (`11-interface-catalogue.md` B3–B4) and movement feel. From Milestone 2 the M1 controller is replaced by the shared unit physics (the prismarine-physics port), so the player and every NPC move identically.
 - Player constants: **Minecraft's per-tick values at a fixed 20 Hz** (1 block = 1 m; a tick is 50 ms):
   - box 0.6 × 1.8 × 0.6 m; eye at 1.62 m (1.27 m sneaking)
   - walk ≈ 4.317 m/s, sprint ≈ 5.612 m/s, sneak ≈ 1.31 m/s
   - jump: initial vertical velocity 0.42 blocks/tick; gravity 0.08 blocks/tick² with 0.98 vertical drag per tick (≈ 1.25 m jump apex)
   - step-up 0.6 m, always on; auto-jump is an optional setting, off by default
   - swim in water
-  - fly 20 m/s, with a ×10 boost key (dev tool through Milestone 4)
+  - fly as in Minecraft's creative mode: about 10.9 m/s, doubled while sprinting, times the owner's fly-speed step (×1 to ×16 on `[` and `]`; an owner tool through Milestone 4)
 
 **UI layer**
 - A Preact app over the canvas.
 - Game state reaches the UI through signals, updated at most 10 Hz for HUD values. The UI never touches Three.js objects directly.
+- **The catalogue is the source** (`11-interface-catalogue.md` A6–A7):
+  - `npm run ui:strings` turns its tables into `src/ui/strings.gen.json`. Interface code shows text only through `t(id, values)` and marks each operable element with `data-ui="<id>"`.
+  - `npm run ui:lint` (part of `npm run check`, Node only) fails on a catalogue problem, on a text literal that could reach the screen, on a colour outside `tokens.css`, and on a gallery that shows an unlisted or too-early control. A listed row that the gallery doesn't show yet is a warning, and a failure with `--complete`, which every phase's "Done when" runs. `UI_PHASE` in `src/ui/phase.ts` says which rows exist yet.
+  - **The gallery** (`/?gallery`) renders every screen and state with fixed sample data. `npm run ui:shots` screenshots it into `out/ui/` and checks the real page: it fails on drawn text that is neither a catalogue string nor sample data, on clipped text or overlapping controls, and on a wrong Tab order. It ships in every build through Milestone 4.
+- Screens are built from the catalogue's components only. Each component has one stylesheet; screens use tokens and components and contain no raw colours or pixel values.
 
 ---
 
@@ -185,10 +195,13 @@ pmndrs `postprocessing`: `RenderPass → EffectPass(Bloom with threshold, ACES t
 |---|---|
 | `npm run atlas` | top-down PNG maps with coverage reports (`04-terrain.md` §14.1) |
 | `npm run slice` | cross-section overview and windows (`04-terrain.md` §14.2) |
-| `npm run postcards` | camera resolution and validation, headless screenshots (`04-terrain.md` §14.3). Browser flags are in `CLAUDE.md`. |
+| `npm run postcards` | camera resolution and validation, headless screenshots (`04-terrain.md` §14.3). Browser flags are in `12-sessions.md` §2. |
 | `npm run terrain-report` | numeric terrain diagnostics per region (`04-terrain.md` §14.5) |
 | `npm run bench:gen` | generation, lighting and meshing timings on the fixed bench set |
 | `npm run golden:update` | regenerate golden hashes whenever generated output changes (bump `WORLDGEN_VERSION` at most once per PR) |
+| `npm run ui:strings` | run `docs/tools/ui-catalogue.mjs --json` and write the interface's string table |
+| `npm run ui:lint [-- --complete]` | the catalogue check, the text-literal and colour scans, and the gallery-versus-catalogue comparison (`11-interface-catalogue.md` A6). `--complete` also fails on rows the gallery doesn't show yet |
+| `npm run ui:shots` | screenshots of every gallery state at 1280 × 720 and 1920 × 1080, and changed states at 150% interface scale, plus the on-page checks (`11-interface-catalogue.md` A6, A7) |
 
 Atlas, slice and the report may use `worker_threads` for speed. Postcards must work in the cloud session's headless environment: software WebGL through SwiftShader.
 
@@ -201,7 +214,7 @@ Atlas, slice and the report may use `worker_threads` for speed. Postcards must w
   - build command `npm run build`
   - output directory `packages/client/dist`
   - environment variable `NODE_VERSION=22`
-- Every pushed branch gets a preview. The branch alias is the branch name, lowercased, with non-alphanumerics turned into `-`, trimmed, and **truncated to 28 characters**. Read the real URL from Cloudflare's PR comment or commit status (see `CLAUDE.md`).
+- Every pushed branch gets a preview. The branch alias is the branch name, lowercased, with non-alphanumerics turned into `-`, trimmed, and **truncated to 28 characters**. Read the real URL from Cloudflare's PR comment or commit status (see `12-sessions.md` §5).
 - **Cross-origin isolation.** `packages/client/public/_headers`:
   ```
   /*
@@ -280,11 +293,13 @@ Atlas, slice and the report may use `worker_threads` for speed. Postcards must w
 | Determinism | golden chunk hashes across seeds, regions and LODs; the forbidden-token scan; the same hashes in Chromium, Firefox and WebKit in CI |
 | Physics (M2+) | golden movement tests from Minecraft's movement formulas (walk, sprint, jump, fall, swim, ladders) |
 | Visual | postcards, rubric, blind review, diagnostics (`04-terrain.md` §14) |
+| Interface | `ui:lint` (nothing on screen that the catalogue doesn't list); gallery screenshots opened and checked against the checklist in `11-interface-catalogue.md` A7 |
+| Cameras and input | unit tests on the camera maths and one Playwright drive of the real page (`11-interface-catalogue.md` C7); binding-table tests (reserved keys refused, clashes reported) |
 | Smoke (Playwright, headless) | the client loads, generates, walks, breaks and places, teleports from the map, with no console errors and `crossOriginIsolated` true |
 | Performance | `bench:gen` numbers against budgets (warn, don't fail, in M1) |
 | Later | simulation invariants (ledger vs agent), bot load tests, protocol fuzzing |
 
-`npm test` runs unit, golden and forbidden-token tests. `npm run check` runs types and Biome. Both must pass before every push.
+`npm test` runs unit, golden and forbidden-token tests. `npm run check` runs types, Biome and `ui:lint`. Both must pass before every push.
 
 ---
 
@@ -295,6 +310,7 @@ Atlas, slice and the report may use `worker_threads` for speed. Postcards must w
 - **Use the design's words in code:** Warden, Seat, Muster, Reeve, Quartermaster, Descent, Shelf, Coverage, News.
 - Each region recipe file starts with a comment linking its section in `04-terrain.md`.
 - Comments explain *why*. Put tunables in named constants or recipe objects, never magic numbers inline.
+- **Interface code contains no text.** Words come from the catalogue through the string table; sizes and colours come from tokens (`11-interface-catalogue.md` A3, A6).
 - Fail loudly in dev; degrade gracefully in production (retry the chunk, log it, keep running).
 - **Dependencies:** few and well known. Adding a heavy dependency needs a one-line justification in `progress.md`.
 - **Third-party code** follows `10-prior-art.md` §1: check the licence, record it in `THIRD_PARTY_NOTICES.md`, keep MPL files separate, and never paste GPL, LGPL, non-commercial or "all rights reserved" source into your context.
