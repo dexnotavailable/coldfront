@@ -179,6 +179,18 @@ The agent appends to lists 2 and 3 and never blocks work waiting for answers.
 
 ---
 
+**2026-10-09 · WorldPlan and travel.**
+
+| # | Decision | Why | To reverse |
+|---|---|---|---|
+| 102 | **The outer whiteout has stable ID `frost`, separate from `rim`.** Rim and Frost discovery sentences use existing facts about the Rimholds and the lifeless whiteout | The frame already defines both places, but the ID table and discovery-story list omitted the Frost and both stories. This supplies content for the existing discovery card without adding a control or new history | 02 §2; 03 §11; region content |
+| 103 | **World kinds are `main` and `test`; Kaldmark is the main world's display name.** Jobs, cached plans, edits, poses and discoveries use kind, seed and generation identity. A separate session counter guards navigation; ordinary snapshot updates do not invalidate it | The same seed must not mix two worlds or let an old asynchronous result move a new avatar. Existing M1 generation/registry invalidation stays in force; compatible legacy records can only be treated as test-world records | World context and client persistence/session contracts |
+| 104 | **Discovery memory persists with that world save identity.** Returning, reloading or crossing a border repeatedly does not replay a card; new generation/season identity starts fresh. Clear my edits clears edits, not discoveries. The test world has no regional story cards | “First entering” should reward exploration rather than demand repeated attention, consistent with pillars 4 and 6. If storage is unavailable, the current session still suppresses repeated cards | Discovery persistence and controller |
+| 105 | **Opening the map starts its chosen spot at the avatar's current position.** Map pan/zoom stays local to the map; entering a point or region never supplies an avatar y coordinate. Go to region appears only in worlds with named regions | This reuses the listed chosen-spot marker and avoids an invented disabled-reason message or a meaningless region control in the sandbox. The engine finds and prepares safe ground before committing travel | 11 D7/D12; map and teleport contracts |
+| 106 | **Phase 1.2 measures dominant-region area, including that region's water, with stable-ID ties; weighted area is also reported.** First-pass postcards cover all sixteen named surface areas and remain ungraded | This makes the 90–110 km² gate inspectable without treating overlap weights as extra land. Early pictures show progress without claiming the later feature-quality gates, especially Ibara's thorns | Region atlas/report and first-pass postcard definitions |
+
+---
+
 ## 3. Parking lot
 
 - Seasonal modifiers ("the Long Winter": a season with twice the winter)

@@ -1,7 +1,7 @@
 # Progress log
 
 **Current milestone:** 1 · The World
-**Current phase:** 1.1 · Foundations complete; 1.2 · World plan next
+**Current phase:** 1.2 · World plan (in progress)
 **Playable link:** [dex.place/coldfront](https://dex.place/coldfront/) · [Interface gallery](https://dex.place/coldfront/?gallery) · [Foundation completion PR #3](https://github.com/dexnotavailable/coldfront/pull/3). Live game commit: `d4c4c49`. The unrelated `coldfront.pages.dev` site is not this game's preview.
 **Agent guide:** `AGENTS.md` (Codex and Claude Code both follow it). **Interface:** only what `docs/11-interface-catalogue.md` lists.
 
@@ -10,7 +10,7 @@
 | Phase | Status | Notes |
 |---|---|---|
 | 1.1 Foundations | ✓ Complete, with recorded limits | 190 tests, check/build, clean Node22 build, complete UI lint and all-three-browser CI pass; accepted images/tools/save fixes published as d4c4c49. Public-site browser launch remains unavailable. |
-| 1.2 World plan | ☐ | |
+| 1.2 World plan | In progress | [Phase plan](plans/phase-1-2.md); isolated WorldPlan, engine and catalogue UI work. Independent psrd2 port passes focused checks; main geography is not accepted yet. |
 | 1.3 Terrain toolkit + Ibara | ☐ | |
 | 1.4 Far terrain | ☐ | |
 | 1.5 Kurogane + Selva | ☐ | |
@@ -21,7 +21,11 @@
 | 1.10 Polish + performance | ☐ | |
 
 ## Current session
-**8–9 October 2026 · Codex · `codex/phase-1-1-review-tools`**
+**9 October 2026 · Codex · `codex/phase-1-2-world-plan`**
+
+Phase 1.1 is merged and live. The [1.2 plan](plans/phase-1-2.md) fixes shared world/context and client travel boundaries before integration. Current work: real rings/drainage/sites and first-pass terrain; world-safe worker/cache/persistence and atomic travel; the fifteen catalogue rows and discovery cards. Decisions 102–106 record the missing Frost ID/content, separate world identity, persistent discovery memory and map defaults. The verified standalone psrd2 port is staged with 1M measured samples and unchanged test-world goldens; it has not yet changed the live game.
+
+The following startup/recovery record describes the completed foundation work.
 
 1. Prove headless Chromium, WebGL2, cross-origin isolation and image capture; open the result before game code.
 2. Build roadmap 1.1 in order. Preserve pointwise generation, tested deterministic maths, analytic noise derivatives, measured quantiles, and the enforced Math allowlist.

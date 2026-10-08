@@ -214,6 +214,8 @@ The **first sentence** of each entry is the region's discovery-card line; the re
 - **Sundered Isles.** The land that fell upward. Admiral Kest commanded the Crown's river fleet; when the land tore loose, his harbour went with it, and he rules the islands as a corsair king.
 - **Blackwater.** Once the Mirror, the lake of the Crown's capital. Now a black ring-sea.
 - **Nadir.** The Crown's heart, heaved up and burned black. Severin, the Castellan, kept the Keep's gates for the High King, and he keeps them still.
+- **Rim.** The Kaldfolk survive the Frost in halls deep in the ice.
+- **Frost.** Nothing lives in the whiteout beyond the Rim.
 
 **Layer 1**
 - **Frost Hollows.** The Frost's cold seeps down and pools here. Tsurara ("icicle"), the Rime Wyrm, nests where it is coldest.

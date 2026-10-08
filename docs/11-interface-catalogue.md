@@ -1390,7 +1390,7 @@ Full screen, flat, north up (C6). A bar 44 px tall along the bottom holds the co
 | `map.layer` | tab | {layer} | — | — | one tab per layer, top-left: the surface, then each layer your people have reached (every layer in Milestone 1 and for the free camera) | 1.8 |
 | `map.where` | stat | Position | — | — | bottom left, follows the cursor. Value: the two coordinates, then `·` and the region's name | 1.2 |
 | `map.scale` | canvas | Scale | — | — | a scale bar, bottom right | 1.2 |
-| `map.pin` | canvas | Chosen spot | — | — | a click chooses a spot and marks it. A double-click does `map.go` (or `map.teleport`) at once | 1.2 |
+| `map.pin` | canvas | Chosen spot | — | — | starts at the avatar's position when opened; a click chooses a spot and marks it. A double-click does `map.go` (or `map.teleport`) at once | 1.2 |
 | `map.teleport` | button | Teleport | Puts the free camera at the chosen spot | Enter | primary; owner tool through Milestone 4, shown when the map was opened from the free camera | 1.2 |
 | `map.go` | button | Go here | Moves the Command view to the chosen spot | Enter | primary; shown when the map was opened from Command view. Closes the map | 1.4 |
 | `map.mark` | button | Add marker | — | — | puts a named marker on the chosen spot | M2 |
@@ -1514,6 +1514,8 @@ Replaces the settings rows inside the same Panel. One row per binding in B3, und
 ### Discovery card
 On first entering a region: its name in the display font (`--fs-28`), the first sentence of its story under it (`--fs-16`, `03-lore.md` §11), centred a quarter of the way down the screen, straight onto the world. A Court-speech name shows its kanji above it in `--font-kanji`. It fades in over 300 ms, holds 4 s, fades out over 300 ms, and never blocks input. Ships in phase 1.2. It has no strings of its own: all of it is content.
 
+First-entry memory belongs to the world save identity (world kind, seed and generation identity), so returning or reloading does not replay it. If storage is unavailable, it lasts for the current session. Clear my edits does not clear discoveries. The test world has no regional discovery cards.
+
 ### Warden card
 Top centre while a Warden is engaged: the name and title in the display font, the line `card.warden` under it, and a Bar 480 px wide. A Court-speech name shows its kanji beside it. When the Warden dies, its last words (content, `03-lore.md` §9) take the second line's place for 6 s, and then the card fades out over 300 ms. Ships in Milestone 4.
 
@@ -1625,7 +1627,7 @@ A side panel. It doesn't take the keys (A4), so you can still walk and fly while
 | ID | Type | Label | Tooltip | Key | Does | Since |
 |---|---|---|---|---|---|---|
 | `tools.title` | title | Tools | — | — | | 1.1 |
-| `tools.region` | select | Go to region | — | — | teleports to a good viewpoint in that region | 1.2 |
+| `tools.region` | select | Go to region | — | — | teleports to a good viewpoint in that region; shown only in worlds with named regions | 1.2 |
 | `tools.postcard` | select | Go to postcard | — | — | teleports the free camera there and shows that postcard's own view, as postcard mode does (`04-terrain.md` §14.3); Esc goes back to the free camera | 1.3 |
 | `tools.time` | slider | Time of day | — | — | 0–24 h | 1.1 |
 | `tools.clock` | toggle | Clock runs | — | — | default on; off freezes the sun | 1.1 |

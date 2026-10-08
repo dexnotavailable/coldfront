@@ -90,6 +90,7 @@ Every region and layer has a **stable ID** used in code, file names, commands an
 | `nadir` | the Nadir | Scholars' | "the lowest point": the old astronomers' word, now the name of the demon king's land |
 | `blackwater` | the Blackwater | Rim | the ring-sea, once the Mirror |
 | `rim` | the Rim | Rim | the ice wall |
+| `frost` | the Frost | Rim | the whiteout beyond the Rim |
 | `frost_hollows`, `old_workings`, `crystal_grottos`, `ember_veins`, `bone_pits`, `root_halls`, `sporewood`, `drowned_caverns` | the Frost Hollows, the Old Workings, the Kagami Grottos (鏡, "mirror"), the Ember Veins, the Bone Pits, the Root Halls, the Sporewood, the Drowned Caverns | mixed | Layer 1 |
 | `stone_garden`, `buried_city`, `leyflow`, `great_shear`, `hollow_sky` | Sekitei (石庭, "stone garden"), the Buried City (Undervault), the Leyflow, the Great Shear, the Hollow Sky | mixed | Layer 2 |
 | `gut`, `ash_sea`, `deep_forges` | the Gut, Yomi (黄泉, the land of the dead; "the Ash Sea"), the Deep Forges | mixed | Layer 3 |
