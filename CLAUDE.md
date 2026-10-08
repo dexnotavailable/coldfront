@@ -6,7 +6,7 @@ The guide for every coding agent is `AGENTS.md`. It is imported here in full and
 
 ## Notes for Claude Code only
 
-- **Where you are.** A cloud session has `CLAUDE_CODE_REMOTE=true` and starts on a branch of its own. Anywhere else you're on the owner's computer: settle your branch before the first commit (`docs/12-sessions.md` §1).
+- **Where you are.** A cloud session has `CLAUDE_CODE_REMOTE=true` and starts on a branch of its own. Anywhere else you're on the owner's computer. Either way, do `docs/12-sessions.md` §1 before you change anything.
 - **Start-up hook.** In cloud sessions a hook in `.claude/settings.json` runs `npm ci` when `node_modules` is missing. If it reports a failure, run `npm ci` yourself. There's no hook on the owner's computer.
 - **Images.** "Open the image" in golden rule 3 means the Read tool on the image file.
 - **Long commands.** The shell tool waits 2 minutes by default (10 at most), then moves the command to the background. Start renders and benchmarks in the background yourself, with a log in `out/`.

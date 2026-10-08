@@ -55,9 +55,10 @@ const VOICE = /^(steward|chron|moment)\./;
 // Units, number formats, key names and compass points: fragments, so they needn't start with a capital.
 const FRAGMENT = /^(unit|fmt|keyname|compass)\./;
 
+// An em dash means "none". A hyphen is a real value (it is the default key for "Zoom out").
 const clean = (cell) => {
   const t = cell.trim();
-  return t === '—' || t === '-' ? '' : t;
+  return t === '—' ? '' : t;
 };
 const words = (s) => s.split(/\s+/).filter(Boolean);
 

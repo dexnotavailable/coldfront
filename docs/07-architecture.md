@@ -167,7 +167,7 @@ pmndrs `postprocessing`: `RenderPass → EffectPass(Bloom with threshold, ACES t
 
 **Game layer (M1)**
 - **Input follows `11-interface-catalogue.md` Part B.** Pointer lock (`unadjustedMovement: true`, retried without it where that isn't supported). Entering the world goes fullscreen with the keyboard locked where the browser allows, so Ctrl-sprint doesn't trigger Ctrl+W (close tab). In a window on Windows and Linux, Left Ctrl is switched off and sprint is double-tap W. A `beforeunload` guard is on whenever the player is in the world. Keys are read by position (`KeyboardEvent.code`) through one binding table that the key list edits.
-- **Cameras follow Part C.** First person and third person (F5) from phase 1.1; the Command camera, as king's view, from phase 1.4; the cut from Milestone 2 (leave room for a clip height in the terrain material from phase 1.4). The camera maths is pure and unit-tested (Part C7).
+- **Cameras follow Part C.** First person and third person (F5) from phase 1.1; the Command camera, as king's view, from phase 1.4; the cut from phase 1.8, with the caves (leave room for a clip height in the terrain material from phase 1.4). The camera maths is pure and unit-tested (Part C7).
 - An AABB player controller; DDA raycast for block picking.
 - **The player controller is the Minecraft controller** (the owner's rule): first person, Minecraft's controls (`11-interface-catalogue.md` B3–B4) and movement feel. From Milestone 2 the M1 controller is replaced by the shared unit physics (the prismarine-physics port), so the player and every NPC move identically.
 - Player constants: **Minecraft's per-tick values at a fixed 20 Hz** (1 block = 1 m; a tick is 50 ms):
@@ -184,7 +184,7 @@ pmndrs `postprocessing`: `RenderPass → EffectPass(Bloom with threshold, ACES t
 - **The catalogue is the source** (`11-interface-catalogue.md` A6–A7):
   - `npm run ui:strings` turns its tables into `src/ui/strings.gen.json`. Interface code shows text only through `t(id, values)` and marks each operable element with `data-ui="<id>"`.
   - `npm run ui:lint` (part of `npm run check`, Node only) fails on a catalogue problem, on a text literal that could reach the screen, on a colour outside `tokens.css`, and on a gallery that shows an unlisted or too-early control. A listed row that the gallery doesn't show yet is a warning, and a failure with `--complete`, which every phase's "Done when" runs. `UI_PHASE` in `src/ui/phase.ts` says which rows exist yet.
-  - **The gallery** (`/?gallery`) renders every screen and state with fixed sample data. `npm run ui:shots` screenshots it into `out/ui/` and checks the real page: it fails on drawn text that is neither a catalogue string nor sample data, on clipped text or overlapping controls, and on a wrong Tab order. It ships in every build through Milestone 4.
+  - **The gallery** (`/?gallery`) renders every screen and state built so far with fixed sample data. `npm run ui:shots` screenshots it into `out/ui/` and checks the real page: it fails on drawn text that is neither a catalogue string nor sample data, on clipped text or overlapping controls, and on a wrong Tab order. It ships in every build through Milestone 4.
 - Screens are built from the catalogue's components only. Each component has one stylesheet; screens use tokens and components and contain no raw colours or pixel values.
 
 ---
@@ -201,7 +201,8 @@ pmndrs `postprocessing`: `RenderPass → EffectPass(Bloom with threshold, ACES t
 | `npm run golden:update` | regenerate golden hashes whenever generated output changes (bump `WORLDGEN_VERSION` at most once per PR) |
 | `npm run ui:strings` | run `docs/tools/ui-catalogue.mjs --json` and write the interface's string table |
 | `npm run ui:lint [-- --complete]` | the catalogue check, the text-literal and colour scans, and the gallery-versus-catalogue comparison (`11-interface-catalogue.md` A6). `--complete` also fails on rows the gallery doesn't show yet |
-| `npm run ui:shots` | screenshots of every gallery state at 1280 × 720 and 1920 × 1080, and changed states at 150% interface scale, plus the on-page checks (`11-interface-catalogue.md` A6, A7) |
+| `npm run ui:shots [-- --sheet <screens>]` | screenshots of every gallery state at 1280 × 720, at 1920 × 1080 and at 150% interface scale, plus the on-page checks (`11-interface-catalogue.md` A6, A7). `--sheet` writes a contact sheet for the report |
+| `npm run test:browser` | the Playwright tests: the smoke test, the camera drive (`11-interface-catalogue.md` C7) and the keyboard walk. It needs a browser, so it is not part of `npm test` |
 
 Atlas, slice and the report may use `worker_threads` for speed. Postcards must work in the cloud session's headless environment: software WebGL through SwiftShader.
 
@@ -225,7 +226,7 @@ Atlas, slice and the report may use `worker_threads` for speed. Postcards must w
   - The postcard tool asserts `crossOriginIsolated`.
   - `COOP: same-origin` cuts popups off from the page, so sign-in (Discord) and, later, payments use **full-page redirects**, never popups.
   - Because of these headers, every asset (fonts included) must be self-hosted.
-  - **MPL files ship with their source.** The build copies `packages/shared/src/third_party/*` into `packages/client/dist/licenses/`, and `THIRD_PARTY_NOTICES.md` and the credits screen link to it. No public repo is needed. The owner must **not** enable Cloudflare Web Analytics: its injected script is cross-origin and gets blocked.
+  - **MPL files ship with their source.** The build copies `packages/shared/src/third_party/*` into `packages/client/dist/licenses/`, and `THIRD_PARTY_NOTICES.md` and the menu's Licences row (`11-interface-catalogue.md` D8) link to it. No public repo is needed. The owner must **not** enable Cloudflare Web Analytics: its injected script is cross-origin and gets blocked.
 - Keep the build under ~5 minutes and each asset under 25 MiB. Textures are generated at runtime, so assets stay small.
 
 ---
@@ -295,7 +296,7 @@ Atlas, slice and the report may use `worker_threads` for speed. Postcards must w
 | Visual | postcards, rubric, blind review, diagnostics (`04-terrain.md` §14) |
 | Interface | `ui:lint` (nothing on screen that the catalogue doesn't list); gallery screenshots opened and checked against the checklist in `11-interface-catalogue.md` A7 |
 | Cameras and input | unit tests on the camera maths and one Playwright drive of the real page (`11-interface-catalogue.md` C7); binding-table tests (reserved keys refused, clashes reported) |
-| Smoke (Playwright, headless) | the client loads, generates, walks, breaks and places, teleports from the map, with no console errors and `crossOriginIsolated` true |
+| Smoke (Playwright, headless; `npm run test:browser`) | the client loads, generates, walks, breaks and places, teleports from the map, with no console errors and `crossOriginIsolated` true |
 | Performance | `bench:gen` numbers against budgets (warn, don't fail, in M1) |
 | Later | simulation invariants (ledger vs agent), bot load tests, protocol fuzzing |
 

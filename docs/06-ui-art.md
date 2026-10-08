@@ -63,7 +63,7 @@ One overlay at a time. An overlay takes a third of the colour out of the world s
 
 ## 5. Design tokens
 
-Implement as CSS custom properties in one file (`packages/client/src/ui/tokens.css`). **Colours, type sizes, spacing, radii, shared sizes and durations come only from these tokens.** A component's own fixed dimensions (a toggle is 28 × 16) live once in that component's stylesheet, as `11-interface-catalogue.md` A3 gives them. A screen's stylesheet contains no colour and no raw pixel value.
+Implement as CSS custom properties in one file (`packages/client/src/ui/tokens.css`). **Colours, type sizes, spacing, radii and shared sizes come only from these tokens,** and so do the durations listed here. A component's own fixed dimensions and timings (a toggle is 28 × 16; a toast stays 2 s) live once in that component, as `11-interface-catalogue.md` A3 and A4 give them. A screen's stylesheet contains no colour and no raw pixel value.
 
 ```css
 :root {
@@ -157,8 +157,8 @@ Part F of `11-interface-catalogue.md` lists what the interface contains at the e
 - the title screen (seed, Play) and the loading bar
 - the free camera's screen: crosshair, target outline, hotbar, and a block palette (all terrain blocks plus a few building blocks)
 - the map (M) with teleport, and discovery cards on entering regions
-- Tab: the Command camera as a king's view (camera only, no command features yet)
-- the menu, and the settings rows marked 1.4 and 1.10
+- Tab: the Command camera as a king's view (camera only, no command features yet), and from phase 1.8 the cut and its depth gauge, for looking into the caves from above
+- the menu (with Licences), and the settings rows marked 1.4 and 1.10
 - **in every build through Milestone 4, previews included** (the owner tests with these): the F3 overlay, the Tools panel (F4) with the region and postcard teleports, the time slider, view modes and render toggles, fly, postcard mode, and the interface gallery (`/?gallery`)
 - only the `lil-gui` parameter panel is hidden, behind `?dev`
 

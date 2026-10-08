@@ -151,8 +151,8 @@ Constraints:
 
 Done when:
 - npm run ui:lint, npm run check and npm test pass.
-- The screen's states are in the gallery (empty, typical, full, disabled, and error where it has one), npm run ui:shots passes, and you have opened its screenshots at both sizes.
-- Your report lists the rows you built and, for each screenshot, its file name, the words you read in it, and pass or fail for each line of the checklist in the catalogue's A7.
+- The screen's states are in the gallery (empty, typical, full, disabled, and error where it has one), npm run ui:shots passes, and you have opened its screenshots at every size it writes.
+- Every line of the checklist in the catalogue's A7 holds. Your report lists the rows you built, the screenshot files you opened, the words you read in them, and pass or fail for each line of that checklist.
 ```
 
 ---

@@ -13,8 +13,8 @@ The owner's brief: plan the cameras and menus in full, and list **every** screen
 
 ## A1. The law
 
-1. **Only what is listed exists.** A control, screen, panel or sentence that isn't in this doc doesn't ship. If a task seems to need one, first reuse a listed one. If nothing fits, Part G may gain **a control row**, or **a message row** (a fact shown in an Alert, Note, Toast, Banner or Modal when something happens): add it in the same change, build exactly that row, and list it under "Decisions you may want to check" in the report. Part G never gains text that sits on a screen to explain it, and a listed row is never reworded unless the owner asked: report the gap instead.
-2. **Every word on screen is a row in these tables, or game content.** Game content is what is defined in data files beside its numbers: the names of people, places, kingdoms, regions, layers, Wardens, items, blocks, goods and their groups, buildings, roles, skills, traits, abilities, needs, conditions, hazards, crops and transport kinds, plus the lore lines of `03-lore.md` (region stories, last words, inscriptions, item flavour). Content follows A2 as well: a name is 3 words at most, and content never carries a subtitle, a hint or an instruction. Every other word is a row here: labels, tooltips, messages, units, column headers, key names and the game's fixed terms (E7). Interface code contains no text literals (A6).
+1. **Only what is listed exists.** A control, screen, panel or sentence that isn't in this doc doesn't ship. If a task seems to need one, first reuse a listed one. If nothing fits, Part G may gain **a control row**, **a key-binding row**, or **a message row** (a fact shown in an Alert, Note, Toast, Banner or Modal when something happens): add it in the same change, build exactly that row, and list it under "Decisions you may want to check" in the report. Part G never gains text that sits on a screen to explain it, and a listed row is never reworded unless the owner asked: report the gap instead.
+2. **Every word on screen is a row in these tables, or game content.** Game content is what is defined in data files beside its numbers: the names of people, places, kingdoms, regions, layers, Wardens and what feeds them, items, blocks, goods and their groups, buildings, roles, skills, traits, abilities, needs, conditions, hazards, world events, crops, kits, transport kinds, deeds, honours, banners, looks and crest parts, plus the lore lines of `03-lore.md` (region stories, last words, inscriptions, item flavour). Content follows A2 as well: a name is 3 words at most, and content never carries a subtitle, a hint or an instruction. Every other word is a row here: labels, tooltips, messages, units, column headers, key names and the game's fixed terms (E7). Interface code contains no text literals (A6).
 3. **Nothing ships early.** No disabled "later" buttons, no empty tabs, no sample data in a real build.
 4. **Nothing decorative.** No illustration, divider, badge, counter, icon or animation that this doc doesn't call for.
 
@@ -71,18 +71,18 @@ Use the tokens in `06-ui-art.md` §5 and only these components. Each has one loo
 - One column of controls per panel. Settings rows put the label left and the control right.
 - Gaps come from the spacing tokens: 8 px inside a group, 16 px between groups, 16 px panel padding.
 - A group gets a title (2 words at most, `--text-2`) only when its panel has two or more groups.
-- Text is left-aligned. Numbers in tables are right-aligned. Nothing is centred except modals, cards and the title screen.
+- Inside every panel, text is left-aligned and numbers in tables are right-aligned. What stands alone is centred on the screen: modals, the menu, settings, the inventory, Find, cards, and the title and moment screens.
 - In normal play (no drawer, no inspector) the interface covers 15% of the screen at most.
 
 **Never**
 - gradients, glows, blurs, glass panels, coloured shadows
 - cards inside panels, grids of stat cards, charts other than a Stat's sparkline or a Bar
 - pill-shaped buttons, rounded corners other than the two radius tokens
-- borders thicker than 1 px (the two 2 px selection marks above are the exception)
+- borders thicker than 1 px (the selection marks are the exception, at 2 px: the Tabs underline, the Row bar, and the frame on the selected hotbar slot)
 - icons that do nothing, icon tiles with coloured backgrounds, count badges on buttons
 - text in ALL CAPS or with letter-spacing (the display font on the title screen and the two cards is the exception)
 - a Spinner before 400 ms of waiting, skeleton shimmer, bouncing or pulsing (one exception: a new critical alert pulses once)
-- any colour or duration that isn't a token, and any size that is neither a token nor a dimension this doc gives
+- any colour that isn't a token, and any size or duration that is neither a token nor a value this doc gives
 
 ## A4. Behaviour every control shares
 
@@ -100,16 +100,16 @@ Use the tokens in `06-ui-art.md` §5 and only these components. Each has one loo
 
 **Who has the keys.** One thing at a time owns the keyboard. From the top:
 
-1. **A text field** that was clicked (or opened by its key: chat, Find). Typing goes to it; Enter does its action; Esc or a click outside gives the keys back. Tab does nothing here, except in chat (D10).
-2. **Key capture** on the key list: the next key pressed becomes the binding (D8).
+1. **A text field on the play screen** that was clicked, or opened by its key (chat, Find). Typing goes to it; Enter does its action; Esc or a click outside gives the keys back. Tab does nothing here, except in chat (D10).
+2. **Key capture** on the key list: the next key or mouse button pressed becomes the binding, except Esc, which cancels (D8).
 3. **A modal.** Enter is its verb, Esc is Cancel, Tab moves between its two buttons.
-4. **A blocking screen:** the title screen and the screens after it (D1), the menu, settings, the map, the Ledger, the inventory, a container or workstation, the block palette, the office, and the death, eliminated and Frost screens. It takes every key and the wheel, and it frees the pointer. Inside it Tab and Shift + Tab move focus in reading order, the arrow keys move a list's selection or step a focused slider (Shift + arrow steps ×10), and Enter presses the focused control, or the row whose Key is Enter. Where it can be left without choosing something (the menu, settings, the map, the Ledger, the inventory, the office), the key that opened it closes it, and so does Esc.
+4. **A blocking screen:** the title screen and the screens after it (D1), the menu, settings and the key list, the map, the Ledger, the inventory, a container or workstation, the block palette, the office, and the death, eliminated and Frost screens. It takes every key and the wheel, and it frees the pointer. Inside it Tab and Shift + Tab move focus in reading order, the arrow keys move a list's selection or step a focused slider (Shift + arrow steps ×10), and Enter presses the focused button, or else the row whose Key is Enter. A text field in it is one of its controls: it takes typing while it has focus, Tab leaves it, and Enter goes to the screen's Enter row. A screen that can be left without choosing something (the menu, settings, the key list, the map, the Ledger, the inventory, a container or workstation, the block palette, the office) closes on the key that opened it and on Esc. The others close only through their own buttons.
 5. **The world.** The bindings of B3 for the current mode.
 
 - **Panels on the play screen never take the keys.** Drawers, the inspector, the alert stack and the Tools panel are worked with the mouse. While they are open W A S D still move, and a click on one of their buttons doesn't leave focus on it, so Space and Enter can never press a button by accident. A text field inside one takes the keys only after a click (level 1).
 - **The pointer in Possess** is locked only while the world has the keys. Anything in levels 1–4 frees it, and closing it locks it again (B1 says when the browser makes that wait for a click). The Tools panel frees it too, without taking the keys.
 
-**Esc closes one thing per press,** the first of these that applies: a tooltip → an open select → key capture → a focused text field → a modal → chat or Find → a blocking screen (settings goes back to the menu; the menu resumes) → postcard mode → a drag in progress → order targeting → the active tool → the open drawer → the selection (the inspector closes). With nothing left, it opens the menu.
+**Esc closes one thing per press,** the first of these that applies: a tooltip → an open select → key capture → chat, Find or another focused text field → a modal → a blocking screen that can be left (the key list goes back to settings; settings goes back to where it was opened from; the menu resumes) → postcard mode → the Tools panel → a drag in progress → order targeting → the active tool → the open drawer → the selection (the inspector closes). With nothing left, it opens the menu.
 
 **Orders travel (from Milestone 4).** A change to something in the world (a priority, a recipe, a blueprint, an order to a company) is an order, and orders move through the network like news (`05-systems.md` §4).
 - The change leaves at once. Where it arrives in under 2 s, nothing shows.
@@ -122,13 +122,13 @@ Use the tokens in `06-ui-art.md` §5 and only these components. Each has one loo
 - Whole numbers below 1,000 as they are; then `1.2k`, `34k`, `1.2M`. Never more than 3 significant figures in the HUD.
 - Percentages have no decimals. Bars never show a number unless a row says so.
 - Money: a coin glyph and a number, Crowns then Marks (`◎ 12 ○ 6`, glyphs generated in code). The words "Crowns" and "Marks" appear only in tooltips.
-- Weights in kg, distances in m below 1,000 and km above, speeds in m/s. Heights are metres above sea level, negative below it (`−412 m`).
+- Weights in kg, distances in m below 1,000 and km above. Heights are metres above sea level, negative below it (`−412 m`).
 - **Time the player waits is real time:** `40 s`, `4 min`, `2 h`, `3 d`. Ages are `4 min ago`. Arrival times are `in 6 min`.
 - **The calendar is world time:** `Day 12 · Summer · Y3`: the day of that time of year (1–42), the time of year, and the year, which is also the season's week (`05-systems.md` §1).
 - **One formatter writes all of these.** It is the only code besides the string table that puts words on screen, and its words are the `unit.*` and `fmt.*` rows in E7.
 - `·` separates parts of a line. Don't use dashes, slashes or brackets for that.
 - Names of people, places, kingdoms and Wardens are shown as stored. Lists truncate with the browser's own text overflow (the one place an ellipsis glyph may be drawn), and the tooltip shows the full name.
-- **In templates,** `{king}` is a ruler's title and name ("Queen Aoi", "King Ivar", or the name alone), `{kingdom}` is the kingdom's own name ("Kiritani Crown"), and `{capital}` is the name of its capital ("Kiritani").
+- **In templates,** `{king}` is a ruler's title and name ("Queen Aoi", "King Ivar", or the name alone). The title is a `ruler.*` word (E7), chosen at founding; before Milestone 5 it comes with the generated name. `{kingdom}` is the kingdom's own name ("Kiritani Crown"; the default is `fmt.crown`). `{capital}` is the name of its capital ("Kiritani"). `{victor}` and `{other}` are a ruler written as `fmt.ruler`, or a Warden's name. Several rulers in a row are joined with `fmt.comma`, and the last two with `fmt.and`.
 - **No spoilers.** The King Below is called "The King Below" in every row, card and line until that player's kingdom has found his name (`03-lore.md` §6). No row states a secret from `03-lore.md` §10.
 
 ## A6. How the tables work
@@ -153,7 +153,7 @@ Use the tokens in `06-ui-art.md` §5 and only these components. Each has one loo
   - `keycap`: draws the key's name. Its Label is the accessible name, and is drawn beside it only where the row says so.
 - **Tooltip** is the exact text. `—` means the label says it all.
 - `{braces}` mark a value filled in at run time.
-- **Defaults.** Where a row gives none, a select or a segmented control starts on its first option, a toggle starts off, and a stepper starts at its lowest value.
+- **Defaults.** Where a row gives none, a select or a segmented control starts on its first option, a toggle starts off, and a stepper starts at its lowest value. A slider's row always gives its default.
 - **Since** is the phase (1.1–1.10) or milestone (M2–M8) that ships the row.
 
 **The pipeline (build it in phase 1.1, before the first screen):**
@@ -172,22 +172,23 @@ Use the tokens in `06-ui-art.md` §5 and only these components. Each has one loo
 4. `npm run ui:shots` loads the gallery in the real browser, takes the screenshots (A7), and fails when:
    - any drawn text is neither a catalogue string (with the state's sample values filled in) nor that state's sample data
    - text is clipped, or the boxes of two controls that aren't parent and child overlap
-   - a blocking screen's Tab order differs from its reading order, or Esc doesn't close it (it walks each one and writes the order to `out/ui/<screen>.keys.txt`)
+   - a blocking screen's Tab order differs from its reading order, or Esc doesn't close one that A4 says can be left (it walks each one and writes the order to `out/ui/<screen>.keys.txt`)
 
 Two things are exempt from this part: the `lil-gui` panel behind `?dev`, and the gallery's own index list.
 
 ## A7. Building and checking a screen
 
-**The gallery.** `/?gallery` lists every screen and state in this doc and renders each one with fixed sample data and no world behind it (a flat `--ink-1` backdrop, or a still postcard when a row needs the world). Besides the screens it has:
+**The gallery.** `/?gallery` lists every screen and state built so far (the rows up to `UI_PHASE`) and renders each one with fixed sample data and no world behind it (a flat `--ink-1` backdrop, or a still postcard when a row needs the world). Besides the screens it has:
 - a **Components** page: every A3 component in every state (rest, hover, pressed, focus, selected, disabled, pending), each drawn with the state forced, so a still image shows them all
 - one page per text component (alerts, notes, toasts, banners, tooltips, confirmations) that shows every string of the current phase in that component, so a line that doesn't fit shows up
+- a **Fixed words** page: every E7 row of the current phase in the component that uses it (a Keycap, a table header, a formatted value)
 
 It ships in every build through Milestone 4 so the owner can browse the interface.
 
 **The loop for any interface task:**
 1. Read Part A and the screen's section. Note the rows for the current phase.
 2. Build those rows with the A3 components and tokens. Add the screen's states to the gallery: empty, typical, full (longest names, largest numbers), disabled, and error where the screen has one.
-3. `npm run ui:shots` captures every gallery state at 1280 × 720 and 1920 × 1080 into `out/ui/`, and the changed states again at 150% interface scale. It also runs the checks in A6.
+3. `npm run ui:shots` captures every gallery state into `out/ui/` three times: at 1280 × 720, at 1920 × 1080, and at 1280 × 720 with the interface at 150%. It also runs the checks in A6. `npm run ui:shots -- --sheet <screens>` adds one contact sheet of the named screens as `docs/postcards/wip/ui.jpg`.
 4. **Open each image with your image viewer and look.** Check it against the list below. Fix and re-shoot until every line holds. For a new screen, also give the images and the checklist to a fresh helper agent that hasn't seen the code (if your tool has them), and fix what it finds.
 5. `npm run ui:lint` and `npm test` pass.
 
@@ -197,9 +198,9 @@ It ships in every build through Milestone 4 so the owner can browse the interfac
 3. Edges line up: one left edge per panel, equal gaps, the same control heights.
 4. Each control looks like its component on the Components page, and each disabled control names its reason row.
 5. The layout matches this doc's description of the screen: what is where, and in which order.
-6. For a blocking screen (A4): its keys file (`out/ui/<screen>.keys.txt`) shows Tab in reading order and Esc closing it.
+6. For a blocking screen (A4): its keys file (`out/ui/<screen>.keys.txt`) shows Tab in reading order and, where A4 says the screen can be left, Esc closing it.
 
-**In the report,** for each screen you touched: the screenshot's file name, the words you read in it, and pass or fail for each of the six lines. Link the gallery on the preview (`<preview link>/?gallery`) and show the contact sheet (`docs/postcards/wip/ui.jpg`; `12-sessions.md` §6). A screen whose screenshots you couldn't take or open is reported as not done, first.
+**In the report,** for each screen you touched: the screenshot files you opened, the words you read in them, and pass or fail for each of the six lines. Link the gallery on the preview (`<preview link>/?gallery`) and show the contact sheet (`docs/postcards/wip/ui.jpg`; `12-sessions.md` §6). A screen whose screenshots you couldn't take or open is reported as not done, first.
 
 ---
 
@@ -214,11 +215,11 @@ These are facts about browsers, checked in October 2026. They shape every bindin
 - **A window keeps some keys for itself.** A page in a normal window can't stop these, so nothing is bound to them: Ctrl/⌘ + W, T, N, Tab, PageUp, PageDown; Ctrl/⌘ + Shift + W, T, N; Ctrl + Q (Firefox on Linux) and ⌘ + Q; Alt + F4; F12; ⌘ + R and ⌘ + L (Safari).
 - **Cancel everything else.** While the world has the keys (A4), call `preventDefault` on every `keydown` except F12. A sprinting player holds Left Ctrl, so every letter their fingers pass over would otherwise fire a browser shortcut (Ctrl + D, S, F, R, 1–9), and so would keys that aren't bound yet in an early phase (F5, F6, F7, Tab, Backspace, Space, the arrows).
 - **Ignore key repeat.** Drop `keydown` events whose `KeyboardEvent.repeat` is set: they would fake the double-taps of W and Space and the short taps of Q and E. On `blur`, on losing pointer lock and whenever something takes the keys (A4), release every held key and button.
-- **Entering the world is one click** (Play, Resume, or the `sys.play` line, "Click to play"). That click requests pointer lock when the mode needs it, then fullscreen: `requestFullscreen({ keyboardLock: 'browser' })`, followed by `navigator.keyboard.lock()` where it exists. Request pointer lock with `{ unadjustedMovement: true }` and retry without it on `NotSupportedError`.
+- **Entering the world is one click** (Play, Resume, or the `sys.play` line, "Click to play"). That click requests pointer lock when the mode needs it and then, while `set.ctl.fullscreen` is on, fullscreen: `requestFullscreen({ keyboardLock: 'browser' })`, followed by `navigator.keyboard.lock()` where it exists. Request pointer lock with `{ unadjustedMovement: true }` and retry without it on `NotSupportedError`.
 - **The keyboard counts as locked** only when `navigator.keyboard.lock()` has resolved, or the browser is a version known to honour `keyboardLock: 'browser'` (Safari 26.4 and later, Firefox 151 and later). Fullscreen without that is treated as a window.
 - **Ctrl + W and Ctrl + Q.** Minecraft players sprint with Left Ctrl while holding W, and drop a stack with Ctrl + Q. In a window on Windows and Linux those close the tab or the browser. So:
   - with the keyboard locked, Left Ctrl sprints and Ctrl + Q drops a stack
-  - otherwise, on Windows and Linux, Left Ctrl does nothing, sprint is double-tap W, and the toast `toast.windowed` says so once per session
+  - otherwise, on Windows and Linux, Left Ctrl does nothing, sprint is a double-tap of the forward key (whatever `set.ctl.doubletap` says), and the toast `toast.windowed` says so once per session
   - on macOS, Left Ctrl always works (⌘ is the closing key there)
   - a `beforeunload` guard is on whenever the player is in the world
 - **Esc.**
@@ -232,8 +233,8 @@ These are facts about browsers, checked in October 2026. They shape every bindin
   - A pinch arrives as a wheel event with `ctrlKey` in Chrome and Firefox, and as `gesturechange` in Safari (use its `scale`, and cancel it). No single event may change the zoom by more than ×1.25, so a real Ctrl + wheel notch can't fling it.
 - **Mouse.** Cancel `mousedown` on the middle button (it stops autoscroll) and `contextmenu` over the game. Start every drag with `setPointerCapture`, so it survives leaving the window. Don't bind mouse buttons 4 and 5: Firefox on Windows uses them for "back" and can't be stopped.
 - **Edge panning works only in fullscreen.** In a window the cursor leaves the page and no events arrive.
-- **Read keys by position** (`KeyboardEvent.code`), so W A S D sit in the same place on every layout. Show them by the player's layout (`navigator.keyboard.getLayoutMap()` where it exists, the `keyname.*` rows in E7 otherwise).
-- **Modifiers.** A binding fires only with exactly the modifiers it names. The exception is Possess and the free camera, where Left Ctrl and Left Shift are game keys (sprint, sneak) and never block another key; ⌘ and Alt still do.
+- **Read keys by position** (`KeyboardEvent.code`), so W A S D sit in the same place on every layout. Show them as the player's keyboard prints them (`navigator.keyboard.getLayoutMap()` where it exists; elsewhere the US-layout character for that position). Keys that print nothing are named by the `keyname.*` rows in E7.
+- **Modifiers.** A binding fires only with exactly the modifiers it names. Two exceptions: in Command view, Shift never blocks the pan keys (it is "Pan faster"); and in Possess and the free camera, Left Ctrl and Left Shift are game keys (sprint, sneak) and never block another key. ⌘ and Alt always block.
 - **macOS keeps F11** for itself. There, fullscreen comes from Play and Resume, or from a key the player binds.
 
 ## B2. Mouse in Command view
@@ -246,7 +247,7 @@ These gestures are fixed (one setting swaps the two drag buttons, D8).
 | Left drag | box-select companies. With a tool active: draw a line or an area |
 | Left double-click | on a company: select every company with the same kit on screen. On anything else: centre on it and follow it |
 | Shift + left click | add to the selection, or remove from it |
-| Right click | the first of these that applies: cancel the drag in progress; cancel the active tool; with companies selected, order them (the target decides: ground = move, enemy = attack, your building = garrison, your caravan = escort); clear the selection. It never closes a drawer |
+| Right click | the first of these that applies: cancel the drag in progress; cancel order targeting or the active tool; with companies selected, order them (the target decides: ground = move, enemy = attack, your building = garrison, your caravan = escort); clear the selection. It never closes a drawer |
 | Shift + right click | add the order to the queue |
 | Right drag | **orbit**: left–right turns the view, up–down tilts it. It starts only once the button has been down for 120 ms *and* has moved 6 px. A right press that moved more than 6 px is never a click, however short it was |
 | Middle drag | **grab the ground and pan** |
@@ -254,7 +255,7 @@ These gestures are fixed (one setting swaps the two drag buttons, D8).
 | Shift + wheel | move the cut (C2) 1 m per step. While a pan key is held it zooms instead, so a fast pan can't move the cut. Read `deltaX` as well: some systems turn Shift + wheel sideways |
 
 - **Directions.** The world follows the mouse. Dragging right swings the world to the right, as Q does; dragging up tips the view toward straight down. Wheel up zooms in; Shift + wheel up raises the cut. `set.ctl.tilt` flips the up–down drag only.
-- **Delete** does the first of these that applies: with a tool active, it switches erasing on or off; with something selected, it does that thing's remove action (demolish, remove a zone, delete a route, cancel a blueprint or a dig).
+- **Delete** does the first of these that applies: with the Build or Zones palette open, it switches erasing on or off; with something selected, it does that thing's remove action (demolish, remove a zone, delete a route, cancel a blueprint or a dig).
 - There are no right-click menus anywhere. Everything a thing can do is in its inspector.
 
 ## B3. Key bindings
@@ -299,8 +300,8 @@ Every row here appears on the key list (D8) under its group, with **Action** as 
 | `key.cmd.realm` | Realm | K | | M2 |
 | `key.cmd.trade` | Trade | T | | M3 |
 | `key.cmd.rotate` | Rotate piece | R | Shift + R turns the other way | M2 |
-| `key.cmd.remove` | Remove | Delete | with a tool active: erasing on or off. Otherwise: the selected thing's remove action (B2) | M2 |
-| `key.cmd.undo` | Undo | Ctrl+Z | the last blueprint, zone or route edit that work hasn't started on | M2 |
+| `key.cmd.remove` | Remove | Delete | with the Build or Zones palette open: erasing on or off. Otherwise: the selected thing's remove action (B2) | M2 |
+| `key.cmd.undo` | Undo | Ctrl+Z | the last blueprint, dig mark, zone or route edit that work hasn't started on | M2 |
 | `key.cmd.attack` | Attack | F | then click a target or the ground | M4 |
 | `key.cmd.hold` | Hold | H | | M4 |
 | `key.cmd.patrol` | Patrol | P | then click the far end | M4 |
@@ -386,7 +387,7 @@ Minecraft features this game doesn't have are absent: experience, hunger, the re
 
 ## B5. Rebinding
 
-- Every row in B3 can be rebound on the key list (D8), to a key or a mouse button, with Ctrl, Shift or Alt.
+- Every row in B3 can be rebound on the key list (D8), to a key or a mouse button, with Ctrl, Shift or Alt. A key can be bound only if it prints a character or has a `keyname.*` row (E7); any other is refused with `keys.unsupported`.
 - The keys a window keeps for itself (B1) are refused, with `keys.reserved`. In Possess, Left Ctrl and Left Shift can't be a binding's modifier, because they are held while moving.
 - One key can serve one action per mode. A clash inside a mode is shown on both rows (`keys.clash`) and both still fire, as in Minecraft. The same key in Command view and in Possess is not a clash.
 - Bindings are saved in the browser, per device.
@@ -419,7 +420,7 @@ The lens is a 40° vertical field of view, whatever the window's shape; resizing
 - **Minimap:** a click is a jump (C3); a drag moves the focus directly (D2).
 
 **Zooming** changes `d`.
-- Zoom is continuous: `d` is multiplied by `e^(0.0016 × pixels)` of wheel travel *(tune)*, so one mouse notch (100 px) is about ×1.17 and a trackpad glides. A pinch uses its own scale directly. No single event changes `d` by more than ×1.25 (B1).
+- Zoom is continuous: `d` is multiplied by `e^(0.0016 × pixels)` of wheel travel *(tune)*, so one mouse notch (100 px) is about ×1.17 and a trackpad glides. A pinch uses its own scale directly. No single event changes `d` by more than ×1.25 (B1). `set.ctl.zoom` scales the 0.0016 after that cap is applied, and `set.ctl.pan` scales the pan speed above.
 - **Zoom is toward the cursor:** the ground point under the cursor stays under the cursor, zooming in and out. If that point is more than `3 × d` from the focus, zoom toward the point at `3 × d` instead, so a shallow view can't fling the camera across the land. With `set.ctl.cursor` off, and while following, zoom is toward the focus.
 - The keys zoom at the rate of six notches a second while held.
 - `d` eases to its target with a 90 ms time constant. At either end it stops dead: no bounce.
@@ -430,7 +431,7 @@ The lens is a 40° vertical field of view, whatever the window's shape; resizing
 - **Tilt is always the curve plus an offset.** The curve gives 35° at 24 m, 45° at 120 m, 58° at 600 m, 68° at 2 km and 80° at 6 km, interpolated on the logarithm of `d`: close in, you look across your town; far out, you look down at a map. Tilting by hand changes the offset, which starts at 0. The sum is clamped to 20°–89°. Zooming, jumps and following keep the offset.
 - **Backspace** returns to north-up and an offset of 0 in 250 ms.
 
-**What is eased, and what isn't.** Only three things are eased: `d` (90 ms), the key-driven pan speed (the ramps above) and the focus's height (below). Everything else is computed each frame, so the anchors hold exactly: tilt comes from the curve at the current `d`; during a zoom the focus is solved so the anchor stays under the cursor; drags follow the mouse with no lag. Timed moves (the 45° snap, Backspace, glides) are their own ease-out animations. `set.ctl.smoothing` scales the two easing times from 0 (instant) to 2.5 times the values here; its default of 40% gives these values.
+**What is eased, and what isn't.** Four things are eased: `d` (90 ms), the key-driven pan speed (the ramps above), the focus's height (300 ms, below) and a followed thing's position (150 ms). Everything else is computed each frame, so the anchors hold exactly: tilt comes from the curve at the current `d`; during a zoom the focus is solved so the anchor stays under the cursor; drags follow the mouse with no lag. Timed moves (the 45° snap, Backspace, glides, the tilt that clears terrain) are their own ease-out animations. `set.ctl.smoothing` scales the first two, the 90 ms and the pan ramps, from 0 (instant) to 2.5 times the values here; its default of 40% gives these values.
 
 **The ground.**
 - The focus rides the surface under it: the highest terrain, water or built block (under the cut: whatever is drawn there, C2), averaged over a disc of radius `0.05 × d` (4 m at least) so a narrow crack or a single tree doesn't move it. It eases to that height with a 300 ms time constant, and it never sinks faster than `d` per second, so flying over a chasm doesn't dive into it. During a grab it holds still and catches up on release.
@@ -447,11 +448,11 @@ The world goes 1.5 km down. Command view looks into it with one tool: a horizont
 
 - **What it does.** Everything above the cut height is hidden: terrain, buildings and people. Where the cut passes through solid rock, the rock is drawn as a flat, matte, dark face (`--ink-1` with 10% of the region's colour), so open space reads clearly against it.
 - **Moving it.** PageDown and PageUp move it 4 m (32 m with Shift; held keys repeat 8 times a second). Shift + wheel moves it 1 m per step. The first PageDown from open sky puts it 4 m below the surface at the focus. End switches it off. Moving it above all terrain in view also switches it off.
-- **The depth gauge** (D2) shows where the cut is, in metres and by layer. Clicking a layer on it puts the cut just under that layer's cavern roof below the screen centre (`C(x, z) − 2 m` from the WorldPlan), or at the middle of the layer where there's no cavern.
+- **The depth gauge** (D2) shows where the cut is, in metres and by layer. Clicking a layer on it puts the cut just under that layer's cavern roof below the screen centre (`C(x, z) − 2 m` from the WorldPlan), or at the middle of the layer where there's no cavern. For the Crust, that is halfway between the surface and the top of Layer 1 at that place.
 - **The focus under a cut** rides what is drawn at the screen centre: the cut face where the cut passes through rock, and the first floor below the cut where it passes through open space.
 - **Clicks hit only what is drawn.** Selection, placement and orders never reach through the cut face or pick something above the cut.
-- **The cut turns on by itself** when the camera is sent to something under cover (a jump to the king, an alert, a settlement, a bookmark, or leaving Possess). A thing is under cover when a solid block that isn't a plant lies within 32 m above its head. The cut is then set half a metre under the lowest such block, so the space the thing stands in is open: a house loses its roof, a tunnel its ceiling. It turns off by itself when a jump lands under open sky.
-- **Light.** Under a cut, add a flat "survey light" inside the player's coverage so tunnels are readable. It is a display aid only and changes no game light.
+- **The cut turns on by itself** when the camera is sent to something under cover (a jump to the king, an alert or a settlement, or leaving Possess). A thing is under cover when a solid block that isn't a plant lies within 32 m above its head. The cut is then set half a metre under the lowest such block, so the space the thing stands in is open: a house loses its roof, a tunnel its ceiling. It turns off by itself when a jump lands under open sky.
+- **Light.** Under a cut, add a flat "survey light" inside the player's coverage (everywhere in Milestone 1 and for the free camera) so tunnels are readable. It is a display aid only and changes no game light.
 - **What you may see.** The cut shows open space only inside the player's connected coverage (live) or where their people have been (remembered, drawn desaturated). Everywhere else it draws solid rock. Knowledge of the deep is earned (`01-vision.md`, "Information has a cost"). In Milestones 2–3, before the network exists, coverage means within 96 m of the player's people and buildings. In Milestone 1, and always for the free camera, everything is shown.
 
 Engineering note: a clip height in the terrain material plus a stencil-capped section plane does this without re-meshing. Leave room for the clip height in the material from phase 1.4.
@@ -524,7 +525,7 @@ One Playwright test drives the real page through `window.__cf.camera` (a read-on
 
 # Part D · The catalogue
 
-Every screen, in the order a player meets them. Layouts are described once per screen; the tables are the complete contents. Names of people, places, items, blocks, buildings, roles, skills, traits, abilities, hazards, regions, layers and Wardens are **game content**: they live with their data (`07-architecture.md` §5), follow A2 (a name of 3 words at most, an optional one-line tooltip), and aren't repeated here.
+Every screen, in the order a player meets them. Layouts are described once per screen; the tables are the complete contents. Game content (A1) lives with its data (`07-architecture.md` §5) and isn't repeated here.
 
 ## D1. Starting
 
@@ -534,7 +535,7 @@ A centred column 320 px wide on a flat `--ink-0` screen: the name, then the rows
 | ID | Type | Label | Tooltip | Key | Does | Since |
 |---|---|---|---|---|---|---|
 | `title.name` | title | Coldfront | — | — | the game's name in the display font, `--fs-28` | 1.1 |
-| `title.seed` | field | Seed | The number the world grows from · same seed, same world | — | whole numbers; starts at 1 and remembers the last one used | 1.1 |
+| `title.seed` | field | Seed | The number the world grows from · same seed, same world | — | digits only (other keys do nothing); starts at 1, remembers the last one used, and an empty field counts as 1 | 1.1 |
 | `title.random` | icon | Random seed | — | — | puts a new seed in the field | 1.1 |
 | `title.world` | select | World | The test world is a small sandbox for the tools | — | owner tool, gone after Milestone 4 | 1.2 |
 | `title.world.main` | row | Kaldmark | — | — | option | 1.2 |
@@ -580,13 +581,13 @@ The centred column, 360 px wide, with the crest drawn 96 px above it. Before Mil
 | `found.title.none` | row | None | — | — | option | M5 |
 | `found.king` | field | Name | — | — | 3–20 letters. With the title, this is `{king}` in every template (A5). An invalid name shows `name.length` or `name.taken` under it | M5 |
 | `found.capital` | field | Capital | The name of your first settlement | — | 3–20 letters | M5 |
-| `found.kingdom` | field | Kingdom | Starts as your capital's name with Crown after it | — | fills itself until the player edits it | M5 |
+| `found.kingdom` | field | Kingdom | Starts as your capital's name with Crown after it | — | fills itself (`fmt.crown`) until the player edits it | M5 |
 | `found.crest` | canvas | Crest | — | — | the crest as others will see it | M5 |
 | `found.reroll` | icon | New crest | — | — | draws another at random | M5 |
 | `found.field` | select | Field | The shield's pattern | — | the crest editor replaces `found.reroll` | M8 |
 | `found.charge` | select | Charge | The emblem on the shield | — | | M8 |
 | `found.tincture` | select | Tincture | The shield's two colours | — | | M8 |
-| `found.honour` | select | Honour | A title you earned in an earlier season · shown after your name | — | listed only when the account has earned any (`05-systems.md` §20) | M8 |
+| `found.honour` | select | Honour | An honour you earned in an earlier season · shown after your name | — | listed only when the account has earned any (`05-systems.md` §20) | M8 |
 | `found.banner` | select | Banner | A banner you earned in an earlier season | — | as above | M8 |
 | `found.look` | select | Look | How your king appears · earned in earlier seasons | — | as above | M8 |
 | `found.begin` | button | Begin | — | Enter | primary; goes to "Choosing ground". Disabled while a name is invalid (`name.length`, `name.taken`) | M5 |
@@ -596,7 +597,7 @@ The map (D7) fills the screen with the offered sites marked. A Panel 360 px wide
 
 | ID | Type | Label | Tooltip | Key | Does | Since |
 |---|---|---|---|---|---|---|
-| `site.row` | row | — | — | — | one offered site: its region's name, then the three stats. Click selects it and centres the map on it | M2 |
+| `site.row` | row | — | — | — | one offered site: its region's name, then its stats. Click selects it and centres the map on it | M2 |
 | `site.water` | stat | Water | Distance to fresh water | — | | M2 |
 | `site.timber` | stat | Timber | Distance to woodland | — | | M2 |
 | `site.hazard` | bar | Hazard | How harsh this spot is | — | | M4 |
@@ -616,7 +617,7 @@ The map (D7) fills the screen with the offered sites marked. A Panel 360 px wide
 │ ┃ gauge               the world                      │           ││
 │                                                      └───────────┘│
 │ ┌───────┐                                                         │
-│ │minimap│ ◌ ◌ ◌ ◌ ◌ ◌    [Build][Zones][Routes][Army][Realm][Trade]  ▤ ▦ ≡ │
+│ │minimap│ ◌◌◌◌◌◌◌ [Build][Zones][Routes][Army][Realm][Trade] ▤▦✉≡ │
 │ └───────┘ overlays                    command bar                 │
 └───────────────────────────────────────────────────────────────────┘
 ```
@@ -649,7 +650,7 @@ Up to three rows under the date, newest on top (A4: they don't move under the cu
 
 | ID | Type | Label | Tooltip | Key | Does | Since |
 |---|---|---|---|---|---|---|
-| `mini.map` | canvas | Minimap | — | — | 208 px square, north always up, the camera's view drawn as an outline. Click glides there; drag moves the view; right click orders selected companies there; the wheel steps its width between 1, 4 and 16 km and the whole world. Under a cut it shows that depth | M2 |
+| `mini.map` | canvas | Minimap | — | — | 208 px square, north always up, the camera's view drawn as an outline. Click jumps there (C3); drag moves the view; right click orders selected companies there; the wheel steps its width between 1, 4 and 16 km and the whole world. Under a cut it shows that depth | M2 |
 | `mini.north` | icon | North | Turn the view north | Backspace | a needle that shows the camera's yaw | M2 |
 | `mini.hide` | icon | Hide minimap | — | — | shrinks it to this button; click again to bring it back | M2 |
 | `overlay.resources` | icon | Resources | Known deposits and what they yield | — | overlays are toggles in a row beside the minimap. One at a time; click again to turn it off. The world loses a third of its colour while one is on | M2 |
@@ -660,13 +661,13 @@ Up to three rows under the date, newest on top (A4: they don't move under the cu
 | `overlay.territory` | icon | Territory | Borders, enemy land and the Seats you know of | — | | M4 |
 | `overlay.mana` | icon | Mana | The mana grid · load, losses and storage | — | | M6 |
 
-Overlays have no legend. Every mark an overlay draws has a tooltip.
+Overlays have no legend. Every mark an overlay draws shows, on hover, the name of the thing and its number: content and numbers only.
 
 ### Depth gauge
 
 | ID | Type | Label | Tooltip | Key | Does | Since |
 |---|---|---|---|---|---|---|
-| `depth.gauge` | canvas | Depth | — | — | a strip 12 × 240 px at the left edge, drawn to scale from the top of the world (+1,023 m) to the bottom (−1,536 m): one band for the surface and crust, one per layer your people have reached (every layer in Milestone 1). A line marks the cut and a dot the focus. Click a band to cut there (C2); hovering a band names it | 1.8 |
+| `depth.gauge` | canvas | Depth | — | — | a strip 12 × 240 px at the left edge, drawn to scale from the top of the world (+1,023 m) to the bottom (−1,536 m): one band for the Crust, and one for each layer below it that your people have reached (every layer in Milestone 1). A line marks the cut and a dot the focus. Click a band to cut there (C2); hovering a band shows its layer's name (content) | 1.8 |
 | `depth.read` | stat | Cut | — | — | beside the gauge, only while the cut is on. Value: the cut's height (A5), then `·` and the layer's name | 1.8 |
 | `depth.off` | icon | Surface | Switch the cut off | End | only while the cut is on | 1.8 |
 
@@ -695,7 +696,7 @@ Drawn on the world, not in panels. All of them hide with F1.
 | `mark.name` | title | {name} | — | — | a name plate over a hovered or selected person or company | M2 |
 | `mark.health` | bar | Health | — | — | 24 px wide over a person, only while they are hurt or selected | M4 |
 | `mark.group` | chip | {n} | — | — | the control-group number beside a company | M4 |
-| `mark.order` | canvas | Order line | — | — | a line from a selected company to its target. While the order is still travelling, its mark moves along the links (E1 `order.travel`) | M4 |
+| `mark.order` | canvas | Order line | — | — | a line from a selected company to its target. While the order is still travelling, its mark moves along the links (E3 `order.travel`) | M4 |
 | `mark.ghost` | canvas | Blueprint | — | — | an unbuilt blueprint, drawn translucent | M2 |
 | `mark.dig` | canvas | Dig mark | — | — | ground marked for digging: a hatched `--warn` tint | M2 |
 | `badge.materials` | icon | Missing materials | Something it needs isn't in reach of this settlement | — | badges float over buildings: one per building, the most serious, hidden when `d` is over 400 m | M2 |
@@ -737,7 +738,7 @@ Category tabs across the top of the palette. Under them, two rows of tiles that 
 | `build.dig` | icon | Dig | Mark ground to be dug out · drag a rectangle | C | a toggle. While on, the two controls below take the tiles' place and a drag marks ground | M2 |
 | `dig.mode` | segmented | Mode | — | — | | M2 |
 | `dig.down` | row | Down | — | — | option, the default: digs down by Depth from what is drawn inside the rectangle (the surface, or the cut face) | M2 |
-| `dig.level` | row | Level | — | — | option: removes everything inside the rectangle that stands above the height where the drag began | M2 |
+| `dig.level` | row | Level | — | — | option: removes everything inside the rectangle that stands above the height where the drag began, up to the cut when one is on | M2 |
 | `dig.depth` | stepper | Depth | — | — | 1–16 m, default 2. Shown for Down | M2 |
 
 **The building tooltip** (assembled from several rows, A2): the name; one line saying what it does (content, A2); its materials as icons with counts; for a single block, its `tip.span` to `tip.rot` lines (E3); and, when the region under the cursor asks more of it, `tip.build.needs`.
@@ -756,7 +757,8 @@ Category tabs across the top of the palette. Under them, two rows of tiles that 
 - **Down** takes the ground down by Depth from what is drawn there. On the surface that is a pit or a foundation. On a cut face (C2) it is a room or a corridor carved that deep into the rock under the cut, which is how mines and tunnels are laid out.
 - **Level** takes away everything inside the rectangle above the height where the drag began: a terrace, or a hill removed.
 - Diggers work from the top down and carry what the blocks yield to a stockpile. They leave what they can't reach, and what would bring a ceiling down (`05-systems.md` §13): those marks show `badge.path` or `badge.span`.
-- A marked area can be selected like a blueprint (D4). Remove erases marks, and Ctrl + Z takes back the last one, while nobody has started on it.
+- Dig and Remove are one choice: turning either on turns the other off, and picking a tile turns both off.
+- A marked area can be selected like a blueprint (D4) and is named by `dig.name`. Remove erases marks, and Ctrl + Z takes back the last one, while nobody has started on it.
 
 ### Zones palette
 
@@ -852,7 +854,7 @@ One Panel, 360 px wide, at the right edge between the top bar and the command ba
 | `captive.release` | button | Release | — | — | | M5 |
 | `sway.bribe` | button | Bribe | An envoy carries coin to them | — | another king's person or a neutral village, when you can see them. It opens `sway.amount` and `sway.send` in its place. Disabled without an Envoy (`why.official`) | M5 |
 | `sway.amount` | stepper | Coin | — | — | in Marks | M5 |
-| `sway.send` | button | Send | — | Enter | primary; also sends a gift (below) | M3 |
+| `sway.send` | button | Send | — | — | primary; also sends a gift (below) | M3 |
 | `sworn.dismiss` | button | Dismiss | Ends their place in your kingdom | — | danger button, no confirmation; on a sworn unit | M7 |
 
 ### A building, or a blueprint
@@ -869,7 +871,7 @@ One Panel, 360 px wide, at the right edge between the top bar and the command ba
 | `state.abandoned` | chip | Abandoned | Nobody holds it · it decays faster | — | | M4 |
 | `building.integrity` | bar | Integrity | Falls a little every day · repairs use materials | — | | M4 |
 | `building.requires` | table | Requires | — | — | the parts and conditions this building type needs, each ticked or crossed. Regional requirements (`05-systems.md` §13) are listed here with the rest | M2 |
-| `building.staff` | stepper | Workers | How many people may work here | — | 0 to the building's limit | M2 |
+| `building.staff` | stepper | Workers | How many people may work here | — | 0 to the building's limit; starts at the limit | M2 |
 | `building.priority` | segmented | Priority | High is supplied and staffed first | — | | M2 |
 | `prio.low` | row | Low | — | — | option | M2 |
 | `prio.normal` | row | Normal | — | — | option, the default | M2 |
@@ -934,7 +936,7 @@ Selected by clicking its hall or its name label.
 | `routeinfo.load` | stat | Each day | — | — | loads a day, last three days | M3 |
 | `routeinfo.danger` | bar | Danger | From attacks on this route in the last few days | — | | M4 |
 | `routeinfo.transport` | select | Transport | — | — | porters, pack animals, carts and the rest, as they become available | M3 |
-| `routeinfo.haulers` | stepper | Haulers | — | — | | M3 |
+| `routeinfo.haulers` | stepper | Haulers | — | — | starts at 2 | M3 |
 | `rule.row` | row | — | — | — | one cargo rule: the three controls below, on one line | M3 |
 | `rule.good` | select | Carry | — | — | | M3 |
 | `rule.amount` | stepper | Up to | The most to carry on one trip | — | | M3 |
@@ -976,7 +978,7 @@ Selected by clicking its hall or its name label.
 | `order.retreat` | button | Retreat | Fall back to the nearest keep | X | acts at once, no target | M4 |
 | `army.detach` | button | Detach | The selected company leaves this army | — | armies only | M5 |
 
-Orders travel (A4). After any order a Note shows when it will arrive: `note.order.sent`, or `note.order.rider` when it has to go by rider.
+Orders travel (A4). After an order that will take more than 2 s to arrive, a Note says when it will: `note.order.sent`, or `note.order.rider` when it has to go by rider. A new company is named by `co.name`, a new army by `army.name`.
 
 ### The ground, and things that aren't yours
 
@@ -1060,14 +1062,14 @@ A side panel with tabs across its top.
 | `post.appoint` | select | Appoint | — | — | lists candidates, best manager first; choosing one appoints them | M3 |
 | `post.dismiss` | icon | Dismiss | — | — | on hover of a held office | M3 |
 | `policy.wages` | title | Wages | — | — | Policies tab: a group of Steppers, in Marks a day | M3 |
-| `policy.wage.peasant` | stepper | Peasants | — | — | | M3 |
-| `policy.wage.craftsman` | stepper | Craftsmen | — | — | | M3 |
-| `policy.wage.soldier` | stepper | Soldiers | — | — | | M4 |
-| `policy.wage.official` | stepper | Officials | — | — | | M3 |
-| `policy.wage.mage` | stepper | Mages | — | — | | M6 |
+| `policy.wage.peasant` | stepper | Peasants | — | — | starts at 1 | M3 |
+| `policy.wage.craftsman` | stepper | Craftsmen | — | — | starts at 2 | M3 |
+| `policy.wage.soldier` | stepper | Soldiers | — | — | starts at 2 | M4 |
+| `policy.wage.official` | stepper | Officials | — | — | starts at 5 | M3 |
+| `policy.wage.mage` | stepper | Mages | — | — | starts at 10 | M6 |
 | `policy.taxes` | title | Taxes | — | — | | M3 |
-| `policy.tax.wage` | slider | Wage tax | Taken from every wage you pay | — | 0–50% | M3 |
-| `policy.tax.market` | slider | Market tax | Taken from every sale at your markets | — | 0–50% | M3 |
+| `policy.tax.wage` | slider | Wage tax | Taken from every wage you pay | — | 0–50%, default 10 *(tune)* | M3 |
+| `policy.tax.market` | slider | Market tax | Taken from every sale at your markets | — | 0–50%, default 10 *(tune)* | M3 |
 | `policy.rations` | segmented | Rations | Short stretches the food and costs loyalty | — | | M3 |
 | `rations.short` | row | Short | — | — | option | M3 |
 | `rations.normal` | row | Normal | — | — | option, the default | M3 |
@@ -1095,7 +1097,7 @@ A side panel with tabs across its top.
 
 | ID | Type | Label | Tooltip | Key | Does | Since |
 |---|---|---|---|---|---|---|
-| `deal.back` | icon | Back | — | Esc | returns to the list and drops the draft | M5 |
+| `deal.back` | icon | Back | — | — | returns to the list and drops the draft | M5 |
 | `deal.give` | title | You give | — | — | | M5 |
 | `deal.get` | title | You get | — | — | | M5 |
 | `deal.add` | select | Add | — | — | adds a line to that list | M5 |
@@ -1124,12 +1126,12 @@ A side panel: `army.new` at the top, then a list of armies with their companies 
 |---|---|---|---|---|---|---|
 | `army.title` | title | Army | — | — | | M4 |
 | `army.row` | row | — | — | — | one company or army: name, strength, its order, and from Milestone 5 a morale Bar. Click selects it | M4 |
-| `army.new` | button | New company | — | — | primary; opens the four controls below in place of the list | M4 |
+| `army.new` | button | New company | — | — | primary; opens the controls below in place of the list | M4 |
 | `army.new.captain` | select | Captain | — | — | candidates, best first | M4 |
-| `army.new.size` | stepper | Soldiers | — | — | 10–50 | M4 |
+| `army.new.size` | stepper | Soldiers | — | — | 10–50, starts at 20 | M4 |
 | `army.new.home` | select | Home | The settlement its soldiers are drawn from | — | | M4 |
 | `army.new.kit` | select | Kit | What they are armed with · drawn from that settlement's stores | — | kits are content | M4 |
-| `army.new.raise` | button | Raise | — | Enter | primary. Disabled with nobody fit to be its Captain (`why.candidate`) or too few people (`why.people`) | M4 |
+| `army.new.raise` | button | Raise | — | — | primary. Disabled with nobody fit to be its Captain (`why.candidate`) or too few people (`why.people`) | M4 |
 | `army.join` | button | Form army | Joins the selected companies under a Marshal | — | opens `army.join.marshal` in its place. Disabled with fewer than two companies selected (`why.select`), or with nobody fit to be Marshal (`why.candidate`) | M5 |
 | `army.join.marshal` | select | Marshal | — | — | candidates, best first; choosing one forms the army | M5 |
 | `army.disband` | button | Disband | — | — | danger button; *confirm* (`confirm.disband`) | M4 |
@@ -1159,8 +1161,8 @@ A side panel with tabs.
 | `form.amount` | stepper | Amount | — | — | | M5 |
 | `form.price` | stepper | Price each | — | — | in Marks | M5 |
 | `form.post` | select | Trading post | Where the goods and coin meet | — | | M5 |
-| `form.submit` | button | Post | — | Enter | primary | M5 |
-| `form.cancel` | button | Cancel | — | Esc | | M5 |
+| `form.submit` | button | Post | — | — | primary | M5 |
+| `form.cancel` | button | Cancel | — | — | | M5 |
 | `contract.row` | row | — | — | — | Contracts tab: good, amount, the other kingdom, a state chip | M5 |
 | `contract.goods` | chip | Awaiting goods | — | — | | M5 |
 | `contract.coin` | chip | Awaiting coin | — | — | | M5 |
@@ -1230,7 +1232,7 @@ The screen is the world. The interface is Minecraft's, element for element, with
 | `hud.abilities` | slot | Abilities | — | — | up to six Slots right of the hotbar, each with its Keycap and a sweep while it recovers | M6 |
 | `hud.sworn` | chip | Sworn to {kingdom} | — | — | beside `hud.unit` for an eliminated player's one unit | M7 |
 
-Chat lines (D10) sit above `hud.unit`. Alerts (D2) show at the top right as they do in Command view; the pointer is locked, so they can't be clicked: Tab, then Space, goes to the newest. Toasts and the Steward's line keep their place (A3). Nothing else is ever on this screen: no date, no minimap, no quest text, no prompts.
+Chat lines (D10) sit above `hud.unit`. Alerts (D2) show at the top right as they do in Command view; the pointer is locked, so they can't be clicked: Tab, then Space, goes to the newest. Toasts and the Steward's line keep their place (A3). Nothing else is ever on this screen: no date, no minimap, no quest text, no prompts. The free camera's screen has only `hud.cross`, `hud.outline`, `hud.hotbar` and `hud.item`: every other row here belongs to possessing a person.
 
 ### Inventory (E)
 A centred Panel nine Slots wide (392 px with its padding). The world stays visible and dimmed 40% behind it; the unit stops moving while it's open. E or Esc closes it.
@@ -1239,7 +1241,7 @@ A centred Panel nine Slots wide (392 px with its padding). The world stays visib
 |---|---|---|---|---|---|---|
 | `inv.worn` | title | Worn | — | — | five Slots: head, body, legs, feet, off hand | M2 |
 | `inv.pack` | title | Pack | — | — | 27 Slots, then the nine hotbar Slots under an 8 px gap | M2 |
-| `inv.load` | stat | Load | Past the limit you walk slower | — | value: "{w} of {cap} kg" | M2 |
+| `inv.load` | stat | Load | Past the limit you walk slower | — | value: `fmt.of`, in kg | M2 |
 | `inv.handwork` | title | Handwork | — | — | a list of the simple recipes that need no workshop | M2 |
 | `inv.recipe` | row | — | — | — | one recipe: what it makes and from what. Click makes one; Shift + click makes as many as the pack allows. Disabled while something is missing (`why.missing`) | M2 |
 
@@ -1288,13 +1290,15 @@ Full screen, flat, north up (C6). A bar 44 px tall along the bottom holds the co
 | `map.scale` | canvas | Scale | — | — | a scale bar, bottom right | 1.2 |
 | `map.pin` | canvas | Chosen spot | — | — | a click chooses a spot and marks it. A double-click does `map.go` (or `map.teleport`) at once | 1.2 |
 | `map.teleport` | button | Teleport | Puts the free camera at the chosen spot | Enter | primary; owner tool through Milestone 4, shown when the map was opened from the free camera | 1.2 |
-| `map.go` | button | Go here | Moves the Command view to the chosen spot | Enter | primary; shown when the map was opened from Command view. Closes the map | M2 |
+| `map.go` | button | Go here | Moves the Command view to the chosen spot | Enter | primary; shown when the map was opened from Command view. Closes the map | 1.4 |
 | `map.mark` | button | Add marker | — | — | puts a named marker on the chosen spot | M2 |
 | `map.mark.name` | field | Name | — | — | appears in the bar after `map.mark`; Enter keeps it | M2 |
 | `map.mark.remove` | button | Remove marker | — | Delete | shown when the chosen spot is a marker | M2 |
 | `map.close` | icon | Close | — | M | top right | 1.2 |
 
-From Milestone 2 the overlay toggles (D2) appear at the left of the bar and draw on the map as they do on the world. A region's name appears on the map once your people have entered it; the free camera sees every name.
+From Milestone 2 the overlay toggles (D2) appear at the left of the bar and draw on the map as they do on the world. A region's name appears on the map once your people have entered it; in Milestone 1, and for the free camera, every name shows.
+
+On a layer's tab the chosen spot is on that layer: the cavern floor at that place, or the nearest open space in the layer below it. Teleport and Go here take you there, and Go here sets the cut as C2 says.
 
 ---
 
@@ -1309,6 +1313,7 @@ The centred column (320 px, as on the title screen) of Buttons over the dimmed w
 | `menu.settings` | button | Settings | — | — | | 1.4 |
 | `menu.guide` | button | Guide | — | — | opens the player guide in a new tab | M8 |
 | `menu.title` | button | Quit to title | — | — | replaced by `menu.leave` from Milestone 5 | 1.1 |
+| `menu.licences` | button | Licences | The open-source code this game uses | — | opens the notices page (`/licenses/`, `07-architecture.md` §8) in a new tab | 1.1 |
 | `menu.leave` | button | Leave | Your kingdom carries on without you | — | returns to the season lobby | M5 |
 
 In Milestones 1–4 the world pauses while the menu is open. From Milestone 5 it never pauses.
@@ -1399,8 +1404,9 @@ Replaces the settings rows inside the same Panel. One row per binding in B3, und
 | `keys.group.possess` | title | Possess | — | — | | M2 |
 | `keys.group.all` | title | Everywhere | — | — | | M2 |
 | `keys.group.owner` | title | Owner tools | — | — | gone after Milestone 4 | M2 |
-| `keys.bind` | keycap | Change key | Click, then press the new key · Esc cancels, Delete clears it | — | the row's current key as a Keycap button. While waiting it reads `keys.listening` | M2 |
+| `keys.bind` | keycap | Change key | Click, then press the new key · Esc cancels | — | the row's current key as a Keycap button. While waiting it reads `keys.listening` | M2 |
 | `keys.default` | icon | Default | Put this key back | — | on rows that differ from the default | M2 |
+| `keys.clear` | icon | Clear key | Leave this action with no key | — | on hover of a row that has a key | M2 |
 | `keys.reset` | button | Reset keys | — | — | *confirm* (`confirm.keys`) | M2 |
 
 ---
@@ -1429,7 +1435,7 @@ One line of world voice (E4) in the Toast's place (A3), `--fs-16`, for 6 s; a to
 | `out.join` | button | Join | You play one sworn unit · no command | — | on the selected offer | M7 |
 | `out.leave` | button | Leave | — | — | | M7 |
 | `frost.table` | table | Standings | — | — | the final standings under `moment.frost`. Columns as in `standings.table` | M7 |
-| `frost.honours` | chip | {honour} | — | — | each title the player earned this season (content, `05-systems.md` §20) | M7 |
+| `frost.honours` | chip | {honour} | — | — | each honour the player earned this season (content, `05-systems.md` §20) | M7 |
 | `frost.leave` | button | Leave | — | Enter | | M7 |
 
 Each of these is a full dimmed screen with a centred column: the moment's line from E4 in the display font, then the rows above.
@@ -1448,7 +1454,7 @@ Bottom left, above the minimap (Command view) or above `hud.unit` (Possess): up 
 | `chat.all` | row | All | — | — | option | M5 |
 | `chat.allies` | row | Allies | — | — | option, shown when you have an alliance | M5 |
 | `chat.whisper` | row | {king} | — | — | option, after `kings.whisper` | M5 |
-| `chat.line` | row | — | — | — | "{king}: {words}", the name in the kingdom's colour | M5 |
+| `chat.line` | row | — | — | — | `fmt.says`, with the name in the kingdom's colour | M5 |
 
 ### Find (Ctrl + K)
 Command view only. A Field 480 px wide, centred a fifth of the way down, with up to eight result rows under it. Typing filters; the arrow keys move; Enter does the row's main action; Esc closes.
@@ -1456,7 +1462,7 @@ Command view only. A Field 480 px wide, centred a fifth of the way down, with up
 | ID | Type | Label | Tooltip | Key | Does | Since |
 |---|---|---|---|---|---|---|
 | `find.field` | field | Find | — | — | | M2 |
-| `find.row` | row | — | — | — | an icon, a name and a kind in `--text-3`. Actions run; places, people and buildings are selected and the camera goes to them | M2 |
+| `find.row` | row | — | — | — | an icon and a name. Actions run; places, people and buildings are selected and the camera goes to them | M2 |
 | `find.actions` | title | Actions | — | — | group titles, shown only over groups that have results | M2 |
 | `find.places` | title | Places | — | — | | M2 |
 | `find.people` | title | People | — | — | | M2 |
@@ -1621,7 +1627,7 @@ A Note says why something can't be done, or what a drag will do. One line, 16 px
 | `note.build.missing` | Missing {amount} {good} · it will wait | the ghost is `--warn`; placing is allowed | M2 |
 | `note.build.run` | {n} × {piece} | during a drag, followed by material icons with counts | M2 |
 | `note.zone.size` | {w} × {l} m | during a zone drag | M2 |
-| `note.dig.size` | {w} × {l} × {d} m · {n} blocks | during a dig drag | M2 |
+| `note.dig.size` | {w} × {l} × {d} m · {n} blocks | during a dig drag. For Level, {d} is the tallest column that goes | M2 |
 | `note.build.link` | Will link to {place} | a network building's ghost | M4 |
 | `note.build.nolink` | Too far to link from here | | M4 |
 | `note.route.stop` | Not a stop | clicking something that can't be one | M3 |
@@ -1640,7 +1646,7 @@ A Note says why something can't be done, or what a drag will do. One line, 16 px
 |---|---|---|---|
 | `toast.shot` | Screenshot saved | F2 | 1.1 |
 | `toast.fly` | Fly speed ×{n} | `[` and `]` | 1.1 |
-| `toast.windowed` | Windowed · sprint by double-tapping W | once per session (B1) | 1.1 |
+| `toast.windowed` | Windowed · sprint by double-tapping {key} | once per session (B1) | 1.1 |
 | `toast.mark` | Bookmark {n} saved | Shift + F5–F8 | M2 |
 | `toast.group` | Group {n} set | Ctrl + 1–9 | M4 |
 | `toast.undo` | Undone | Ctrl + Z | M2 |
@@ -1649,7 +1655,10 @@ A Note says why something can't be done, or what a drag will do. One line, 16 px
 | `timeofyear.autumn` | Autumn | | M2 |
 | `timeofyear.winter` | Winter | | M2 |
 | `zone.name` | {kind} {n} | a new zone's name | M2 |
-| `order.travel` | {order} · arrives in {eta} | tooltip on an order's mark while it travels | M4 |
+| `dig.name` | Dig {n} | a new dig mark's name | M2 |
+| `co.name` | {town} company {n} | a new company's name | M4 |
+| `army.name` | Army {n} | a new army's name | M5 |
+| `order.travel` | {order} · arrives in {eta} | tooltip on a pending control, and on an order's mark, while the order travels (A4) | M4 |
 | `card.warden` | Warden of {region} | the Warden card's second line | M4 |
 | `town.noreeve` | No Reeve | in `town.reeve` | M2 |
 | `tip.build.needs` | Here it needs {requirement} | last line of the building tooltip | M4 |
@@ -1669,8 +1678,9 @@ A Note says why something can't be done, or what a drag will do. One line, 16 px
 | `keys.unset` | Not set | on `keys.bind` with no key | M2 |
 | `keys.clash` | Also used by {action} | tooltip on both clashing rows; their Keycaps turn `--warn` | M2 |
 | `keys.reserved` | {key} belongs to the browser | Note when a refused key is pressed | M2 |
+| `keys.unsupported` | That key can't be used | Note when a key with no name row is pressed (B5) | M2 |
 | `name.taken` | That name is taken | under a name Field | M5 |
-| `name.length` | Use 3 to 20 letters | under a name Field | M5 |
+| `name.length` | Use 3 to 20 letters | under a name Field | M2 |
 | `chat.slow` | Wait a moment before sending again | Note | M5 |
 | `find.none` | No matches | | M2 |
 | `people.none` | Nobody matches | | M2 |
@@ -1744,7 +1754,7 @@ One line per event, server-wide, in world voice. The King Below's name is never 
 | `chron.alone` | Week {w}: {king} of {capital} breaks {warden} alone. | a Solitary kill | M7 |
 | `chron.dead` | Week {w}: {king} of {capital} is dead. | | M7 |
 | `chron.taken` | Week {w}: {kingdom} falls to {victor}. | | M7 |
-| `chron.faith` | Week {w}: {king} breaks faith with {other}. | a broken treaty | M7 |
+| `chron.faith` | Week {w}: {king} of {capital} breaks faith with {other}. | a broken treaty | M7 |
 | `chron.below` | Week {w}: the King Below is broken. | | M7 |
 | `chron.frost` | Week 26: the Frost takes the basin. | | M7 |
 
@@ -1789,16 +1799,15 @@ Words the interface needs that aren't labels, tooltips or messages. Each is used
 
 | ID | Text | When | Since |
 |---|---|---|---|
-| `unit.s` | s | after a number of seconds | 1.1 |
-| `unit.min` | min | | 1.1 |
+| `unit.s` | s | after a number of seconds | M2 |
+| `unit.min` | min | | M2 |
 | `unit.h` | h | | 1.1 |
 | `unit.d` | d | days of real time | M2 |
 | `unit.ms` | ms | the debug overlay | 1.1 |
 | `unit.mb` | MB | the debug overlay | 1.1 |
-| `unit.m` | m | | 1.1 |
+| `unit.m` | m | | 1.2 |
 | `unit.km` | km | | 1.2 |
 | `unit.kg` | kg | | M2 |
-| `unit.speed` | m/s | | 1.1 |
 | `fmt.multiple` | ×{n} | fly speed | 1.1 |
 | `fmt.ago` | {t} ago | an age | M2 |
 | `fmt.in` | in {t} | an arrival time | M3 |
@@ -1811,6 +1820,10 @@ Words the interface needs that aren't labels, tooltips or messages. Each is used
 | `fmt.about` | about {n} | an estimate | M4 |
 | `fmt.route` | {from} → {to} | a route's two ends | M3 |
 | `fmt.ruler` | {king} of {capital} | | M5 |
+| `fmt.crown` | {capital} Crown | a kingdom's default name | M2 |
+| `fmt.says` | {king}: {words} | a chat line | M5 |
+| `fmt.comma` | {a}, {b} | joins rulers in a list of three or more | M7 |
+| `fmt.and` | {a} and {b} | joins the last two | M7 |
 | `fmt.score` | {n} · {rank} of {kings} | | M7 |
 | `compass.n` | N | `f3.facing` | 1.1 |
 | `compass.ne` | NE | | 1.1 |
@@ -1852,24 +1865,23 @@ Words the interface needs that aren't labels, tooltips or messages. Each is used
 
 | ID | Text | When | Since |
 |---|---|---|---|
-| `keyname.space` | Space | | 1.1 |
+| `keyname.space` | Space | | M2 |
 | `keyname.enter` | Enter | | 1.1 |
 | `keyname.esc` | Esc | | 1.1 |
-| `keyname.lctrl` | Left Ctrl | | 1.1 |
-| `keyname.lshift` | Left Shift | | 1.1 |
-| `keyname.mouse1` | Left mouse | | 1.1 |
-| `keyname.mouse2` | Right mouse | | 1.1 |
-| `keyname.mouse3` | Middle mouse | | 1.1 |
-| `keyname.wheel` | Wheel | | 1.1 |
-| `keyname.tab` | Tab | | 1.4 |
-| `keyname.shift` | Shift | | 1.4 |
-| `keyname.backspace` | Backspace | | 1.4 |
-| `keyname.up` | ↑ | the arrow keys | 1.4 |
-| `keyname.down` | ↓ | | 1.4 |
-| `keyname.left` | ← | | 1.4 |
-| `keyname.right` | → | | 1.4 |
-| `keyname.pageup` | PageUp | | 1.8 |
-| `keyname.pagedown` | PageDown | | 1.8 |
+| `keyname.lctrl` | Left Ctrl | | M2 |
+| `keyname.lshift` | Left Shift | | M2 |
+| `keyname.mouse1` | Left mouse | | M2 |
+| `keyname.mouse2` | Right mouse | | M2 |
+| `keyname.mouse3` | Middle mouse | | M2 |
+| `keyname.tab` | Tab | | M2 |
+| `keyname.shift` | Shift | | M2 |
+| `keyname.backspace` | Backspace | | M2 |
+| `keyname.up` | ↑ | the arrow keys | M2 |
+| `keyname.down` | ↓ | | M2 |
+| `keyname.left` | ← | | M2 |
+| `keyname.right` | → | | M2 |
+| `keyname.pageup` | PageUp | | M2 |
+| `keyname.pagedown` | PageDown | | M2 |
 | `keyname.end` | End | | 1.8 |
 | `keyname.home` | Home | | M2 |
 | `keyname.delete` | Delete | | M2 |
@@ -1896,6 +1908,8 @@ Words the interface needs that aren't labels, tooltips or messages. Each is used
 | `rank.master` | Master | | M6 |
 | `sex.woman` | Woman | | M2 |
 | `sex.man` | Man | | M2 |
+| `ruler.king` | King | a ruler's title, before the name (A5) | M2 |
+| `ruler.queen` | Queen | | M2 |
 | `coin.crowns` | Crowns | in tooltips, and as the gold glyph's name for screen readers | M3 |
 | `coin.marks` | Marks | the silver glyph's | M3 |
 | `cause.pay` | Pay | the six causes of loyalty (`loyalty.why`) | M3 |
@@ -1913,13 +1927,13 @@ Each row's **Since** decides when it ships. This table only sums them up; `node 
 
 | Phase | The interface that exists at its end |
 |---|---|
-| 1.1 | title screen (seed, Play); loading; the free camera's screen (crosshair, target outline, hotbar, the held item's name); block palette; menu (Resume, Quit to title); F1, F2, F3 and the Tools panel (F4) with the rows marked 1.1; the system states that need no server (click to play, no WebGL2, small window, blocked storage, lost graphics, new version); the toasts; the "Clear my edits" confirmation; the string pipeline, `ui:lint`, the gallery and `ui:shots` (A6, A7) |
+| 1.1 | title screen (seed, Play); loading; the free camera's screen (crosshair, target outline, hotbar, the held item's name); block palette; menu (Resume, Licences, Quit to title); F1, F2, F3 and the Tools panel (F4) with the rows marked 1.1; the system states that need no server (click to play, no WebGL2, small window, blocked storage, lost graphics, new version); the toasts; the "Clear my edits" confirmation; the string pipeline, `ui:lint`, the gallery and `ui:shots` (A6, A7) |
 | 1.2 | the map with Teleport; discovery cards; "Go to region"; the World select |
 | 1.3 | "Go to postcard"; the View switch (Clay, Features) |
-| 1.4 | the Command camera as king's view (C1, C6) with Tab; Settings with the rows marked 1.4; the LOD rows in F3 and Tools |
+| 1.4 | the Command camera as king's view (C1, C6) with Tab; the map's "Go here"; Settings with the rows marked 1.4; the LOD rows in F3 and Tools |
 | 1.8 | the cut (C2) with its keys and the depth gauge; the map's layer tabs |
 | 1.10 | every Settings row marked 1.10, including the Audio tab's Volume; nothing else new |
-| M2 | the Command view: top bar, alerts, minimap, the Resources overlay, command bar, Build (with Dig) and Zones, the inspector, Realm (Overview, People, News), the Ledger, Find, the key list, bookmarks; the map's "Go here" and markers; Possess with real inventories, Handwork, containers and workstations; the Steward's lines; "Choosing ground"; the death screen; the free camera as an owner tool beside the kingdom |
+| M2 | the Command view: top bar, alerts, minimap, the Resources overlay, command bar, Build (with Dig) and Zones, the inspector, Realm (Overview, People, News), the Ledger, Find, the key list, bookmarks; the map's markers; Possess with real inventories, Handwork, containers and workstations; the Steward's lines; "Choosing ground"; the death screen; the free camera as an owner tool beside the kingdom |
 | M3 | Routes; Trade (Prices); Realm (Officials, Policies, Treasury); loyalty, tiers and their causes; the Logistics and Loyalty overlays; neutral villages and gifts; reputation; the office (K) |
 | M4 | Army (companies) and the order buttons; control groups; the order wheel; the network: its buildings, link notes, the Network, Hazards and Territory overlays, news that travels and pending orders; enemy and Warden rows and the Warden card; integrity and repair; conditions; inscriptions; two more Ledger tabs |
 | M5 | signing in, the lobby, founding; chat; Realm (Kings), offers and deals; Trade (Board, Contracts); captives and bribes; morale; armies under a Marshal and siege; capture; the system states for connections. Owner tools leave |
