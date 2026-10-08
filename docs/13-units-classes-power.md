@@ -18,6 +18,7 @@ Every number is a starting value for playtests *(tune)* unless it is marked **fi
 8. **Calamities are strategic pieces.** Like the king, they are not to be spent recklessly.
 9. **For now, every person looks like a Minecraft avatar** (§3.2).
 10. **People see like people** (added later the same day). Every unit has a human field of view, and you see only what your units see. `16-sight.md` holds these rules.
+11. **Calamities are forces you try to hold** (added later the same day). Their loyalty plummets the moment they rise. Some are bought with excessive money, some demand a following, some can't be controlled and go rogue, roaming the land and causing havoc, and some are fiercely loyal and protective: the bastions that let a great kingdom bounce back from a war. Strong rivals try to take them. They are like nuclear weapons: a few nations have them, usually about five, never ten or more, while economy, trade and alliances still rule (§15).
 
 ## 2. Words
 
@@ -39,6 +40,8 @@ Every number is a starting value for playtests *(tune)* unless it is marked **fi
 | **Sight** | what a person sees: a view cone, out to a range, along clear lines (`16-sight.md`) |
 | **Calamity** | the top grade, and a person who holds it (§15) |
 | **Flame** | a Calamity's second life pool, fed by its upkeep (§15.2) |
+| **Nature** | what kind of Calamity it is: Sellsword, Idol, Wildfire, Bastion or Oathsworn (§15.3) |
+| **Hold** | how firmly a Calamity answers to its king, 0–100 (§15.8) |
 
 `05-systems.md` and the catalogue still say **Possess** for playing a unit. It means the same thing.
 
@@ -63,7 +66,7 @@ A played unit moves, digs, builds and carries exactly as a Minecraft player does
 
 **Fall damage:** 5% of max Health for every metre fallen beyond 3 m, so a 23 m fall kills, as in Minecraft.
 
-**The avatar** (everyone, the king and the free camera included). A blocky figure with a Minecraft avatar's proportions, 1.8 m tall: head 8 × 8 × 8 px, body 8 × 12 × 4, arms and legs 4 × 12 × 4, one px being 1.8 m ÷ 32. Its look is generated in code from the person's identity (golden rule 6): skin and hair from their stored traits, clothes by class and needs tier, a trim in the kingdom's colours (wider from Champion), worn armour drawn as a layer by material; a Calamity burns with a visible fire. Nothing reproduces a skin from Minecraft. It animates as a Minecraft avatar does: limbs swing with speed, the body leans to sprint and crouches to sneak, the arm swings to hit, dig and place, a shield rises, a bow draws, the body flashes red when hurt. Skills add a pose and a wind-up (§11.5). A Downed person lies on the ground (§5.9). This is the owner's "for now": a later art pass may replace it.
+**The avatar** (everyone, the king and the free camera included). A blocky figure with a Minecraft avatar's proportions, 1.8 m tall: head 8 × 8 × 8 px, body 8 × 12 × 4, arms and legs 4 × 12 × 4, one px being 1.8 m ÷ 32. Its look is generated in code from the person's identity (golden rule 6): skin and hair from their stored traits, clothes by class and needs tier, a trim in the kingdom's colours (wider from Champion), worn armour drawn as a layer by material; a Calamity burns with a visible fire. Nothing reproduces a skin from Minecraft. It animates as a Minecraft avatar does: limbs swing with speed, the body leans to sprint and crouches to sneak, the arm swings to hit, dig and place, a shield rises, a bow draws, the body flashes red when hurt. Skills add a pose and a wind-up (§11.5). A Downed person lies on the ground (§5.9). This is the owner's "for now": a later art pass may replace it. How it all moves on screen, and the rest of the look: `18-look-and-feel.md` §6–§7.
 
 ### 3.3 Sight
 
@@ -192,7 +195,7 @@ This is what makes a grade gap count: a hundred levied farmers can't scratch a C
 - **Blocking.** Hold the use button with a shield. Hits from the front (a 120° arc) lose the shield's **Block** value after armour; projectiles from the front are stopped outright. A block never takes off more than 75% of a hit; a parry takes off all of it. Each blocked hit costs 8 Stamina, plus 1 per 10 damage blocked. At 0 Stamina the guard breaks: **Staggered**, and the shield can't rise again for 2 s. While it is up the unit moves at half speed and can't attack or sprint.
 - **Weapons with Guard** in their row (spears, staves, greatswords, parrying daggers) block with half a round shield's Block of their tier, and can parry. A row may widen its own parry window.
 - **Blunt hits ignore a quarter of Block.** Hits a row calls **crushing** (big creatures, Wardens' heavy hits) can't be blocked or parried, and leave whoever they hit **Staggered**.
-- **A parry**, raising the shield or Guard weapon within 0.25 s before a melee hit lands, blocks all of it, costs nothing and Staggers the attacker for 0.75 s. AI units never parry.
+- **A parry**, raising the shield or Guard weapon within 0.25 s before a melee hit lands, blocks all of it, costs nothing and Staggers the attacker for 0.75 s. AI units never parry. So that a parry can be timed by eye, AI units and creatures commit to a melee blow 0.25 s before it lands and draw back for it (`18-look-and-feel.md` §8.3); a player's blow lands at once, as Minecraft's does.
 
 ### 5.6 Mounts and beasts
 
@@ -371,11 +374,11 @@ A season is 4,368 hours long, and people work about half of them. So work alone 
 | **Elite** | 31–40 | ×2.5 | promotion by the player, with proficiency 60 in the class's trade | 1 per 20 people | ×4 |
 | **Champion** | 41–50 | ×3.0 | the Trial, played (§9.3) | 1 per 100 people | ×10 |
 | **Paragon** | 51–60 | ×3.5 | a bound Warden relic, or the Marrow Rite (§9.4) | 1 per 1,000 people | ×25 |
-| **Calamity** | 61–70 | ×4.0 | one of four paths (§15); a Crownbearer or Relic-bound Calamity keeps its level and climbs on without stopping at 60 | 1 per kingdom, plus one Oathbound | upkeep instead (§15.4) |
+| **Calamity** | 61–70 | ×4.0 | one of five natures (§15.3); a Wildfire keeps its level and climbs on without stopping at 60 | 1 Bastion and 1 other per kingdom, plus one Oathsworn; 9 in the world (§15.5) | upkeep instead (§15.3) |
 
 - **Places** are counted against the kingdom's whole population. Losing people never demotes anyone, but nobody new is promoted while the kingdom is over a limit.
 - **Wage** multiplies the class's wage (`05-systems.md` §11). Elites want the Craftsman tier's needs, Champions and above the Noble tier's (`05-systems.md` §7).
-- **A promotion** happens by itself when its gate is met: Proven and Tempered by level and deed, Champion on passing the Trial, Paragon on binding a relic or finishing the Rite, Calamity by its path. Elite alone waits for the player to press Promote (`person.promote`). A promotion refills Health. Nobody is ever demoted, except a Calamity that falls (§15.4) and a Paragon who unbinds a relic (§9.4).
+- **A promotion** happens by itself when its gate is met: Proven and Tempered by level and deed, Champion on passing the Trial, Paragon on binding a relic or finishing the Rite, Calamity by its nature's way (§15.3). Elite alone waits for the player to press Promote (`person.promote`). A promotion refills Health. Nobody is ever demoted, except a Calamity that falls (§15.4) and a Paragon who unbinds a relic (§9.4).
 
 ### 9.2 Linear in power, hard to climb
 
@@ -565,8 +568,8 @@ Rows in `14-class-library.md` are written to these budgets. A row may break one 
 | Ultimate | one big moment | 100 Resolve. About three Actives' worth: at most 400% of a hit on one target or 200% on everything within 6 m; hard control 2 s at most, on everything within 12 m at most; buffs on others within 16 m; Reveal 64 m at most; or one feat of the trade (a piece at the best quality its maker can reach, a whole vein at once, a field brought in within a minute) |
 | Art | an advanced class's second active | cooldown 20–120 s; 10–40 Stamina or 10–60 Mana; effects last 5–20 s; at most 250% of a hit on one target or 120% within 5 m; hard control 1.5 s at most, on everything within 6 m at most; buffs on others within 12 m; Reveal 32 m at most |
 | Mastery | bends one rule of the design docs, for this person or for what they make, tend or lead | names the doc and section it bends; a flat +25% at most, or ×2 on one range, capacity or rate; it may switch a limit off for this person ("sprinting costs no Stamina") |
-| Relic | a Warden's power | `15-item-library.md` §9: a Tier I relic is about an Ultimate on a 3-minute cooldown plus a small passive; each tier up is ×1.5 (◆100, 150, 225, 340, 500 for heals and shields), areas 6–8 m; the three Tier V relics are Calamity paths |
-| Cataclysm | the map changes | 600 s cooldown; a tenth of max Flame; a radius of up to 48 m for damage and 32 m for terrain; up to 20 × a hit on each creature in the area. Every damaging Cataclysm also deals 200,000 siege damage once to each Warden in its area (400,000 with Sunder) |
+| Relic | a Warden's power | `15-item-library.md` §9: a Tier I relic is about an Ultimate on a 3-minute cooldown plus a small passive; each tier up is ×1.5 (◆100, 150, 225, 340, 500 for heals and shields), areas 6–8 m; the three Tier V relics make Wildfires (§15.3) |
+| Cataclysm | the map changes | 600 s cooldown; a tenth of max Flame; a radius of up to 48 m for damage and 32 m for terrain (a line may run farther over the same ground, as above); up to 20 × a hit on each creature in the area. Every damaging Cataclysm also deals 200,000 siege damage once to each Warden in its area (400,000 with Sunder) |
 
 ---
 
@@ -655,75 +658,160 @@ With steel the king is worth about 35 Proven soldiers, and about 50 with brimste
 ---
 ## 15. Calamities
 
+A Calamity is a force a kingdom tries to hold. Its loyalty collapses the moment it rises, and each nature answers only to what feeds it: coin, a following, war in the king's own company, or an oath (§15.3, §15.8). Rival kings try to take it from you. Calamities are the season's nuclear weapons: a few kingdoms have one, and everyone plans around them, but economy, trade and alliances still decide who rules. At most nine exist at once, and the costs aim at about five on a full server (§15.5).
+
 ### 15.1 What a Calamity is
 
 A person bound to a fire that must be fed: in the lore, a small copy of what the King Below did to himself (`03-lore.md` §3, §6), which is why the Hearth both makes and fears them. Court speech calls them *saiyaku*. Every Calamity has:
 
 - **Mantle.** It counts as grade 7 for Overmatch, so Common and Proven attackers do a tenth of their damage, Tempered a quarter, Elite half and Champions three quarters. It can't be Staggered, Feared or Taunted, and Stunned, Rooted, Frozen and Slowed hold it for a quarter of their time, half a second at most.
-- **Sunder.** Its hits and skills break the block they strike and every block within 1 m of it, as siege damage. Against creatures they ignore half of armour. Against Wardens, generals and structures they do double damage, every number included (a Cataclysm's too).
-- **Dread.** Enemies below Elite within 32 m lose 5 morale a second, and their AI won't close on it unless ordered to.
+- **Sunder** (every nature but the Bastion). Its hits and skills break the block they strike and every block within 1 m of it, as siege damage. Against creatures they ignore half of armour. Against Wardens, generals and structures they do double damage, every number included (a Cataclysm's too).
+- **Presence** (`16-sight.md` §11): the world changes around it, by its nature. In play, every Calamity but a Calm one has **Dread**'s effect, whatever its presence looks like: enemies below Elite within 32 m lose 5 morale a second, and their AI won't close on it unless ordered to. A **Calm** one (a Bastion, or an Idol on its own kingdom's land) keeps every ally within 64 m from losing morale instead.
 - **Flame:** a second life pool (§15.2).
-- **A Cataclysm** of its class family (`14-class-library.md` §3.5).
-- **No hiding.** It shows, live, on the map of every king whose coverage comes within 2 km of it.
+- **A Cataclysm** of its class, base class or family (`14-class-library.md` §3.5); a Bastion has Sanctuary instead.
+- **Hold:** how firmly it answers to its king, 0–100 (§15.8).
+- **No hiding.** It shows, live, on the map of every king whose coverage comes within 2 km of it, whoever it serves.
 
 ### 15.2 Flame
 
 Flame takes damage after Shielded and before Health (§5.1). A Calamity is never Downed: it dies when its Flame and its Health are both gone.
 
-| Path | Max Flame | Refilled by |
+| Nature | Max Flame | Refilled by |
 |---|---|---|
-| Kindled | 40 per member of the congregation, 40,000 at most | offerings burned at the Great Hearth: 1 Flame per offering point, 300 a second at most, only while the Calamity is inside connected coverage |
-| Oathbound | 30,000 | nothing |
-| Crownbearer | 15,000 | 5% of the damage it deals to creatures, 30 a second at most |
-| Relic-bound | the relic's (`15-item-library.md` §9) | the relic's hunger, 30 a second at most |
+| Sellsword | 30,000 | coin from its king's treasury: 1 Flame for 2 Marks, 300 a second at most, only while it is inside connected coverage |
+| Idol | 40 per member of the congregation, 40,000 at most | offerings burned at the Great Hearth: 1 Flame per offering point, 300 a second at most, only while it is inside connected coverage |
+| Wildfire, crowned | 15,000 | 5% of the damage it deals to creatures, 30 a second at most |
+| Wildfire, relic-bound | the relic's (`15-item-library.md` §9) | the relic's hunger, 30 a second at most |
+| Bastion | 50,000 | offerings from its stronghold's stores: 1 Flame per offering point, 200 a second at most, only inside its domain (§15.10) |
+| Oathsworn | 30,000 | nothing |
+| A rogue Idol (§15.9) | what it had, at its full maximum | its cult's offerings: 1 Flame per offering point, 100 a second at most, only at its camp |
+| Any other rogue (§15.9) | what it had, at its full maximum | havoc: 1 Flame for every 10 points of siege damage it deals and 5% of the damage it deals to creatures, 50 a second at most |
 
-### 15.3 The four paths
+### 15.3 The five natures
 
-**Kindled: the Hearth's way.** The way most kingdoms will try, and the hardest to keep.
+| Nature | Made by | Held by | What it wants | A rival takes it by |
+|---|---|---|---|---|
+| **Sellsword** | the Gilding: a fortune in coin | its wage, paid every day | coin | outbidding you, until it walks to them |
+| **Idol** | the Kindling: a Great Hearth and 300 worshippers | its congregation's devotion | its faithful | swaying the faithful and burning the shrines, until it breaks loose |
+| **Wildfire** | the Broken Crown or a deep relic | war, fought with the king beside it | war | waiting for it to break loose, then killing it for the crown or relic |
+| **Bastion** | the Warding: an oath to a stronghold | its stronghold, kept whole and manned | to guard | killing it, the only way into its stronghold |
+| **Oathsworn** | the Oath: a soldier sworn to burn | the oath itself, for its one day | its one battle | nothing: it is gone in a day |
+
+**Sellsword: the Gilding.** Bought, and loyal to coin.
+- **The candidate:** a Paragon at level 60, of any class.
+- **The Gilding:** seven in-game days at the Great Hearth (below), the candidate never farther than 64 m from it, while 250,000 Marks are burned in it: coin, gold, silver and jewels, by their reference price (`05-systems.md` §11). Here coin counts. No congregation is needed.
+- **The wage:** every in-game day, at least 6,000 Marks from the treasury (`person.wage`; the king may pay more). A day not fully paid leaves it **Guttering** (§15.4).
+- **Rivals** may offer it a higher daily wage (`calamity.offer`). An offer stands only while the king making it has room for it (§15.5) and keeps seven days of that wage set aside in its treasury; it stands until withdrawn (`offer.withdraw`). The best standing offer it hears of loosens its Hold (§15.8). When its Hold breaks, it walks to the best standing offer and serves that king from Hold 40; with none, it goes rogue.
+- **Lowering the wage** counts as a day unpaid.
+
+**Idol: the Kindling.** The Hearth's way, held by its following.
 - **The candidate:** a Paragon at level 60.
-- **The Great Hearth:** one building per kingdom, in the capital's coverage. Its required parts (`05-systems.md` §13): a hearth of 5 × 5 fireclay-brick blocks around a **hearth heart** (4 titan bone, 10 moonsilver ingots, 6 pure mana crystal), a chimney with a path to open sky, and an enclosed stone hall of at least 600 m³.
+- **The Great Hearth:** one building per kingdom, in the capital's coverage. Its required parts (`05-systems.md` §13): a hearth of 5 × 5 fireclay-brick blocks around a **hearth heart** (4 titan bone, 10 moonsilver ingots, 6 pure mana crystal), a chimney with a path to open sky, and an enclosed stone hall of at least 600 m³. Sellswords are gilded here too.
 - **The congregation:** the people whose homes lie within 150 m of a hearth-shrine connected (by coverage) to the Great Hearth. Each shrine counts up to 50 of them, so 300, the least the Kindling needs, takes six shrines. Worship takes a twentieth of their day: they work 5% less.
 - **The Kindling:** seven in-game days at the Great Hearth. The candidate never goes farther than 64 m from it, the High Hearthkeeper attends each day, and 100,000 offering points are burned in it over the seven days. If the candidate leaves or the Hearth goes cold, the Kindling starts over and half of what was burned is lost.
 - **Offering points:** a good is worth its reference price in Marks (`05-systems.md` §11). Only what burns or is precious counts: fuel, food, drink, cloth, timber, crystal, pearls, precious metals and jewels. Coin and tools don't.
-- **Upkeep:** every in-game day, 2,000 offering points plus 4 for each member of the congregation, burned from the capital's stores. Flame regained in a fight costs more on top (§15.2). A day not fully paid leaves the Calamity **Guttering** (§15.4).
+- **Upkeep:** every in-game day, 2,000 offering points plus 4 for each member of the congregation, burned from the capital's stores. Flame regained in a fight costs more on top (§15.2). A day not fully paid leaves it **Guttering** (§15.4).
+- **Rivals** take an Idol by taking its faithful: swaying its congregation (`05-systems.md` §8), raiding its shrines, and desecrating them (holding one for 60 s with nobody of the Idol's kingdom within 16 m).
 
-**Oathbound: the soldier's way.**
+**Wildfire: the crown and the deep relics.** Uncontrollable by nature: most break loose within days.
+- **Crowned:** when a king is killed by another kingdom's people, **the Broken Crown** (`15-item-library.md` §9) falls where the king died. A Paragon who wears it becomes a Wildfire at their current level, and climbs to 70 as anyone does; a Champion who wears it only becomes a Paragon (§9.4). No upkeep. The bearer is shown, live, on every king's map wherever it goes, and every faction of the Deep knows where it is. When it dies, the crown falls where it fell. Taking the crown off makes it fall as §15.4 says.
+- **Relic-bound:** the three Tier V relics, **the Ichor Heart**, **the Ashen Veil** and **the War-Smith's Hammer**, each make the Paragon who binds one a Wildfire at their current level, who then climbs to 70 as anyone does. A Champion who binds one only becomes a Paragon (§9.4). Unbound, the bearer falls as §15.4 says. Each relic has a **hunger** (`15-item-library.md` §9): a hungry relic leaves its bearer Guttering, as an unpaid Hearth does.
+- **The king's grip:** a Wildfire takes orders only while the king stands within 64 m of it, and only orders to move and to fight. It can be played only while the king is within 64 m (play returns to Command view if the king falls farther behind), and while the player plays it, the king's own AI keeps within 32 m of it where it can, so holding a Wildfire puts the king in harm's way.
+- **Rivals** take a Wildfire by killing its bearer, rogue or not, and picking up the crown or relic.
+
+**Bastion: the Warding.** Fiercely loyal and protective: the bedrock of a great kingdom (§15.10).
+- **The candidate:** a Paragon at level 60 in the Guard role (§12).
+- **The stronghold:** the capital's keep, or the hall of the settlement a Governor runs a province from (§13.3), inside a ring of stone walls at least 8 m high, with a garrison of at least 50 soldiers.
+- **The Warding:** seven in-game days in the stronghold, the candidate never leaving it, the king present on the first day and the last, while 100,000 offering points are burned at its hearth-shrine.
+- **Upkeep:** every in-game day, 1,000 offering points from the stronghold's stores, and the garrison kept at 50 or more.
+- **Rivals** can't lure a Bastion or sway it. The stronghold can't be captured while its Bastion lives, so they must kill it.
+
+**Oathsworn: the Oath.** A soldier sworn to die.
 - **Who:** an Assault soldier (§12) of Champion grade or higher.
 - **The Oath** is sworn at any hearth-shrine with the king or the High Hearthkeeper within 16 m (`person.oath`, with a confirmation). From then they are **Oathsworn**, and can't be unsworn.
 - **The fire:** within three in-game days, the player calls it (`person.fire`, or G while playing them). If nobody calls it, it comes by itself at the end of the third day.
-- **One day of fire:** they become a level-70 Calamity at once, with 30,000 Flame that never refills. When the in-game day ends, or when Flame and Health are gone, they burn to ash: dead, for good. Their gear drops.
-
-**Crownbearer: the conqueror's way.**
-- When a king is killed by another kingdom's people, **the Broken Crown** (`15-item-library.md` §9) falls where the king died.
-- A Paragon who wears it becomes a Calamity at their current level, and climbs to 70 as anyone does. No upkeep.
-- The bearer is shown, live, on every king's map wherever it goes, and every faction of the Deep knows where it is. When it dies, the crown falls where it fell. Taking the crown off makes it fall as §15.4 says.
-
-**Relic-bound: the deep way.**
-- The three Tier V relics, **the Ichor Heart**, **the Ashen Veil** and **the War-Smith's Hammer**, each make the Paragon who binds one a Calamity at their current level, who then climbs to 70 as anyone does. A Champion who binds one only becomes a Paragon (§9.4). Unbound, the bearer falls as §15.4 says.
-- Each has a **hunger** (`15-item-library.md` §9): a hungry relic leaves its bearer Guttering, as an unpaid Hearth does.
+- **One day of fire:** they become a level-70 Calamity at once, with 30,000 Flame that never refills and a Hold of 100. When the in-game day ends, or when Flame and Health are gone, they burn to ash: dead, for good. Their gear drops.
 
 ### 15.4 Guttering and falling
 
-- **Guttering:** max Flame is halved and nothing refills it, until a full day's upkeep (or the relic's hunger) is met.
-- **Three days of Guttering in a row,** or a Crownbearer or Relic-bound Calamity taking its crown or relic off: the Calamity **falls** to Paragon at its own level, 60 at most, **Wounded**, and loses all experience above that. A Champion whom a crown or relic made a Paragon falls back the same way to Champion, at its own level, 50 at most (§9.4). A Kindled Calamity's fall leaves the Great Hearth cold for four in-game years (four real weeks): no Kindling there until it warms.
-- An Oathbound never falls. It burns.
+- **Guttering:** max Flame is halved, nothing refills it, and its Hold falls 20 a day, until a full day's upkeep (the wage, the offerings or the relic's hunger) is met.
+- **Three days of Guttering in a row,** or a crowned or relic-bound Wildfire taking its crown or relic off: the Calamity **falls** to Paragon at its own level, 60 at most, **Wounded**, and loses all experience above that. A Champion whom a crown or relic made a Paragon falls back the same way to Champion, at its own level, 50 at most (§9.4). An Idol's fall, or its breaking loose, leaves the Great Hearth cold for four in-game years (four real weeks): no Kindling or Gilding there until it warms.
+- **A Hold of 0** sets it loose instead (§15.9), even on a day it would also fall. A Bastion never goes loose; it falls.
+- The Oathsworn never fall and never go loose. They burn.
 
 ### 15.5 Death, limits and news
 
-- **Death is permanent.** A Kindled Calamity's death also leaves the Great Hearth cold for four in-game years, and costs its congregation 15 loyalty.
-- **Limits:** one seated Calamity per kingdom (Kindled, Crownbearer or Relic-bound), plus one Oathbound, sworn or burning. A kingdom may keep a second crown or relic in a store, but nobody can wear it while a Calamity sits.
-- **News:** every king hears when a Calamity rises and when one falls or dies, and the Chronicle records it (E1 and E5 of the catalogue).
+- **Death is permanent.** An Idol's death also leaves the Great Hearth cold for four in-game years, and costs its congregation 15 loyalty.
+- **The world holds nine.** No more than 9 Calamities live at once, counting rogues and the Oathsworn, sworn or burning (the owner: "under 10, usually 5 or so"). While nine places are taken, no Gilding, Kindling or Warding completes, no crown or relic makes a Calamity, and no Oath can be sworn. A rite that finishes then waits, its conditions still holding (`rite.waiting`), and a crown or relic waits on its wearer, until a place frees; a freed place goes to whichever finished or put one on first. The costs are set so that about five are alive on a full server.
+- **A rite interrupted** (the candidate leaves, the Hearth goes cold, the stronghold falls short of its walls or garrison) starts over, and half of what was burned is lost.
+- **A kingdom holds** at most one Bastion and one other Calamity (a Sellsword, an Idol or a Wildfire), plus one Oathsworn, sworn or burning. A kingdom may keep a second crown or relic in a store, but nobody can wear it while that place is taken.
+- **When a kingdom falls** (its king dies or its throne empties, `05-systems.md` §2), its Sellsword, Idol and Wildfire go loose (§15.9), a sworn Oathsworn's oath ends and frees its place (one already burning burns out its day), and its Bastion holds out alone (§15.10).
+- **News:** every king hears when a Calamity rises, breaks loose, falls or dies, and the Chronicle records it (E1 and E5 of the catalogue).
 
 ### 15.6 What one can do
 
-- **Level mountains.** A Cataclysm removes up to 32 m of terrain around its point every ten minutes, and Sunder breaks whatever the Calamity strikes.
+- **Level mountains.** A Cataclysm removes up to 32 m of terrain around its point every ten minutes, a Duelist's Severance cuts a line 800 m long through a mountain's flank, and Sunder breaks whatever the Calamity strikes.
 - **Break a small kingdom.** After Overmatch and armour, a Proven soldier's hit does about 2 damage to it. It kills nearly one such soldier a second with plain blows, and a Cataclysm flattens a settlement's heart (48 m) at once. Its Flame decides how long it can keep that up away from home.
-- **Solo an easier Warden.** Sunder doubles its damage to Wardens and ignores half their armour, about 950 damage a second, and each Cataclysm adds 400,000: about three quarters of an hour against a Tier I Warden (4 million Health), if the player dodges the telegraphed heavy hits. Every hit it takes burns Flame, and Flame is offerings.
-- **Hold a kingdom alone.** At home, a Kindled Calamity's Flame refills at up to 300 a second, a point of offerings for each point of Flame, for as long as the stores last: a Tempered company can't outpace it, but the stores can run dry, and fifty Elite archers can.
+- **Solo an easier Warden.** Sunder doubles its damage to Wardens and ignores half their armour, about 950 damage a second, and each Cataclysm adds 400,000: about three quarters of an hour against a Tier I Warden (4 million Health), if the player dodges the telegraphed heavy hits. Every hit it takes burns Flame, and Flame is upkeep.
+- **Hold a kingdom alone.** At home, an Idol's Flame refills at up to 300 a second, a point of offerings for each point of Flame, for as long as the stores last: a Tempered company can't outpace it, but the stores can run dry, and fifty Elite archers can. A Bastion holds its stronghold and everything within 1 km of it (§15.10).
 
 ### 15.7 How to answer one
 
-Starve it: raid the shrines and the offerings, and the Hearth gutters. Make it fight far from its coverage, where its Flame doesn't refill. Bring siege engines and Champions, which Overmatch barely touches; bring your own Calamity. Let an Oathbound's day run out. Dread doesn't work on Elites, so an Elite core holds where levies flee. And it is one body: it can only be in one place.
+By its nature: outbid a Sellsword, steal an Idol's faithful, keep a Wildfire busy far from its king until it breaks loose on its own people, let an Oathsworn's day run out, and break a Bastion only with everything you have. Starve any of them: raid the treasury, the shrines and the offerings, and they gutter. Make them fight far from their coverage, where their Flame doesn't refill. Bring siege engines and Champions, which Overmatch barely touches; bring your own Calamity, or an ally's. Dread doesn't work on Elites, so an Elite core holds where levies flee. And each is one body: it can only be in one place.
+
+### 15.8 Hold
+
+Every Calamity has a **Hold** from 0 to 100 (`person.hold`): how firmly it answers to its king. Ordinary people sit well above the loyalty at which they simply obey (`05-systems.md` §8); a Calamity doesn't.
+
+- **A new Calamity starts at Hold 40;** a Bastion and the Oathsworn start at 100.
+- **Stages:**
+
+| Hold | Stage | It |
+|---|---|---|
+| 60–100 | obeys | takes every order, within its nature's limits (a Wildfire's grip, a Bastion's domain) |
+| 30–59 | **wilful** | takes only orders that serve what it wants (below), and between orders follows its want |
+| 1–29 | **restless** | ignores orders and follows its want within 2 km of its home; it can't be possessed |
+| 0 | **loose** | leaves its kingdom (§15.9) |
+
+- **Each in-game day** *(tune)*:
+
+| Nature | Hold rises | Hold falls |
+|---|---|---|
+| Sellsword | 5 a day its wage is paid in full | 20 a day it isn't (a lowered wage counts as unpaid, §15.3); 5 a day for each 1,000 Marks the best standing offer beats its wage, 15 a day at most from offers |
+| Idol | 5 a day with 300 or more faithful and the upkeep paid | 5 a day for each 50 faithful short of 300; 10 at once for each shrine lost or desecrated |
+| Wildfire | 6 for a day it dealt 5,000 damage or more to the Deep's creatures or to other kingdoms' people of Proven grade or higher; 6 for a day the king spent at least six in-game hours within 32 m of it, more than 2 km from the capital's hall | 8 every day |
+| Bastion | back to 100 at the first dawn its stronghold has its garrison and upkeep again | 25 a day while its stronghold is short of its garrison or its upkeep |
+| Oathsworn | stays at 100 | never |
+
+- **What it wants,** when wilful or restless: a Sellsword stays inside your connected coverage, where it is paid, and sits at the capital when restless; an Idol stays within 2 km of its shrines and the Great Hearth, and preaches at them when restless; a Wildfire goes looking for a fight, of any kingdom's foes, within 2 km of its home when restless (its home is the house it lives in, or else its capital's keep); a Bastion guards its domain.
+- **Guttering** costs 20 a day (§15.4) on top of the table, except for a Sellsword, whose unpaid row already counts it.
+- **Playing one:** an obedient or wilful Calamity can be possessed, a restless one refuses (`note.possess.restless`), and a Wildfire needs its king within 64 m (§15.3). A wilful one, played or ordered, goes only where its want allows and stops at the edge; an order it refuses shows `note.order.wilful`.
+
+### 15.9 Rogues
+
+A Calamity whose Hold reaches 0 breaks loose. It leaves its kingdom with its gear, its Flame and its Cataclysm, and becomes a **rogue**: a neutral force that answers to nobody, shown live on every king's map, with news to every king (`news.rogue`).
+
+- **Its fire feeds on havoc,** or a rogue Idol's on its cult (§15.2). It never gutters, and Hold no longer applies.
+- **By nature:**
+  - **A rogue Sellsword** becomes a warlord for hire. It camps in the wild, raids caravans and outposts for coin, and serves again the first king whose standing offer is at least its old wage and who has room for it (§15.5). It starts again at Hold 40.
+  - **A rogue Idol** founds a cult: a neutral camp near its old shrines. Each in-game day, each person of any kingdom living within 2 km whose loyalty is under 40 has a 10% chance of leaving for it *(tune)* (`news.left`), and the cult's offerings feed it. It defends its camp; when it dies, the cult scatters.
+  - **A rogue Wildfire** goes from settlement to settlement, the nearest it hasn't struck yet, of any kingdom, its old home included, staying until it has broken the place's heart (its hall or keep) or been driven off (its Flame under half). Any Calamity, general or army of 100 or more within 512 m draws it aside, so it can be lured.
+- **Killing a rogue** is shared as a Warden's kill is (`05-systems.md` §18): credit by contribution, and score (`05-systems.md` §20). Only damage dealt after it broke loose counts, and the kingdom it broke from, and that kingdom's allies, get no credit or score for it. Its crown, relic and gear drop where it dies.
+- The Bastion and the Oathsworn never go rogue. A Bastion whose king dies holds its stronghold for nobody, as a neutral fortress, until it is killed or falls (§15.10).
+
+### 15.10 Bastions
+
+A Bastion isn't aggressive. It has no Sunder, its own blows are a Paragon's (grade 6 in §5.1 and §9.1), and its presence is Calm. What it has is a **domain**: everything within 1,024 m of its stronghold. It never leaves the domain: it refuses orders to, and walks back if it is carried out. While it lives and stands in its domain:
+
+- your people and your allies' people there take 20% less damage (§17.2 caps the sum)
+- walls and buildings there take half the siege damage, and repair twice as fast for half the materials
+- your Downed there don't die when their time runs out: they stay down until dawn and then rise **Wounded** (a finishing blow still kills them)
+- **the king can't die there:** while the Bastion has Flame, a hit or a finishing blow that would kill the king strikes its Flame instead, and a Downed king's time doesn't run out
+- your people within 32 m of the king anywhere in the domain are **Fortified**
+- hazard exposure there is halved (§6)
+- **Sanctuary,** its Cataclysm (`14-class-library.md` §3.5): for a minute nobody in the domain can harm anyone, while your side heals and repairs
+
+So a kingdom with a Bastion bounces back from a lost war, and the only road to its king runs through the Bastion. If its king dies, the kingdom falls as `05-systems.md` §2 says, but the Bastion stays: it holds its stronghold for nobody, as a neutral fortress whose Flame feeds on the stronghold's stores until they run out, and Hold no longer applies. Then it gutters, falls after three days as §15.4 says, and the stronghold is anyone's.
 
 ---
 
@@ -754,7 +842,7 @@ The Deep's soldiers use the same rules as people (§5), without Downed. Their gr
 | V | 156,000,000 | 180 | 3,460 | 960 |
 | The King Below | 390,000,000 | 200 | 4,840 | 1,340 |
 
-- A **heavy hit** strikes one target about every 6 s, telegraphed for at least 1 s, and is **crushing** (§5.5). A **wave** strikes an area about every 15 s, telegraphed for at least 1.5 s. Each Warden's kit (`02-world.md` §7, `05-systems.md` §18) shapes these into its own attacks.
+- A **heavy hit** strikes one target about every 6 s, telegraphed for at least 1 s, and is **crushing** (§5.5). A **wave** strikes an area about every 15 s, telegraphed for at least 1.5 s. Both land where they were aimed when the wind-up began: a heavy hit on a 2 m circle round where its target stood, a wave on its own shape. Stepping out in time dodges them (`18-look-and-feel.md` §8.2). Each Warden's kit (`02-world.md` §7, `05-systems.md` §18) shapes these into its own attacks.
 - Wardens ignore Overmatch and get none. They can't be Stunned, Rooted, Frozen, Feared or Taunted; Slowed and Chilled hold them for a quarter of their time; effects that take a share of max Health don't work on them. A Fortress Warden takes 90% less from everything but siege. Wardens can't be **Staggered** except by a parry, and generals hold it a quarter as long (§6).
 - The Tier I figure is the design target of `05-systems.md` §18: 200 Proven soldiers, a third of them striking at any moment, through 100 armour, for 20 minutes.
 
@@ -792,11 +880,11 @@ The Deep's soldiers use the same rules as people (§5), without Downed. Their gr
 
 ## 18. Off screen
 
-Most people, most of the time, are in the ledger (`05-systems.md` §22). Its version of these rules must agree with the one above on average:
+Most people, most of the time, are in the tally (`05-systems.md` §22). Its version of these rules must agree with the one above on average:
 
 - **Work:** each class's Knack applies always; each Active adds its average uplift (its effect × its time ÷ (its time + its cooldown)), computed from the library when the content is built. Ultimates count only where the policy lets them autocast.
 - **Learning:** experience, proficiency and Resolve come at the work rates, without played bonuses.
-- **Battles:** each unit brings its effective Health and damage a second, with Overmatch applied against the other side's most common grade and skills counted at their average uplift, into the regiment model of `07-architecture.md` §9.
+- **Battles:** each unit brings its effective Health and damage a second, with Overmatch applied against the other side's most common grade and skills counted at their average uplift, into the regiment model of `17-simulation-and-bots.md` §2.2.
 - **The Downed:** after a battle off screen, 30% of the fallen on the side that holds the field rise Wounded; the rest die, or are taken captive by another king's people.
 
 ---
@@ -823,7 +911,7 @@ Most people, most of the time, are in the ledger (`05-systems.md` §22). Its ver
 | M4 | fighting (§5), the other conditions, Downed and Wounded; Overmatch; the classes marked M4, roles, and ranks up to Captain; Champions, Trials and the civilian Masteries; the first relic slot and the relics of the Wardens that ship then; foes' sight, awareness and hiding (`16-sight.md` §10). Until Milestone 6 a bound relic gives its powers but no promotion |
 | M5 | advanced classes, their Arts and Masteries; Commanders and Marshals; the Envoy and the Spymaster; balance for war between kings |
 | M6 | Mana and the mage classes; runes; Paragons, the second relic slot, the Marrow Rite and the relics of the Wardens that ship then; the Magister |
-| M7 | Calamities: the four paths, the Great Hearth, the Broken Crown, the remaining relics and Cataclysms |
+| M7 | Calamities: the five natures, Hold, rogues and the Bastion's domain; the Great Hearth, the Broken Crown, the remaining relics and Cataclysms |
 
 Each class, skill and item row carries its own **Since**; the content checker's `--upto` counts what a phase must hold.
 

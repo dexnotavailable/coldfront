@@ -115,6 +115,7 @@ These are settled. Don't re-open them without the owner. Unmarked items are the 
   - he can't be controlled
   - he helps: the AI routes him to housekeeping and other useful work suited to his stats
   - he never fights and is never attacked
+- **The world does the early killing** (8 October 2026). A first-time king should mostly fall to the world (winter, hunger, beasts, the Deep, disasters), not to veterans. How: `05-systems.md` §2 and §16.
 
 ### Command and possession
 - Two modes, **Command** (top-down macro) and **Possess** (be any of your units) (default).
@@ -124,6 +125,7 @@ These are settled. Don't re-open them without the owner. Unmarked items are the 
 - **Every unit is a Minecraft-player equivalent** (break blocks, inventory, HP), run by the game's AI in an optimised way. AI and possession drive the same controller, physics and actions (default design, `05-systems.md` §3).
 - An officer is a unit with a **command radius**. Possess a Captain and you lead his company directly (default).
 - **Classes, skills and a power ladder** (8 October 2026). Every unit has a class and skills: an Active early, an Ultimate once it has met a gameplay requirement. Most skills are weak and useful (information, highlighting, help with the job); the strongest are outright broken, and only at the endgame. Players play, level and min-max many units. Military units have a class, a role (Assault, Guard, Support, Secondary) and a rank; civilians climb trade ranks; the government has a ladder of offices. The ladder is linear in power and extremely hard to climb. Its top, the **Calamity**, can level mountains, break a small kingdom, solo an easier Warden or hold a kingdom alone, and is costly to keep: worshippers burning offerings, hearths built to uphold it, or a soldier sworn to die. Like kings, Calamities are not to be spent recklessly. For now every person looks like a Minecraft avatar. (`13-units-classes-power.md`, `14-class-library.md`, `15-item-library.md`.)
+- **Calamities are forces you try to hold** (8 October 2026). Some come only through enormous sums of money, some demand a following, some are uncontrollable, and some are fiercely loyal and protective. An ordinary person's loyalty is high enough that control is a given, but it plummets when they become a Calamity: keeping your grip on one is another dimension of ruling, and strong rivals will try to take yours. A kingdom can raise a soldier likely to go rogue and roam the lands causing havoc. The protective ones are the staples that keep big kingdoms alive: not aggressive, but they make strongholds that bounce back from a war, and their kits cover whole areas and strengthen allies near the king. They are like nuclear weapons: several kingdoms have one, yet economy, trade and alliances still rule, and that strength is only put to the test when a kingdom has no allies to protect it or to protect. Fewer than ten in the world, usually about five (`13-units-classes-power.md` §15).
 - The **network** (watchtowers, signal towers, mana relays) defines where your people's sight reaches you live, and where you command and possess. Coverage must be **connected** to your capital. Capturing relays flips land, and cutting a relay cuts off everyone beyond it (default).
 - **News travels physically:** riders early, signal towers later, mana relays late (default). Automated responses wait for the news, so human-led raids that run down messengers beat the AI's reactions.
 
@@ -167,6 +169,7 @@ These are settled. Don't re-open them without the owner. Unmarked items are the 
 - **Regen varies:** none, slow and natural, absorbing fallen soldiers, fed by structures or resources. The demon king combines the most annoying, hardest-to-stop kinds. He also regenerates for every Warden still alive (default).
 - **Enemies spread by time and your activity.** A wandering scout sees your base and walks home to report, and then an army comes. An army that takes a settlement keeps it. Otherwise enemies expand slowly and roam.
 - **Dead bosses stay dead** until the reset. Their minions stop spawning, and they drop strong items and artifacts.
+- **Presence** (8 October 2026). Bosses and other great powers are felt before they are seen: the wind shifts, the weather and the light change, a hostile one brings a sudden hue and a deep bass, some bring a protective calm that feels almost too surreal, and some bring only silence, and then a mountain is gone (`16-sight.md` §11).
 
 ### Seasons
 - The content is finite: about 6 months for ~100 players. Then the server resets, and players earn tags and rewards for bosses, achievements and land.
@@ -188,6 +191,8 @@ These are settled. Don't re-open them without the owner. Unmarked items are the 
 - **Stack** (TypeScript, Three.js, shared browser/server code, Rust/WASM only if needed) (default). A licence-checked audit of open-source prior art confirmed it and adjusted details (`10-prior-art.md`, `07-architecture.md`).
 - **The owner builds with coding agents:** OpenAI's Codex from October 2026, after starting the docs with Claude Code. Both read the same guide, `AGENTS.md`, so either can pick the work up (`12-sessions.md`).
 - **Names are diverse:** Japanese/anime-styled names (regions, characters, bosses) alongside the European fantasy names, drawn from the world's three tongues (`03-lore.md` §8 and §12). Code uses stable IDs, so names can change freely.
+- **Light to simulate** (8 October 2026). Optimised on every front: whatever nobody is watching runs as code, probability and calculation, so hundreds of thousands of people and more stay cheap, and things happen while you're away. A rendering hiccup can be forgiven; a slow simulation can't (`17-simulation-and-bots.md`).
+- **Tools to build it alone** (8 October 2026). The owner can't playtest alone, so builds can speed the world up, skip ahead in a way that looks natural, and cheat for testing. **Bot kings** make the choices a player would, like a chess engine: an authored "expand your empire 101" book, and choices driven by the numbers (which resource matters most, which Warden to go for, where to expand). They serve development and playtests first, and may later fill a server short of players (`17-simulation-and-bots.md`).
 
 ---
 
@@ -198,17 +203,24 @@ These are settled. Don't re-open them without the owner. Unmarked items are the 
 | **Kaldmark** | The world: a vast basin ringed by ice, draining toward the Nadir |
 | **King** | A player's avatar and life. Dies → the kingdom collapses |
 | **The Steward** | The mysterious tutorial guide every king gets. Can't be controlled; never fights |
+| **The Steward's peace** | A new king's first three real days, when other kingdoms can't harm it (`05-systems.md` §2) |
 | **Command view / Possess** | The two play modes |
 | **The cut** | Command view's way of seeing underground: a level slice that hides everything above it (`11-interface-catalogue.md` C2) |
 | **The catalogue** | `11-interface-catalogue.md`: the complete list of what the interface contains. If it isn't there, it isn't in the game |
 | **Network** | Watchtowers, signal towers and mana relays. Its *connected* coverage is where your people's sight reaches you live, and where you command and possess |
 | **News** | Any report or order; it travels physically through the network or by rider |
+| **Ledger** | The in-game book of what your kingdom has learned about the world |
+| **Tally** | The simulation of everyone nobody is watching: settlements as numbers, rates and dice (`17-simulation-and-bots.md` §2) |
+| **Bot king** | A kingdom the game plays, by a player's rules, marked as a bot (`17-simulation-and-bots.md` §6) |
 | **Reeve · Quartermaster · Captain · Marshal · Magister · Treasurer · Envoy** | Officials: town · supply · company · army · mana and mages · coin · trade and diplomacy. The full ladder of offices and posts is in `13-units-classes-power.md` §13 |
 | **Class · Role · Rank · Grade** | A person's trade · a soldier's place in a fight · a step on a ladder of command, trade or office · a step on the power ladder, from Common to Calamity (`13-units-classes-power.md`) |
 | **Skill** | A power on a slot: Knack, Active, Ultimate, Art, Mastery, a relic's, or a Cataclysm (`14-class-library.md`) |
-| **Calamity** | The top grade: one person who can break a small kingdom, kept alive by costly upkeep |
+| **Calamity** | The top grade: one person who can break a small kingdom, and a force its king tries to hold. Five natures: Sellsword, Idol, Wildfire, Bastion and Oathsworn. Usually about five in the world, never more than nine (`13-units-classes-power.md` §15) |
+| **Hold · Rogue** | How firmly a king holds a Calamity, 0–100 · a Calamity that broke loose at Hold 0 and roams as a threat to everyone |
 | **Overhead** | The camera for playing a unit: the Command camera locked on it, from above |
 | **Sight** | What a unit sees: a view cone with a range. You see only what your units see (`16-sight.md`) |
+| **Presence** | What a great power gives off: a change in wind, weather, light and sound, or a silence (`16-sight.md` §11) |
+| **Telegraph** | How a coming blow shows itself: the attacker's wind-up pose, and its shape filling on the ground (`18-look-and-feel.md` §8.2) |
 | **Band** | The player's short list of people to switch between while playing |
 | **Warden** | A region boss (29 of them) |
 | **Seat** | A Warden's arena and fortress at the desolate heart of its region |

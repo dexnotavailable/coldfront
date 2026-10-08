@@ -118,12 +118,15 @@ Implement as CSS custom properties in one file (`packages/client/src/ui/tokens.c
   /* shadow and motion */
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   --t-press: 60ms; --t-quick: 100ms; --t-drawer: 200ms; --t-fade: 300ms; --t-tip-delay: 300ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);   /* what appears or answers */
+  --ease-in: cubic-bezier(0.64, 0, 0.78, 0);    /* what you dismiss */
+  --ease-move: cubic-bezier(0.65, 0, 0.35, 1);  /* what goes from place to place */
 }
 ```
 
 - **Type.** Inter (400/500/600) for all UI text, with tabular numbers (`font-variant-numeric: tabular-nums`). `--fs-14` is the body size; nothing on screen is smaller than `--fs-12`. Cormorant SC (600) only for display moments: the game's name on the title screen, region names on discovery cards, Warden cards, and the lines that head the death, eliminated and Frost screens. Noto Serif JP (500) only for the kanji on the two cards; its `@fontsource` package is split into small subsets, so the browser loads only the few glyphs used. Self-host all fonts through `@fontsource` npm packages; no external font requests.
 - **Icons.** Lucide (1.5 px stroke, 18 px). Custom glyphs (resources, coins, badges, crests) are drawn in the same monoline style on a 20 px grid, generated as SVG in code.
-- **Motion.** Ease-out, no bounce. Respect `prefers-reduced-motion` and the Motion setting.
+- **Motion.** Three curves, shared with the world (`18-look-and-feel.md` §3; the cameras' timed moves use a gentler fourth): `--ease-out` for what appears or answers, `--ease-in` for what you dismiss, `--ease-move` for what goes from place to place. No overshoot, no bounce. Every animation the interface has is listed in `11-interface-catalogue.md` A4. Respect `prefers-reduced-motion` and the Motion setting.
 - **Panels.** `--panel` fill, `--r-panel` corners, a `--line` hairline, `--shadow`. No blur behind panels: on top of a 3D scene it costs frames, and it reads as decoration. The panels are nearly opaque instead, so text stays legible over any terrain.
 - **Interface size.** The whole interface scales by one factor (80–150%, `set.ui.scale`), and every size token scales with it.
 
@@ -169,6 +172,8 @@ Even this small UI goes through the catalogue's pipeline (string table, lint, ga
 
 ## 9. Art direction
 
+This section is the still picture. How it moves and lives (the camera's feel, rendering and shaders, wind and weather, animation, effects) is `18-look-and-feel.md`.
+
 **Voxels.** 1 m blocks, 16 × 16 procedural textures, clean silhouettes. The beauty comes from **light, atmosphere and composition**, not texture noise.
 
 **Palette.** The baseline is cool and muted: slate, iron, frost, pine, with lamp-gold highlights. Each region has a dominant colour and an accent. The fantasy regions break the palette on purpose.
@@ -202,6 +207,8 @@ Keep contrast *low inside* a texture, so big surfaces don't look noisy, and put 
 
 **Sight** (from Milestone 2, `16-sight.md` §5). Land that none of your people see now is drawn a fifth darker, never more: the world stays readable. Underground that your people know is survey-lit under the cut, so tunnels and caverns read clearly; underground they have never seen is total darkness.
 
+**Presence** (Wardens and generals from Milestone 4, Calamities from Milestone 7; `16-sight.md` §11). A great power changes the world around it: wind, weather, the colour of the light, fog and sound, or a silence. Each signature is a fixed set of sky, light and fog values blended in by distance; the camera never shakes and nothing flashes.
+
 **People (the avatar from phase 1.1).**
 - Blocky figures with a Minecraft avatar's proportions, 1.8 m tall, generated in code with simple rigid-part animation (`13-units-classes-power.md` §3.2). This is the owner's look for now.
 - Classes read by clothing colour and the tool in hand; worn armour shows as a layer by material.
@@ -223,3 +230,4 @@ Keep contrast *low inside* a texture, so big surfaces don't look noisy, and put 
 - An ambient bed per region (wind, fen insects, cracking ice, lava hiss, crystal hum, Tasogare's silence).
 - Minimal UI sounds: soft ticks, one distinct critical-alert tone.
 - A restrained score: low strings, bowed metal, distant choir in the deep layers. Each Warden has a motif. The Frost has a theme.
+- **Presence** (`16-sight.md` §11.2): under Dread the background dies away and a low bass swells; Calm hushes to one long held note; a Storm is its weather, loud; Hunger is a low, dry crackle; Silence fades every sound to nothing.

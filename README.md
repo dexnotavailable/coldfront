@@ -15,6 +15,8 @@ This repository starts as **design docs only**. AI coding sessions build the gam
 | `docs/13-units-classes-power.md` | **People's rulebook.** How you play a unit (always from above), how people fight, learn and grow, and the power ladder up to the Calamity |
 | `docs/14-class-library.md` · `docs/15-item-library.md` | Every class and skill, and every item, as tables the game is built from |
 | `docs/16-sight.md` | **Sight.** What every unit can see, why you only see what your units see, how unseen land and the underground look, hiding and watchtowers, and how enemies notice and remember you |
+| `docs/17-simulation-and-bots.md` | **Keeping the world light, and testing it alone.** How hundreds of thousands of people stay cheap to simulate, your tools to speed the world up, skip ahead and cheat, whole-season runs, and bot kings that play like players |
+| `docs/18-look-and-feel.md` | **How it looks and moves.** The camera's feel, light and shaders, wind and weather, animation, effects, and the interface's motion |
 | `docs/tools/ui-catalogue.mjs` · `docs/tools/content-check.mjs` | Small checkers for the catalogue and for the class and item libraries: they fail if a name is too long, a skill breaks its budget, a recipe uses an item that doesn't exist, and so on |
 | `docs/progress.md` | The live progress log. Read this after each session. |
 | `docs/diagrams/` | The world map and funnel diagrams (and the script that draws them) |
@@ -212,6 +214,9 @@ The session can run for a long time. **You can close the tab**; it keeps working
 | Overhead | How you see the person you play: from above, the camera following them (the wheel zooms, the arrow keys turn and tilt) |
 | Sight | What a unit can see: a cone in front of it, farther by day and from higher up. You only see what your units see |
 | Band | Your short list of people to switch between while playing (`,` and `.`) |
+| Calamity | The strongest kind of person: one can break a small kingdom, and holding on to one is hard. Five kinds: Sellsword, Idol, Wildfire, Bastion, Oathsworn |
+| Bot king | A kingdom the game plays by the same rules as a player, marked "Bot". For testing first |
+| World speed · Skip ahead | Your tools (Tools panel) to run the world faster, or jump an hour, a day or a week ahead |
 | Reasoning effort | How long the model thinks before it acts. Higher is slower and uses more of your plan |
 | Ultracode | A Claude Code setting (on in this repo) that makes the agent plan "workflows": many helper agents working in parallel. Stronger, and it uses your usage limit faster. `/effort ultracode off` turns it off for one session |
 | Goal | A finish line you set with `/goal`; the session keeps working until it's met |

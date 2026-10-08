@@ -31,6 +31,8 @@ export const PHASES = ['1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '
 const FAMILIES = ['Field', 'Wild', 'Earth', 'Wood', 'Fire', 'Stone', 'Thread', 'Table', 'Road', 'Mind', 'Hall'];
 const ATTRIBUTES = ['Strength', 'Agility', 'Endurance', 'Intellect', 'Will', 'Affinity'];
 const SLOTS = ['Knack', 'Active', 'Ultimate', 'Art', 'Mastery', 'Cataclysm', 'Office'];
+// A Calamity's nature (13 §15.3); a Cataclysm row may name one in its For column.
+const NATURES = ['Sellsword', 'Idol', 'Wildfire', 'Bastion', 'Oathsworn'];
 const RESOLVE = ['Work', 'Fight', 'Aid'];
 const HEALTH = ['2', '3', '4', '6', '8'];
 const OFFICES = [
@@ -266,7 +268,7 @@ function main() {
     if (c.ready !== '600 s') bad(c, 'a Cataclysm is ready every 600 s (13 §11.10)');
     if (!/flame/i.test(c.cost)) bad(c, 'a Cataclysm costs Flame');
     for (const who of c.for.split(/,\s*/)) {
-      const ok = FAMILIES.includes(who.replace(/ family$/, '')) || classById.has(unbacktick(who)) || classes.some((k) => k.class === who) || advanced.some((k) => k.class === who);
+      const ok = NATURES.includes(who) || FAMILIES.includes(who.replace(/ family$/, '')) || classById.has(unbacktick(who)) || classes.some((k) => k.class === who) || advanced.some((k) => k.class === who);
       if (!ok) bad(c, `"${who}" in For is neither a family nor a class`);
     }
   }

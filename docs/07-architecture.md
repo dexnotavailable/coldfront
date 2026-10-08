@@ -60,18 +60,21 @@ Nothing loads from a CDN at runtime. Every dependency comes from npm and is bund
 │  │  ├─ src/third_party/ ported MPL files, kept separate with their licence headers (e.g. the erosion filter)
 │  │  ├─ src/physics/   (M2) the prismarine-physics port and the shared action API
 │  │  ├─ src/sight/     (M2) view cones, ranges, lines of sight and awareness (`16-sight.md`)
+│  │  ├─ src/tally/     (M3) the simulation of everyone nobody watches: rates, an event queue, seeded dice (`17-simulation-and-bots.md` §2)
+│  │  ├─ src/bots/      (M4) bot kings: book, evaluation, look-ahead (`17-simulation-and-bots.md` §6)
 │  │  ├─ src/worldgen/  plan/ columns/ density/ features/ carvers/ fluids/ materials/ decoration/
 │  │  │                 regions/<regionId>.ts (one recipe per region), pipeline.ts, version.ts
 │  │  ├─ src/blocks/    registry.ts, textures/recipes.ts
 │  │  └─ test/          unit tests, golden/worldgen.json, forbidden-tokens.test.ts
 │  ├─ client/           the game (Vite)
-│  │  ├─ src/engine/    renderer, chunk store, streaming, lod (3D chunk grid + column-tile quadtree), workers (gen, light, mesh), sky, water, post
-│  │  ├─ src/game/      player controller, physics, input (bindings, fullscreen, keyboard lock), cameras (command, Overhead, free) and the cut, the darkening of unseen land (M2), edits persistence
+│  │  ├─ src/engine/    renderer, chunk store, streaming, lod (3D chunk grid + column-tile quadtree), workers (gen, light, mesh), sky, water, post,
+│  │  │                 wind, weather and particles, motion.ts (the curves and the one clock, `18-look-and-feel.md` §3)
+│  │  ├─ src/game/      player controller, physics, input (bindings, fullscreen, keyboard lock), cameras (command, Overhead, free) and the cut, the darkening of unseen land (M2), the avatar's rig and animation, edits persistence
 │  │  ├─ src/ui/        tokens.css, components/ (one file per catalogue component), screens/, hud/, gallery/,
 │  │  │                 strings.gen.json (generated from the catalogue; never edited by hand), t.ts, phase.ts (UI_PHASE)
 │  │  ├─ src/dev/       the logic behind the owner tools: teleports, view modes, postcard mode, lil-gui (?dev). Their screens live in src/ui like any other
 │  │  └─ public/_headers
-│  ├─ tools/            atlas, slice, postcards (+ cameras/), terrain-report, bench, golden, ui-strings, ui-lint, ui-shots
+│  ├─ tools/            atlas, slice, postcards (+ cameras/), terrain-report, bench, golden, ui-strings, ui-lint, ui-shots; later bench-sim (M3) and season (M5, `17-simulation-and-bots.md` §5)
 │  └─ server/           (M5+)
 └─ out/                 generated scratch output (gitignored)
 ```
@@ -125,6 +128,7 @@ These apply to anything whose output must match across machines: world generatio
 - Stored sparsely per chunk: voxel index → block ID (plus metadata later).
 - A chunk = base generation + edits.
 - An edit on a chunk border also refreshes the neighbour's halo and mesh.
+- **Shape edits (M7).** A Cataclysm that removes terrain (the Mountain-breaker's 32 m crater, Severance's 800 m cut; `14-class-library.md` §3.5) is stored as one shape and a sequence number, not as a diff for every block it removes. A chunk applies its edits in sequence, so a block placed after the cut survives. A cut is a few bytes on disk and on the wire.
 - M1 keeps edits per seed in IndexedDB; M5 moves them to the server database.
 
 ### Entities (M2+)
@@ -240,13 +244,13 @@ Atlas, slice and the report may use `worker_threads` for speed. Postcards must w
 **Authoritative simulation**
 - **Physics at a fixed 20 Hz** (two steps per simulation tick): every Minecraft movement constant is per 50 ms step, so slower physics would make units move at half speed and jump wrong.
 - **AI, jobs and snapshots at 10 Hz.**
-- **Simulation tiers T0–T3** (`05-systems.md` §22): possessed, near a camera, loaded but unwatched, ledger.
+- **Simulation tiers T0–T3** (`05-systems.md` §22): possessed, near a camera, loaded but unwatched, tally. The tally exists from Milestone 3, in the solo worker, and moves to the server here unchanged (`17-simulation-and-bots.md` §2).
 - **Systems** (ECS): movement and pathing, jobs and tasks, needs, production, logistics, combat, morale, loyalty, network connectivity and news, sight and awareness (`16-sight.md`), enemy AI, Wardens, hazards, decay.
 
 **Space and attention**
 - The world is divided into 256 m **sectors**, with vertical bands (the world goes 1.5 km deep) and hysteresis at sector edges.
-- A sector is **active** when a player's camera or possessed unit is near it. In an active sector, units within ~64–128 m of a camera run at T1 and the rest at T2 (`05-systems.md` §22). Every other sector runs at **T3, the ledger** (aggregates). Battles in ledger sectors resolve with the regiment-level combat model; a camera arriving mid-battle hydrates it.
-- Every system provides `hydrate` and `dehydrate` functions. Invariant tests check that ledger and agent simulations agree on average (production rates, consumption, loyalty drift) within tolerance, and **round-trip tests** prove that hydrating and dehydrating never duplicates or loses an item, a person or a hit point.
+- A sector is **active** when a player's camera or possessed unit is near it. In an active sector, units within ~64–128 m of a camera run at T1 and the rest at T2 (`05-systems.md` §22). Every other sector runs at **T3, the tally** (aggregates). Battles in tally sectors resolve with the regiment model (`17-simulation-and-bots.md` §2.2); a camera arriving mid-battle hydrates it.
+- Every system provides `hydrate` and `dehydrate` functions. Invariant tests check that tally and agent simulations agree on average (production rates, consumption, loyalty drift) within tolerance, and **round-trip tests** prove that hydrating and dehydrating never duplicates or loses an item, a person or a hit point.
 
 **Pathfinding** (`10-prior-art.md` §3)
 - **Reachability first.** Walkable connected components per chunk section, linked across section faces, with a global component ID per cell: "can A reach B?" is one lookup. Rebuild only changed sections, lazily and in batches per tick.
@@ -302,7 +306,7 @@ Atlas, slice and the report may use `worker_threads` for speed. Postcards must w
 | Cameras and input | unit tests on the camera maths and one Playwright drive of the real page (`11-interface-catalogue.md` C7); binding-table tests (reserved keys refused, clashes reported) |
 | Smoke (Playwright, headless; `npm run test:browser`) | the client loads, generates, walks, breaks and places, teleports from the map, with no console errors and `crossOriginIsolated` true |
 | Performance | `bench:gen` numbers against budgets (warn, don't fail, in M1) |
-| Later | simulation invariants (ledger vs agent), bot load tests, protocol fuzzing |
+| Later | simulation invariants (tally vs agent), bot load tests, protocol fuzzing |
 
 `npm test` runs unit, golden and forbidden-token tests. `npm run check` runs types, Biome and `ui:lint`. Both must pass before every push.
 

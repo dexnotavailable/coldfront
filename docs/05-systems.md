@@ -25,11 +25,16 @@ Milestones 2–8 build these systems. Milestone 1 builds none of them, but its a
   - never starts fights
 
   The officials keep the kingdom running. The king can still die.
-- **King death:**
+- **King death, or an empty throne** (below):
   1. The life is lost.
   2. The kingdom collapses. Over the next in-game day, everyone leaves their jobs and becomes a wanderer, drifting toward whichever nearby kingdom attracts them, or forming neutral camps.
   3. Buildings become neutral (ownerless, decaying). Stockpiles and coin stay where they are, free to loot.
   4. If lives remain, the player picks a spawn site from offered candidates (outer ring, far from networks, `02-world.md` §8). They start again with 20 people, the Steward and a starting kit.
+- **The world does the early killing** (the owner's rule, 8 October 2026). A first-time king should fall to the cold, the Deep and the land, and learn from it, not be farmed by veterans:
+  - **The Steward's peace.** For the first 3 real days after a king settles (72 in-game days), other kingdoms can't touch it: their people can't harm its people, damage or take its buildings and nodes, sway its people or loot its stores, and inside its coverage their presence, Cataclysms and fires do nothing and they can't build. Rogue Calamities and cults leave it alone too. It works both ways: while it lasts, its people can't do any of this to others, and ordering any of it ends the peace at once. Every new king gets it, a re-summoned one too. The Deep, beasts, hazards and disasters ignore it. The top bar shows it while it lasts (`top.peace`).
+  - **The empty throne.** A kingdom whose people (the king and the Steward not counted) stay under 5 for a whole in-game day has fallen, even if the king lives: the life is lost as at a king's death, and the king walks away toward the Rim. The news warns when they fall under 10 (`news.dwindling`). Starving through a first winter, a plague or a war party that wipes out a village can end a kingdom this way.
+  - **Threats are fair.** Every early killer warns before it lands: the first winter (the Steward's line, and the calendar on the top bar), the first war party (a scout comes first, then the march is seen, §17), a region's hazard (exposure builds on the screen before it hurts, §16), and world events (omens first, §16).
+  - **Target** *(tune)*: a careless first king falls within 2–4 real days; a careful one sees its first winter through. Whole-season runs measure it (`17-simulation-and-bots.md`).
 - **Lives:** 3 per account per season. Later: 1 free + up to 2 paid (~$5 each), capped at 3.
 - **Out of lives** means eliminated. An eliminated player can accept an invitation from a living king to join their kingdom as **one sworn unit**. The player possesses and controls only that unit, with no command powers, and the host can dismiss them. One invitation at a time.
 - **The Steward.** An NPC with his own stats and a mysterious aura. He can't be possessed or controlled, and he can't be targeted or harmed. He works through the normal job system (housekeeping and whatever useful work suits his stats) and never fights. He doesn't count toward population. When the king dies, he walks away toward the Rim.
@@ -385,7 +390,9 @@ These raise a target's attraction toward you. Once their own loyalty falls low e
   - **items** (spoilage, rust)
 - **Protection:** clothing (furs, fire cloaks), shelter (interiors with the right materials), wards, consumables (antidotes, torches).
 - **Depth:** darker (light needed), region-specific heat or cold, ascent effects (`02-world.md` §3). Raw-mana regions carry **Hollowing** risk without wards.
+- **Weather** (from Milestone 2). Every 3 in-game hours *(tune)* each region's weather is rolled from its odds for the time of year, by the season's seed, so every king has the same sky: clear, cloudy, rain, or snow in cold regions and in winter, over the standing air some regions always have (`16-sight.md` §3.2). The odds are content data (Kogane mostly clear, the Sallows mostly fog and rain, Shirogane mostly snow). Storms are rarer, and the dynamic events below are its extremes. What it does to sight is `16-sight.md` §3.2; how it looks is `18-look-and-feel.md` §5.4.
 - **Dynamic events** (later milestones): sandstorms, blizzards, mana storms, floods, avalanches, grass fires, and **Ibara eruptions**, where new thorns burst from the ground near heavy activity (a terrain edit that can destroy buildings).
+- **Omens.** Every event shows its signs at least 15 real minutes before it strikes: the sky, the ground, animals fleeing, and the news `news.omen` for the places your people can see. Nothing in the world kills without warning.
 
 ---
 
@@ -441,7 +448,7 @@ These raise a target's attraction toward you. Once their own loyalty falls low e
 
 ## 19. War between kings
 
-- **PvP everywhere, with no declaration needed.** The offline AI, the king's strength and far-away respawns are the protections.
+- **PvP everywhere, with no declaration needed.** The offline AI, the king's strength, far-away respawns and a new king's Steward's peace (§2) are the protections.
 - **Companies** (a Captain + 10–50 soldiers) form **armies** (a Marshal + companies).
   - Orders: move, attack, hold, patrol, escort, siege, garrison, retreat.
   - Light formations: line, column, loose.
@@ -466,6 +473,7 @@ These raise a target's attraction toward you. Once their own loyalty falls low e
 | First to reach Layer 1 / 2 / 3 / the Pit | 500 / 1,000 / 2,000 / 4,000 |
 | End state | land (km² of coverage), population, wealth (coin + goods at reference prices): each normalised to the server maximum, up to 1,000 each |
 | War | kingdom taken 500 · king killed 300 · major battle won (≥ 50 units a side) 50, capped |
+| A rogue Calamity slain | 1,000, shared by credit as a Warden's kill is; none to the kingdom it broke from or its allies (`13-units-classes-power.md` §15.9) |
 
 - **Leaderboards:** overall, Slayers, Realms (land + population), Wealth, Warlords.
 - **Achievements**, grouped:
@@ -503,8 +511,9 @@ These raise a target's attraction toward you. Once their own loyalty falls low e
 | T0 | possessed by a player | full physics every 50 ms, predicted on that player's client |
 | T1 | near a player's camera (roughly 64–128 m) | full physics every 50 ms; AI decisions 10 times a second |
 | T2 | loaded but unwatched | follows its path without collision checks; digging and building take the same timed durations; AI 1–2 times a second |
-| T3 | everywhere else (the ledger) | settlement-level production and consumption, loyalty drift, route flows and job progress, updated every 1–10 s. Unobserved battles resolve with regiment-level combat models |
+| T3 | everywhere else (the tally) | settlement-level production and consumption, loyalty drift, route flows and job progress, kept as rates and brought up to date only when something happens (`17-simulation-and-bots.md` §2.2). Unobserved battles resolve with the regiment model (`17-simulation-and-bots.md` §2.2) |
 
-- **Hydration:** when attention arrives, units are placed consistently with the ledger (near their workplace or home) and keep their identities. Items a unit carries leave the ledger's stock when it hydrates and return when it dehydrates; round-trip tests prove that no item, person or hit point is duplicated or lost. A unit's identity (home, job, family) persists through every tier. SimCity (2013) cut exactly this corner to gain speed, and players noticed.
+- **Hydration:** when attention arrives, units are placed consistently with the tally (near their workplace or home) and keep their identities. Items a unit carries leave the tally's stock when it hydrates and return when it dehydrates; round-trip tests prove that no item, person or hit point is duplicated or lost. A unit's identity (home, job, family) persists through every tier. SimCity (2013) cut exactly this corner to gain speed, and players noticed.
 - **Target** *(tune; benchmark before promising)*: tens of thousands of hydrated units server-wide, with a few thousand at T1 at once.
 - **Design consequence:** every system in this doc must have both a per-agent version and an aggregate version that agree on average. See `07-architecture.md` §9.
+- **The tally in full,** catching up while nobody plays, the owner's time controls and tools, and bot kings: `17-simulation-and-bots.md`.

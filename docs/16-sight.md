@@ -16,6 +16,7 @@ Every number is a starting value for playtests *(tune)* unless it is marked **fi
 6. **The land is always drawn,** slightly darker where none of your people see it now.
 7. **What is buried stays dark.** Ore and anything else inside the rock is hidden in total darkness. The underground stays good to look at and easy to work in.
 8. **Sight is worth building for:** watchtowers, vantage points, and troops placed where the terrain blocks the enemy's view.
+9. **Great powers have presence** (added later the same day). Bosses and other strong beings change the world around them: the wind shifts, the weather turns, the light changes hue, a bass swells when a hostile one stands close. Some bring a protective calm that feels almost too surreal. Some have no aura at all: everything goes silent, and then a mountain is gone (§11).
 
 ## 2. Words
 
@@ -167,7 +168,7 @@ A **last-seen mark** stays where something was last seen: its outline, faded, wi
 
 You see these without sight:
 - what your people's skills **Reveal** and **Mark** (`13-units-classes-power.md` §11.8)
-- a Calamity within 2 km of your coverage, and the bearer of the Broken Crown anywhere (`13-units-classes-power.md` §15)
+- a Calamity within 2 km of your coverage, and every rogue Calamity and the bearer of the Broken Crown anywhere (`13-units-classes-power.md` §15)
 - everything, for the owner: always in the free camera, in Milestone 1 in the king's view too, and from Milestone 2 with `tools.sight` (owner tools last through Milestone 4)
 
 ### 5.7 The map and the minimap
@@ -295,7 +296,7 @@ Your people follow the same rules when you don't play them. A worker who notices
 
 ## 8. Off screen
 
-In the ledger (`05-systems.md` §22) there are no cones. A settlement or post with people on watch sees an approaching force at the range of its highest watch post, by the time of day; a company on the move sees 64 m by day and 20 m by night. When two forces meet there, the one that saw the other first strikes first: one round of its hits lands before the other answers. On average this must agree with the rules above, as `13-units-classes-power.md` §18 asks of every rule.
+In the tally (`05-systems.md` §22) there are no cones. A settlement or post with people on watch sees an approaching force at the range of its highest watch post, by the time of day; a company on the move sees 64 m by day and 20 m by night. When two forces meet there, the one that saw the other first strikes first: one round of its hits lands before the other answers. On average this must agree with the rules above, as `13-units-classes-power.md` §18 asks of every rule.
 
 ---
 
@@ -304,7 +305,7 @@ In the ledger (`05-systems.md` §22) there are no cones. A settlement or post wi
 ### 9.1 Where it runs
 
 - **The rules** are shared code in `packages/shared/src/sight/` (Milestone 2): cones, ranges, lines and awareness, pure and inside the allowlist of `04-terrain.md` §3. Cone tests are dot products against fixed cosines, so no trigonometry is needed.
-- **Who sees whom** runs in the simulation: the worker in Milestones 2–4, the server from Milestone 5. It updates the played unit at 10 Hz, units near a camera (T1) at 5 Hz and the rest (T2) at 1 Hz, staggered across ticks. Ledger units (T3) use §8.
+- **Who sees whom** runs in the simulation: the worker in Milestones 2–4, the server from Milestone 5. It updates the played unit at 10 Hz, units near a camera (T1) at 5 Hz and the rest (T2) at 1 Hz, staggered across ticks. Units in the tally (T3) use §8.
 - **The darkening** of the land is display. The client computes it from its own people's positions and facings with the same shared code, so the server never has to send it.
 
 ### 9.2 Lines and areas
@@ -348,5 +349,87 @@ In the ledger (`05-systems.md` §22) there are no cones. A settlement or post wi
 |---|---|
 | Milestone 1 | none: everything is in sight and known. Leave room in the terrain material for the darkening and for the knowledge test |
 | M2 | your people's sight (§3), with the light, height and lines; the darkened land; underground knowledge, and ore known only once seen; beasts shown only in sight; last-seen marks for what skills revealed; `mark.sight` for your people; the owner's `tools.sight` |
-| M4 | foes' sight and awareness (§7), sound, memory and search; hiding (§4) and the unaware hit; on watch, watchtowers, the spyglass and lights at night (§6); last-seen marks for foes; the Sight overlay; `mark.sight` for foes and `mark.aware`; the news of sightings and digging; others' changes shown only once seen; the ledger's rule (§8) |
+| M4 | the presence of Wardens and generals in sky, light and air (§11); foes' sight and awareness (§7), sound, memory and search; hiding (§4) and the unaware hit; on watch, watchtowers, the spyglass and lights at night (§6); last-seen marks for foes; the Sight overlay; `mark.sight` for foes and `mark.aware`; the news of sightings and digging; others' changes shown only once seen; the tally's rule (§8) |
 | M5 | the server sends each kingdom only what it sees (§9.5); allies share sight |
+| M7 | the presence of Calamities (§11.3) |
+| M8 | the sound of presence: the bass, the hush, the held note and the silence (§11.2) |
+
+---
+
+## 11. Presence
+
+### 11.1 Who has it, and how far
+
+Strong things announce themselves through the world around them. The effect is strongest at the centre and fades to nothing at the edge of its reach.
+
+| Who | Reach |
+|---|---|
+| a general | its fort, about 128 m |
+| a Calamity | 512 m |
+| a Warden | its arena at full strength, and its whole region faintly: the region's sky is its mood |
+| the King Below | the whole world, one signature for each phase of the fight |
+
+**In play** (the last column of §11.2), a presence acts only at full strength: within 64 m of a Calamity (its fear within 32 m, `13-units-classes-power.md` §15.1), in a general's fort, in a Warden's arena and in the King Below's. Everywhere else in its reach it is sight and sound only.
+
+### 11.2 Signatures
+
+Each has one of five signatures. The sky, light and air come with the Wardens in Milestone 4; the sound comes with the audio in Milestone 8.
+
+| Signature | Sky and light | Air | Sound | In play |
+|---|---|---|---|---|
+| **Dread** | colour drains toward grey and tints toward its hue; shadows deepen | the wind turns to blow toward it; dust and leaves stream in | birdsong and background sound die away; a low bass swells as it nears | enemies below Elite within 32 m lose morale (`13-units-classes-power.md` §15.1) |
+| **Calm** | the light warms and softens, a little too bright, as if overexposed | the wind stops; dust and petals hang in the air | sound hushes to one long held note | allies where it acts in play don't lose morale |
+| **Silence** | nothing changes | nothing moves | every sound within its reach fades to nothing: background, wind, footsteps, fighting. The hush is the only warning | no sound carries where it acts in play (§7.3): shouts and alarms there go unheard |
+| **Storm** | the sky darkens to its weather | snow, ash, rain or lightning gather around it | its weather, loud | its weather's sight factor applies where it acts in play (§3.2) |
+| **Hunger** | colours sicken: greens yellow, stone cracks | leaves fall, and grass dies to bare earth where it walks | a low, dry crackle | where it acts in play, crops stop growing and food spoils twice as fast |
+
+### 11.3 Who has which
+
+- **Calamities, by nature** (`13-units-classes-power.md` §15.3): a Sellsword, Dread tinted gold; an Idol, Calm on its own kingdom's land and Dread anywhere else; a crowned Wildfire, Dread; a relic-bound one, its relic's (the Ichor Heart Hunger, the Ashen Veil Silence, the War-Smith's Hammer a Storm of sparks and soot); a Bastion, Calm; the Oathsworn, Silence. A Duelist or an Assassin is Silence, whatever its nature, except as a Bastion.
+- **Generals** carry their Warden's signature over their forts.
+- **A Warden's death** clears its region's sky for the rest of the season.
+- **Wardens:**
+
+| # | Warden | Signature | What you notice |
+|---|---|---|---|
+| 1 | Marshal Varn, the Burnt Standard | Dread | war drums far off; the wind drags smoke toward its camp |
+| 2 | Shimotsuki, the Hoarfather | Storm | the blizzard thickens and the light goes blue-white |
+| 3 | Iwakura, the Mountain That Walks | Dread | a bass felt more than heard; dust lifts off the slopes |
+| 4 | Satrap Ozrem, the Gilded | Hunger | sand drifts uphill toward the vault, and everything glints gold |
+| 5 | The Gravewarden | Hunger | the grass goes grey and old bones break the surface |
+| 6 | Vhessa, the Green Throat | Calm | the jungle turns too green and too still: not one insect |
+| 7 | The Drowned Abbot | Silence | the fog thickens and every sound drowns, but for a bell |
+| 8 | The Leviathan of the Mere | Storm | rain sweeps in and the water heaves |
+| 9 | Akari, the Lampless Queen | Silence | lights gutter and go out, and the dusk deepens |
+| 10 | Gōka, the Thorn-Crowned | Storm | ash falls and embers ride the wind |
+| 11 | Hibiki, the Resonant | Dread | a ringing that rises with every step closer; the crystals hum |
+| 12 | Admiral Kest, the Stormwright | Storm | gales and lightning wrap the islands |
+| 13 | Severin, Castellan of Nadir Keep | Calm | banners hang still and one note holds: an order that feels wrong |
+| 14 | The Bloom | Hunger | spores drift and every colour sickens |
+| 15 | The Rootbound King | Silence | the roots drink every sound |
+| 16 | The Blind Choir | Silence | utter quiet, until the choir sings as it strikes |
+| 17 | Foreman Gall, the Last Overseer | Dread | machinery clanks under a deep hammering bass |
+| 18 | Tsurara, the Rime Wyrm | Storm | frost creeps over the walls and snow falls underground |
+| 19 | The Slagmother | Storm | heat shimmer and a rain of embers |
+| 20 | Utsusemi, the Mirror Warden | Calm | every reflection goes still and bright |
+| 21 | The Marrow Titan | Dread | a slow heartbeat in the bass |
+| 22 | Noctua, the Moth Sovereign | Calm | soft light, drifting moths and a lulling hush |
+| 23 | The Shear Matriarch | Dread | skittering in the walls; the wind is sucked toward the Shear |
+| 24 | The Gardener | Calm | a perfect, silent garden: too perfect |
+| 25 | The Undervault Regent | Silence | the dead city makes no sound at all |
+| 26 | The Current | Storm | a mana storm crackles along the Leyflow |
+| 27 | The Maw That Feeds | Hunger | the walls breathe and glisten, and everything rots |
+| 28 | Yomotsu, Queen of Ashes | Silence | ash falls without a sound and colour drains away |
+| 29 | Vorgrim, War-Smith of the King | Dread | hammer-blows in the bass, and sparks on the air |
+| 30 | The King Below | all five | one for each phase, over the whole world |
+
+### 11.4 Presence and sight
+
+- **Presence is part of the world,** so it shows wherever the camera is, whether or not any of your people see its source: a sky going wrong over a valley warns you before anyone sees what is in it (§5.3). Outside your people's sight it gives a place, not a position: its centre is drawn at the middle of the 128 m square its source stands in, so it can't be used to aim or averaged into one.
+- **The camera never shakes** (catalogue C1). Presence is told by the world, not the screen.
+- **Players can turn it down** with `set.video.presence`, for comfort; it never turns off what it does in play.
+
+### 11.5 Engineering
+
+- **Presence sources** (a centre, reach, signature, hue and strength) travel with the environment, not with creatures: the server sends every source whose reach overlaps a client's camera area, whatever that kingdom sees, with its centre snapped to its 128 m square unless that kingdom sees the source.
+- **The client** blends a colour grade per signature into the post-processing by distance, steers a wind field for particles and plants, overrides the weather, and from Milestone 8 ducks, drones and holds the sound. It uses the four strongest sources near the camera, through a fixed set of shader values, so sources coming and going never recompile shaders.

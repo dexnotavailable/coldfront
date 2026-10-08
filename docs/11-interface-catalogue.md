@@ -88,7 +88,22 @@ Use the tokens in `06-ui-art.md` §5 and only these components. Each has one loo
 
 - **States:** rest; hover (`--panel-hi` fill, at once); pressed (darker for 60 ms); keyboard focus (1 px `--steel` outline, 2 px away); selected; disabled (40% opacity, no hover); pending (an order still on its way: see "Orders travel").
 - **Hidden or disabled.** A control that can't be used is hidden. It is shown disabled only where its row says so, and then its tooltip is replaced by the reason row that the row names (A2).
-- **Timing:** press feedback within one frame. Tooltips appear after 300 ms, or at once if another tooltip closed in the last 500 ms; they fade in 100 ms and hide on press. Drawers and the inspector slide in 200 ms. Nothing else animates for longer than 300 ms except the camera transitions in C5.
+- **Timing:** press feedback within one frame. Tooltips appear after 300 ms, or at once if another tooltip closed in the last 500 ms; they fade in 100 ms and hide on press. Drawers and the inspector slide in 200 ms. Nothing animates for longer than 300 ms except what the Motion list below names.
+- **Motion** (`18-look-and-feel.md` §3). What appears eases out (`--ease-out`); what you dismiss eases in (`--ease-in`) and leaves in two thirds of the time it took to come; what goes from one place to another uses `--ease-move`. Nothing overshoots or bounces. These are all of the interface's animations:
+  - drawers and the inspector slide 16 px in from their edge as they fade in, 200 ms, and leave in 130 ms
+  - tooltips, an open select's list and notes fade in over 100 ms
+  - a toast or the Steward's line rises 4 px as it fades in over 100 ms; when its time is up it fades out over 300 ms
+  - a modal fades in as the world dims, 150 ms, and leaves in 100 ms
+  - a new alert fades in over 200 ms where it lands, and the rows below make room over the same time (unless the cursor is over the stack, below)
+  - the Tabs underline and a Segmented control's selection glide to the new choice over 150 ms
+  - a Bar eases to a new value over 150 ms. When Health or Flame falls, the part lost stays drawn in `--text-2` for 200 ms, then drains over 300 ms
+  - a selection ring (`mark.selected`) settles from 115% of its size over 150 ms; `mark.ping` and `mark.telegraph` move as their rows say
+  - an alert row that leaves fades out over 200 ms, and the rows below close up over the same time
+  - the held item's name (`hud.item`) and chat lines (D10) fade out over 0.5 s when their time is up
+  - while an order travels, `mark.order`'s mark moves along the links, and the Network overlay's dots move with the news they carry
+  - a Spinner turns once a second
+  - besides these, only: the critical alert's one pulse (A3), the low-Health shake (`hud.health`), the sweep of a recovering skill (`hud.skills`), the moments of D9 at their own timings, and the cameras (Part C)
+  - numbers never count up or down: a value changes at once
 - **Clicks** fire on release inside the control. A drag starts after 6 px. A double-click is two clicks within 300 ms.
 - **Changes apply at once and are saved.** There are no Apply, Save or OK buttons anywhere.
 - **Sliders:** drag; click the track to jump; double-click resets to the default. The world updates while you drag.
@@ -435,11 +450,11 @@ The lens is a 40° vertical field of view, whatever the window's shape; resizing
 - **Tilt is always the curve plus an offset.** The curve gives 35° at 24 m, 45° at 120 m, 58° at 600 m, 68° at 2 km and 80° at 6 km, interpolated on the logarithm of `d`: close in, you look across your town; far out, you look down at a map. Tilting by hand changes the offset, which starts at 0. The sum is clamped to 20°–89°. Zooming, jumps and following keep the offset.
 - **Backspace** returns to north-up and an offset of 0 in 250 ms.
 
-**What is eased, and what isn't.** Four things are eased: `d` (90 ms), the key-driven pan speed (the ramps above), the focus's height (300 ms, below) and a followed thing's position (150 ms). Everything else is computed each frame, so the anchors hold exactly: tilt comes from the curve at the current `d`; during a zoom the focus is solved so the anchor stays under the cursor; drags follow the mouse with no lag. Timed moves (the 45° snap, Backspace, glides, the tilt that clears terrain) are their own ease-out animations. `set.ctl.smoothing` scales the first two, the 90 ms and the pan ramps, from 0 (instant) to 2.5 times the values here; its default of 40% gives these values.
+**What is eased, and what isn't.** Five things are eased: `d` (90 ms), the key-driven pan speed (the ramps above), the focus's height (300 ms, below), a followed thing's position (150 ms) and the tilt that clears terrain (70 ms, below). Everything else is computed each frame, so the anchors hold exactly: tilt comes from the curve at the current `d`; during a zoom the focus is solved so the anchor stays under the cursor; drags follow the mouse with no lag. Timed moves (the 45° snap, Backspace, glides) are their own animations, on the camera's curve (`ease-camera`, `18-look-and-feel.md` §3.1). `set.ctl.smoothing` scales the first two, the 90 ms and the pan ramps, from 0 (instant) to 2.5 times the values here; its default of 40% gives these values.
 
 **The ground.**
 - The focus rides the surface under it: the highest terrain, water or built block (under the cut: whatever is drawn there, C2), averaged over a disc of radius `0.05 × d` (4 m at least) so a narrow crack or a single tree doesn't move it. It eases to that height with a 300 ms time constant, and it never sinks faster than `d` per second, so flying over a chasm doesn't dive into it. During a grab it holds still and catches up on release.
-- The camera stays at least 6 m above whatever is under it. When terrain rises into it, steepen the tilt (over 200 ms) until it clears. If straight down still doesn't clear, lift the focus instead. Never change `d` for this.
+- The camera stays at least 6 m above whatever is under it. When terrain rises into it, steepen the tilt until it clears, easing with a 70 ms time constant. If straight down still doesn't clear, lift the focus instead. Never change `d` for this.
 - At the world's edge the focus stops. Nothing shakes the Command camera, ever.
 
 **Following.** `insp.follow`, or a left double-click on anything but a company (B2), makes the focus track that thing (150 ms time constant). Zooming and orbiting keep the follow; any pan, grab or jump ends it. If the followed thing dies, leaves your coverage or, when it isn't yours, leaves your sight (`16-sight.md` §5), the follow ends where it was last seen.
@@ -480,7 +495,7 @@ A played unit is always seen from above, by **Overhead**: the Command camera of 
 
 - The focus is the unit's feet + 1 m, following with a 100 ms time constant. `d` runs from 10 to 120 m (24 m to start) *(tune)*, the lens is C1's 40°, and the cursor stays free: it aims.
 - The tilt is the player's own, 30°–85° (55° to start) *(tune)*, not C1's curve. ← and → turn (100° a second while held, a 45° snap on a tap), ↑ and ↓ tilt (60° a second), and a middle drag orbits once the button has been down 120 ms *and* moved 6 px, as B2's right drag does. The wheel zooms toward the unit, continuously as in C1. A middle click that doesn't become a drag picks a block.
-- **Looking ahead.** While a bow or crossbow is drawn, a spyglass is raised or a skill is being aimed, the focus moves toward the aim point by half the distance to it, 96 m at most, easing over 300 ms, so the far end of a shot stays on screen. It eases back when that ends *(tune)*.
+- **Looking ahead.** While a bow or crossbow is drawn, a spyglass is raised or a skill is being aimed, the focus moves toward the aim point by half the distance to it, 96 m at most, following it with a 100 ms time constant, so the far end of a shot stays on screen. It eases back the same way when that ends *(tune)*.
 - **Under cover, the cut follows the unit.** The unit is under cover when a solid block that isn't a plant lies above its head in its own column, below the camera (C2). The cut then sits half a metre under the lowest such block among the covered columns of the 3 × 3 patch around the unit. It comes on once the cover has held for 0.25 s and goes off once the unit has been out of cover for 0.5 s. While on, it moves down at once whenever the roof gets lower, so it never sits inside a roof, and up only when the roof is 1 m or more higher, easing over 150 ms *(tune)*. While it follows the unit, the tilt is at least 70°, so narrow tunnels read, easing over 300 ms; the player's own tilt comes back in the open. PageUp, PageDown and End move the cut by hand until the unit next walks under or out of cover. This is how the underground is played: the layers above the unit are cut away as it goes down and put back as it comes up, and what the cut opens is drawn by C2's rules.
 - **Behind something.** Whenever terrain, a building or anything else stands between the camera and the unit, the unit is drawn through it as a flat silhouette (`hud.silhouette`), with its target outline, so it is never lost from view.
 - The camera keeps 6 m above the surface under it (C1) and never shakes. A hit flashes the avatar red, as in Minecraft.
@@ -648,6 +663,7 @@ The map (D7) fills the screen with the offered sites marked. A Panel 360 px wide
 | `top.lives` | bar | Lives | Lives left this season | — | one pip per life | M7 |
 | `top.king` | icon | {king} in danger | Hurt, or enemies are close · moves the view there | Home | a health ring in `--danger`; shown only while the king is hurt or enemies are near | M4 |
 | `top.date` | stat | Date | A day lasts an hour · a year lasts a week | — | value: `fmt.date` (A5) | M2 |
+| `top.peace` | stat | Steward's peace | Other kings can't harm your people or buildings · it ends early if you attack one | — | a new king's first 3 real days (`05-systems.md` §2); value: the time left (A5) | M5 |
 
 ### Alerts
 Up to three rows under the date, newest on top (A4: they don't move under the cursor). The texts are in E1.
@@ -706,6 +722,7 @@ Drawn on the world, not in panels. All of them hide with F1.
 |---|---|---|---|---|---|---|
 | `mark.hover` | canvas | Hover outline | — | — | a 1 px `--steel` outline on whatever under the cursor can be selected | M2 |
 | `mark.selected` | canvas | Selection | — | — | a ring on the ground under a selected person or company; an outline on a selected building, zone or route | M2 |
+| `mark.ping` | canvas | Order ping | — | — | where a right-click order lands: a ring that shrinks to the point and fades over 300 ms, in `--steel`, or `--danger` for an attack | M2 |
 | `mark.name` | title | {name} | — | — | a name plate over a hovered or selected person or company | M2 |
 | `mark.health` | bar | Health | — | — | 24 px wide over a person, only while they are hurt or selected | M4 |
 | `mark.group` | chip | {n} | — | — | the control-group number beside a company | M4 |
@@ -715,6 +732,7 @@ Drawn on the world, not in panels. All of them hide with F1.
 | `mark.reveal` | canvas | Revealed | — | — | what an information skill revealed, outlined through blocks for its time, and Marked foes; then a last-seen mark (`13-units-classes-power.md` §11.8) | M2 |
 | `mark.sight` | canvas | View cone | — | — | the sight of the selected person (of each member, for a company), and from Milestone 4 of a foe under the cursor: a faint fan on the ground, cut short where something blocks it, in `--steel` for yours and `--danger` for a foe's (`16-sight.md` §3) | M2 |
 | `mark.aware` | canvas | Awareness | — | — | a small ring over a foe in sight that has noticed something, in `--warn`: open while it is suspicious or searching, filled while it is alert (`16-sight.md` §7.1) | M4 |
+| `mark.telegraph` | canvas | Danger zone | — | — | the ground a foe's area blow will strike, fixed where it was aimed when the wind-up began (`13-units-classes-power.md` §16): its exact shape outlined in `--danger` (`--warn` for a rogue Calamity's or the world's own), with a 1 px `--ink-0` line inside, filling from the centre outward over the wind-up so it is full when the blow lands; only while one of your people sees the attacker (`18-look-and-feel.md` §8.2) | M4 |
 | `mark.lastseen` | canvas | Last seen | — | — | where something was last seen: its outline, faded, for 5 minutes. Hovering names it and gives its age; a click selects it (`foe.seen`). In Milestones 2–3, only for what skills revealed; from Milestone 4, for foes too (`16-sight.md` §5.5) | M2 |
 | `badge.materials` | icon | Missing materials | Something it needs isn't in reach of this settlement | — | badges float over buildings: one per building, the most serious, hidden when `d` is over 400 m | M2 |
 | `badge.workers` | icon | No workers | Nobody is assigned here | — | | M2 |
@@ -884,6 +902,13 @@ One Panel, 360 px wide, at the right edge between the top bar and the command ba
 | `person.flame` | bar | Flame | Their second life · their upkeep feeds it | — | Calamities only | M7 |
 | `person.oath` | button | Swear the oath | A Calamity for one day · then they burn | — | danger button; *confirm* (`confirm.oath`). Assault soldiers of Champion grade or higher, at a hearth-shrine, with the king or the High Hearthkeeper near | M7 |
 | `person.fire` | button | Call the fire | They become a Calamity for one day · then they burn | — | danger button; *confirm* (`confirm.fire`). The Oathsworn only | M7 |
+| `person.nature` | chip | {nature} | — | — | Calamities only: its nature (`nature.*`, E7; `13-units-classes-power.md` §15.3) | M7 |
+| `person.hold` | bar | Hold | How firmly this Calamity answers to you · feed it or it breaks loose | — | Calamities only (§15.8 of doc 13), with `hold.wilful` or `hold.restless` beside it under 60 or under 30 | M7 |
+| `hold.wilful` | chip | Wilful | Takes only orders that serve what it wants | — | | M7 |
+| `hold.restless` | chip | Restless | Ignores your orders · close to breaking loose | — | | M7 |
+| `person.wage` | stepper | Wage | Paid each day from the treasury · less than a rival offers loosens its hold | — | Sellswords only, in Marks; never under the Gilding's wage | M7 |
+| `person.offer` | stat | Best offer | The highest wage another king offers it | — | Sellswords only, while an offer stands | M7 |
+| `person.stronghold` | stat | Stronghold | — | — | Bastions only: the keep it is sworn to; a click jumps there | M7 |
 | `person.band` | toggle | In your band | Keeps them on the band list for quick switching | — | disabled at eight (`why.band`) | M2 |
 | `person.appoint` | select | Appoint | Give them an office | — | lists the offices they could hold (`office.*`, E7); choosing one appoints them. Hidden when none is open to them | M3 |
 | `person.training` | bar | Training | How far along they are | — | while they drill for a military class | M4 |
@@ -1060,6 +1085,7 @@ Orders travel (A4). After an order that will take more than 2 s to arrive, a Not
 | `rel.ally` | chip | Ally | — | — | | M5 |
 | `rel.pact` | chip | Pact | — | — | | M5 |
 | `rel.trade` | chip | Trade partner | — | — | | M5 |
+| `rel.bot` | chip | Bot | A king the game plays | — | beside a bot king's name wherever kings are named (`17-simulation-and-bots.md` §6.5) | M5 |
 | `cargo.contents` | table | Cargo | — | — | caravans, pay chests and piles on the ground | M3 |
 | `cargo.arrives` | stat | Arrives | — | — | | M3 |
 | `mana.output` | stat | Output | — | — | mana parts | M6 |
@@ -1074,6 +1100,15 @@ Orders travel (A4). After an order that will take more than 2 s to arrive, a Not
 | `hearth.stores` | stat | Offerings | Days of offerings in the capital's stores | — | value: `fmt.days` | M7 |
 | `hearth.kindle` | select | Kindle | Begin seven days of kindling for a Paragon of level 60 | — | candidates; choosing one is *confirm* (`confirm.kindle`). Disabled while the Hearth is cold (`why.cold`) or the congregation is short (`why.congregation`) | M7 |
 | `hearth.kindling` | bar | Kindling | — | — | the days and offerings of a Kindling in progress | M7 |
+| `hearth.gild` | select | Gild | Begin seven days of gilding for a Paragon of level 60 · coin, not worship | — | candidates; choosing one is *confirm* (`confirm.gild`). Disabled while the Hearth is cold (`why.cold`) or the treasury is short (`why.coin`) | M7 |
+| `hearth.gilding` | bar | Gilding | — | — | the days and coin of a Gilding in progress | M7 |
+| `keep.ward` | select | Swear a Bastion | Seven days of warding for a Guard Paragon of level 60 · bound here for good | — | on a keep that can hold one (the capital's keep, or the hall a Governor runs a province from: `13-units-classes-power.md` §15.3); candidates; choosing one is *confirm* (`confirm.ward`). Disabled while the walls or the garrison fall short (`why.stronghold`) | M7 |
+| `keep.warding` | bar | Warding | — | — | the days and offerings of a Warding in progress | M7 |
+| `rite.waiting` | chip | Waiting | The world holds nine Calamities · it completes when a place frees | — | beside a finished Kindling, Gilding or Warding while nine places are taken (`13-units-classes-power.md` §15.5) | M7 |
+| `calamity.offer` | button | Make an offer | Offer it a daily wage · it walks to the best offer when its hold breaks | — | another kingdom's Sellsword, or a rogue one, in your sight, while you have room for one (`13-units-classes-power.md` §15.5); shows `offer.wage` and `offer.send` in its place, or `offer.withdraw` while your offer stands. Seven days of the wage are set aside from your treasury while it stands | M7 |
+| `offer.wage` | stepper | Wage | — | — | Marks a day | M7 |
+| `offer.send` | button | Send | — | Enter | primary; the offer travels as an order does (A4) and stands until withdrawn | M7 |
+| `offer.withdraw` | button | Withdraw | — | — | ends your standing offer; the wage set aside returns to the treasury | M7 |
 
 ---
 
@@ -1409,6 +1444,7 @@ A centred Panel 560 px wide: tabs across the top, one column of rows. Each row i
 | `shadows.far` | row | Near and far | — | — | option, the default | 1.4 |
 | `set.video.bloom` | toggle | Bloom | Glow around lava, crystal and lamps | — | default on | 1.4 |
 | `set.video.haze` | toggle | Distance haze | The air that fades far land · off helps slow machines | — | default on | 1.4 |
+| `set.video.presence` | slider | Presence effects | How strongly great powers tint, darken and hush the world · effects in play stay | — | 0–100%, default 100 (`16-sight.md` §11) | M4 |
 | `set.video.scale` | slider | Resolution | Draws fewer pixels and scales them up · helps slow machines | — | 50–100%, default 100 | 1.10 |
 | `set.video.limit` | select | Frame limit | Lower saves battery | — | | 1.10 |
 | `limit.30` | row | 30 | — | — | option | 1.10 |
@@ -1476,10 +1512,10 @@ Replaces the settings rows inside the same Panel. One row per binding in B3, und
 ## D9. Moments
 
 ### Discovery card
-On first entering a region: its name in the display font (`--fs-28`), the first sentence of its story under it (`--fs-16`, `03-lore.md` §11), centred a quarter of the way down the screen, straight onto the world. A Court-speech name shows its kanji above it in `--font-kanji`. It fades in over 300 ms, holds 4 s, fades out, and never blocks input. Ships in phase 1.2. It has no strings of its own: all of it is content.
+On first entering a region: its name in the display font (`--fs-28`), the first sentence of its story under it (`--fs-16`, `03-lore.md` §11), centred a quarter of the way down the screen, straight onto the world. A Court-speech name shows its kanji above it in `--font-kanji`. It fades in over 300 ms, holds 4 s, fades out over 300 ms, and never blocks input. Ships in phase 1.2. It has no strings of its own: all of it is content.
 
 ### Warden card
-Top centre while a Warden is engaged: the name and title in the display font, the line `card.warden` under it, and a Bar 480 px wide. A Court-speech name shows its kanji beside it. When the Warden dies, its last words (content, `03-lore.md` §9) take the second line's place for 6 s, and then the card fades. Ships in Milestone 4.
+Top centre while a Warden is engaged: the name and title in the display font, the line `card.warden` under it, and a Bar 480 px wide. A Court-speech name shows its kanji beside it. When the Warden dies, its last words (content, `03-lore.md` §9) take the second line's place for 6 s, and then the card fades out over 300 ms. Ships in Milestone 4.
 
 The King Below isn't a Warden, so his card has no second line. It reads "The King Below" until that player's kingdom has found his name, and his name and that title after (A5).
 
@@ -1562,7 +1598,7 @@ Full-screen states are a centred column on `--ink-0`: one line from the table, t
 
 ## D12. Owner tools
 
-In every build through Milestone 4, previews included: the owner tests with these. They leave in Milestone 5.
+In every build through Milestone 4, previews included: the owner tests with these. They leave public builds in Milestone 5, and live on dev servers and in the admin tools from then (`17-simulation-and-bots.md` §4).
 
 ### Debug overlay (F3)
 Top left: one line per row, `--fs-12`, tabular numbers, each line on its own strip of `--panel`.
@@ -1606,6 +1642,22 @@ A side panel. It doesn't take the keys (A4), so you can still walk and fly while
 | `tools.speed` | stat | Fly speed | — | — | value: `fmt.multiple` | 1.1 |
 | `tools.free` | button | Free camera | Walk and fly anywhere with endless blocks | — | leaves the kingdom running and enters the free camera; Tab returns | M2 |
 | `tools.sight` | toggle | See everything | Every creature, and all of the underground, as if your people saw it | — | default off; `16-sight.md` §5.6 | M2 |
+| `tools.pace` | slider | World speed | How fast the world runs · 0 pauses it | — | 0, ×1, ×2, ×5, ×10, ×20 (`17-simulation-and-bots.md` §3); value: `fmt.multiple` | M2 |
+| `tools.skip` | select | Skip ahead | Runs the world forward quickly · what happens goes into the news | — | the options below; it runs through the tally (`17-simulation-and-bots.md` §3) | M3 |
+| `skip.hour` | row | One hour | — | — | option: an in-game hour (2.5 real minutes) | M3 |
+| `skip.day` | row | One day | — | — | option: an in-game day (a real hour) | M3 |
+| `skip.year` | row | One year | — | — | option: an in-game year (a real week) | M3 |
+| `tools.spawn` | select | Spawn | Puts one at the cursor | — | the options below | M2 |
+| `spawn.person` | row | Person | — | — | option | M2 |
+| `spawn.beast` | row | Beast | — | — | option | M2 |
+| `spawn.warparty` | row | War party | — | — | option | M4 |
+| `spawn.rogue` | row | Rogue Calamity | — | — | option: a rogue Wildfire, level 65, with full Flame; the owner's tool ignores the limit of nine | M7 |
+| `tools.give` | select | Give | A stack of it for the selected person, or coin for the treasury | — | every item (content), then `give.coin` | M2 |
+| `give.coin` | row | Coin | 10,000 Marks for the treasury | — | option | M2 |
+| `tools.level` | stepper | Level | Sets the selected person's level · the grade follows | — | 1–60: a Calamity is made only in its nature's way (`13-units-classes-power.md` §15.3) | M2 |
+| `tools.season` | select | Time of year | Jumps the calendar to its start · the days between aren't run | — | the `timeofyear.*` words (E7) | M2 |
+| `tools.event` | select | Start event | Begins it now, after its omens | — | the world events (content) | M6 |
+| `tools.bots` | stepper | Bot kings | How many bot kings share this world · used when a new world starts | — | 0–9 (`17-simulation-and-bots.md` §6) | M4 |
 | `tools.still` | button | Postcard mode | Hides the interface and waits until the view has fully loaded | — | Esc leaves it | 1.1 |
 | `tools.gallery` | button | Interface gallery | — | — | opens `/?gallery` in a new tab | 1.1 |
 | `tools.clear` | button | Clear my edits | Forgets every block placed or broken in this seed | — | danger button; *confirm* (`confirm.clear`) | 1.1 |
@@ -1653,10 +1705,16 @@ News lines fill alert rows (D2) and the News tab. A row is: a priority icon, the
 | `news.trial` | {name} has passed the Trial | info | M4 |
 | `news.trial.failed` | {name} failed the Trial | info | M4 |
 | `news.calamity` | {kingdom} has raised a Calamity | important, to every king | M7 |
-| `news.calamity.gone` | The Calamity of {kingdom} is gone | important, to every king | M7 |
-| `news.guttering` | The Great Hearth is short of offerings | critical: a day's upkeep went unpaid | M7 |
+| `news.calamity.gone` | {name} of {kingdom} is gone | important, to every king: a kingdom's Calamity fell or died | M7 |
+| `news.guttering` | {name} is guttering | critical: a day of its wage, its offerings or its relic's hunger went unmet (`13-units-classes-power.md` §15.4) | M7 |
 | `news.oath` | {name} has sworn to the fire | important | M7 |
+| `news.rogue` | {name} has broken loose from {kingdom} | important, to every king | M7 |
+| `news.rogue.slain` | The rogue {name} has fallen | important, to every king | M7 |
+| `news.restless` | {name} grows restless | critical: your Calamity's Hold fell under 30 | M7 |
+| `news.outbid` | {king} is bidding for {name} | important: another king has made an offer for your Sellsword | M7 |
+| `news.cult` | A cult has risen near {place} | important: a rogue Idol has settled | M7 |
 | `news.died` | {name} has died in {town} | info: one of your people. Rows about the same town merge with a count (D2) | M2 |
+| `news.dwindling` | Only {n} of your people remain | critical: under 10; under 5 for a day and the throne stands empty (`05-systems.md` §2) | M2 |
 | `news.unburned` | The dead lie unburned in {town} | important | M4 |
 | `news.left` | {name} has left {town} | important: their loyalty fell too low | M3 |
 | `news.defected` | {name} has gone over to {kingdom} | important | M5 |
@@ -1664,10 +1722,12 @@ News lines fill alert rows (D2) and the News tab. A row is: a priority icon, the
 | `news.looted` | {place} was looted | important | M4 |
 | `news.ascent` | {n} of your people fell ill coming up from {layer} | important | M6 |
 | `news.event` | {event} at {place} | important: a storm, flood, avalanche, fire or eruption (content names) | M6 |
+| `news.omen` | Signs of {event} near {place} | important: at least 15 real minutes before a world event strikes (`05-systems.md` §16) | M6 |
 | `news.rival` | Another king's riders were seen near {place} | important | M5 |
 | `news.taken` | {place} has fallen to {victor} | important | M4 |
 | `news.offer` | {king} has sent an offer | important | M5 |
 | `news.broken` | {king} has broken your treaty | important | M5 |
+| `news.peace` | The Steward's peace is over | info: three days after settling, or when you attack another king | M5 |
 | `news.built` | {building} is finished in {town} | info | M2 |
 | `news.joined` | {n} wanderers have joined {town} | info | M3 |
 | `news.standout` | A standout has arrived in {town} | info; the row's click selects them | M3 |
@@ -1707,10 +1767,13 @@ A Note says why something can't be done, or what a drag will do. One line, 16 px
 | `note.order.sent` | Order sent · arrives in {eta} | for 3 s after an order | M4 |
 | `note.order.rider` | Sent by rider · arrives in {eta} | for 3 s after an order to a place that is cut off (A4) | M4 |
 | `note.order.lost` | No rider can reach them | the order isn't sent | M4 |
+| `note.order.wilful` | It won't do that | an order a wilful Calamity refuses (`13-units-classes-power.md` §15.8) | M7 |
 | `note.possess.coverage` | Outside your coverage | on Tab or `person.possess` | M2 |
 | `note.possess.dark` | Cut off from your capital | | M4 |
 | `note.possess.steward` | The Steward can't be possessed | | M2 |
 | `note.possess.other` | Not one of yours | | M5 |
+| `note.possess.restless` | It won't answer you | a restless Calamity (`13-units-classes-power.md` §15.8) | M7 |
+| `note.peace` | Under the Steward's peace | an attack ordered on a new king's people or buildings | M5 |
 | `note.skill.ready` | Not ready | a skill on cooldown | M2 |
 | `note.skill.stamina` | Not enough stamina | | M2 |
 | `note.skill.resolve` | Resolve isn't full | an Ultimate | M3 |
@@ -1787,6 +1850,7 @@ A Note says why something can't be done, or what a drag will do. One line, 16 px
 | `why.skill` | Opens at {need} | a locked skill Slot | M2 |
 | `why.cold` | The Hearth is cold | | M7 |
 | `why.congregation` | Needs {n} more in the congregation | | M7 |
+| `why.stronghold` | Needs stone walls 8 m high and 50 soldiers | | M7 |
 | `why.band` | Your band is full | | M2 |
 | `why.rank` | No place open at that rank | | M4 |
 | `why.trial` | They can try again in {t} | | M4 |
@@ -1811,6 +1875,12 @@ A Note says why something can't be done, or what a drag will do. One line, 16 px
 | `confirm.kindle.title` | Kindle {name}? | | M7 |
 | `confirm.kindle.body` | Seven days and 100,000 offerings | | M7 |
 | `confirm.kindle.do` | Kindle | | M7 |
+| `confirm.gild.title` | Gild {name}? | | M7 |
+| `confirm.gild.body` | Seven days and 250,000 Marks, then a wage every day | | M7 |
+| `confirm.gild.do` | Gild | | M7 |
+| `confirm.ward.title` | Swear {name} to this stronghold? | | M7 |
+| `confirm.ward.body` | Seven days and 100,000 offerings · bound here for good | | M7 |
+| `confirm.ward.do` | Swear | | M7 |
 | `confirm.rite.title` | Begin the Marrow Rite for {name}? | | M6 |
 | `confirm.rite.body` | It burns 20 titan marrow, 50 pure crystal and 10 deep pearls | | M6 |
 | `confirm.rite.do` | Begin | | M6 |
@@ -1844,6 +1914,7 @@ The Steward's lines are `03-lore.md` §7, word for word, and are shown as D9 say
 | `steward.next` | Another crown. Walk with me. | a new king arrives after a death | M2 |
 | `steward.idle` | I keep the Crown. | the Steward is selected and has nothing to say | M2 |
 | `moment.death` | {king} is dead | heads the death screen | M2 |
+| `moment.empty` | The throne stands empty | heads the death screen when the kingdom fell around a living king (`05-systems.md` §2) | M2 |
 | `moment.out` | Your last crown has fallen | heads the screen after the last life | M7 |
 | `moment.frost` | The Frost has come | heads the season's end | M7 |
 | `moment.clean` | A clean Frost | heads it instead when the King Below fell this season | M7 |
@@ -1862,8 +1933,10 @@ One line per event, server-wide, in world voice. The King Below's name is never 
 | `chron.taken` | Week {w}: {kingdom} falls to {victor}. | | M7 |
 | `chron.faith` | Week {w}: {king} of {capital} breaks faith with {other}. | a broken treaty | M7 |
 | `chron.calamity` | Week {w}: {king} of {capital} raises a Calamity. | | M7 |
-| `chron.calamity.gone` | Week {w}: the Calamity of {capital} is no more. | | M7 |
-| `chron.oath` | Week {w}: {name} of {capital} burns for {king}. | an Oathbound's day of fire | M7 |
+| `chron.calamity.gone` | Week {w}: {name} of {capital} is no more. | | M7 |
+| `chron.rogue` | Week {w}: {name} breaks loose from {capital}. | | M7 |
+| `chron.rogue.slain` | Week {w}: the rogue {name} is slain near {place}. | | M7 |
+| `chron.oath` | Week {w}: {name} of {capital} burns for {king}. | an Oathsworn's day of fire | M7 |
 | `chron.below` | Week {w}: the King Below is broken. | | M7 |
 | `chron.frost` | Week 26: the Frost takes the basin. | | M7 |
 
@@ -2046,6 +2119,11 @@ Words the interface needs that aren't labels, tooltips or messages. Each is used
 | `grade.champion` | Champion | | M4 |
 | `grade.paragon` | Paragon | | M6 |
 | `grade.calamity` | Calamity | | M7 |
+| `nature.sellsword` | Sellsword | a Calamity's nature (`13-units-classes-power.md` §15.3) | M7 |
+| `nature.idol` | Idol | | M7 |
+| `nature.wildfire` | Wildfire | | M7 |
+| `nature.bastion` | Bastion | | M7 |
+| `nature.oathsworn` | Oathsworn | | M7 |
 | `slot.knack` | Knack | the skill slots, on the skill tooltip | M2 |
 | `slot.active` | Active | | M2 |
 | `slot.ultimate` | Ultimate | | M3 |
@@ -2081,12 +2159,12 @@ Each row's **Since** decides when it ships. This table only sums them up; `node 
 | 1.4 | the Command camera as king's view (C1, C6) with Tab; the map's "Go here"; Settings with the rows marked 1.4; the LOD rows in F3 and Tools |
 | 1.8 | the cut's keys (C2) and the depth gauge; the map's layer tabs |
 | 1.10 | every Settings row marked 1.10, including the Audio tab's Volume; nothing else new |
-| M2 | the Command view: top bar, alerts, minimap, the Resources overlay, command bar, Build (with Dig) and Zones, the inspector, Realm (Overview, People, News), the Ledger, Find, the key list, bookmarks; the map's markers; Possess with real inventories, Handwork, containers and workstations; sight: the darkened land, creatures shown only while seen, the underground only where your people have seen it, the view cone of a selected person, last-seen marks for what skills revealed, and the owner's "See everything"; classes, levels, grades, experience, attribute points and proficiencies in the inspector; skills on keys, in the inspector and beside the hotbar, with autocast; the Band; the Steward's lines; "Choosing ground"; the death screen; the free camera as an owner tool beside the kingdom |
-| M3 | Routes; Trade (Prices); Realm (Officials, Policies, Treasury, Grades); Promote, Resolve, deeds, Speciality and Background; Ultimates; loyalty, tiers and their causes; the Logistics and Loyalty overlays; neutral villages and gifts; reputation; the office (K) |
-| M4 | Army (companies) and the order buttons; roles, military ranks, wards and day trades; company classes and skills; Trials and relic slots; control groups; the order wheel; the network: its buildings, link notes, the Network, Hazards and Territory overlays, news that travels and pending orders; foes' sight: the Sight overlay, awareness marks, last-seen marks for foes, and the news of sightings and digging; enemy and Warden rows and the Warden card; integrity and repair; conditions; inscriptions; two more Ledger tabs |
-| M5 | signing in, the lobby, founding; advanced classes; chat; Realm (Kings), offers and deals; Trade (Board, Contracts); captives and bribes; morale; armies under a Marshal and siege; capture; the system states for connections. Owner tools leave |
-| M6 | the Mana overlay; mana, machine and lift rows; the Mana bar; ascent sickness and world events in the news |
-| M7 | lives; Calamities: the Great Hearth, the oath, Flame, their news and Chronicle lines; the season's week and the Frost warnings; the Chronicle, Standings, Feats and Ledger of Kings; sworn units; the eliminated and Frost screens |
+| M2 | the Command view: top bar, alerts, minimap, the Resources overlay, command bar, Build (with Dig) and Zones, the inspector, Realm (Overview, People, News), the Ledger, Find, the key list, bookmarks; the map's markers; Possess with real inventories, Handwork, containers and workstations; sight: the darkened land, creatures shown only while seen, the underground only where your people have seen it, the view cone of a selected person, last-seen marks for what skills revealed, and the owner's "See everything"; classes, levels, grades, experience, attribute points and proficiencies in the inspector; skills on keys, in the inspector and beside the hotbar, with autocast; the Band; the Steward's lines; "Choosing ground"; the death screen; the free camera as an owner tool beside the kingdom; the owner's world speed, spawn, give, level and time-of-year tools; the empty throne and the warning before it; order pings |
+| M3 | Routes; Trade (Prices); Realm (Officials, Policies, Treasury, Grades); Promote, Resolve, deeds, Speciality and Background; Ultimates; loyalty, tiers and their causes; the Logistics and Loyalty overlays; neutral villages and gifts; reputation; the office (K); skip ahead |
+| M4 | Army (companies) and the order buttons; roles, military ranks, wards and day trades; company classes and skills; Trials and relic slots; control groups; the order wheel; the network: its buildings, link notes, the Network, Hazards and Territory overlays, news that travels and pending orders; foes' sight: the Sight overlay, awareness marks, last-seen marks for foes, and the news of sightings and digging; enemy and Warden rows and the Warden card; integrity and repair; conditions; inscriptions; two more Ledger tabs; the Presence effects setting; bot kings and war parties in the Tools panel; danger zones under foes' blows |
+| M5 | signing in, the lobby, founding; advanced classes; chat; Realm (Kings), offers and deals; Trade (Board, Contracts); captives and bribes; morale; armies under a Marshal and siege; capture; the system states for connections. Owner tools leave; the Steward's peace; the bot mark |
+| M6 | the Mana overlay; mana, machine and lift rows; the Mana bar; ascent sickness and world events in the news; starting world events, and omens in the news |
+| M7 | lives; Calamities: the Great Hearth, the oath, Flame, their news and Chronicle lines; the season's week and the Frost warnings; the Chronicle, Standings, Feats and Ledger of Kings; sworn units; the eliminated and Frost screens; Calamity natures: Hold, wages and offers, the Gilding and the Warding, rogues with their news and Chronicle lines; spawning a rogue Calamity |
 | M8 | the crest editor; honours, banners and looks; buying a life; the Audio tab's remaining rows; the Guide |
 
 ---

@@ -17,7 +17,7 @@ The goal: Big Globe-class terrain for the whole of Kaldmark, walkable in the bro
 ### 1.1 Foundations
 - **Build, in this order** (push a playable build at the end of step 3, so the owner has a link early):
   1. Monorepo scaffold (npm workspaces, Vite, TS strict, Biome, Vitest, `.node-version`); constants; deterministic math (`det.ts`) and the forbidden-token test; hashes and OpenSimplex2 noise, with measured quantiles and tests; the test world (rolling plains with a pond at y = 0, placeholder trees).
-  2. **The interface foundation, before the first screen** (`11-interface-catalogue.md` A3, A6, A7): `tokens.css`, the components the 1.1 screens use, the string table (`ui:strings`), the gallery (`/?gallery`), `ui:lint` inside `npm run check`, and `ui:shots`. Then: block registry and the first ~30 texture recipes; chunk store; worker pool; the bitwise greedy mesher with AO (ported, `10-prior-art.md` §2); the renderer: `SunLight` shadows, three's `Sky`, fog, pmndrs postprocessing; sky light (seeded from column heightmaps, then the ported light queues; coloured block light waits for 1.3); time of day (the cycle, a slider, a fixed postcard time); the player controller: the avatar (`13-units-classes-power.md` §3.2) seen from above in Overhead (`11-interface-catalogue.md` C4, with the free camera's limits), which brings the Command camera's maths (C1's lens, rays, zoom and turning) and the cut's clip and cap following the avatar under cover (C2); Minecraft's controls, and Minecraft's movement constants at a fixed 20 Hz (walk, sprint, sneak, jump, step-up 0.6 m, fly); break and place with a hotbar; the title screen, the loading bar and the menu (the rows marked 1.1).
+  2. **The interface foundation, before the first screen** (`11-interface-catalogue.md` A3, A6, A7): `tokens.css`, the components the 1.1 screens use, the string table (`ui:strings`), the gallery (`/?gallery`), `ui:lint` inside `npm run check`, and `ui:shots`. Then: block registry and the first ~30 texture recipes; chunk store; worker pool; the bitwise greedy mesher with AO (ported, `10-prior-art.md` §2); the renderer: `SunLight` shadows, three's `Sky`, fog, pmndrs postprocessing; sky light (seeded from column heightmaps, then the ported light queues; coloured block light waits for 1.3); time of day (the cycle, a slider, a fixed postcard time); the player controller: the avatar (`13-units-classes-power.md` §3.2) seen from above in Overhead (`11-interface-catalogue.md` C4, with the free camera's limits), which brings the Command camera's maths (C1's lens, rays, zoom and turning) and the cut's clip and cap following the avatar under cover (C2); Minecraft's controls, and Minecraft's movement constants at a fixed 20 Hz (walk, sprint, sneak, jump, step-up 0.6 m, fly); the motion curves and the one clock, with movement drawn between physics steps and the avatar's Minecraft animations (`18-look-and-feel.md` §3, §6–§7); break and place with a hotbar, with the placed block's pop and the broken block's particles; the title screen, the loading bar and the menu (the rows marked 1.1).
   3. COOP/COEP headers (Pages `_headers`, and the Vite dev and preview servers); a build that works on Cloudflare Pages; the "WebGL2 unavailable" screen; the postcard screenshot pipeline and TEST-1. **Push a playable build and open the draft PR.**
   4. Golden test and `golden:update`; atlas and slice (on the test world, `height` mode); postcards; `bench:gen`; the shipped CI workflow passing, with `test:golden:browsers` defined.
   5. Edits saved in IndexedDB; the F3 overlay, the Tools panel (F4), the block palette and every other row marked 1.1 (the system states, the toasts, F1, F2, F11, Licences); the remaining textures; `THIRD_PARTY_NOTICES.md`.
@@ -57,7 +57,7 @@ The goal: Big Globe-class terrain for the whole of Kaldmark, walkable in the bro
   - the **full thorn spec** (`04-terrain.md` §8.5)
   - calderas, fissures, vents, ash dunes
   - Ibara lava network; lava fluid
-  - emissive blocks, coloured block light, bloom
+  - emissive blocks, coloured block light, bloom; flame, embers and glow (`18-look-and-feel.md` §5.5)
   - the terrain report, clay and feature views, the `?primitive=1` calibration anchor
 
   Postcards may use LOD0 out to 512 m until LOD arrives.
@@ -74,7 +74,7 @@ The goal: Big Globe-class terrain for the whole of Kaldmark, walkable in the bro
   - column meshing at zero crossings for LOD2+; skirts; the vertical band rules
   - feature LOD policies
   - far shadows (horizon map); depth-precision setup; floating origin
-  - per-region sky and atmosphere; takram aerial perspective for the far haze
+  - per-region sky and atmosphere, with clouds in the sky dome; takram aerial perspective for the far haze
   - the Command camera as king's view, on Tab (`11-interface-catalogue.md` C1, C6), with its tests (C7)
   - settings: the rows marked 1.4 (render distance, far terrain, shadows, bloom, haze, fullscreen on play, interface size)
 - **Owner tries:**
@@ -156,6 +156,7 @@ The goal: Big Globe-class terrain for the whole of Kaldmark, walkable in the bro
   - meet the budgets
   - revisit the timeboxed Known issues
   - the interface rows marked 1.10: the complete settings
+  - the look and feel marked 1.10 in `18-look-and-feel.md` §13: plants and cloth in the wind, cloud shadows, each region's air, foam lines, and the interface's motion checked with motion strips
   - final postcard runs on seeds 1–3
   - a milestone summary in `progress.md`
 - **Owner tries:** a full tour, then sign off (or send notes).
@@ -175,29 +176,35 @@ The simulation runs in a worker using `shared` code, standing in for the future 
 - Templates (house, stockpile, farm, workshop) built block by block; freeform validation for 2–3 building types.
 - Command view (select, blueprints, zones) and possession (Overhead; Minecraft controls; break and place using real items; skills on keys).
 - **Sight** (`16-sight.md` §10): your people's view cones, the darkened land, creatures shown only while seen, and the underground shown only where your people have seen it.
-- Tier-1 needs, the calendar and a first winter.
+- **The look in motion** (`18-look-and-feel.md` §13): people's animations, skill poses and wind-ups, beasts, contact shadows, the marks' motion and order pings, footsteps and landings, weather with the calendar (`05-systems.md` §16).
+- Tier-1 needs, the calendar and a first winter. The empty throne: a kingdom that dwindles to a handful of people is lost (`05-systems.md` §2).
+- **The owner's dev tools** (`17-simulation-and-bots.md` §4): world speed, spawn, give, level, time of year, and the AI's reasons under `?dev`.
 - The interface rows marked M2 in `11-interface-catalogue.md`: the top bar, alerts, minimap, the command bar, Build and Zones, the inspector, Realm, the Ledger, Find, the key list, inventories, the Dig tool, the death screen, and the cut's rule that you see underground only where your people have seen (its C2).
 
 ## Milestone 3 · Production and logistics
 - Medium chains (bread, tools, iron, weapons) and workstations; tool wear, quality, spoilage and preservation.
-- Carts, roads, routes (drawn and auto-generated) and the Quartermaster; several settlements.
+- Carts, roads, routes (drawn and auto-generated) and the Quartermaster; several settlements. Doors and gates turn as `18-look-and-feel.md` §7.3 says.
 - Money: mint, wages, markets, taxes, treasury, pay chests.
 - Needs tiers 2–3 and loyalty; more officials, with the offices and posts of `13-units-classes-power.md` §13.
 - The other civilian classes; deeds, Resolve and Ultimates; Tempered and Elite.
 - Wanderers, neutral villages, reputation.
+- **The tally** (`17-simulation-and-bots.md` §2), moved forward from Milestone 5: settlements nobody watches run as numbers; a solo world catches up on load; skip ahead; `npm run bench:sim`.
 
 ## Milestone 4 · A hostile world
 - Hazards for the first regions; material properties and regional building requirements.
 - Support and collapse; decay and repair.
 - The network (watchtowers, riders, signal towers, connection to the capital) and news delivery.
 - Enemies: musters, roamers, scouts and reports, war parties, occupation.
-- Fighting (`13-units-classes-power.md` §5–§6); the military classes, roles and ranks; Champions and Trials; companies and Captains; the officer command radius.
-- Sight for foes (`16-sight.md` §10): awareness, hearing, memory and search; hiding; people on watch, watchtowers, spyglasses and lights at night; last-seen marks.
+- Fighting (`13-units-classes-power.md` §5–§6), and how it looks: hits, danger zones, conditions on the body, skill effects by element (`18-look-and-feel.md` §8); the military classes, roles and ranks; Champions and Trials; companies and Captains; the officer command radius.
+- Sight for foes (`16-sight.md` §10): awareness, hearing, memory and search; hiding; people on watch, watchtowers, spyglasses and lights at night; last-seen marks. The presence of Wardens and generals (`16-sight.md` §11).
+- **Bot kings in solo worlds** (`17-simulation-and-bots.md` §6): rivals that play by the player's rules, with an opening book, an evaluation and a short look ahead.
 - The first Seat and Warden: Marshal Varn.
 
 ## Milestone 5 · Multiplayer
 - The authoritative, self-hosted server (Node 24 LTS, `ws`, better-sqlite3): protocol, persistence, Discord login (redirect flow).
-- Many kings; interest management by sight (`16-sight.md` §9.5); simulation tiers T0–T3 (`05-systems.md` §22).
+- Many kings; interest management by sight (`16-sight.md` §9.5); simulation tiers T0–T3 on the server, with the tally from Milestone 3 (`05-systems.md` §22).
+- The Steward's peace for new kings (`05-systems.md` §2).
+- Bots on dev servers, marked as bots, to fill playtests to 100 kings; whole-season runs (`npm run season`, `17-simulation-and-bots.md` §5).
 - PvP, morale and surrender, capture, swaying people; Commanders, Marshals and armies; siege engines; the advanced classes.
 - Market board and trading posts; diplomacy.
 - Self-hosting guide and Docker setup; a 10–20 player playtest.
@@ -206,18 +213,18 @@ The simulation runs in a worker using `shared` code, standing in for the future 
 - The mana grid: crystals, ley wells, generators, conduits, relays, cells, wards.
 - Mages and the Academy; the mage classes and runes; Paragons and the Marrow Rite.
 - Lifts and warded lifts; ascent sickness.
-- Hand-built factories (machines, conveyors).
-- Layer 1 hazards, enemies and Wardens; Tier II Wardens; Ibara eruptions.
+- Hand-built factories (machines, conveyors), with wheels, belts and lifts that move as `18-look-and-feel.md` §7.3 says.
+- Layer 1 hazards, enemies and Wardens; Tier II Wardens; Ibara eruptions; world events, each with its omens (`05-systems.md` §16).
 
 ## Milestone 7 · The Season
 - All 29 Wardens, ~100 generals and the King Below; content for Layers 2–3.
-- Calamities: the Great Hearth, the oath, the Broken Crown and the Tier V relics (`13-units-classes-power.md` §15).
+- Calamities (`13-units-classes-power.md` §15): the five natures, Hold, rogues and the Bastion's domain; the Great Hearth, the oath, the Broken Crown and the Tier V relics; their presence (`16-sight.md` §11), their fire and the Cataclysms' effects (`18-look-and-feel.md` §8.5).
 - The season loop (Thaw → Front → Frost → reset), scoring, leaderboards, achievements, the Chronicle and the Ledger.
 - Lives, sworn units for eliminated players, late joining, inactive decay, anti-alt measures.
-- Bot load tests toward 100 kings; admin tools.
+- Bot load tests toward 100 kings; bot personalities and difficulty tuned by whole-season runs; admin tools.
 
 ## Milestone 8 · Launch polish
-- Audio; UI polish and accessibility; the full Steward-led onboarding.
+- Audio, with a sound for every effect; UI polish and accessibility; a final art pass (`18-look-and-feel.md` §13); the full Steward-led onboarding.
 - Cosmetics, titles and the crest editor.
 - Paid lives (1 free + 2 paid, capped at 3).
 - Low-end performance; a player guide.

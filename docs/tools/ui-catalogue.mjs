@@ -40,6 +40,7 @@ const PROPER = new Set([
   'Overhead', 'Shoulder', 'Knack', 'Ultimate', 'Ultimates', 'Mastery', 'Resolve', 'Flame', 'Trial',
   'Elite', 'Champion', 'Paragon', 'Calamity', 'Guard', 'Hearth', 'Great', 'Hearthkeeper',
   'Marrow', 'Rite', 'Corporal', 'Sergeant', 'Lieutenant', 'Assault', 'Support', 'Secondary',
+  'Calamities', 'Sellsword', 'Sellswords', 'Idol', 'Idols', 'Wildfire', 'Wildfires', 'Bastion', 'Bastions', 'Oathsworn',
 ]);
 const BANNED = [
   [/!/, 'exclamation mark'],
@@ -113,7 +114,7 @@ function check(entries) {
     const ws = words(s.replace(/\{[^}]*\}/g, 'X'));
     if (ws.length && /^[a-z]/.test(ws[0])) bad(e, `${what} must start with a capital: "${s}"`);
     ws.slice(1).forEach((w) => {
-      const bare = w.replace(/[^\p{L}\p{N}]/gu, '');
+      const bare = w.replace(/['’]s$/u, '').replace(/[^\p{L}\p{N}]/gu, ''); // a possessive keeps its noun's capital
       if (!/^\p{Lu}/u.test(bare)) return;
       if (PROPER.has(bare) || /^[\p{Lu}\p{N}]+$/u.test(bare)) return; // proper noun or abbreviation
       if (/[.:·]$/.test(ws[ws.indexOf(w) - 1] ?? '')) return; // starts a new clause

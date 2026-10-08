@@ -15,7 +15,7 @@ You're starting COLDFRONT: a seasonal multiplayer voxel civilization builder tha
 
 I'm the owner. I don't code. I make design calls; you make every technical call.
 
-Before writing code, read in this order: AGENTS.md, docs/01-vision.md, docs/08-roadmap.md (Milestone 1), docs/04-terrain.md (§1–§7, §10, the test world in §11, and §13–§16; the other sections when a phase needs them), docs/07-architecture.md, docs/10-prior-art.md (§1, §2 and §4), docs/02-world.md, docs/12-sessions.md. From docs/11-interface-catalogue.md read Part A, B3–B4, C1, C2 and C4 (the Overhead camera uses C1's maths, and the cut follows the avatar under cover from phase 1.1), and the sections of the 1.1 screens when you build them; from docs/13-units-classes-power.md read §3.2 and §3.4 (the avatar and the Overhead camera). Leave the other docs until a phase needs them.
+Before writing code, read in this order: AGENTS.md, docs/01-vision.md, docs/08-roadmap.md (Milestone 1), docs/04-terrain.md (§1–§7, §10, the test world in §11, and §13–§16; the other sections when a phase needs them), docs/07-architecture.md, docs/10-prior-art.md (§1, §2 and §4), docs/02-world.md, docs/12-sessions.md. From docs/11-interface-catalogue.md read Part A, B3–B4, C1, C2 and C4 (the Overhead camera uses C1's maths, and the cut follows the avatar under cover from phase 1.1), and the sections of the 1.1 screens when you build them; from docs/13-units-classes-power.md read §3.2 and §3.4 (the avatar and the Overhead camera); read docs/18-look-and-feel.md (the look and feel; its §13 says what 1.1 brings). Leave the other docs until a phase needs them.
 
 This session: Milestone 1, phase 1.1 (Foundations). If it's done and verified and you still have plenty of room, continue into phase 1.2 (World plan) on the same branch, but only after the 1.1 report is in the pull request.
 
@@ -90,7 +90,7 @@ Polish pass on <REGION>. Re-read its recipe in docs/04-terrain.md and its postca
 ## 5. Start a new milestone (from Milestone 2 on)
 
 ```
-Milestone <N> starts now. Read AGENTS.md, docs/progress.md, the Milestone <N> outline in docs/08-roadmap.md, the sections of docs/05-systems.md and docs/07-architecture.md it depends on, docs/13-units-classes-power.md (its §20 says what Milestone <N> brings), the rows marked M<N> in docs/14-class-library.md and docs/15-item-library.md (`node docs/tools/content-check.mjs --upto M<N>` counts them), and the rows marked M<N> in docs/11-interface-catalogue.md (its Part F lists them).
+Milestone <N> starts now. Read AGENTS.md, docs/progress.md, the Milestone <N> outline in docs/08-roadmap.md, the sections of docs/05-systems.md and docs/07-architecture.md it depends on, docs/13-units-classes-power.md (its §20 says what Milestone <N> brings), the rows marked M<N> in docs/14-class-library.md and docs/15-item-library.md (`node docs/tools/content-check.mjs --upto M<N>` counts them), what Milestone <N> brings in docs/16-sight.md §10, docs/17-simulation-and-bots.md §8 and docs/18-look-and-feel.md §13, and the rows marked M<N> in docs/11-interface-catalogue.md (its Part F lists them).
 
 First, draft a detailed phase plan for Milestone <N>, in the same style as Milestone 1's, and add it to docs/08-roadmap.md. Give every interface row marked M<N> to one of the phases. Then build phase <N>.1. In the pull request, ask me to approve the phase plan.
 ```

@@ -709,7 +709,7 @@ Every region uses the cavern template (§9.2) inside its layer band and footprin
 
 ## 13. Rendering the terrain (M1)
 
-Engine details are in `07-architecture.md` §6. This is what the terrain needs to look right.
+Engine details are in `07-architecture.md` §6. This is what the terrain needs to look right. The life around it (wind in the plants, cloud shadows, weather, each region's air, night, flame and glow) is `18-look-and-feel.md` §5; postcards leave out its particles and cloud shadows and stop its motion at their fixed time (§11 there).
 
 ### 13.1 Material
 - Extend **`MeshLambertMaterial` through `onBeforeCompile`**, in one module: vertex unpacking plus texture-array sampling, variant and tint selection, gloss, emissive.
