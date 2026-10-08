@@ -1,15 +1,15 @@
 # Progress log
 
 **Current milestone:** 1 · The World
-**Current phase:** 1.1 · Foundations (not started)
-**Preview link:** `https://<branch-alias>.coldfront.pages.dev`, once Cloudflare Pages is connected (README Part C)
+**Current phase:** 1.1 · Foundations (in progress)
+**Preview link:** pending the first verified playable build at `https://dex.place/coldfront/`. The documented `coldfront.pages.dev` address belongs to an unrelated site and must not be used as this game's preview.
 **Agent guide:** `AGENTS.md` (Codex and Claude Code both follow it). **Interface:** only what `docs/11-interface-catalogue.md` lists.
 
 ## Status board
 
 | Phase | Status | Notes |
 |---|---|---|
-| 1.1 Foundations | ☐ not started | begins with the interface foundation: tokens, string table, `ui:lint` (roadmap 1.1, step 2) |
+| 1.1 Foundations | In progress | Screenshot proof first; deterministic foundation, then the catalogue pipeline before screens |
 | 1.2 World plan | ☐ | |
 | 1.3 Terrain toolkit + Ibara | ☐ | |
 | 1.4 Far terrain | ☐ | |
@@ -21,7 +21,21 @@
 | 1.10 Polish + performance | ☐ | |
 
 ## Current session
-*(The agent writes its plan here at the start of each session.)*
+**8 October 2026 · Codex · `codex/phase-1-1-foundations`**
+
+1. Prove headless Chromium, WebGL2, cross-origin isolation and image capture; open the result before game code.
+2. Build roadmap 1.1 in order. Preserve pointwise generation, tested deterministic maths, analytic noise derivatives, measured quantiles, and the enforced Math allowlist.
+3. Establish catalogue strings, tokens, lint, gallery and screenshots before the first screen. GPT-6 Astra owns visual, spatial, camera, motion and interface work through dexflow's design route.
+4. Publish the first verified playable step-3 build, open a draft PR, then publish verified increments promptly. The owner explicitly authorised merges and live publication on 8 October, superseding the older rule reserving merges to the owner. Do not alter the owner's CI or tool configuration.
+5. Finish with tests, check, build, a clean checkout build, inspected terrain and interface images, measured benches and a current report. Later milestones stay subject to their explicit design acceptance gates; technical choices are ours.
+
+Source is `D:\Dex\Projects\coldfront`, cloned from `dexnotavailable/coldfront` at `eced20f`. The existing dex.place checkout contains unrelated edits; hosting integration must use an isolated checkout. A banked usage reset is authorised once the remaining main allowance reaches 1–2%; the initial live reading was 83% remaining with one reset available.
+
+**Screenshot prerequisite passed:** three 0.186.0, Playwright 1.63.0, Chromium 153.0.8010.12 (revision 1243), `--enable-unsafe-swiftshader`. A local HTTP scene with COOP/COEP rendered exactly twice and captured via in-page `toBlob`. WebGL2 and cross-origin isolation were true, context loss false, GL error zero. Both the Astra helper and main agent opened the PNG: a cyan cube with differently lit faces, cast shadow and slate floor. This proves the rendering/capture route only, not terrain or gameplay. Local evidence: `D:\Dex\Temp\coldfront-proof\output\receipt.json` and `three-webgl2-proof.png`.
+
+**Hosting integration:** [dex.place PR #2](https://github.com/dexnotavailable/dex.place/pull/2) merged and deployed as `453aa632a58a9d21490710a7dfcd4aa6687822f3`. Its isolated `/coldfront/` mount passed all 50 origin/deployer tests, 127 site tests, TypeScript checks and the site production build. Public readback confirmed that SHA, a query-preserving 308 redirect, both isolation headers, and healthy site status. It serves only a separately published game distribution; the game is not playable yet and `/coldfront/` correctly returns 404 until one is published. Existing site and SP13 routes keep their headers. The normal site puller owns deployment; no extra server, tunnel or scheduled task was created.
+
+**Implementation lanes:** Astra is implementing the deterministic shared foundation, the catalogue pipeline/screens, and the engine/game in three isolated copies. They share explicit typed contracts and disjoint file ownership. Integration accepts the shared foundation before the UI/engine. The UI tooling must pass on primitives before screens are authored. The phase-1.1 catalogue inventory is 91 rows: 41 controls, 28 texts, 22 bindings.
 
 ## Rubric scores (latest; score of record = min(self, blind))
 | Postcard | Seed | Self | Blind | Record | Critique |
@@ -32,7 +46,8 @@
 |---|---|---|---|
 
 ## Known issues
-- (none yet)
+- No playable game build yet. The first public game release remains the roadmap's step-3 checkpoint.
+- The documented `coldfront.pages.dev` name belongs to another website. Live releases use `dex.place/coldfront/`; a separate Pages project would need a verified owned address.
 
 ## Try this (latest build)
 1. (the agent fills this in)

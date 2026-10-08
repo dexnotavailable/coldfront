@@ -170,6 +170,14 @@ The agent appends to lists 2 and 3 and never blocks work waiting for answers.
 
 ---
 
+**2026-10-08 · first implementation.**
+
+| # | Decision | Why | To reverse |
+|---|---|---|---|
+| 100 | **Tooltips may wrap naturally inside their existing 280 px maximum width.** Exact catalogue wording, the 100-character limit and 13 px type stay unchanged; other controls still reject accidental wrapping | The actual primitive screenshots showed that `tools.clear`'s prescribed wording cannot fit on one line at the prescribed width and type size. This resolves contradictory rules without shortening the explanation, enlarging the tooltip or adding text. The original failed screenshots are retained | 11 A2; Tooltip-specific layout checks |
+
+---
+
 ## 3. Parking lot
 
 - Seasonal modifiers ("the Long Winter": a season with twice the winter)
