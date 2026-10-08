@@ -1,4 +1,12 @@
 import { BLOCK_REGISTRY, Block } from "../../../shared/src/blocks/registry.js";
+import type {
+  SurfaceRegionId,
+  WorldContext,
+  WorldKind,
+  WorldPlanData,
+  XZ,
+} from "../../../shared/src/world/types.js";
+import { createWorldContext } from "../../../shared/src/world/world-context.js";
 import { WORLDGEN_VERSION } from "../../../shared/src/worldgen/version.js";
 import type {
   CompassId,
@@ -9,11 +17,19 @@ import type {
   GameSnapshot,
   HotbarIndex,
   InputScope,
+  MapFrame,
+  MapPoint,
+  MapPointRequest,
+  MapRequest,
+  TeleportRequest,
+  TeleportResult,
   ToolState,
+  WorldSession,
 } from "../contracts/game-ui.js";
 import { ChunkStore } from "../engine/chunk-store.js";
 import { blockIcon } from "../engine/effects.js";
-import { GameClocks } from "../engine/motion.js";
+import { ease, GameClocks } from "../engine/motion.js";
+import { PlanPreparation } from "../engine/prepare-plan.js";
 import { type WorldColors, WorldRenderer } from "../engine/renderer.js";
 import { chunkKey, type VoxelEdit } from "../engine/worker-protocol.js";
 import { WORLD_BUTTONS, WORLD_CODES } from "./bindings.js";
@@ -25,6 +41,7 @@ import {
   PHYSICS,
   stepBody,
 } from "./controller.js";
+import { insideXZ, resolveDestination } from "./destination.js";
 import { FLY_SPEEDS, WorldInput } from "./input.js";
 import { EditPersistence } from "./persistence.js";
 import {
@@ -34,6 +51,15 @@ import {
   type Point,
   raycast,
 } from "./raycast.js";
+import { NavigationGate, sameSession } from "./session.js";
+import {
+  type MapSamplingReport,
+  mapFrame,
+  regionAt,
+  regionViewpoints,
+  topRegions,
+} from "./world-map.js";
+import { insideFrame, type SavedPose, worldKey } from "./world-save.js";
 
 export interface GameOptions {
   readonly colors: WorldColors;
@@ -43,6 +69,8 @@ export interface GameOptions {
   /** Root injects the worldgen+registry source hash at build time. */
   readonly cacheTag: string;
   readonly externalKeyboard?: boolean;
+  /** The opaque map covers the canvas; simulation/clocks continue without hidden draws. */
+  readonly worldVisible?: () => boolean;
   readonly postcard?: {
     readonly position: Point;
     readonly target: Point;
@@ -51,6 +79,14 @@ export interface GameOptions {
   };
 }
 export interface GameTelemetry {
+  readonly rendering: Readonly<{
+    visible: boolean;
+    animationRenders: number;
+    hiddenFrames: number;
+  }>;
+  readonly mapReports: readonly Readonly<
+    MapSamplingReport & { sessionId: number; requestId: number }
+  >[];
   readonly camera: Readonly<{
     position: Point;
     focus: Point;
@@ -181,8 +217,32 @@ class GameRuntime implements GamePort {
   private hud = true;
   private stopped = false;
   private session = 0;
+  private worldRequest = 0;
+  private world: WorldSession | null = null;
+  private loadStage: "plan" | "terrain" = "terrain";
+  private readonly plans = new PlanPreparation();
+  private readonly navigation = new NavigationGate();
+  private mapSerial = 0;
+  private readonly mapReports: (MapSamplingReport & {
+    sessionId: number;
+    requestId: number;
+  })[] = [];
+  private viewpoints: ReadonlyMap<SurfaceRegionId, XZ> = new Map();
+  private discoveries = new Set<SurfaceRegionId>();
+  private readonly discoveryMemory = new Map<string, Set<SurfaceRegionId>>();
+  private lastRegion: SurfaceRegionId | null = null;
+  private poseSavedAt = 0;
+  private cameraTransition: {
+    fromPosition: Point;
+    fromFocus: Point;
+    started: number;
+    duration: number;
+  } | null = null;
+  private fade: Animation | null = null;
   private frame = 0;
   private lastFrame = 0;
+  private animationRenders = 0;
+  private hiddenFrames = 0;
   private accumulator = 0;
   private snapshotTime = 0;
   private tick = 0;
@@ -262,6 +322,22 @@ class GameRuntime implements GamePort {
       ((Math.round(this.body.headYaw / (Math.PI / 4)) % 8) + 8) % 8
     ] as CompassId;
     return {
+      world: lifecycle === "ready" ? this.world : null,
+      loadStage: this.loadStage,
+      mapInfo:
+        lifecycle === "ready" && this.store
+          ? {
+              bounds: { minX: -22528, minZ: -22528, maxX: 22528, maxZ: 22528 },
+              regions: this.store.context.regions.map(
+                ({ id, name, kanji, discoverySentence }) => ({
+                  id,
+                  name,
+                  ...(kanji ? { kanji } : {}),
+                  ...(discoverySentence ? { discoverySentence } : {}),
+                }),
+              ),
+            }
+          : null,
       revision: this.revision,
       lifecycle,
       loadProgress: this.loadProgress,
@@ -291,6 +367,9 @@ class GameRuntime implements GamePort {
       debug:
         lifecycle === "ready"
           ? {
+              regionWeights: this.store
+                ? topRegions(this.store.context, this.body.x, this.body.z)
+                : [],
               feet: [this.body.x, this.body.y, this.body.z],
               facing,
               pitchDegrees: this.camera.tilt,
@@ -353,6 +432,8 @@ class GameRuntime implements GamePort {
         this.pendingTransitions--;
         this.input.setScope(this.pendingTransitions ? "inactive" : this.scope);
         this.publish();
+        if (this.lifecycle === "ready" && this.pendingTransitions === 0)
+          this.discoverRegion();
       });
     this.transitions = next;
     this.promise = next;
@@ -361,20 +442,33 @@ class GameRuntime implements GamePort {
   apply(command: GameCommand): void {
     if (this.stopped) return;
     switch (command.type) {
-      case "start":
-        this.transition(() => this.start(command.seed));
+      case "start": {
+        const request = ++this.worldRequest;
+        this.cancelNavigation();
+        this.plans.cancel();
+        this.transition(() =>
+          this.start(command.seed, command.worldKind, request),
+        );
         break;
+      }
       case "quit":
+        ++this.worldRequest;
+        this.cancelNavigation();
+        this.plans.cancel();
         this.transition(() => this.quit());
         break;
       case "pause":
+        if (this.clocks.paused === command.paused) return;
         this.clocks.paused = command.paused;
         this.input.release();
         break;
       case "input-scope":
+        if (this.scope === command.scope) return;
         this.scope = command.scope;
         this.input.setScope(
-          this.pendingTransitions ? "inactive" : command.scope,
+          this.pendingTransitions || this.navigation.pending
+            ? "inactive"
+            : command.scope,
         );
         break;
       case "set-time":
@@ -410,7 +504,16 @@ class GameRuntime implements GamePort {
         this.transition(() => this.setPostcard(command.active));
         break;
       case "clear-edits":
-        this.transition(() => this.clear(command.seed));
+        if (!sameSession(this.world, command.world)) {
+          this.emit({
+            type: "clear-edits-finished",
+            world: command.world,
+            ok: false,
+          });
+          break;
+        }
+        this.cancelNavigation();
+        this.transition(() => this.clear(command.world));
         break;
     }
     this.publish();
@@ -422,36 +525,186 @@ class GameRuntime implements GamePort {
       displayTimeMs: this.clocks.displayMs,
     });
   }
-  private async start(seed: number): Promise<void> {
-    const session = ++this.session;
+  private pose(): SavedPose {
+    return {
+      x: this.body.x,
+      y: this.body.y,
+      z: this.body.z,
+      yaw: this.body.yaw,
+      flying: this.tools.flying,
+    };
+  }
+  private async saveCurrent(): Promise<void> {
+    if (!this.store || !this.world) return;
+    const identity = this.world.identity,
+      edits = [...this.store.edits.values()],
+      pose = this.pose();
+    await this.persistence.save(identity, edits);
+    await this.persistence.savePose(identity, pose);
+  }
+  private destination(
+    store: ChunkStore,
+    x: number,
+    z: number,
+    preferred?: SavedPose | null,
+  ): SavedPose {
+    return resolveDestination(
+      {
+        get: store.get,
+        surface: store.surface,
+        water: (wx, wz) =>
+          store.context.waterQuery(wx, wz, {
+            bodyId: 0,
+            kind: "none",
+            level: 0,
+          }),
+      },
+      x,
+      z,
+      this.body.yaw,
+      preferred,
+    );
+  }
+  private uploadStore(store: ChunkStore, limit: number): void {
+    if (!this.renderer) return;
+    for (let i = 0; i < limit && store.uploads.length; i++) {
+      const result = store.uploads.shift();
+      if (!result) break;
+      const stored = store.chunks.get(chunkKey(result.address));
+      if (
+        !stored ||
+        stored.revision !== result.revision ||
+        !sameSession(store.world, result.world)
+      )
+        continue;
+      this.renderer.upload(result);
+      stored.state = "visible";
+    }
+  }
+  private async prepareNear(
+    store: ChunkStore,
+    position: Point,
+    radius: number,
+    current: () => boolean,
+    progress?: (value: number) => void,
+  ): Promise<boolean> {
+    let complete = false,
+      failure: unknown;
+    const pending = store
+      .requestView(position.x, position.y, position.z, radius)
+      .then(
+        (value) => {
+          complete = true;
+          return value;
+        },
+        (error: unknown) => {
+          failure = error;
+          complete = true;
+          return [];
+        },
+      );
+    while (!complete && current()) {
+      this.uploadStore(store, 8);
+      const finished = [...store.chunks.values()].filter(
+        (chunk) => chunk.result,
+      ).length;
+      progress?.(finished / Math.max(1, store.chunks.size));
+      await new Promise<void>((resolve) => setTimeout(resolve, 25));
+    }
+    if (!current()) return false;
+    const addresses = await pending;
+    if (failure) throw failure;
+    while (store.uploads.length && current()) {
+      this.uploadStore(store, this.options.postcard ? Infinity : 8);
+      if (!this.options.postcard)
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+    }
+    if (!current()) return false;
+    if (!store.hasView(addresses, true))
+      throw new Error("Destination meshes are not uploaded");
+    return true;
+  }
+  private async start(
+    seed: number,
+    kind: WorldKind,
+    request: number,
+    skipSave = false,
+  ): Promise<void> {
+    if (kind !== "main" && kind !== "test")
+      throw new Error("Unknown world kind");
+    if (request !== this.worldRequest || this.stopped) return;
+    const current = () => request === this.worldRequest && !this.stopped;
+    const oldStore = this.store,
+      oldWorld = this.world,
+      oldMode = this.mode;
+    let candidate: ChunkStore | null = null;
     cancelAnimationFrame(this.frame);
-    this.store?.dispose();
-    this.store = null;
-    this.input.dispose();
-    this.camera = new OverheadCamera();
-    this.input = this.makeInput();
-    this.input.setScope(this.pendingTransitions ? "inactive" : this.scope);
     this.lifecycle = "loading";
     this.seed = seed >>> 0;
     this.loadProgress = 0;
-    this.body = makeBody();
-    this.previous = { ...this.body };
-    this.clocks.setHours(this.options.postcard?.hours ?? 12);
-    this.clocks.paused = false;
-    this.clocks.displayMs = 0;
-    this.tools = initialTools();
-    this.lastView = "";
-    this.tick = 0;
-    this.lastFrame = 0;
-    this.accumulator = 0;
+    this.loadStage = kind === "main" ? "plan" : "terrain";
     this.publish();
     try {
+      if (!skipSave) await this.saveCurrent();
+      // Keep source geometry/pose, but release its worker resources before a
+      // builder or candidate pool starts. At most one terrain pool is alive.
+      oldStore?.suspendWorkers();
+      await this.persistence.open();
+      if (!current()) return;
+      const world: WorldSession = Object.freeze({
+        id: ++this.session,
+        identity: Object.freeze({
+          kind,
+          seed: seed >>> 0,
+          generation: `${WORLDGEN_VERSION}:${this.options.cacheTag}`,
+        }),
+      });
+      const plan: WorldPlanData | null = await this.plans.prepare(
+        world.identity,
+        (value) => {
+          if (!current()) return;
+          this.loadProgress = Math.max(
+            this.loadProgress,
+            (0.35 * value.completed) / Math.max(1, value.total),
+          );
+          this.publish();
+        },
+      );
+      if (!current()) return;
+      const context: WorldContext =
+        kind === "main"
+          ? createWorldContext({
+              kind,
+              seed: world.identity.seed,
+              plan: plan as WorldPlanData,
+            })
+          : createWorldContext({ kind, seed: world.identity.seed });
+      const saved = await this.persistence.loadWorld(world.identity);
+      if (!current()) return;
+      if (this.persistence.blocked) this.emit({ type: "storage-blocked" });
+      candidate = new ChunkStore(world, context, plan, saved.edits);
+      const pose = this.destination(
+        candidate,
+        saved.pose?.x ?? context.spawn.x,
+        saved.pose?.z ?? context.spawn.z,
+        saved.pose,
+      );
+      const body = makeBody(pose.x, pose.y, pose.z);
+      body.yaw = body.headYaw = pose.yaw;
+      body.flying = pose.flying;
+      const camera = new OverheadCamera();
+      camera.relocate(body, candidate.get, candidate.surface);
+      const viewpoints = regionViewpoints(context);
+      this.loadStage = "terrain";
+      this.loadProgress = Math.max(this.loadProgress, 0.35);
+      this.publish();
       if (!this.renderer)
         this.renderer = new WorldRenderer(this.canvas, this.options.colors);
       this.graphics = "available";
       this.renderer.onLost = () => {
         this.graphics = "lost";
         this.input.release();
+        this.cancelNavigation();
         this.publish();
       };
       this.renderer.onRestored = () => {
@@ -459,78 +712,127 @@ class GameRuntime implements GamePort {
         this.emit({ type: "graphics-rebuilding" });
         this.rebuildGraphics();
       };
-      await this.persistence.open();
-      const saved = await this.persistence.load(this.seed);
-      if (this.persistence.blocked) this.emit({ type: "storage-blocked" });
-      if (session !== this.session) return;
-      const store = new ChunkStore(this.seed, saved);
-      this.store = store;
-      store.onFailure = (error) => {
+      const postcard = this.options.postcard;
+      if (postcard && kind !== "test")
+        throw new Error("TEST-1 postcard requires the test world");
+      const prepared = await this.prepareNear(
+        candidate,
+        postcard?.target ?? body,
+        postcard?.radius ?? 96,
+        current,
+        (value) => {
+          this.loadProgress = Math.max(this.loadProgress, 0.35 + 0.55 * value);
+          this.publish();
+        },
+      );
+      if (!prepared || !current()) return;
+      this.renderer.setPostcard(!!postcard);
+      this.renderer.update(
+        body,
+        body,
+        1,
+        0,
+        Infinity,
+        {
+          ...initialTools(),
+          timeHours: postcard?.hours ?? 12,
+          flying: pose.flying,
+        },
+        null,
+        null,
+        Block.Stone,
+        false,
+      );
+      this.renderer.prepareView(
+        world.id,
+        postcard?.position ?? camera.position,
+        postcard?.target ?? camera.focus,
+      );
+      if (!current()) return;
+      this.renderer.effects.reset();
+      this.renderer.setWorld(world.id);
+      this.renderer.setView(
+        postcard?.position ?? camera.position,
+        postcard?.target ?? camera.focus,
+      );
+      this.renderer.update(
+        body,
+        body,
+        1,
+        0,
+        Infinity,
+        {
+          ...initialTools(),
+          timeHours: postcard?.hours ?? 12,
+          flying: pose.flying,
+        },
+        null,
+        null,
+        Block.Stone,
+        false,
+      );
+      this.renderer.render();
+      this.renderer.render();
+      // No awaited operation after this point: pose, world and visible GPU set commit together.
+      this.store = candidate;
+      candidate = null;
+      this.world = world;
+      this.viewpoints = viewpoints;
+      const discoveryKey = worldKey(world.identity);
+      this.discoveries =
+        this.discoveryMemory.get(discoveryKey) ?? new Set<SurfaceRegionId>();
+      for (const id of saved.discoveries) this.discoveries.add(id);
+      this.discoveryMemory.set(discoveryKey, this.discoveries);
+      this.lastRegion = null;
+      this.body = body;
+      this.previous = { ...body };
+      this.camera = camera;
+      this.input.dispose();
+      this.input = this.makeInput();
+      this.input.setScope("inactive");
+      this.clocks.setHours(postcard?.hours ?? 12);
+      this.clocks.paused = false;
+      this.clocks.runs = true;
+      this.clocks.displayMs = 0;
+      this.tools = { ...initialTools(), flying: pose.flying };
+      this.mode = postcard ? "postcard" : "overhead";
+      this.target = this.ghost = null;
+      this.actionRecord = null;
+      this.cameraTransition = null;
+      this.lastView = "";
+      this.tick = this.lastFrame = this.accumulator = this.poseSavedAt = 0;
+      oldStore?.dispose();
+      if (oldWorld) this.renderer.removeWorld(oldWorld.id);
+      this.store.onFailure = (error) => {
+        if (this.store?.world.id !== world.id) return;
         console.error(error);
         this.lifecycle = "failed";
         this.publish();
       };
-      const postcard = this.options.postcard;
-      if (postcard) {
-        this.mode = "postcard";
-        this.renderer.setPostcard(true);
-        this.renderer.setView(postcard.position, postcard.target);
-      } else {
-        this.mode = "overhead";
-        this.renderer.setPostcard(false);
-        this.renderer.setView(this.camera.position, this.camera.focus);
-      }
-      let complete = false;
-      const pending = store
-        .requestView(
-          postcard?.target.x ?? 0,
-          postcard?.target.y ?? 6,
-          postcard?.target.z ?? 0,
-          postcard?.radius ?? 96,
-        )
-        .then(() => {
-          complete = true;
-        });
-      while (
-        !complete &&
-        session === this.session &&
-        this.read().lifecycle !== "failed"
-      ) {
-        this.upload(8);
-        const finished = [...store.chunks.values()].filter(
-          (c) => c.result,
-        ).length;
-        this.loadProgress = Math.max(
-          this.loadProgress,
-          0.05 + (0.8 * finished) / Math.max(1, store.chunks.size),
-        );
-        this.publish();
-        await new Promise<void>((resolve) => setTimeout(resolve, 50));
-      }
-      await pending;
-      if (session !== this.session || this.read().lifecycle === "failed")
-        return;
-      while (store.uploads.length) {
-        this.upload(postcard ? Infinity : 8);
-        if (!postcard)
-          await new Promise<void>((resolve) =>
-            requestAnimationFrame(() => resolve()),
-          );
-      }
-      this.updatePicture(0);
-      this.renderer.compile();
-      this.renderer.render();
-      this.renderer.render();
       this.lifecycle = "ready";
       this.loadProgress = 1;
       this.publish();
       if (!postcard) this.frame = requestAnimationFrame(this.animate);
     } catch (error) {
+      if (!current()) return;
       console.error(error);
       this.lifecycle = "failed";
       if (error instanceof Error && error.message.includes("WebGL2"))
         this.graphics = "unavailable";
+      if (oldWorld && this.renderer) {
+        this.renderer.setWorld(oldWorld.id);
+        this.renderer.setPostcard(oldMode === "postcard");
+        this.renderer.setView(this.camera.position, this.camera.focus);
+        this.updatePicture(1);
+      }
       this.publish();
+    } finally {
+      if (candidate) {
+        this.renderer?.removeWorld(candidate.world.id);
+        candidate.dispose();
+      }
+      if (current() && this.store === oldStore && oldStore)
+        await oldStore.resumeWorkers();
     }
   }
   private upload(limit: number): void {
@@ -543,14 +845,7 @@ class GameRuntime implements GamePort {
       this.renderer.effects.placementActive(this.clocks.displayMs)
     )
       return;
-    for (let i = 0; i < limit && this.store.uploads.length; i++) {
-      const result = this.store.uploads.shift();
-      if (!result) break;
-      const stored = this.store.chunks.get(chunkKey(result.address));
-      if (!stored || stored.revision !== result.revision) continue;
-      this.renderer.upload(result);
-      stored.state = "visible";
-    }
+    this.uploadStore(this.store, limit);
   }
   private rebuildGraphics(): void {
     if (!this.renderer || !this.store) return;
@@ -577,7 +872,7 @@ class GameRuntime implements GamePort {
         this.fixedStep();
         this.accumulator -= PHYSICS.tick;
       }
-      if (this.store)
+      if (this.store && !this.navigation.pending)
         this.camera.step(
           dt,
           this.body,
@@ -586,11 +881,33 @@ class GameRuntime implements GamePort {
           this.input.turn,
           this.input.tilt,
         );
-      this.renderer?.setView(this.camera.position, this.camera.focus);
+      const transition = this.cameraTransition;
+      if (transition) {
+        const t = ease(
+          "ease-camera",
+          (this.clocks.displayMs - transition.started) / transition.duration,
+        );
+        const mix = (a: Point, b: Point): Point => ({
+          x: a.x + (b.x - a.x) * t,
+          y: a.y + (b.y - a.y) * t,
+          z: a.z + (b.z - a.z) * t,
+        });
+        this.renderer?.setView(
+          mix(transition.fromPosition, this.camera.position),
+          mix(transition.fromFocus, this.camera.focus),
+        );
+        if (t >= 1) {
+          this.cameraTransition = null;
+          this.lastView = "";
+        }
+      } else this.renderer?.setView(this.camera.position, this.camera.focus);
     }
     this.upload(8);
-    this.updatePicture(this.accumulator / PHYSICS.tick);
-    this.renderer?.render();
+    if (this.options.worldVisible?.() ?? true) {
+      this.updatePicture(this.accumulator / PHYSICS.tick);
+      this.renderer?.render();
+      this.animationRenders++;
+    } else this.hiddenFrames++;
     if (now - this.snapshotTime > 100) {
       this.snapshotTime = now;
       this.publish();
@@ -598,7 +915,8 @@ class GameRuntime implements GamePort {
     this.frame = requestAnimationFrame(this.animate);
   };
   private fixedStep(): void {
-    if (!this.store) return;
+    if (!this.store || this.navigation.pending || this.pendingTransitions)
+      return;
     this.tick++;
     this.previous = { ...this.body };
     const active = this.pendingTransitions === 0 && this.scope === "world";
@@ -644,18 +962,26 @@ class GameRuntime implements GamePort {
     const view = `${Math.floor(this.body.x / 16)},${Math.floor(this.body.y / 32)},${Math.floor(this.body.z / 16)},${Math.ceil(this.camera.distance / 64)}`;
     if (view !== this.lastView) {
       this.lastView = view;
-      void this.store.requestView(
-        this.body.x,
-        this.body.y,
-        this.body.z,
-        Math.max(96, Math.min(224, this.camera.distance * 1.3)),
-      );
-      for (const key of this.store.evict(
-        this.body.x,
-        this.body.z,
-        Math.max(192, this.camera.distance * 1.6),
-      ))
-        this.renderer?.remove(key);
+      void this.store
+        .requestView(
+          this.body.x,
+          this.body.y,
+          this.body.z,
+          Math.max(96, Math.min(224, this.camera.distance * 1.3)),
+        )
+        .catch(() => {});
+      if (!this.cameraTransition)
+        for (const key of this.store.evict(
+          this.body.x,
+          this.body.z,
+          Math.max(192, this.camera.distance * 1.6),
+        ))
+          this.renderer?.remove(key);
+    }
+    this.discoverRegion();
+    if (this.world && this.clocks.displayMs - this.poseSavedAt >= 5000) {
+      this.poseSavedAt = this.clocks.displayMs;
+      void this.persistence.savePose(this.world.identity, this.pose());
     }
   }
   private updateTarget(): void {
@@ -697,6 +1023,7 @@ class GameRuntime implements GamePort {
         z: this.target.z + this.target.normal.z,
       };
       if (
+        insideFrame(p.x, p.y, p.z) &&
         p.y + 1 <= cut &&
         this.store.get(p.x, p.y, p.z) === Block.Air &&
         !intersectsBody(this.body, p.x, p.y, p.z)
@@ -740,11 +1067,18 @@ class GameRuntime implements GamePort {
     );
   }
   private recordEdit(edit: VoxelEdit): void {
-    if (!this.store || this.pendingTransitions || this.lifecycle !== "ready")
+    if (
+      !this.store ||
+      !this.world ||
+      this.navigation.pending ||
+      this.pendingTransitions ||
+      this.lifecycle !== "ready" ||
+      !insideFrame(edit.x, edit.y, edit.z)
+    )
       return;
     this.store.edit(edit);
     void this.persistence
-      .save(this.seed, [...this.store.edits.values()])
+      .save(this.world.identity, [...this.store.edits.values()])
       .then(() => {
         if (this.persistence.blocked) this.emit({ type: "storage-blocked" });
       });
@@ -815,49 +1149,313 @@ class GameRuntime implements GamePort {
     }
     this.publish();
   }
-  private async clear(seed: number): Promise<void> {
-    if (seed !== this.seed) {
-      this.emit({ type: "clear-edits-finished", seed, ok: false });
+  private async clear(world: WorldSession): Promise<void> {
+    const request = this.worldRequest;
+    if (!sameSession(this.world, world)) {
+      this.emit({ type: "clear-edits-finished", world, ok: false });
       return;
     }
-    const ok = await this.persistence.clear(seed);
-    if (!ok) {
-      this.emit({ type: "clear-edits-finished", seed, ok: false });
+    const ok = await this.persistence.clear(world.identity);
+    if (
+      !ok ||
+      !sameSession(this.world, world) ||
+      request !== this.worldRequest
+    ) {
+      this.emit({ type: "clear-edits-finished", world, ok: false });
       return;
     }
     if (this.store) this.store.edits.clear();
-    await this.start(seed);
+    await this.start(world.identity.seed, world.identity.kind, request, true);
     this.emit({
       type: "clear-edits-finished",
-      seed,
-      ok: ok && this.lifecycle === "ready",
+      world,
+      ok: this.lifecycle === "ready",
     });
   }
   private async quit(): Promise<void> {
-    ++this.session;
+    this.cancelNavigation();
+    this.mapSerial++;
     cancelAnimationFrame(this.frame);
     this.input.release();
-    if (this.store)
-      await this.persistence.save(this.seed, [...this.store.edits.values()]);
+    await this.saveCurrent();
     this.store?.dispose();
     this.store = null;
+    this.world = null;
     this.renderer?.dispose();
     this.renderer = null;
     this.lifecycle = "idle";
     this.mode = "overhead";
     this.publish();
   }
+  private cancelNavigation(): void {
+    this.navigation.cancel();
+    this.fade?.cancel();
+    this.fade = null;
+    this.canvas.style?.removeProperty("opacity");
+    this.input.release();
+    this.input.setScope(this.pendingTransitions ? "inactive" : this.scope);
+  }
+  cancelTeleport(sessionId: number): void {
+    if (this.world?.id === sessionId && this.navigation.pending)
+      this.cancelNavigation();
+  }
+  inspectMap(request: MapPointRequest): MapPoint | null {
+    if (
+      !this.world ||
+      !this.store ||
+      request.sessionId !== this.world.id ||
+      this.lifecycle !== "ready" ||
+      this.pendingTransitions ||
+      !insideXZ(request.x, request.z)
+    )
+      return null;
+    return {
+      x: request.x,
+      z: request.z,
+      regionId: regionAt(this.store.context, request.x, request.z),
+    };
+  }
+  async readMap(request: MapRequest): Promise<MapFrame | null> {
+    const world = this.world,
+      store = this.store;
+    if (
+      !world ||
+      !store ||
+      request.sessionId !== world.id ||
+      this.lifecycle !== "ready" ||
+      this.pendingTransitions
+    )
+      return null;
+    const serial = ++this.mapSerial;
+    return mapFrame(
+      store.context,
+      request,
+      this.viewpoints,
+      () =>
+        !this.stopped &&
+        this.world === world &&
+        this.lifecycle === "ready" &&
+        !this.pendingTransitions &&
+        serial === this.mapSerial,
+      (report) => {
+        this.mapReports.push({
+          ...report,
+          sessionId: world.id,
+          requestId: serial,
+        });
+        if (this.mapReports.length > 12) this.mapReports.shift();
+      },
+    );
+  }
+  private discoverRegion(): void {
+    const world = this.world,
+      store = this.store;
+    if (!world || !store || world.identity.kind === "test") return;
+    const region = regionAt(store.context, this.body.x, this.body.z);
+    if (region === this.lastRegion) return;
+    this.lastRegion = region;
+    if (!region || this.discoveries.has(region)) return;
+    this.discoveries.add(region);
+    this.emit({
+      type: "region-entered",
+      sessionId: world.id,
+      regionId: region,
+    });
+    void this.persistence.discover(world.identity, region).then((ok) => {
+      if (!ok && this.world === world) this.emit({ type: "storage-blocked" });
+    });
+  }
+  async teleport(request: TeleportRequest): Promise<TeleportResult> {
+    const result = (committed: boolean): TeleportResult => ({
+      sessionId: request.sessionId,
+      committed,
+    });
+    const world = this.world,
+      store = this.store,
+      renderer = this.renderer;
+    if (
+      !world ||
+      !store ||
+      !renderer ||
+      world.id !== request.sessionId ||
+      this.lifecycle !== "ready" ||
+      this.pendingTransitions ||
+      this.mode !== "overhead"
+    )
+      return result(false);
+    const point =
+      request.target.kind === "region"
+        ? this.viewpoints.get(request.target.regionId)
+        : request.target;
+    if (!point || !insideXZ(point.x, point.z)) return result(false);
+    this.fade?.cancel();
+    this.fade = null;
+    const ticket = this.navigation.begin(world.id);
+    const current = () =>
+      this.navigation.current(ticket, this.world?.id ?? -1) &&
+      this.world === world &&
+      !this.stopped &&
+      !this.pendingTransitions;
+    this.input.release();
+    this.input.setScope("inactive");
+    const fromPosition = { ...this.camera.position },
+      fromFocus = { ...this.camera.focus };
+    try {
+      const pose = this.destination(store, point.x, point.z);
+      const body = makeBody(pose.x, pose.y, pose.z);
+      body.yaw = body.headYaw = pose.yaw;
+      body.flying = pose.flying;
+      const camera = this.camera.destination(body, store.get, store.surface);
+      const distance = Math.hypot(
+        body.x - this.body.x,
+        body.y - this.body.y,
+        body.z - this.body.z,
+      );
+      const reduced =
+        typeof matchMedia === "function" &&
+        matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const glide = !reduced && distance < 3 * this.camera.requestedDistance;
+      const radius = Math.max(96, Math.min(224, camera.distance * 1.3));
+      if (!(await this.prepareNear(store, body, radius, current)))
+        return result(false);
+      // A short camera glide keeps the source and each intervening near set.
+      if (glide)
+        for (
+          let step = 1, count = Math.ceil(distance / 96);
+          step < count;
+          step++
+        ) {
+          const t = step / count;
+          if (
+            !(await this.prepareNear(
+              store,
+              {
+                x: this.body.x + (body.x - this.body.x) * t,
+                y: this.body.y + (body.y - this.body.y) * t,
+                z: this.body.z + (body.z - this.body.z) * t,
+              },
+              radius,
+              current,
+            ))
+          )
+            return result(false);
+        }
+      if (!current()) return result(false);
+      renderer.update(
+        body,
+        body,
+        1,
+        this.clocks.displayMs,
+        Infinity,
+        { ...this.tools, flying: pose.flying },
+        null,
+        null,
+        this.slots[this.selected] ?? Block.Stone,
+        false,
+      );
+      try {
+        renderer.prepareView(world.id, camera.position, camera.focus);
+      } finally {
+        this.updatePicture(this.accumulator / PHYSICS.tick);
+      }
+      if (!current()) return result(false);
+      const fadeMs = reduced ? 150 : 120;
+      if (!glide && this.canvas.animate) {
+        this.fade = this.canvas.animate([{ opacity: 1 }, { opacity: 0 }], {
+          duration: fadeMs / 2,
+          fill: "forwards",
+        });
+        await this.fade.finished.catch(() => {});
+        if (!current()) return result(false);
+      }
+      // Candidate body and camera become active in one synchronous commit only
+      // after real geometry draw preparation; every preceding await is guarded.
+      renderer.setView(
+        glide ? fromPosition : camera.position,
+        glide ? fromFocus : camera.focus,
+      );
+      renderer.update(
+        body,
+        body,
+        1,
+        this.clocks.displayMs,
+        Infinity,
+        { ...this.tools, flying: pose.flying },
+        null,
+        null,
+        this.slots[this.selected] ?? Block.Stone,
+        false,
+      );
+      renderer.render();
+      this.body = body;
+      this.previous = { ...body };
+      this.camera = camera;
+      this.tools = { ...this.tools, flying: pose.flying };
+      this.accumulator = 0;
+      this.lastFrame = 0;
+      this.lastView = "";
+      this.target = this.ghost = null;
+      this.aim = { x: body.x, y: body.y + 1, z: body.z - 1 };
+      this.occluded = false;
+      this.input.dispose();
+      this.input = this.makeInput();
+      this.input.setScope("inactive");
+      this.cameraTransition = glide
+        ? {
+            fromPosition,
+            fromFocus,
+            started: this.clocks.displayMs,
+            duration: 250,
+          }
+        : null;
+      if (!glide && this.canvas.animate) {
+        this.fade?.cancel();
+        this.fade = this.canvas.animate([{ opacity: 0 }, { opacity: 1 }], {
+          duration: fadeMs / 2,
+        });
+      }
+      this.discoverRegion();
+      void this.persistence.savePose(world.identity, this.pose());
+      this.publish();
+      return result(true);
+    } catch (error) {
+      if (current()) {
+        this.fade?.cancel();
+        this.fade = null;
+        renderer.setView(fromPosition, fromFocus);
+        this.updatePicture(1);
+      }
+      throw error;
+    } finally {
+      this.navigation.finish(ticket);
+      if (!this.navigation.pending) {
+        this.input.release();
+        this.input.setScope(this.pendingTransitions ? "inactive" : this.scope);
+      }
+    }
+  }
   whenReady(): Promise<void> {
     return this.promise;
   }
   async capturePng(): Promise<Blob> {
-    if (!this.renderer || this.lifecycle !== "ready")
+    if (
+      !this.renderer ||
+      this.lifecycle !== "ready" ||
+      this.navigation.pending ||
+      this.pendingTransitions
+    )
       throw new Error("World is not ready for capture");
     return this.renderer.capturePng();
   }
   async renderStill(displayTimeMs?: number): Promise<Blob> {
     await this.promise;
-    if (!this.renderer || !this.store || this.lifecycle !== "ready")
+    if (
+      !this.renderer ||
+      !this.store ||
+      this.lifecycle !== "ready" ||
+      this.navigation.pending ||
+      this.pendingTransitions
+    )
       throw new Error("Still capture requires a ready world");
     if (displayTimeMs !== undefined) {
       cancelAnimationFrame(this.frame);
@@ -878,6 +1476,15 @@ class GameRuntime implements GamePort {
       dy = focus.y - position.y,
       dz = focus.z - position.z;
     return Object.freeze({
+      rendering: {
+        visible: this.options.worldVisible?.() ?? true,
+        animationRenders: this.animationRenders,
+        hiddenFrames: this.hiddenFrames,
+      },
+      mapReports: this.mapReports.map((report) => ({
+        ...report,
+        names: report.names.map((name) => ({ ...name })),
+      })),
       camera: Object.freeze({
         position: { x: position.x, y: position.y, z: position.z },
         focus: { ...focus },
@@ -902,7 +1509,10 @@ class GameRuntime implements GamePort {
       ghost: this.ghost ? { ...this.ghost } : null,
       loaded: this.store?.chunks.size ?? 0,
       queued: this.store?.queueSize ?? 0,
-      ready: this.pendingTransitions === 0 && this.lifecycle === "ready",
+      ready:
+        this.pendingTransitions === 0 &&
+        !this.navigation.pending &&
+        this.lifecycle === "ready",
       displayTimeMs: this.clocks.displayMs,
       editCount: this.store?.edits.size ?? 0,
       lastAction: this.actionRecord,
@@ -919,9 +1529,13 @@ class GameRuntime implements GamePort {
   }
   async dispose(): Promise<void> {
     this.stopped = true;
+    ++this.worldRequest;
+    this.cancelNavigation();
+    this.plans.cancel();
     await this.transition(() => this.quit());
     this.input.dispose();
     this.listeners.clear();
     await this.persistence.close();
+    await this.plans.dispose();
   }
 }

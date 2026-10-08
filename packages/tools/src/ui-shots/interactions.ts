@@ -1,4 +1,5 @@
 import type { Page } from "playwright";
+import { BLOCK_REGISTRY } from "../../../shared/src/blocks/registry";
 /** Exercises production UI components against the explicitly gallery-only port. */
 export async function inspectInteractions(
   page: Page,
@@ -6,6 +7,94 @@ export async function inspectInteractions(
 ): Promise<{ checks: string[]; errors: string[] }> {
   const checks: string[] = [];
   const errors: string[] = [];
+  if (fixture === "map-main" || fixture === "map-test") {
+    try {
+      await page.reload({ waitUntil: "networkidle" });
+      const map = page.locator('[data-ui="map.view"][data-map-ready="true"]');
+      await map.waitFor();
+      const read = () =>
+        map.evaluate((el) => {
+          const d = (el as HTMLElement).dataset;
+          return {
+            x: Number(d.mapX),
+            z: Number(d.mapZ),
+            scale: Number(d.mapScale),
+            pinX: Number(d.mapPinX),
+            pinZ: Number(d.mapPinZ),
+          };
+        });
+      const box = await map.boundingBox();
+      if (!box) throw new Error("Missing map canvas");
+      await page.mouse.click(box.x + box.width * 0.6, box.y + box.height * 0.4);
+      const chosen = await read();
+      const label = await page.locator('[data-ui="map.where"]').textContent();
+      if (!label?.includes("Position")) throw new Error("Map Position missing");
+      await page.keyboard.down("KeyW");
+      await page.waitForTimeout(220);
+      await page.keyboard.up("KeyW");
+      await page.waitForTimeout(150);
+      const panned = await read();
+      if (panned.z >= chosen.z) throw new Error("North-up W did not pan north");
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+      await page.mouse.wheel(0, -100);
+      await page.waitForTimeout(500);
+      const zoomed = await read();
+      if (zoomed.scale >= panned.scale)
+        throw new Error("Map wheel did not zoom");
+      if (zoomed.pinX !== chosen.pinX || zoomed.pinZ !== chosen.pinZ)
+        throw new Error("Map pan/zoom changed the chosen world point");
+      await page.locator('[data-ui="map.teleport"]').click();
+      await page
+        .locator('[data-ui="map.view"]')
+        .waitFor({ state: "hidden", timeout: 1500 });
+      checks.push(
+        "real map click, coordinate readout, north-up W pan, cursor wheel zoom, stable pin, Teleport commit closure (fixture port)",
+      );
+    } catch (error) {
+      errors.push(String(error));
+    }
+    return { checks, errors };
+  }
+  if (
+    fixture === "primitive-select-world" ||
+    fixture === "primitive-select-region"
+  ) {
+    let step = "initial Escape";
+    try {
+      const trigger = page.locator("button[data-select-input]");
+      const list = page.locator('[role="listbox"]');
+      const initial = await trigger.textContent();
+      const fieldHook = await page.evaluate(
+        () => !!document.activeElement?.closest("[data-select-input]"),
+      );
+      if (!fieldHook)
+        throw new Error("Focused Select option lacks the field-ownership hook");
+      await page.keyboard.press("Escape");
+      await list.waitFor({ state: "hidden", timeout: 1000 });
+      if ((await trigger.textContent()) !== initial)
+        throw new Error("Escape changed Select value");
+      await trigger.press("ArrowDown");
+      await list.waitFor();
+      step = "keyboard commit";
+      await page.keyboard.press("End");
+      const last = await list.locator('[role="option"]').last().textContent();
+      await page.keyboard.press("Enter");
+      await list.waitFor({ state: "hidden", timeout: 1000 });
+      if ((await trigger.textContent()) !== last)
+        throw new Error("Select did not commit its last stable option");
+      await trigger.click();
+      await list.waitFor();
+      step = "outside pointer dismissal";
+      await page.mouse.click(8, 8);
+      await list.waitFor({ state: "hidden", timeout: 1000 });
+      checks.push(
+        "Select hook, Escape without mutation, keyboard open/End/commit, pointer outside dismissal",
+      );
+    } catch (error) {
+      errors.push(`${step}: ${String(error)}`);
+    }
+    return { checks, errors };
+  }
   if (
     !["title", "hud", "tools", "palette", "menu", "confirm-clear"].includes(
       fixture,
@@ -83,10 +172,25 @@ export async function inspectInteractions(
     }
     if (fixture === "palette") {
       const search = page.locator('[data-ui="blocks.search"]');
-      await search.fill("stone");
+      const query = "stone";
+      const expectedNames = BLOCK_REGISTRY.filter(
+        (block) => block.id !== 0 && block.name.toLowerCase().includes(query),
+      ).map((block) => block.name);
+      await search.fill(query);
       const slots = page.locator('[data-ui="blocks.grid"]');
-      if ((await slots.count()) !== 3)
-        throw new Error("Palette filter did not match registry names");
+      await page.waitForFunction((expected) => {
+        const actual = [
+          ...document.querySelectorAll('[data-ui="blocks.grid"]'),
+        ].map((element) => element.getAttribute("aria-label"));
+        return JSON.stringify(actual) === JSON.stringify(expected);
+      }, expectedNames);
+      const actualNames = await slots.evaluateAll((elements) =>
+        elements.map((element) => element.getAttribute("aria-label")),
+      );
+      if (JSON.stringify(actualNames) !== JSON.stringify(expectedNames))
+        throw new Error(
+          `Palette names ${JSON.stringify(actualNames)} did not match registry names ${JSON.stringify(expectedNames)}`,
+        );
       await slots.first().click();
       const target = slots.last();
       const name = await target.getAttribute("aria-label");

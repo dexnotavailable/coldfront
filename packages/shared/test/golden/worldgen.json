@@ -1,11 +1,11 @@
 {
   "schema": 1,
-  "sampleSetVersion": 1,
-  "worldgenVersion": 1,
+  "sampleSetVersion": 2,
+  "worldgenVersion": 2,
   "encoding": "sha256; uint16-le; ieee754-binary64-le; signed-zero-preserved; NaN-rejected",
   "provenance": {
-    "sourceHash": "b7a26a0a158fa5698ab5d98a82b6c65cce57e1d16edd973e4cabae226849c861",
-    "sourceCommit": "f8f9d955bff74510cd801ebfb06232aa02d4f48f",
+    "sourceHash": "f33a4f964bd64508d4e34a9e7b78ec7b5ea9411cbe1d880955e86d608374a818",
+    "sourceCommit": "095583f572b092675093b0eae04034b78f7ca5e7",
     "nodeVersion": "v24.18.0"
   },
   "records": [
@@ -2857,6 +2857,2952 @@
         "haloBlocks": "2c47842cad48daa16cc9f8bbfb48176d2bf0ba1fcf1665ae45cecf6d81f45ea2",
         "density": "7dcff25c05c8eafc0d7d8edf18a22505734a18511fe0e0656170bb98b0b113d5",
         "columns": "3dbe2400b0119e4748016e6e9c8a417276dd1e3b45ab2acd823d635a940fe64d"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-plains",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": -502,
+        "cy": 1,
+        "cz": -326,
+        "spacing": 1,
+        "region": "plains",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "9c92f0230717132b11fb854e739d067f46f66471737f6970d3a0394c68135882",
+        "haloBlocks": "a10b171948a5c45aef50466c59c0fcbe824f5f468b32409b79c9e78404a6e8a3",
+        "density": "e1ed97ae8f38683347e4c8eb1d8ba81d4ad164bd5ed045695b7a90be7ec8eb28",
+        "columns": "21666570101061601c6e0cb84369f4f3431f58f2be5ead47fd37e431c0633662"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-tundra",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": -26,
+        "cy": 2,
+        "cz": -545,
+        "spacing": 1,
+        "region": "tundra",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "470044fb51e24aad74d15e95db237ccaaf795219d384bf60cc5124fe5640865a",
+        "haloBlocks": "7fad96ead6d8c97505e45c13a4fc4173bc2d8794195c3a5fe5a2bc74bf87af11",
+        "density": "c1a43b209545c7f4f1c968701f86739871a97163e877ef98f1b65062a7bf832e",
+        "columns": "f6252e1929806f17d84b6d4edee512029586bc2c4ab6036fd3c2fd72833e94c3"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-mountains",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": 392,
+        "cy": 24,
+        "cz": -342,
+        "spacing": 1,
+        "region": "mountains",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "41b187a89b7287818c699347ff028c49b8f00ee3e2c0c480c74d59feeb6fe3b8",
+        "haloBlocks": "fc94f0a6d122d12636a9de2ee589ae1c69511efad190170aa9a5434317fa5745",
+        "density": "bc102fca2cc830dc4b6d012289105f886f51050eeff246218245789b74e43647",
+        "columns": "4e29bc363eb594250c3cef902a80df032b75d7fa6eccd4adaaa3f362da5adfa5"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-desert",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": 501,
+        "cy": 1,
+        "cz": 31,
+        "spacing": 1,
+        "region": "desert",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "5b69b7f032b6d157d0b6d31efa1ca89b968152968163c0e8caf86357a42c1d83",
+        "haloBlocks": "36816143d9ae95ccb61b8accc9817d6e448e1774cae326a03ba822a73c194fdd",
+        "density": "bb88def00d4158da4b397b5a49826e7e58dff48b10d2e7e95ed624f894c0b537",
+        "columns": "3e5b3396a067c16fb46181dabc6f66ba4df4ca0527edba7a7aa34990d1d222bb"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-boneyard",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": 385,
+        "cy": 0,
+        "cz": 335,
+        "spacing": 1,
+        "region": "boneyard",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "f2d1081789393495d64ef1e1e277c65abc3f40d8ad98bd8529bf2c61403ccfd7",
+        "haloBlocks": "badf0085e59bc8b3d9bb4d70fce1d66b1d2a5c4a56dd3fe6ee9f8d5ff656da1b",
+        "density": "6288147eb67a14e628249651f26eab2b0ddedb524614d26e99a6220c0c98b37e",
+        "columns": "220d4c238350b3c0fc330b5b1fe9be5bff25c2a98184c15def05a50db056e85e"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-jungle",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": 156,
+        "cy": 1,
+        "cz": 600,
+        "spacing": 1,
+        "region": "jungle",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "aebf41eab5383b45dc4cb64e88ee6efe68d4e71d983b92f603a23d68d500bfa3",
+        "haloBlocks": "3e9dc46b3aec3a21a8d3318ce358b2d7347900607eaf3ff5753df5cb92137324",
+        "density": "c3530249683abbe4a9bf32af946c56316003ee60da85d3505fa8bc856e426ed3",
+        "columns": "47c1364c792130c36a1d88c8b46d7d1bdfc325a4fd4a295e43625c3e3313cfc8"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-swamp",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": -296,
+        "cy": 0,
+        "cz": 500,
+        "spacing": 1,
+        "region": "swamp",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "25db2391dcfb2deeff061c1115555b174cf773faa62758434948237ab1c30e88",
+        "haloBlocks": "39a8727457c09f1cb0e32e47d0ff23b74803dcd521e0c88dce1c30f9e2df14e7",
+        "density": "6215a11d92aa4a27c3f667b52be4f14cad9976ee555a29ce8f64044c40500040",
+        "columns": "45bbeb7767a29a5dc7c19959492f862e377fab232765b7a6f9ece8577d7772e4"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-lake",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": -582,
+        "cy": 0,
+        "cz": -232,
+        "spacing": 1,
+        "region": "lake",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "ddd91e4f11b3565d7e873a15a517e5bce32844990da367298052f5c578b3c064",
+        "haloBlocks": "68cc4aa4799bbe0366497059bef27fceeb9e20574afdeacc22c49ac55b7f7f5e",
+        "density": "f25ba6dee8dfaa94a5324e5afa580525a06d1f3101997a101382a6f7b420408a",
+        "columns": "f1925dc041be38005516ecfe774ec3d05f35a78d01693434738af4781a501454"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-twilight",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": -179,
+        "cy": 2,
+        "cz": -178,
+        "spacing": 1,
+        "region": "twilight",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "66c1b95e73560961c8e0d8b0674a4b4cbd78ee27c27142f514498a5e215776b1",
+        "haloBlocks": "37034420739261955e50c608b35d6e5800b0eb958a2b0d18750f2afdfbe807ea",
+        "density": "a485b1501c7b8a2ba185172184120087416a5f3ba2dc008f72d4861b2a0579c1",
+        "columns": "8ad466c5a43f47f3e0ee0f762855da8e67b8c08997c15222a90dd8171e278366"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-hellscape",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": 177,
+        "cy": 0,
+        "cz": 180,
+        "spacing": 1,
+        "region": "hellscape",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "ed85408a65e7f8631eb5f3763e290a8ec481ac20cc979d49c1487680f63ecfe4",
+        "haloBlocks": "7d4069e7e435fb48068271e839755fc2ee524d9c248f3b9403f95cf61dea6d67",
+        "density": "2092b8b1eebbea7b0f292e26e4d2148db40fd14d9d9dd952810f8a3116cd00a5",
+        "columns": "8fd1537f331e8352ba76beaa20e868ca7d4efbb7b926cb450e96c7698708431b"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-shardfields",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": 221,
+        "cy": 2,
+        "cz": -199,
+        "spacing": 1,
+        "region": "shardfields",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "ef42906467e74d5d766b272363be5fa3953ac30d15cc215e91c191632cf8b029",
+        "haloBlocks": "cf6e4ec1abf0bf41888261b8a8ad1aebe589e19ebc4c4c4f33d992c04a70c2fd",
+        "density": "7f1033656e3b27d922720c8f1c9feae6f70a1cb5ef2252013c3295f9cae6af59",
+        "columns": "7713ac764b9e9eacec77f9f7990f6cf466d2a4e939b9fdd8ab4af63c5038ca70"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-isles",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": -224,
+        "cy": 0,
+        "cz": 207,
+        "spacing": 1,
+        "region": "isles",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "c03e4ff37f04eb02936201b37f524f9160afb1954321f9540c46517383af6e80",
+        "haloBlocks": "be68fc52174cf51e3dc68c123e98f34f3ced2cff456f3e3847e710a92dc27ef6",
+        "density": "a1071166562e2b348a3425694368f593c59bbe988033c0ca2df50a7dc1fb38b6",
+        "columns": "eb5b452fe1b4379d012bc3090b61731c98751cd54fcb0e78d7e413c53dfbe5a6"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-nadir",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": 0,
+        "cy": 9,
+        "cz": 0,
+        "spacing": 1,
+        "region": "nadir",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "7f06288ab1dd68fd0f40bf93f678421cb429e4c98a34af6de2fafe5be800cbd4",
+        "haloBlocks": "a6c713fb7edae8bc28a7998789893a11e8a6a78486b12ee534de0058a4f14321",
+        "density": "d7fbd4896a2ce7ecdff9065c2117b9ab3e2110a7ee09cd09643b3dd706aed032",
+        "columns": "9f4f90760f850053c03ed8b56d61bbdc604b85512e3b8f6d2499ecee39f6e51e"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-blackwater",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": 53,
+        "cy": 0,
+        "cz": -165,
+        "spacing": 1,
+        "region": "blackwater",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "c3dd57ac127a0143e02b0125f5e9115c138a32d9c0fa107aaf9669d90d2fac86",
+        "haloBlocks": "a06f1a29ff21b3f83339838d7e66af3059e832ac975ce1ad89dd29f8f0cc6659",
+        "density": "b466fdee277c08ef6588c5b0ce55ce3c40a83b24ee6165a24f9925bbe1a4eac2",
+        "columns": "92b80c8881afa7ad3fcd1c2c496fdba9c853f1d156f67b7456f2728c6762fc61"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-rim",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": 0,
+        "cy": 12,
+        "cz": -657,
+        "spacing": 1,
+        "region": "rim",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "788a7a24c15505d7b9563cf807a87ac93a7a462e666cc0e3914154c84858656e",
+        "haloBlocks": "2b4ff76e414145a41e45ea657e2f66ef44e3798528dd3996531df6a1bd9c3574",
+        "density": "64be8fc2c2d3a44f775db7c1fe59562449802665ccff52ccb62663ebd0f92373",
+        "columns": "d9b52fb466a3f76405a2cad572607e5b39ae4036bc5d9938723717bfcfe91653"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-frost",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": 0,
+        "cy": 18,
+        "cz": -688,
+        "spacing": 1,
+        "region": "frost",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
+        "haloBlocks": "4f81ca3cfecda83303af8494315ac6922e13d0b62ae1199070b29bad691cd277",
+        "density": "43749189bb3319fca614b31a82a801e53889a0e7683947f4606bbb9068b04b76",
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod1-plains",
+        "world": "main",
+        "seed": 1,
+        "lod": 1,
+        "cx": -251,
+        "cy": 0,
+        "cz": -163,
+        "spacing": 2,
+        "region": "plains",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "c86a39247c9b0a37ae6b70bac98ed636c0e81844bab8c127b84b80aaed7c4b8d",
+        "haloBlocks": "8df2ad182db15dbbe8387bafa525fd0406383aff9a7d48189c48359493fdc772",
+        "density": "1c02d790f584234e13c993c91cf106f6982c57263268dea6a9420dd87034fa72",
+        "columns": "b9d5a40c5fd7fc0730e6cbb387e671889ed15e0b55a781b798a484cdfd720c39"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod1-tundra",
+        "world": "main",
+        "seed": 1,
+        "lod": 1,
+        "cx": -13,
+        "cy": 1,
+        "cz": -273,
+        "spacing": 2,
+        "region": "tundra",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "afe41794b6d405aaf7541f9f4d4840a212179b708ae967b4783f929351c2c098",
+        "haloBlocks": "46df09fff4307ed461dd7c84ac3e337fc21c5f157f8929328f86178e519a7913",
+        "density": "f962b7c1b7f9f1457baa553abe82c848cadf33b2bcf44ab8151f247478a15b16",
+        "columns": "93e843dbc9a336a26e62fcd6a28569b791184d2b87e06136c529705bdf318914"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod1-mountains",
+        "world": "main",
+        "seed": 1,
+        "lod": 1,
+        "cx": 196,
+        "cy": 12,
+        "cz": -171,
+        "spacing": 2,
+        "region": "mountains",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "96cc3078a94cea9461d75df97069234267c0a2dc6012ccbfd669bd46f6c38606",
+        "haloBlocks": "17167e3e12fa1f2b0eedd32be5f0cfd0b09c85a22e8fa6b1c2d3b7e8ca3300dc",
+        "density": "14a952132a83ed5a03a0d9da2d898f9d8b29f4546472cb5a9fa00556cebc0154",
+        "columns": "1a4cd38610d64fe3ff162731692558fd510d9d215355184ac4f0c2b3cb5be28b"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod1-desert",
+        "world": "main",
+        "seed": 1,
+        "lod": 1,
+        "cx": 250,
+        "cy": 0,
+        "cz": 15,
+        "spacing": 2,
+        "region": "desert",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "f210c21c087a169b6804bb955c135bd858573aa9a135072038f2615605d38450",
+        "haloBlocks": "22aa7fecb221be59616261aeaa20b329cd9e081973277334fe5b5b40ebc5763d",
+        "density": "d8ee6afd3018c9ad717086399124afd0de6e249ec43152e55ff06aff356172ce",
+        "columns": "bc4c0d30f3108468d7857e64dbf57af960194602d57847de56c35e2fabeb930a"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod1-boneyard",
+        "world": "main",
+        "seed": 1,
+        "lod": 1,
+        "cx": 192,
+        "cy": 0,
+        "cz": 167,
+        "spacing": 2,
+        "region": "boneyard",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "de980179aecd326eac21ab6e52125e99892c92a87d32d7e3230ae7c90c26eb93",
+        "haloBlocks": "43bba48172da973d38a820d50792e781fd521870afd053b53363fc474dc97350",
+        "density": "45bb7d7c8ad97745cb6c4df7f01a1ec6185878509532ff91d1153da2a9188d2e",
+        "columns": "31f358962372f41ec906862ece35067a25f38c73d487d731e17418dd35bd4c5d"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod1-jungle",
+        "world": "main",
+        "seed": 1,
+        "lod": 1,
+        "cx": 78,
+        "cy": 0,
+        "cz": 300,
+        "spacing": 2,
+        "region": "jungle",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "66ae990407bd901a481cdef5724e55bf5834c47fe1a88fa6d44707fd551dc1f3",
+        "haloBlocks": "b32558b64a7ff9386dc890035582af9eb71f4bcf4fff3478aa6a34d5c2b26872",
+        "density": "ab44953b5bc8afeb93f4f5908ba2e58e98baf2662b35f97a85caa6bd551b9d67",
+        "columns": "707584c03b0115eecaadef8829c9417f866f3856e9f948c86bbc4b747622260f"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod1-swamp",
+        "world": "main",
+        "seed": 1,
+        "lod": 1,
+        "cx": -148,
+        "cy": 0,
+        "cz": 250,
+        "spacing": 2,
+        "region": "swamp",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "906040f6cbae1ff68cccc488f543a9eb9a8cae758e11ed12d95024bc0c4e84d6",
+        "haloBlocks": "f9ec96173dfbe781145bdef3d0e19c471afd25d3d6bb5cba3d235f833125e7bc",
+        "density": "d3b4df70661ff3597f2b5ab19840cabac61a30d6e9d4c2a296040a36f8dc331b",
+        "columns": "8354b6786dda9e9e0c5f979013316f873f7462fc9cfcf72f43fb5f82f67bc562"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod1-lake",
+        "world": "main",
+        "seed": 1,
+        "lod": 1,
+        "cx": -291,
+        "cy": 0,
+        "cz": -116,
+        "spacing": 2,
+        "region": "lake",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "6ff0ed964209bd9c1e861c8b88f526c78227189b106152d78ce7405368aae23e",
+        "haloBlocks": "21bff60b66ae30332d7e3108055c9579dd1a535e381a053917e22fa3d168ac17",
+        "density": "d4264dbffd25fa8d880e0b3d6b9ceab9e583a9e9a865f46ee3504985236a09e1",
+        "columns": "9d69c3bd5ff3b6fd6ced20257c878c6b7fafab6ac18bb3167781fe624efa0097"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod1-twilight",
+        "world": "main",
+        "seed": 1,
+        "lod": 1,
+        "cx": -90,
+        "cy": 1,
+        "cz": -89,
+        "spacing": 2,
+        "region": "twilight",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "f0b92ba2d3c224bd2adfbb5a9f1303843f0a4deeac53a69a4f030dc28a74a7dc",
+        "haloBlocks": "b3a907b5bf495607d0cf23840077dd6bc597e4457f4d933ad5d98853f2df2c7c",
+        "density": "8948615e98a90d1eabeeb6f1327bdce4b7b913a8faeac28f4506d38d9887aad7",
+        "columns": "d0f7dda4541de4147ac9af71d03b57c975bc5bda7f4772508b9a442e7e398378"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod1-hellscape",
+        "world": "main",
+        "seed": 1,
+        "lod": 1,
+        "cx": 88,
+        "cy": 0,
+        "cz": 90,
+        "spacing": 2,
+        "region": "hellscape",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "5d136099d79384a4799b0cc7a9122f1c3389f08c24798cd85c15c6eb143cc94e",
+        "haloBlocks": "ece423b4320a4774b0061c76d461844891f74de8ffe5f621c2853f635205cc97",
+        "density": "83ecc7c79360b879a55d996d839791d2b578a3ca96c2561fa07aac55588673ab",
+        "columns": "93c018391fe1ff15d0d3135f39e0e1ed884a71e78898b334f7fce71af2b81469"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod1-shardfields",
+        "world": "main",
+        "seed": 1,
+        "lod": 1,
+        "cx": 110,
+        "cy": 1,
+        "cz": -100,
+        "spacing": 2,
+        "region": "shardfields",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "3ea7f3db819afc336fc362760fb9f84565041eac933abf179e7411d83fba8ca7",
+        "haloBlocks": "8e057dd1ebf4b45e3ff9c94c73a1459558b8b04d30aa82e4e36b800969e68c25",
+        "density": "404e575720c84ba4d588d78b6b3cf7c72aa1cfc439dd6250cfed42a9bb20fa9b",
+        "columns": "debd185d5f9dc6b6ac13d74129e01f99ad2d636611d2bfa8b9baf4f3aa6858bd"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod1-isles",
+        "world": "main",
+        "seed": 1,
+        "lod": 1,
+        "cx": -112,
+        "cy": 0,
+        "cz": 103,
+        "spacing": 2,
+        "region": "isles",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "70625e5e4750472e519ef53a9a471fe7368c1d6cbdd9bf4d7645ef9f9e9d410c",
+        "haloBlocks": "40b7bea6672ebcf4000e2c780beff03b19a906247dc61a174bf78fbd287bcab9",
+        "density": "1973fe881a4c1acdf1e0236be7ddf05834970c297564153d94549bd50ae16542",
+        "columns": "db624ef921184429a8c42575f45f6765fdedf38f84beb46098896d75f671c9a1"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod1-nadir",
+        "world": "main",
+        "seed": 1,
+        "lod": 1,
+        "cx": 0,
+        "cy": 4,
+        "cz": 0,
+        "spacing": 2,
+        "region": "nadir",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "183b05ebdc7c9961ff483c00a58328bff153221e64dc840de977143513b3fe97",
+        "haloBlocks": "a601a6b69cad0c9ef0d0959c1118b2740495f1cda594ff22147ca2fb811dcf8c",
+        "density": "0787ad395ebfe57520b2861ae52609238e317390916d7964b258909c974a76a2",
+        "columns": "d2b18bc557b11aa9326b8d0907e43f149c284e0db70d3cca29419ea4dab2e03d"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod1-blackwater",
+        "world": "main",
+        "seed": 1,
+        "lod": 1,
+        "cx": 26,
+        "cy": 0,
+        "cz": -83,
+        "spacing": 2,
+        "region": "blackwater",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "76d742cf6e6f4904be77f0d5982bd91a4d619611adde570e00e420daecb90e02",
+        "haloBlocks": "547924a0f36aa7a12b0a105d3dec5c4fdef153b1a68982b75564095e2c8309ca",
+        "density": "2de32ec91b367aba3c5318cae78effbe8e58381cad700d84b155e95cfc7cb742",
+        "columns": "230661850cb306c1e095d5727ac1178c36e9946d4e0d33b1cf6a89354ea9b610"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod1-rim",
+        "world": "main",
+        "seed": 1,
+        "lod": 1,
+        "cx": 0,
+        "cy": 6,
+        "cz": -329,
+        "spacing": 2,
+        "region": "rim",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "a9cd756720a4e69477026a74828bbcc1cb07daecf7f216483216c008b83b48da",
+        "haloBlocks": "3761c8b7ed0d4b83be4d2df3019af9819bb2398df1d430476b3b45a6a90d0a5f",
+        "density": "935cbd1aaa1de57da2012ce747af07be89aec5238a3b4caaaaf60d29adf72d0d",
+        "columns": "4a6ca9eb301e22f6f2c42f77b7dbf933e5c11c56d117a2e6fab8c976fc0c9571"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod1-frost",
+        "world": "main",
+        "seed": 1,
+        "lod": 1,
+        "cx": 0,
+        "cy": 9,
+        "cz": -344,
+        "spacing": 2,
+        "region": "frost",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "c1585103169e8377531d8c10f723b787879339e2c3488872d80f24b7ebb70f41",
+        "haloBlocks": "4c46bec298589305dbc0b81171a28ad649dd551be7429d4509e0caec71e7f535",
+        "density": "da60bd56fbd86ff912366e7a02b112e9fe6f14f63dfff2c54667f000d1b99fe9",
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-nadir-inside",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": 153,
+        "cy": 3,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "982ff2768cda6361ed2aa464d758db17db4720adde45f3696139e26f1e28e8ff",
+        "haloBlocks": "9f8c4128f3e40f69e6057b0e9cbc305ecfcb47d33c6fa6cd0b89285ab908b704",
+        "density": "3997009490a344dcff36b880b510b14ace1b054188eb12230736b5ef9785fa0f",
+        "columns": "b71bb9d7e584bc47e53bb01af62ebe91569f23e065efdd04ed083dd3d4335dbb"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-nadir-outside",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": 155,
+        "cy": -4,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "c89470a0bd96f2b6689896a29563e36ce5e9cb7e3be204d17ec1d6c244d22d64",
+        "haloBlocks": "09cb671142bb4db905a666f4827f32da17f63a065ba84d96bef4f9ebe194d84f",
+        "density": "343e445bf124774b48773466b2b17a1642ecc45fe2fc3c0416433b983b60bd47",
+        "columns": "fa1a64d88888663cb706a4a49f37dd106a2bf405d9163f4dba95ffafa636cdfa"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-blackwater-inside",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": 196,
+        "cy": -4,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "b85e52d3a0f6521ec7446bde1e1d2bf2d3de59cec1a3695b39fa6853de2d7918",
+        "haloBlocks": "4e7ac22e8b703711f8b1ca04d61be90ace355418e7a8c2f145ca899155fed8d3",
+        "density": "255feddb174c47c81a7569ebf7b4319904a5afd499f5e48ade23c4bb9a0f8800",
+        "columns": "48d5fd96bcf4b19a2ca3ffc3ceae9b230f64de7a55f0716735bd8f9e08802018"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-blackwater-outside",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": 198,
+        "cy": -1,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "a467605fa4dca159515f66c94e38a4a98f0c2e6b45fc8b0e96cf59318b55e03f",
+        "haloBlocks": "ea0ce89219b762fe632bf798acecbf800aa47f4cda5accf7c7e7579d201b538d",
+        "density": "4f1ef7756ebe5d137d07a49c693da87244644e88e71a60400b524145dad0ea22",
+        "columns": "1943ff512794c791e415cf499ddc3444352ab0a1ca49e49aa3e1974e3647fc8c"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-inner-inside",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": 412,
+        "cy": 1,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "4fee42554f10077037a28ae6a8176aaaa251a99be9199277b3aad9c23b843640",
+        "haloBlocks": "4b29b73d88ca84883f2ae1710d1344c9b9b4cec62dc8a277138d7b0af4c0ec6b",
+        "density": "c7de760dadfebd7c63785682ac0cc82e3ef44705e4ac649b59c0178d9d771b4f",
+        "columns": "e1c63bdeb8c838550ece733f0c52de8bbcbbf791df3c6697b4913f8e1433f945"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-inner-outside",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": 414,
+        "cy": 1,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "65655611e5dc3d8c2cca8d45885ed554ace61d9dc2f86cc35728b87b673dc0fb",
+        "haloBlocks": "4aa6d1170605171e7a352a4eb95b910ebb457f9b6f30402aa59913644198c5d6",
+        "density": "6ea49706810dabacca6135c2aef3744a5b205834474136aae6bf0a23b6ec9e1b",
+        "columns": "41301bb23f1c7db0c96753198ca699f0f42b51e02537c02707bac0f715b3539e"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-outer-inside",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": 639,
+        "cy": 1,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "5558dd6c96947ca09f133c1c663695ea733e29b28f956d2acbec9bcfd178db52",
+        "haloBlocks": "284d9fdd17c5620ef146e9dbce651d2498167ebd03ac1672ef6ffaf691bffac2",
+        "density": "6a497c5188757b9d39a3ab55c7e64b8add417aa094a3c26551e3e35d43ed6f1d",
+        "columns": "db307fd558cc160ea7b595fb69e36de9f84a7a200facb7aa0544f37641ad2c94"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-outer-outside",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": 641,
+        "cy": 1,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "8335d629586e94164616666871307dd1cb7069610bf7dce1e091b34b76b8ace7",
+        "haloBlocks": "5b3f26661159fe753929fc2d48821f42857bd480a07f282518fe147b0b088819",
+        "density": "0940c7b442e94b263e20635d2c5b86dd84ada02ccccc76cd363111f47afcf55f",
+        "columns": "61dd123ce47edbbf3d6abfc3f93fa234d55a94c422ae6894f02eb3720eb08ca9"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-rim-inside",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": 665,
+        "cy": 18,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "5ffca6cd007a585540e85b86a445631bb0cf524775d1f55160ce5839eca779d4",
+        "haloBlocks": "6447a0ee46ed9efe4be3003719f697d56ec434397d01cba3825f7d64a5ef59b2",
+        "density": "9eedb4c3ec6ddbb16ec6a5f8a4aa8a0b9beebd2d76c13dacb58829ba88a8e5a9",
+        "columns": "fe3c03232c6bb4559d7521c9f87ebfb69295c39d530568db89cc5c39e9f73e59"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-rim-outside",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": 667,
+        "cy": 18,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "9fcb566ab49ed9615e21e2578a0ae534c391698c59960fadb629194369b09075",
+        "haloBlocks": "6fff9e80a84bc7a0a7d4de205dae7a82d1b3b6fc5e0f5673224f3c3f21e4221c",
+        "density": "83e879387f1e96d7d869104c7da5630cb863181a3b1234b77c1cc864e1755231",
+        "columns": "cb343565546a6f5e3e8770564601402b856adefa42f332d6d0522f4d7f65adad"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-frame--704--704",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": -704,
+        "cy": 18,
+        "cz": -704,
+        "spacing": 1,
+        "coverage": "xz-frame-boundary-signed-corner"
+      },
+      "hashes": {
+        "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
+        "haloBlocks": "1be1bc2d76e8aa1d484d128c0570e854bdbb895e2a787a8f12581b1d379abb22",
+        "density": "baa08deb73c70ef2650e6476ddea553b60e8e5f5858811c1c91ea3ed9de8132a",
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-frame--704-703",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": -704,
+        "cy": 18,
+        "cz": 703,
+        "spacing": 1,
+        "coverage": "xz-frame-boundary-signed-corner"
+      },
+      "hashes": {
+        "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
+        "haloBlocks": "58b3e20d6297a0cbf0d5cb498f2fab9be747a3de4f2f79b72eb24f9fad86e604",
+        "density": "7feebf2dffb63be20ffb636bc95f5568e9885f46f2d7e0855c19f38ab722712f",
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-frame-703--704",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": 703,
+        "cy": 18,
+        "cz": -704,
+        "spacing": 1,
+        "coverage": "xz-frame-boundary-signed-corner"
+      },
+      "hashes": {
+        "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
+        "haloBlocks": "8b5f5d80da99621cac7b33aea6c2dc8d11ab5dd309cbcfc30d6828ae8fd2a80f",
+        "density": "6f52f56f4bfd347ce8f97023464a1b8c0e28d448554163d3e3608d7e5d3ec75f",
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-frame-703-703",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": 703,
+        "cy": 18,
+        "cz": 703,
+        "spacing": 1,
+        "coverage": "xz-frame-boundary-signed-corner"
+      },
+      "hashes": {
+        "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
+        "haloBlocks": "7d89a9c836573a00821644cf3c27e0854c55dd4f2d5573b5f4c8f34e03128b6e",
+        "density": "782e7ca7eb8be1bb410ade6d95bbb309f53c35db449b113c6b1269adf739878f",
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-floor",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": -1,
+        "cy": -48,
+        "cz": -1,
+        "spacing": 1,
+        "coverage": "floor"
+      },
+      "hashes": {
+        "blocks": "0b1bc4208dd7f3a8249804514cb01d457207656dd6acb695c816cfb3e2898e17",
+        "haloBlocks": "67f15edbfe2bb0df5c7ce3ae8f7089d716eccccb5fd221e74e624f2ae9914827",
+        "density": "ccb434e1c36d19c9ca3796d15993c84c7bf88d864cf6945f07f440f4ca8fdabf",
+        "columns": "aec001c57422e2d8104c84d81b6fbfed40201bb99e02a7668a73b7f8e9715064"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-worldstone-transition",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": -1,
+        "cy": -47,
+        "cz": -1,
+        "spacing": 1,
+        "coverage": "worldstone-transition"
+      },
+      "hashes": {
+        "blocks": "4f76e9188b6063650654fde6caa90189ee08262522be6f9e08cc0d75a7b4dc72",
+        "haloBlocks": "21a236e48ac56faa68f52af1a0665d679dd12fbf32b4b15427fe2405a67b28cd",
+        "density": "c96715c894bd9f46310c300d483143070fe30227cff363735661deb24082ea04",
+        "columns": "aec001c57422e2d8104c84d81b6fbfed40201bb99e02a7668a73b7f8e9715064"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-deep-stone",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": -1,
+        "cy": -8,
+        "cz": -1,
+        "spacing": 1,
+        "coverage": "deep-stone"
+      },
+      "hashes": {
+        "blocks": "4f76e9188b6063650654fde6caa90189ee08262522be6f9e08cc0d75a7b4dc72",
+        "haloBlocks": "8d98320d427ca0dafd223ec85ee9f82027a2daa9fe04b499c81acb8b392a0753",
+        "density": "3303f7240f5380b95a3cc75563c6ecc813e5d5e403986490213ad882dd9a12f5",
+        "columns": "aec001c57422e2d8104c84d81b6fbfed40201bb99e02a7668a73b7f8e9715064"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s1-lod0-sky-ceiling",
+        "world": "main",
+        "seed": 1,
+        "lod": 0,
+        "cx": -1,
+        "cy": 31,
+        "cz": -1,
+        "spacing": 1,
+        "coverage": "sky-ceiling"
+      },
+      "hashes": {
+        "blocks": "de2f256064a0af797747c2b97505dc0b9f3df0de4f489eac731c23ae9ca9cc31",
+        "haloBlocks": "9736d8dd61f2488c3dfc458e674c95b61b1194c527dcf63ec29a0f0e95c6aaf6",
+        "density": "65c30f4f6446dd834f855111ecb70e53fd12b3c2452d3feb0cee1d5b735f405d",
+        "columns": "aec001c57422e2d8104c84d81b6fbfed40201bb99e02a7668a73b7f8e9715064"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-plains",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": -464,
+        "cy": 0,
+        "cz": -230,
+        "spacing": 1,
+        "region": "plains",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "c22f7de8afbe4eb15ce9473cb7c5cea0df169b97c25a976379e0bc2faf61921f",
+        "haloBlocks": "4b9908de481cebde07ef2f609ea50aa064d81e0664db54a20de7ca97298909bc",
+        "density": "ed064a6b4ed6f2448d48eaf0abbf353a9c533c9cbb867a31af0643e14792dde0",
+        "columns": "e7de95dbf45ae1b7d1f7d6d4c399fd71e9d1d970552e099a1cb60a9abf260613"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-tundra",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": -21,
+        "cy": 0,
+        "cz": -488,
+        "spacing": 1,
+        "region": "tundra",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "8146245a37cddb607630f8a92dfd8f1aba38371c1218988112d886887b3285c4",
+        "haloBlocks": "8bfa349bc85205046e71d0d0e3be8b28ee6457994b38fe8d65e157d15db94225",
+        "density": "a892fa615fed5ff81d092e53ed19045c9a5ff149733e2c0255f24c26ccdc008b",
+        "columns": "84cba36919393ad4deb9dcaf2880aaa1d64b54c919f0041ea9aab60769c762f2"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-mountains",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": 480,
+        "cy": 9,
+        "cz": -228,
+        "spacing": 1,
+        "region": "mountains",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "9eb7f8b37ec3e2ff85fa7b73a45e8c8334efa08eb324e48e71b67da5c627894b",
+        "haloBlocks": "4898a1c0fea241dc5569b27d60c69027dbad9bc7972f8f1547bf84bd27ec31c6",
+        "density": "3f66d23cf184e443ecf203297743f6bf1d0506ec2e7b18cf8556c0a21e528891",
+        "columns": "82043547660a2a05f0e3cd9e7a8eaed4eb08c3064d6af2502f756706668765ee"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-desert",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": 519,
+        "cy": 1,
+        "cz": 24,
+        "spacing": 1,
+        "region": "desert",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "7730b75e4190b4646a747ec8e0a6c4a5dea88a6df8d91eb12d4c944b5b8aec3b",
+        "haloBlocks": "ed417a2915d62d60afd219de63c5d76f010a1ed7d4e36729c85a23756e564702",
+        "density": "40c6d9590dae69a737f2b8566e01949837c4a84d87df4c8f958fe34e6f011ae1",
+        "columns": "7953c5e5cf04ef9c3c579b04c00fa42f3f5c7e650a32c334a792d5a2a62929e6"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-boneyard",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": 329,
+        "cy": 0,
+        "cz": 375,
+        "spacing": 1,
+        "region": "boneyard",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "a5f4cf47fa60eed1f5869206b5b022df8c2de0d63360279c2b5aa20f8b66992f",
+        "haloBlocks": "974639f202b375ec485661425bc1ae5e8d38b113f3d78afe5205dd53c7f4d035",
+        "density": "24a2f1bef94118864dc59c6f72f595a0d42f3b285bcbeb1a1994c8d31dddf489",
+        "columns": "0510c10edd7f441a599da6e05f5c6f8856fa1e1bfe2bc5117bedabff944cc4e4"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-jungle",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": -216,
+        "cy": 0,
+        "cz": 536,
+        "spacing": 1,
+        "region": "jungle",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "e53c0fd65d2e38de13f6ac72744c84170f79b35aac9cc0fbb3b716de5be9a9f0",
+        "haloBlocks": "413211a9198cd1bfdb833b5a9d53f50999b0ad8f55366a875f0a9c93d83cb5e8",
+        "density": "412a13b8cae0a5f6503e8f26e62c7cce25f7ba2372285bde3494178208a53262",
+        "columns": "cdd32a6e82889b008b0585967700e2c44b14b8b7798675df48136079fb848089"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-swamp",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": -538,
+        "cy": 0,
+        "cz": 284,
+        "spacing": 1,
+        "region": "swamp",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "3f4f3f2da2c83ee938d1b8fd6363adf39c8963730f98e8a2460f3bd1cbf0614d",
+        "haloBlocks": "eb4c250cdcbdd9ab5ce54ee953cd3a86753770047007fdd23e59c681f3e51eb0",
+        "density": "b81c40ecae40fcf1737b8273c584fb9e878c38459d4c30379605ff4b5970354e",
+        "columns": "4f3b50e6c7bc44101f0358783c2cd489e8a5a24871ff3c1a18cf6b743e85d593"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-lake",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": -590,
+        "cy": 0,
+        "cz": 206,
+        "spacing": 1,
+        "region": "lake",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "d4add7790ae9d9e37b636690e88d817dd11fe02b43022f853dcb89ab8345c221",
+        "haloBlocks": "65990d7ab7ab406fec1ad5a7ff1156a80812b1af1ae2356ffb83344272984825",
+        "density": "ccc665f87fb10a87c414f77d6d3d475093d8b2277a6dfbda19c1f42daf29037a",
+        "columns": "bfa8a525f2eae458c545180cf769ecf3c60c89078436a5c975ea9703b9c5fcea"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-twilight",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": -203,
+        "cy": 0,
+        "cz": -177,
+        "spacing": 1,
+        "region": "twilight",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "76486415f9b26cd051f6c735841c03243f1308372826d0e99993dc28a5fa4f5b",
+        "haloBlocks": "4e98af0b63aa791096b8c3ee500905219f6b3313cfa8a8eee42f281c0efc7140",
+        "density": "8f4e657d65ffcd54dcb38c0fcc62b241d9b00590ae3d73c02a2794433c535d9c",
+        "columns": "1dfb837bbd390e9024c4eaa17c86b90c6b72014d52b425d0dfda6718c1fccdf5"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-hellscape",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": 178,
+        "cy": 1,
+        "cz": 179,
+        "spacing": 1,
+        "region": "hellscape",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "e7668640d674c027acab27b2612c63e7994facedcd4c7c2939f56a00c75d6a55",
+        "haloBlocks": "652add6818abddec10aa2140511b93bea4d722e7de139b3c476326192a78a71c",
+        "density": "41fb2453198ff14eb82549ba27e77d2dc592077f28463f7edbdb256b9b6e4601",
+        "columns": "9d410bb4630f2a831eb5c8e65f1f4d076ecfb1542acab1788adeb526c46acae3"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-shardfields",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": 204,
+        "cy": 2,
+        "cz": -222,
+        "spacing": 1,
+        "region": "shardfields",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "b605eef05346ef95091aee494c96b20b985e7fae7871a655f8e752af60640ae7",
+        "haloBlocks": "97354db8d2efa0d3c36475ee34341fcf4194bed975373c37c236721537547dd2",
+        "density": "bc42e619c1eff3f29af8ed7bdb511e1514072e792399e63bb17fde4454508610",
+        "columns": "e4724ace4678d550e5651f294b0092073f59ab8cc3b7ced3793cef898ccc7952"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-isles",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": -226,
+        "cy": 0,
+        "cz": 199,
+        "spacing": 1,
+        "region": "isles",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "520136a02ad23e325cf4e2132acea45adca5263e6c1ba0905a1630df269c9d26",
+        "haloBlocks": "cfd1c5305f74c90ab48cb0a752eec7ea9770622250b7bccbd1bf5ce3291b2b60",
+        "density": "bfe7c2249a847da1266a1d2f3daf52feb2934b0b650a1bb77c4fa5d2c5857d99",
+        "columns": "d809f245b7da7e4b25c6323620bdc78c3219dc6c447504086fb5da1c6a6504d6"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-nadir",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": 0,
+        "cy": 9,
+        "cz": 0,
+        "spacing": 1,
+        "region": "nadir",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "18ef46d1af95fc9f23f611c937cb737f63da3a45da26a60706d2a915bb4a9650",
+        "haloBlocks": "350475a53b1713248aeac40e1147da3b55e3bfd9f8b23b6c694061757e994efe",
+        "density": "d9f0b7ff1273217ecfed53365f01409650d5a3a96432aee173187cf6b7565ed0",
+        "columns": "3d2d29a8836d80f4688eb4fd43226b11008857d00575ae14b94154f3d33d0974"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-blackwater",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": 59,
+        "cy": 0,
+        "cz": -163,
+        "spacing": 1,
+        "region": "blackwater",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "25b30b36de0bbd329e94d66ff2f519f75c586e4f594a08ea7104a945f156cfab",
+        "haloBlocks": "cd362368f8b455497feb1389c1e6603cb6e9679de7d17bb3adac90ffe6dd0ca2",
+        "density": "58a8abd104dc5d19af5dce671a3ebf18b47474a7350ecae8efce7b092f63eaf9",
+        "columns": "f98a532190ae51e2cacd2b2fe080a78f660a856908c5ab0bce6d2d25bdbbff92"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-rim",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": 0,
+        "cy": 9,
+        "cz": -657,
+        "spacing": 1,
+        "region": "rim",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "df7c55f3f2b1869ff2b525dd03a1159f9298c21bb1a324265715dbbf27231926",
+        "haloBlocks": "9d2882c6bfd40e88779507a1ed9530079b19f277ea0812ee9d65ac0f7c6faed0",
+        "density": "5dd6b821c1f8d9897c44f1a9d8da932e61348a64e2131083c69ad6bbe02fd517",
+        "columns": "ff84e999959c80a2475d14a6b630327ed5f506da858f7487fc10ae82c70d9590"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-frost",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": 0,
+        "cy": 18,
+        "cz": -688,
+        "spacing": 1,
+        "region": "frost",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
+        "haloBlocks": "4f81ca3cfecda83303af8494315ac6922e13d0b62ae1199070b29bad691cd277",
+        "density": "43749189bb3319fca614b31a82a801e53889a0e7683947f4606bbb9068b04b76",
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod1-plains",
+        "world": "main",
+        "seed": 2,
+        "lod": 1,
+        "cx": -232,
+        "cy": 0,
+        "cz": -115,
+        "spacing": 2,
+        "region": "plains",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "bf45405f216b01eb19b0a927cdbf358e70b0864e726fc935a120a132f0d15258",
+        "haloBlocks": "2053d691534528c2c116ad90802cdb6327f6138ceac1e4903c884fbef7336f99",
+        "density": "0da09bf51708fca1481fff821bfa0cb6162a7449b82dd49f0d18628b6412801b",
+        "columns": "5d472ed2c4d27c486fa991ebd7a328f41b936823cb608ce8446a73620c80d040"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod1-tundra",
+        "world": "main",
+        "seed": 2,
+        "lod": 1,
+        "cx": -11,
+        "cy": 0,
+        "cz": -244,
+        "spacing": 2,
+        "region": "tundra",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "4cc93c6d3ae6c75f5f87ce6e4f56df40105f06495d1f1e182cb31da924b85760",
+        "haloBlocks": "3c84240eca08fc1ceea341421212b8f1e63dfd954c1d1d2870729920d34ebf02",
+        "density": "0a4a48d3fc2fd001111674cfd76f522e28f49014c2496c25f15634a313c3e626",
+        "columns": "c0ba7b8467cbba660bebcfd02a5f0c7a8c573cd39328a51e0ba4b1fd6af09c63"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod1-mountains",
+        "world": "main",
+        "seed": 2,
+        "lod": 1,
+        "cx": 240,
+        "cy": 4,
+        "cz": -114,
+        "spacing": 2,
+        "region": "mountains",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "2981a47e7191e024cf2177e174816ab4f485e2d8ea5fe38ef8dc8e5ece549e53",
+        "haloBlocks": "e84ac94b24271f4f0c4bb7aa9edbb275334a101affe2d1756c125a5c2c3328e6",
+        "density": "17c25590d9d990887ee3e834df3c65bbcdecf4c6b09bb57622a8342c30044099",
+        "columns": "8e166bb3a264f2fc98cc23be766fc9a68e88dcd9bb7608bd0fc75278da96a9d8"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod1-desert",
+        "world": "main",
+        "seed": 2,
+        "lod": 1,
+        "cx": 259,
+        "cy": 0,
+        "cz": 12,
+        "spacing": 2,
+        "region": "desert",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "bd5402e3b337921beef4312aec7aa704141ed23d2e31df1378eaee868af7066c",
+        "haloBlocks": "46bae16ad03867e344a821dcdff805804db8e3628d4f28acbd5db81046bad098",
+        "density": "c8eb397369effcdb6ee529c44e6e2c757e86e077d11098242f1ababe6bd9c037",
+        "columns": "645fa75b0b666072e7eb37dbd75b3e1db72999658eb5222da6f377f3a12074d4"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod1-boneyard",
+        "world": "main",
+        "seed": 2,
+        "lod": 1,
+        "cx": 164,
+        "cy": 0,
+        "cz": 187,
+        "spacing": 2,
+        "region": "boneyard",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "9305a321e1c39c5e394720ba1af1a0905e5875ca27e26f326cb31c29f676cd87",
+        "haloBlocks": "167d768e1d19cc4232dc7490b5ba7b7e3cdeda20ca871836ff95e1d45a2e2dd8",
+        "density": "177e824c372846ff3ec6ee521d76eb42e793aaff8f1caa628388cf20a867ada2",
+        "columns": "79241a66b3b55c4ee9f456b3b15ffc3b47b6ee07989d78e73244a44532e13064"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod1-jungle",
+        "world": "main",
+        "seed": 2,
+        "lod": 1,
+        "cx": -108,
+        "cy": 0,
+        "cz": 268,
+        "spacing": 2,
+        "region": "jungle",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "1aa2216c43099c93af8bc4f0ebaf2559da6ce0851b679a55612fd9cd63e93416",
+        "haloBlocks": "c276f2d541804924f8db84e8940e6464573de41190b7eb01556585fd3359f4de",
+        "density": "0898e01f9f5839a58d98a17ebb80256223b35f2e9648dcab0ade23326d7733d9",
+        "columns": "577d2871f2cdc8cdf1e4e8c6bf437652a4b22dd2e4ba5cf9c43c3f09c06b5455"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod1-swamp",
+        "world": "main",
+        "seed": 2,
+        "lod": 1,
+        "cx": -269,
+        "cy": 0,
+        "cz": 142,
+        "spacing": 2,
+        "region": "swamp",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "6b3ec71bbd0980d2619b79b3ccf60d3c91af317aefef1d80c9eaccd2f89835a6",
+        "haloBlocks": "51d46e30d26464f2048e5b66677fb210050af0b1f34b34f6c26c04631bfc674b",
+        "density": "c471e1e8dcf53b0ab1bb4b588262f53409b0b600ef18bede4002faf8d0265150",
+        "columns": "c8fe43dc01fd19ce24e53a0065249bed589ed8b01c03aa584a9885a129882853"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod1-lake",
+        "world": "main",
+        "seed": 2,
+        "lod": 1,
+        "cx": -295,
+        "cy": 0,
+        "cz": 103,
+        "spacing": 2,
+        "region": "lake",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "f33fd77430397b264067772e90d1d8d4362de4da07c519cece9d26358f37fc7b",
+        "haloBlocks": "def0329f9e7a3d7a2623edb67a176a793f64a7cc0765e241573d238a1310abcf",
+        "density": "38b57fb0aceafff9ce3252a82f0c82eaf34bd67cc1c16bd5def078cab75eac3a",
+        "columns": "73edc33c0bd2f0623b04dbd158fff243e41ab0b5d5b0e15ac87787f2f10e9a6c"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod1-twilight",
+        "world": "main",
+        "seed": 2,
+        "lod": 1,
+        "cx": -102,
+        "cy": 0,
+        "cz": -89,
+        "spacing": 2,
+        "region": "twilight",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "3893ccebdcc96cf5cc9c8760c42ebf7d4026b77d9dd7a18eef67329e3f2350eb",
+        "haloBlocks": "1fc4eb9cb9dc5b231242b290234728e72d63ebac7ca05df22470a088f8e96c50",
+        "density": "cb5fd2d0dba3d7d7308c17716ebab172d49d9903c7484ff7b64c81b7c049430f",
+        "columns": "f725832d22fe024220b92d5e1893f45e6b7f86534589fe85f57adeb00b2479a9"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod1-hellscape",
+        "world": "main",
+        "seed": 2,
+        "lod": 1,
+        "cx": 89,
+        "cy": 0,
+        "cz": 89,
+        "spacing": 2,
+        "region": "hellscape",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "22ec3aff8ffaa9f672854bb55cdd5344480661bab6cf5eca2ede26a57c25169b",
+        "haloBlocks": "8e1d06e4cdad6c7198cc1057a13a6430c59a6f1ecab6995a4ba0b2d48293dfef",
+        "density": "6975b52e592fcb4f424fdd9e003c2da263cdb390e2d4b2e014a1a311bee6f41d",
+        "columns": "14f4a369d04e7dc6f01e5a33861ba9cc4a4f3ff48bf2435fbde5f4beb00e3d5b"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod1-shardfields",
+        "world": "main",
+        "seed": 2,
+        "lod": 1,
+        "cx": 102,
+        "cy": 1,
+        "cz": -111,
+        "spacing": 2,
+        "region": "shardfields",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "025d0f4ecedae09c1e4e4b3065f9ca330ae88fc8dd2f6fa58c55120dfbabd3c2",
+        "haloBlocks": "e5e17c6edb404a6b91a93619d158614e7ed602826de5e300d09c049ea255c218",
+        "density": "e689a90854e9015de4f10ae18b8f7051ca5d7aefcf99ddbade7f28d67f0eb415",
+        "columns": "f2dbcc397c3f75c76de7cfd36689e5005de48b6721f961f9f7f7d3fcc77931a4"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod1-isles",
+        "world": "main",
+        "seed": 2,
+        "lod": 1,
+        "cx": -113,
+        "cy": 0,
+        "cz": 99,
+        "spacing": 2,
+        "region": "isles",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "0e439cf58f5b65977d9db1315454f10866efebc39acc56ed41e43d3d522f7330",
+        "haloBlocks": "bfeac563378798d11fcb378a8f9a19e4d1dca0079187593662a60b0d07dc1fb2",
+        "density": "0f68894f551d0328eff5eb45755fba563c3853eb7d977e41b9e668659e192dfb",
+        "columns": "ec90804930d463f8d5fa34a1b7e3f7351dc99d2799354dd7003ed8da5ea18005"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod1-nadir",
+        "world": "main",
+        "seed": 2,
+        "lod": 1,
+        "cx": 0,
+        "cy": 4,
+        "cz": 0,
+        "spacing": 2,
+        "region": "nadir",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "b428b377f9a82099361257ed09b2e99b12cab38b96e6fe82d66ca45cb6abf570",
+        "haloBlocks": "806ebb0e597cca86ced3b51c026ff83b1c7ec00879e89f3a69e01961f8f6f952",
+        "density": "dd080cd83726431f0374eba3ee2c5ad0232b7b08b50b151ad80899220381fd42",
+        "columns": "d51ab2971d1b554494f55c6e29cf7f316ee59d670772bf6057c6d1265b393e58"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod1-blackwater",
+        "world": "main",
+        "seed": 2,
+        "lod": 1,
+        "cx": 29,
+        "cy": 0,
+        "cz": -82,
+        "spacing": 2,
+        "region": "blackwater",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "e6d76c2c8f9d3ab0e8e19d08a7f2863ed13aa62729e15fdf1dff1814fdcdb358",
+        "haloBlocks": "01e45927a24341756dd8a6316c7cc2b61f848ac8d387a86419feae34d58076e4",
+        "density": "8727df26bf5d7a9736a2a1b33cf071c4203d13bcf8464882126ca31e26b3a606",
+        "columns": "70fafb204b005bd33a13fbd214086b0ca81f22d24c0e52b94b1ab01bdbe4210d"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod1-rim",
+        "world": "main",
+        "seed": 2,
+        "lod": 1,
+        "cx": 0,
+        "cy": 4,
+        "cz": -329,
+        "spacing": 2,
+        "region": "rim",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "35e4975faafa7d808eca9f6ef758cf8b95e7414c51ee88c0edf26c7283e061d0",
+        "haloBlocks": "1147ea3a2019d2fd39fcd5506cc72621840b83efaffe63955f0981b9ede6d59f",
+        "density": "99feb47f937560c66d03b45c2f508a3248c2bcda42be08dd012de69c327505ce",
+        "columns": "6a3d6e1284aecf8818fb505e110ee9f51fbaf93d33fcdda0f2e6f8db1a94d22b"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod1-frost",
+        "world": "main",
+        "seed": 2,
+        "lod": 1,
+        "cx": 0,
+        "cy": 9,
+        "cz": -344,
+        "spacing": 2,
+        "region": "frost",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "c1585103169e8377531d8c10f723b787879339e2c3488872d80f24b7ebb70f41",
+        "haloBlocks": "4c46bec298589305dbc0b81171a28ad649dd551be7429d4509e0caec71e7f535",
+        "density": "da60bd56fbd86ff912366e7a02b112e9fe6f14f63dfff2c54667f000d1b99fe9",
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-nadir-inside",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": 150,
+        "cy": 2,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "eda4353b431d0f042bab06af7c1e847ce1ea81ccdcb6f7017d373fa7cda39db8",
+        "haloBlocks": "b68ca7e716256050f475c3a9d18b84943a0d07c0f7066912cb4eaa960f02a6ba",
+        "density": "55894393326c2f2bdb067f88f91cc758822b89dbcd3b5e8f36e393b26e059bf3",
+        "columns": "15618dc48f52a0075554fe939fe97e01e48c032822463cf87fb06714ca9c02b6"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-nadir-outside",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": 152,
+        "cy": -4,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "19cba63487d5e25681479ddb83194adfb54fa31a51e58e5b72a82c33eda7706b",
+        "haloBlocks": "d67de26693b50c0b6e748ad1488699e06ef540153e10f36c2c00e9262403f8a8",
+        "density": "065363dcf5e3e93e705faeaedcd84bec2b6cef35b80674c23767d158c43f3996",
+        "columns": "0e8d647034132efa79ec1f71aefd031dc0a1c283f1e487c8d378cda1e94776c9"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-blackwater-inside",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": 194,
+        "cy": -5,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "2d8b2a3423ca7e1d206b7999c289f85818d62b57109c9cc8bfc206131d178310",
+        "haloBlocks": "e8b652a1ae707830d3f4a085efe45b90b5b0131871948002ffa5e1a01963ecdf",
+        "density": "dd62b98ef64a93c99fb878a78852550d3208ceed7b0d2c18807d38174bb5c8d5",
+        "columns": "6c18dfe247bb2206386327b65a47eed3bc224487b1622d644d2fc1df6cc4c8af"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-blackwater-outside",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": 196,
+        "cy": 0,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "b316b56eda60ca0eb1e53e536eaa76479ed51b6adc7d7c2a7163e10aa9fadc79",
+        "haloBlocks": "ce9eaacecdfb768c52d68533f6c5c83890fb232f7182defabe0591410667a74d",
+        "density": "d90e130203262db88abc221a02ec424538b041d030dee21cfb4001ab4d2f0b0f",
+        "columns": "7142296a48d909749b8591a2aaf2969b2249bf595d94ff6b3ba4e94864e7b217"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-inner-inside",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": 401,
+        "cy": 1,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "63d8b258cc7ada993e6eea6fae6c2e404306e05275d1e095dabc91cc4a823a4e",
+        "haloBlocks": "9644380d8d18b8cbac2b3183646bbe742a9660f8a4eb7987c3981005e5114c91",
+        "density": "7d1169c8ab300f0c3a91f4afcf3be6d8e305fb861db2945b403c0bb78de73c61",
+        "columns": "5621974a5ef8c5b573b48300eeefe18b77be782870db1a0ef86d9a0c447710f4"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-inner-outside",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": 403,
+        "cy": 1,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "99dec305b22a4b622ece57058228f31077d8beb6ffd748c21db5c180e37af466",
+        "haloBlocks": "4eea673fb5b57313e1c79a3255f05d77bfbc40a91c51020eaff7479f44f7013c",
+        "density": "7ccf4ea2834989828be52a35f0c59864781deb6a85482f4a68f6d79fce2ecf91",
+        "columns": "a4d0190a633a8d5fc1c71552247ef337118f91702b925d7f31cee89591a7e361"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-outer-inside",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": 639,
+        "cy": 1,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "a97209597e1d00535e9693e435df337bad0925a5d2f8a7d9b376b49ecf5e76e4",
+        "haloBlocks": "f7a0c018b13f20e0f442d843cba9b56ad92307bf5a6de422a9fee388cb907878",
+        "density": "a0879f5f05c917c86f3719caa48f31cf8a4078972537541a165f3dd9ed67e4dd",
+        "columns": "7f02854410d8674027ae135fd240e773feb3a1609710da0286b71818d0e09c16"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-outer-outside",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": 641,
+        "cy": 1,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "e31146423475fd91a2b5302b246f8d1170f24eeededb7d459b739fa6a4aef4ec",
+        "haloBlocks": "5ccc1edb04ed0179976948a2ce9e1ee1fbfcc31a0066babb6126db2ecd4c05e3",
+        "density": "dc9518bb3adcb13632dfeeaaa9014d139da29da3591bfb209e136e238d913881",
+        "columns": "caaa77d31bffc3b40a26ea9b218764d3916713f00fcdd9a97a2827f5b8ca9fe4"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-rim-inside",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": 678,
+        "cy": 18,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "679aa58b1c8ad8f6443d0899791138098aec6f850f7b949fe6d591c2af25989e",
+        "haloBlocks": "68cc56285fa6d07ace6109ec5a8115906b8ae1197c9d1716fda1266a2832bfac",
+        "density": "ccee3870a616613932295fe85a3faea5c79a1ab050682423a175e53999741e88",
+        "columns": "d514944b6527e48d9762b917fea5d019d8e6b67f07d7ba1510afee6bb96bd9d5"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-rim-outside",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": 680,
+        "cy": 18,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "246cc23e60a17f4a1552b3ffea21138cff1f4a1691676b7efb5cee57e433bba8",
+        "haloBlocks": "437ede3f63f30fe92918871b5ec6fa8de6b87f517cc745f0d79dde33e19f01b9",
+        "density": "84a28bca53c89a3369e5a2e9b657bb5d9aa23ee144f38f7aa62dc11db6c49c09",
+        "columns": "70d6fe2e18865e83e2f55c88c97458869f34e1cf94493c931d6f4ef77981e9ff"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-frame--704--704",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": -704,
+        "cy": 18,
+        "cz": -704,
+        "spacing": 1,
+        "coverage": "xz-frame-boundary-signed-corner"
+      },
+      "hashes": {
+        "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
+        "haloBlocks": "1be1bc2d76e8aa1d484d128c0570e854bdbb895e2a787a8f12581b1d379abb22",
+        "density": "baa08deb73c70ef2650e6476ddea553b60e8e5f5858811c1c91ea3ed9de8132a",
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-frame--704-703",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": -704,
+        "cy": 18,
+        "cz": 703,
+        "spacing": 1,
+        "coverage": "xz-frame-boundary-signed-corner"
+      },
+      "hashes": {
+        "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
+        "haloBlocks": "58b3e20d6297a0cbf0d5cb498f2fab9be747a3de4f2f79b72eb24f9fad86e604",
+        "density": "7feebf2dffb63be20ffb636bc95f5568e9885f46f2d7e0855c19f38ab722712f",
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-frame-703--704",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": 703,
+        "cy": 18,
+        "cz": -704,
+        "spacing": 1,
+        "coverage": "xz-frame-boundary-signed-corner"
+      },
+      "hashes": {
+        "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
+        "haloBlocks": "8b5f5d80da99621cac7b33aea6c2dc8d11ab5dd309cbcfc30d6828ae8fd2a80f",
+        "density": "6f52f56f4bfd347ce8f97023464a1b8c0e28d448554163d3e3608d7e5d3ec75f",
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-frame-703-703",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": 703,
+        "cy": 18,
+        "cz": 703,
+        "spacing": 1,
+        "coverage": "xz-frame-boundary-signed-corner"
+      },
+      "hashes": {
+        "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
+        "haloBlocks": "7d89a9c836573a00821644cf3c27e0854c55dd4f2d5573b5f4c8f34e03128b6e",
+        "density": "782e7ca7eb8be1bb410ade6d95bbb309f53c35db449b113c6b1269adf739878f",
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-floor",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": -1,
+        "cy": -48,
+        "cz": -1,
+        "spacing": 1,
+        "coverage": "floor"
+      },
+      "hashes": {
+        "blocks": "0b1bc4208dd7f3a8249804514cb01d457207656dd6acb695c816cfb3e2898e17",
+        "haloBlocks": "67f15edbfe2bb0df5c7ce3ae8f7089d716eccccb5fd221e74e624f2ae9914827",
+        "density": "abd8d63be5f9deb38f6a5d7a30ab0cad3d65c32dcaa5de3528a81d5252fa572c",
+        "columns": "7dfd2c967eef28648286c2db15e651ded1554b74eb1d3ad2ba9ffb25d479c4b4"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-worldstone-transition",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": -1,
+        "cy": -47,
+        "cz": -1,
+        "spacing": 1,
+        "coverage": "worldstone-transition"
+      },
+      "hashes": {
+        "blocks": "4f76e9188b6063650654fde6caa90189ee08262522be6f9e08cc0d75a7b4dc72",
+        "haloBlocks": "21a236e48ac56faa68f52af1a0665d679dd12fbf32b4b15427fe2405a67b28cd",
+        "density": "1f6052f697b4a4ce7b954a1847c82b347212816d5c5b2f3332e2717036e66d48",
+        "columns": "7dfd2c967eef28648286c2db15e651ded1554b74eb1d3ad2ba9ffb25d479c4b4"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-deep-stone",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": -1,
+        "cy": -8,
+        "cz": -1,
+        "spacing": 1,
+        "coverage": "deep-stone"
+      },
+      "hashes": {
+        "blocks": "4f76e9188b6063650654fde6caa90189ee08262522be6f9e08cc0d75a7b4dc72",
+        "haloBlocks": "8d98320d427ca0dafd223ec85ee9f82027a2daa9fe04b499c81acb8b392a0753",
+        "density": "ffe31348c27751af166f3e66c4b5c040a6696337ef9387d1186b0f0f2d4f9c6c",
+        "columns": "7dfd2c967eef28648286c2db15e651ded1554b74eb1d3ad2ba9ffb25d479c4b4"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s2-lod0-sky-ceiling",
+        "world": "main",
+        "seed": 2,
+        "lod": 0,
+        "cx": -1,
+        "cy": 31,
+        "cz": -1,
+        "spacing": 1,
+        "coverage": "sky-ceiling"
+      },
+      "hashes": {
+        "blocks": "de2f256064a0af797747c2b97505dc0b9f3df0de4f489eac731c23ae9ca9cc31",
+        "haloBlocks": "9736d8dd61f2488c3dfc458e674c95b61b1194c527dcf63ec29a0f0e95c6aaf6",
+        "density": "8016649a796bd781f5da3446712f187b3955a8b37815434d86799fcd766c9dc2",
+        "columns": "7dfd2c967eef28648286c2db15e651ded1554b74eb1d3ad2ba9ffb25d479c4b4"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-plains",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": -218,
+        "cy": 1,
+        "cz": -458,
+        "spacing": 1,
+        "region": "plains",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "05a09b1b1e34cef01dadba191d8959da3b0e19629a76707880845e76c98ca0ab",
+        "haloBlocks": "1e396c8f199ae146a76adb9942492fe253fc21cc6b845dc797fafeeaaa4307a7",
+        "density": "c1afabf4440a011e06123302241ee19f55ca45e92b9b211d762004b45921a3db",
+        "columns": "b7469751ce9421e760de2678a76da57d72f87afa914a6021ac4816e6de8f43f7"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-tundra",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": 14,
+        "cy": 2,
+        "cz": -487,
+        "spacing": 1,
+        "region": "tundra",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "6eff26ab0e36d49e342823a01d3b6ca3e91fc12c51d7313becc651043be3935a",
+        "haloBlocks": "980a269af0c19433390c2ed0c9a4d55ccc70a20e3dc53dc0ffe62baa52da3d2d",
+        "density": "8ecd1a2939ca824aeb183acce659b7d4f097e4d7e2c230d4f205064721067a56",
+        "columns": "a1dcae69e213183829d0b9da6d39cc6ebb6dba5e3375d1994a4335a761707da7"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-mountains",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": 360,
+        "cy": 22,
+        "cz": -405,
+        "spacing": 1,
+        "region": "mountains",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "1260fe0ecb3be4e96a31a5ce9cc3e536201e6b80e7ed99c9351077f895df541c",
+        "haloBlocks": "b291fc3cc6db2ce4aaa7907a122b1804e8f02922e61fd159a219e48921eec6d8",
+        "density": "4f4e9d60ce2dea348631a2857dc00beeee918d1163c24c8ff2f695be0563beb1",
+        "columns": "9a805d03d337059ed7bf5d590e7c0a86a3d877073d3edf9b052a36c3bd1ff44f"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-desert",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": 499,
+        "cy": 3,
+        "cz": -31,
+        "spacing": 1,
+        "region": "desert",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "ae46c3a2641ab062a25064f75a5a2cabe5d1050b0cb9a881d1dce358d96fc82d",
+        "haloBlocks": "5b6c35a89c1cbe87e5ee736870797bcef88dacde88ec8f6091ea6d8323795507",
+        "density": "934e9bda15603a0dca2f9470e04f15c3e04d0351a50ac66aa21f7727dac0591c",
+        "columns": "5ebbb042345f600890196458cb30a44a46358c166218763827344155574de77c"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-boneyard",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": 371,
+        "cy": 1,
+        "cz": 405,
+        "spacing": 1,
+        "region": "boneyard",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "77dc232d5845d5bed752aac05c298e21d3b703683498c8ea8d7687980ec0b778",
+        "haloBlocks": "68e6f333a142a2b02be3a3e460138a8d51423c7821cfd17200bbba2bf73739a4",
+        "density": "0b11d497fcd0e25d4a655e21820a4c8d3d0e5c637f17a46053878c55d303cbfd",
+        "columns": "9c55ec91b5da4699b73ac85afa99f7c946a4dc448c9035b60123a602a3c2a98f"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-jungle",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": -200,
+        "cy": 0,
+        "cz": 572,
+        "spacing": 1,
+        "region": "jungle",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "513965553a8ec182107dd7cca20cc34556ea2acd2528a2c785125fa9c97a9c44",
+        "haloBlocks": "55c91e59efb3397ef14bbbf5e32f997ddcf55085c6b2551d6ddc6e2520816570",
+        "density": "08ac44d89d2078ff70c19e8be5842ca3ad379c26e06a95698450c1ca87002b91",
+        "columns": "b74d70f34a16cfa04e5d890df69a0cd76f72187b4f79bceda4db8214c6575c17"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-swamp",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": -200,
+        "cy": 0,
+        "cz": 440,
+        "spacing": 1,
+        "region": "swamp",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "60542f818ba46bb21345e3125998013d7badbe374b5f97470bb2d46c3a92ba86",
+        "haloBlocks": "a3341376ca2fffd7ce8f84ee4e86508252d58226b0d92e46ca643634d804a1b2",
+        "density": "eeaf9f1cd2e686772549898d882767ce62d1c5e4563370ac99ae7d4067b38a79",
+        "columns": "bd4a98e246e93072927b73b16456b74c9fc82c636f4115bcaf88d34947db0f5a"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-lake",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": -640,
+        "cy": 0,
+        "cz": 16,
+        "spacing": 1,
+        "region": "lake",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "249c9699e7c677840552c37a603ce50325dc4f55cd4b7a31e04f7b457177abf4",
+        "haloBlocks": "8db08ba7e462eb1e64eceeec495031dd7c4403fde5c624f6b0229ad0cc9f2d49",
+        "density": "2cb1db3bd776cec79d210d4556e3a8f96bd7adea2bccd94fdea5b37d33bce0ff",
+        "columns": "8119bc2e4148eedeb01ad7353dae8a15f27b0368887685f1a12915ee480def10"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-twilight",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": -181,
+        "cy": 0,
+        "cz": -177,
+        "spacing": 1,
+        "region": "twilight",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "144f67a0627e98a274afa6016eec042499a666971bf75104841baf4a4a0bf9c7",
+        "haloBlocks": "4a99c53e2964ded6a943210514f5ae2c634534ad7173d51cb62d4f543ad0f157",
+        "density": "c7e5bb724ce7fed048c987f5cfee5a896c5f1ad4a34be16d8aba81a0b2173c25",
+        "columns": "aef7ae68dbdc1885a09f95e64f16f4bdedb94513b0550f2fdfe2a5d1f2a79df7"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-hellscape",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": 232,
+        "cy": 1,
+        "cz": 232,
+        "spacing": 1,
+        "region": "hellscape",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "3a79279cdef55af0e081c2a6b642bcd4e89f2f11d4ca6c6fa63b315257219dd3",
+        "haloBlocks": "eff526dceea2153ab72e82f92c49e349962786e04ede2f6726d472bca84781d6",
+        "density": "c98fe353023cf3211970ee90f32cddfb23ec96e4da9a1844f11fb9aefeeb0e80",
+        "columns": "5897ef8af6f8d0353d86bc80729a94110ad6883343dccf8a019e4b1c7e9e40bb"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-shardfields",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": 204,
+        "cy": 2,
+        "cz": -226,
+        "spacing": 1,
+        "region": "shardfields",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "4df360848f105f3a4437121fe7cdec7c165f54c81de10b4661bb7981084fe6f7",
+        "haloBlocks": "9079289ad2fee4ae138a130431646ca784dbd29fd6795ff9472cd86cd6ae93d0",
+        "density": "95188259484ffd6de8eb96a36d71feb4143a81169a912c43959f05cdb6dc0ad1",
+        "columns": "78e32a1a39a96b79e004b92476fdc12e40c566a805f628524d3982e9206ade37"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-isles",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": -175,
+        "cy": 0,
+        "cz": 201,
+        "spacing": 1,
+        "region": "isles",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "945fa20b1a7814890eb5c6960f123cc184ae43e5421e67469cb52a83d2a9686e",
+        "haloBlocks": "5d89c6f67032d313cebbd95b9fc65b903a8f76f818f9aa08c6075255c97173c8",
+        "density": "03e944b0410204449ce3db6a0f2e7d4d7a8970dc79203447e68dc970a360480d",
+        "columns": "602265b458791fcd64591f4fad28aff62e9410086fdf11f46e2889ba9d638c80"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-nadir",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": 0,
+        "cy": 10,
+        "cz": 0,
+        "spacing": 1,
+        "region": "nadir",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "702a6ca4c6d1327a622c4d7ad901850b0ca96719fc258044835e4dbc2d536a9a",
+        "haloBlocks": "56cb351975a6b6549fd79f47201b3c6531a614b7eed24aaa984e7c52f276d9f8",
+        "density": "4ffeb522cdddcab0e44acb0c241433cc103ac9dfcaad4ae2fc3dcc066e102927",
+        "columns": "144675622a963bfe86f3860d00a6038431d4a92ccb634f3002d3e8f906c5638f"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-blackwater",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": 58,
+        "cy": 0,
+        "cz": -163,
+        "spacing": 1,
+        "region": "blackwater",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "101f62246d849eabc74a9e086e75650bd5eff87fd3fcfbd9960bd706ce8513b0",
+        "haloBlocks": "7bcb684b54016b7c26a6499fab0abf04ff522dac9737b84b257815815953aeec",
+        "density": "08e63de73ec1353a16b8d6bddeb2a99c869fe2110293f40d0688b8ccd15c9a8b",
+        "columns": "efd694f5ea00ce6211a03c5abf78b577967faf134ffb1da1a7fa5ce3e6776402"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-rim",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": 0,
+        "cy": 6,
+        "cz": -657,
+        "spacing": 1,
+        "region": "rim",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "ac2de4aef283cb43b25375f613eb95c859742a76e56708d98f946cb2a4be23de",
+        "haloBlocks": "0f92edf13d28d53e8b0694da9a70b09d08df0fdea90c12ff71119fbb0fb9daac",
+        "density": "1872802cefc2c2c071a5f93c223d87446ca92c63870436e5ea963960c33967b6",
+        "columns": "717f3c068105922e41c237d6c69e8e30f74400fb76444800c4e1d9745b933307"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-frost",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": 0,
+        "cy": 18,
+        "cz": -688,
+        "spacing": 1,
+        "region": "frost",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
+        "haloBlocks": "4f81ca3cfecda83303af8494315ac6922e13d0b62ae1199070b29bad691cd277",
+        "density": "43749189bb3319fca614b31a82a801e53889a0e7683947f4606bbb9068b04b76",
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod1-plains",
+        "world": "main",
+        "seed": 3,
+        "lod": 1,
+        "cx": -109,
+        "cy": 0,
+        "cz": -229,
+        "spacing": 2,
+        "region": "plains",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "4934cc01f1c2abd00610245e43dc236c8cc719bd53fc6fe5d09b039a5758c55d",
+        "haloBlocks": "74151f4cbc917ec7aa389a870e86facfc90d435ce96f2915bc702da884b6a9ca",
+        "density": "9e89f315e17fb1edb1e40102e2857a84e2d79370588fb1d6f3d83fab16514e68",
+        "columns": "c392f47deda4847a6050f50965305261d34b24a7a67c7a15ba2cad6cc7651d92"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod1-tundra",
+        "world": "main",
+        "seed": 3,
+        "lod": 1,
+        "cx": 7,
+        "cy": 1,
+        "cz": -244,
+        "spacing": 2,
+        "region": "tundra",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "4fd8421561777303113c9fe72b112275d1371a5f3c475d82d819a25951bbc337",
+        "haloBlocks": "04ecada4bff8557d9238bbcb8be75ebeb373828d993583fefbef36111b526fb4",
+        "density": "7d28616739b9a7355dab46cd4bd1e16daabab664ee5718e082b1e367760e5632",
+        "columns": "2f74d339b566aed0ce2b732cc039e315572c4f0e1373240c08ac618a19456f0a"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod1-mountains",
+        "world": "main",
+        "seed": 3,
+        "lod": 1,
+        "cx": 180,
+        "cy": 11,
+        "cz": -203,
+        "spacing": 2,
+        "region": "mountains",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "64f725f5c43e158419b63f31560264c0b032938aec7890ea14484eebf2adeef8",
+        "haloBlocks": "3727273353b8b9886ec88e75457a8798b9768c246abb5b014c772ccbf00002a2",
+        "density": "d6bf7fc643659689f1ff8dc6f34abb970382cc195e532b3b828442b74a559b48",
+        "columns": "fab3b5cfdf57d2b3f9405a94f87a5c58f909e8c28b4315812c8463342d65b1c9"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod1-desert",
+        "world": "main",
+        "seed": 3,
+        "lod": 1,
+        "cx": 249,
+        "cy": 1,
+        "cz": -16,
+        "spacing": 2,
+        "region": "desert",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "e849b5431d8c8ed0f457988a2552c7fa9fcb91722cd810d8a44cb02c123179e1",
+        "haloBlocks": "4cba92f4402b58fdcf2d10c11a2348799cf57cee72c8cb9b5669bce5ac07a531",
+        "density": "2607df5242b36f052cba4d1a37dd9a428eaa63af5898338b2422e5d06cc85438",
+        "columns": "bfc4f40a35df9da34549678e4cf9442c0def4fcf41438eeca9a7f8fdb2303f24"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod1-boneyard",
+        "world": "main",
+        "seed": 3,
+        "lod": 1,
+        "cx": 185,
+        "cy": 0,
+        "cz": 202,
+        "spacing": 2,
+        "region": "boneyard",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "a5a916c996f275b63957140ad3a467667b468f1f25a17dbe8e549ad18c5be8ee",
+        "haloBlocks": "d3e95f74e7407fde29aee154c69cfa059da833e22cebd0306c12e1a684fe165d",
+        "density": "21ad7813d62be70ff4fc95cda565c44531f8e33fa5cd1eab6ff7c45e53fc6668",
+        "columns": "47eb29598667536bf250d8be9579ce65b8fcafe3da7bbc6f981f2169c9211bf3"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod1-jungle",
+        "world": "main",
+        "seed": 3,
+        "lod": 1,
+        "cx": -100,
+        "cy": 0,
+        "cz": 286,
+        "spacing": 2,
+        "region": "jungle",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "47fae1883b604dd7a1b220e1b7ea0bb5e740e5acee4bb1afa1da8923cf7b0b9c",
+        "haloBlocks": "2ab1d892287748e020542eb50314d2f3ac390caf156389b9cbe3b69f7411b9fa",
+        "density": "06194a7c95522743d6c3f57479bbe8d09ae0fc414cdf79e101121752cdc9bd91",
+        "columns": "35b981ab02cad6777a807129963c53814628cad71c874a1737aef0fcba50a350"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod1-swamp",
+        "world": "main",
+        "seed": 3,
+        "lod": 1,
+        "cx": -100,
+        "cy": 0,
+        "cz": 220,
+        "spacing": 2,
+        "region": "swamp",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "12b2f3860ccc2f92f7e83203ede2df84f6d77cd1c78f469cca24c2950ebfccc0",
+        "haloBlocks": "74917b67c5226d27b7097ef227ceef2c6df5d8cd35da53fba898b4de9ffcd5f4",
+        "density": "3bf803460852f263ae8c9d3fddf93d8cd43abf0b85d136799db73e025c910644",
+        "columns": "fca87fc3d6d3b3d6e1e85dd6830494036e71a1f165b0487bccfd8a5df395881e"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod1-lake",
+        "world": "main",
+        "seed": 3,
+        "lod": 1,
+        "cx": -320,
+        "cy": 0,
+        "cz": 8,
+        "spacing": 2,
+        "region": "lake",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "461942f24079e6c45097e0c3c54bd0dd7ba631ec53ebd2b48fe0ca9e1921cd7f",
+        "haloBlocks": "bd01837016361c1c1f053568444d37a0f94b49c02679f9cdfab2a6a9e18de8a1",
+        "density": "a8331c383614766ad2f6ced4a9b2495132ec31721894bbb2073b42f6b820cedd",
+        "columns": "7a2be025d11d537d48750533d9217cd385faff5160060b238ce7b8ad17f2a226"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod1-twilight",
+        "world": "main",
+        "seed": 3,
+        "lod": 1,
+        "cx": -91,
+        "cy": 0,
+        "cz": -89,
+        "spacing": 2,
+        "region": "twilight",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "ff92e86588c1086e9d12833fa6c065188f347424fe2b27d76bc0d0e34123ae70",
+        "haloBlocks": "8caea4b051adb847ce6c25a9e62ca67600b9ab840146246fe88b1d0b2376b1dd",
+        "density": "e13d766532c34d9be67469afbb835c76b18243e3df325066397d16e559357a44",
+        "columns": "3f871ad0d6a4b3535d93e962c5f9d230dd46f516f81cccb3b0292d72749d6836"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod1-hellscape",
+        "world": "main",
+        "seed": 3,
+        "lod": 1,
+        "cx": 116,
+        "cy": 0,
+        "cz": 116,
+        "spacing": 2,
+        "region": "hellscape",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "6849dace00537908ceed722439e8d9d90526081dafcb2a40f22b3f414b879444",
+        "haloBlocks": "f9977100de86a4fbcf457894a896d3ae70869b93de088efdaf008164aebf3f06",
+        "density": "4a428528d454abf3a25bd5454ad71bed0d93f8da6e8b38ee7883e1560b27c478",
+        "columns": "c525111544aac0668cd16c89bb087d076d563b11435037e7b16f395882e33632"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod1-shardfields",
+        "world": "main",
+        "seed": 3,
+        "lod": 1,
+        "cx": 102,
+        "cy": 1,
+        "cz": -113,
+        "spacing": 2,
+        "region": "shardfields",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "4b6ee6e37f5d14167a276d10d3764124a7a2d1f1bb360b01faf33bc82f5a3946",
+        "haloBlocks": "2f8cdc79e234e6065b7915c54e3d80be1a46f2232450a1fd333c2f922e462bec",
+        "density": "424f0550d2831619bf51150485c442f759b8557aa7c96e3bb90f836a51ff8ca9",
+        "columns": "1647806f7cf47f5ad9471c41208e75ae91eb85bdd7beb260cc75fcfee43feca9"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod1-isles",
+        "world": "main",
+        "seed": 3,
+        "lod": 1,
+        "cx": -88,
+        "cy": 0,
+        "cz": 100,
+        "spacing": 2,
+        "region": "isles",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "853d7010108307c52edc684765b819094961293a2e15a4b89f5afb31cf89ffd4",
+        "haloBlocks": "0ab68f1e58f747085eb0bf7b5f76dcd04b786adde774722cfb3d2596ef0286ac",
+        "density": "f1be42544a75940f2da3b8f32cc00dabf0346900e77db7c4d2f3cfe539b6261f",
+        "columns": "8bd8d467f1a10e5fc2c289b19baa3ffb25f4b48d2651dad3d0d95a67a5da7434"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod1-nadir",
+        "world": "main",
+        "seed": 3,
+        "lod": 1,
+        "cx": 0,
+        "cy": 5,
+        "cz": 0,
+        "spacing": 2,
+        "region": "nadir",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "27d4e69fc402b3e8633c05bb37e2c2f6f079db4233d624456491cfa9176d95f1",
+        "haloBlocks": "4225602e2590bffbb59fcc1d644036d4d30aab67369c409c0d8ac244fc9b7ec1",
+        "density": "034d41104e23fa580d53a791d751a197ac99fac0e35741cbc72bf3cb0db53c31",
+        "columns": "7308990693ba0cfd302a85f9659ca6042b846cca87bd9c6d76d5bd4101964760"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod1-blackwater",
+        "world": "main",
+        "seed": 3,
+        "lod": 1,
+        "cx": 29,
+        "cy": 0,
+        "cz": -82,
+        "spacing": 2,
+        "region": "blackwater",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "ac79dc8b24f9cb76913b3820d7ddc9d4994060989ba08ed37dffe658a2abd11a",
+        "haloBlocks": "27f209ed6e54f402d63f3422da0c9a35b502d7de6e646006ac5ad11fcc26a333",
+        "density": "946bdfd227530aab64f75824b24bb19861c3e2a33ca125567f8b2673baf3e9cf",
+        "columns": "d7e9e846a316b96c902d4369b5f338661b01eafe7034e32746742f93b0e53ad4"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod1-rim",
+        "world": "main",
+        "seed": 3,
+        "lod": 1,
+        "cx": 0,
+        "cy": 3,
+        "cz": -329,
+        "spacing": 2,
+        "region": "rim",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "9011319524a066918d5381327a6edac48bf656f73181da5e5106e83dffe3f3ce",
+        "haloBlocks": "c51d5f5d484bf24b27afca3c938768576b6654d759a7be4bb2b4f83fcecff3cc",
+        "density": "be83c0a478d633cf131d12bd605f98a2b4c5ca9b94f6f8e5ee5a3d0344c0fc65",
+        "columns": "cc80522977199ca28ae307ed933094c95c42affc12afbe611588934f3960d738"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod1-frost",
+        "world": "main",
+        "seed": 3,
+        "lod": 1,
+        "cx": 0,
+        "cy": 9,
+        "cz": -344,
+        "spacing": 2,
+        "region": "frost",
+        "coverage": "dominant-region-terrain-air-or-water-interface"
+      },
+      "hashes": {
+        "blocks": "c1585103169e8377531d8c10f723b787879339e2c3488872d80f24b7ebb70f41",
+        "haloBlocks": "4c46bec298589305dbc0b81171a28ad649dd551be7429d4509e0caec71e7f535",
+        "density": "da60bd56fbd86ff912366e7a02b112e9fe6f14f63dfff2c54667f000d1b99fe9",
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-nadir-inside",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": 148,
+        "cy": 2,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "39df42b2cbed1dcd0e1bf59619f25801a45fcf7c9e888eb3277dc4f5b52f4526",
+        "haloBlocks": "23c0b1021be02b3c1587cc02988dbfb76c8721ee41a1847374a5a8dd1f9d3aa2",
+        "density": "cebcaf8e7167abb0d66330fbc4ab853e4223afadd90b65d0b9ed365458854663",
+        "columns": "cff718efb1ccfed0ff8e99acafef2566233778d939486fc2e1f660a2a680a441"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-nadir-outside",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": 150,
+        "cy": -4,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "96ffb9a26cd03a059e154d9b4d42dbd1ce99fac6d7335f00cf8dcdfa47293e06",
+        "haloBlocks": "0ba6df9ce15e041df4a63acb268f61b5adc44eacd40e1f9d83b57d906e64746a",
+        "density": "3204f6a011e9eb64b0d0b67a77fa6d84cbf4832f8b5fb4eaa87af6d70de0feb5",
+        "columns": "5c61af87f534ef17dc0d9432894417d45551528852ead000abf8c36d3ae84c93"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-blackwater-inside",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": 185,
+        "cy": -4,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "6e477e085f69bd8ca4e3f43f00e01e68a7673219c486f21ce3b9c0395516f09a",
+        "haloBlocks": "193824137510f8acad7ae0ed4888306f8838bd6626e21bad265a50648a0d7bb3",
+        "density": "ab90ac58bdbd2a0fdd523ac5faf958d4d255ca8282e6c2ba48b83df2a193194e",
+        "columns": "addfd278a44f005ce8cfe8f68fb8c5549562e027490bc408f75c4f3ef9f935a4"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-blackwater-outside",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": 187,
+        "cy": -1,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "3331a7190eb73fb92ab8bdd7e353523c3fe616b0093713fb799085bd6412a7ae",
+        "haloBlocks": "a921cc86d30029e74f48223289f958969763dfeefaa7d74af4db6674a476bd26",
+        "density": "88ec45e19dfbf95abacd0760f230140ba99b246a4c50a9c2c01027326dd6fa08",
+        "columns": "706b488c3d59d8f4126ae20716cfac7c7b5d3734b0d7aa87792fbabc2309b4ab"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-inner-inside",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": 399,
+        "cy": 2,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "066179c284aae8a750812933fae682f4fd40d058ac1046f40e2ebb032cbf9b9c",
+        "haloBlocks": "c6ba7125b1f75a4bb89a32cfd7eb16246113dab2b84309d13c78167cf79d6d6c",
+        "density": "9c1a7c4de6f760878d0f15ac880afcf61fabe7a478d28d77d954a753fee095fd",
+        "columns": "a8080764378d21d891394a286a7d16e6c30e5425065f8353e8fb917057fd2b5e"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-inner-outside",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": 401,
+        "cy": 2,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "783f2e157a027946de1eef1fe8d0a42093d125b4e964a1160ca003aa9ff9e185",
+        "haloBlocks": "f3a0934cdf26288ac99625f940139e24f48735fe7b21854bf220b757cefe3ba7",
+        "density": "dad833e6eccdb13f8969a96d0195bd3f4fa9f67de4fb943186d370f9cf230436",
+        "columns": "6544da12a12f62cfafd03f50f96fce2afb61b534e8beb5dab6ffd5c3252a2bae"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-outer-inside",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": 637,
+        "cy": 2,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "f3b4cee73ab36c9ffe7461af87df0a725a836be7366238510f53f97e19a5038d",
+        "haloBlocks": "e574f7b7e3d30348228b4fd9e364fa5003ed3525c9a6079767ca3f49336b49aa",
+        "density": "c39331784ac3662025c7f7300e47c79050c7ceaae3b10661f5c5a75020011bc4",
+        "columns": "79df007020ce48941ae8fdbcb6b80627beaed48a0457581ea82292daef6cc757"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-outer-outside",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": 639,
+        "cy": 1,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "d7ae4e677830221b6d89ab8685fb31d53c674e9bcd56d6fd00abc21eec91496c",
+        "haloBlocks": "26e85dc72e23b1ff5cdd475eb305adb8c846437a39f003826081d11c3aea7570",
+        "density": "5f2f359e2f81b31e7fda248403ce363d5c875e473b5a36618a49d1b97a2cdf80",
+        "columns": "ba0255f0d0f4be352ebcae740028fdb10c694d7a34b7c3623b3ef6b756154baf"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-rim-inside",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": 664,
+        "cy": 18,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "84536281d516fb5ea838554e32766abebf68c3c04e08c466d07bc3a99afcd5ac",
+        "haloBlocks": "a52cb77f68d0536d12cb28f967b9663a21b66225edd0fef95a5feaf30bf265c0",
+        "density": "71a2a12143afd6a026588dc65753065f2c6938f9fd694426eec9e80b0fc8f7db",
+        "columns": "f499a0e8ee34663edc2d6f820e2e82c53978a7ee48063d33c75580056626d9f1"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-rim-outside",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": 666,
+        "cy": 18,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "warped-ring-transition"
+      },
+      "hashes": {
+        "blocks": "f1621b5932b86cfb25a0c044f2b49162757fa68ee6a3fde02c28f7a9d3d74869",
+        "haloBlocks": "6597855288205acd723df0f4c9a6089da755421a580e76d2d11dd43cd7a5d677",
+        "density": "63dad929bed13f598c1a7ff4c1007cd6e6b310cc4940c0463728f7d19564b21f",
+        "columns": "752d4ac9d59749298ef362b0e6086e2d1fe690276870ee2d99a7fae0db75fda5"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-frame--704--704",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": -704,
+        "cy": 18,
+        "cz": -704,
+        "spacing": 1,
+        "coverage": "xz-frame-boundary-signed-corner"
+      },
+      "hashes": {
+        "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
+        "haloBlocks": "1be1bc2d76e8aa1d484d128c0570e854bdbb895e2a787a8f12581b1d379abb22",
+        "density": "baa08deb73c70ef2650e6476ddea553b60e8e5f5858811c1c91ea3ed9de8132a",
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-frame--704-703",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": -704,
+        "cy": 18,
+        "cz": 703,
+        "spacing": 1,
+        "coverage": "xz-frame-boundary-signed-corner"
+      },
+      "hashes": {
+        "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
+        "haloBlocks": "58b3e20d6297a0cbf0d5cb498f2fab9be747a3de4f2f79b72eb24f9fad86e604",
+        "density": "7feebf2dffb63be20ffb636bc95f5568e9885f46f2d7e0855c19f38ab722712f",
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-frame-703--704",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": 703,
+        "cy": 18,
+        "cz": -704,
+        "spacing": 1,
+        "coverage": "xz-frame-boundary-signed-corner"
+      },
+      "hashes": {
+        "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
+        "haloBlocks": "8b5f5d80da99621cac7b33aea6c2dc8d11ab5dd309cbcfc30d6828ae8fd2a80f",
+        "density": "6f52f56f4bfd347ce8f97023464a1b8c0e28d448554163d3e3608d7e5d3ec75f",
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-frame-703-703",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": 703,
+        "cy": 18,
+        "cz": 703,
+        "spacing": 1,
+        "coverage": "xz-frame-boundary-signed-corner"
+      },
+      "hashes": {
+        "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
+        "haloBlocks": "7d89a9c836573a00821644cf3c27e0854c55dd4f2d5573b5f4c8f34e03128b6e",
+        "density": "782e7ca7eb8be1bb410ade6d95bbb309f53c35db449b113c6b1269adf739878f",
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-floor",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": -1,
+        "cy": -48,
+        "cz": -1,
+        "spacing": 1,
+        "coverage": "floor"
+      },
+      "hashes": {
+        "blocks": "0b1bc4208dd7f3a8249804514cb01d457207656dd6acb695c816cfb3e2898e17",
+        "haloBlocks": "67f15edbfe2bb0df5c7ce3ae8f7089d716eccccb5fd221e74e624f2ae9914827",
+        "density": "8f1be233e1ae24b80dfba5ff25c381392f2c59b36d9c05c794f71a20be9eaffc",
+        "columns": "de89dcbe7d4940baad63868654e4eab95e47c4843298c0cb8278e1078ac5209a"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-worldstone-transition",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": -1,
+        "cy": -47,
+        "cz": -1,
+        "spacing": 1,
+        "coverage": "worldstone-transition"
+      },
+      "hashes": {
+        "blocks": "4f76e9188b6063650654fde6caa90189ee08262522be6f9e08cc0d75a7b4dc72",
+        "haloBlocks": "21a236e48ac56faa68f52af1a0665d679dd12fbf32b4b15427fe2405a67b28cd",
+        "density": "539455b96d6a905c9817f3591789cf13a4655b7d7da9ac0c48388deae7eca0b1",
+        "columns": "de89dcbe7d4940baad63868654e4eab95e47c4843298c0cb8278e1078ac5209a"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-deep-stone",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": -1,
+        "cy": -8,
+        "cz": -1,
+        "spacing": 1,
+        "coverage": "deep-stone"
+      },
+      "hashes": {
+        "blocks": "4f76e9188b6063650654fde6caa90189ee08262522be6f9e08cc0d75a7b4dc72",
+        "haloBlocks": "8d98320d427ca0dafd223ec85ee9f82027a2daa9fe04b499c81acb8b392a0753",
+        "density": "fd791394c39a94cc9f16f0085f0b24f1a7f3a568cf68cf28b7ae48a5707c348e",
+        "columns": "de89dcbe7d4940baad63868654e4eab95e47c4843298c0cb8278e1078ac5209a"
+      }
+    },
+    {
+      "sample": {
+        "id": "main-s3-lod0-sky-ceiling",
+        "world": "main",
+        "seed": 3,
+        "lod": 0,
+        "cx": -1,
+        "cy": 31,
+        "cz": -1,
+        "spacing": 1,
+        "coverage": "sky-ceiling"
+      },
+      "hashes": {
+        "blocks": "de2f256064a0af797747c2b97505dc0b9f3df0de4f489eac731c23ae9ca9cc31",
+        "haloBlocks": "9736d8dd61f2488c3dfc458e674c95b61b1194c527dcf63ec29a0f0e95c6aaf6",
+        "density": "f2ce1feb4f1af797ff3aff85bc7587624607d534eea10c300f4c75416b1da114",
+        "columns": "de89dcbe7d4940baad63868654e4eab95e47c4843298c0cb8278e1078ac5209a"
       }
     }
   ]

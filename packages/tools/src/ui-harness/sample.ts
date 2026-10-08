@@ -5,10 +5,17 @@ import type {
   GameEvent,
   GamePort,
   GameSnapshot,
+  MapFrame,
+  MapRequest,
+  SurfaceRegionId,
+  TeleportRequest,
   UiHost,
+  WorldKind,
 } from "../../../client/src/contracts/game-ui";
 import { createUiController } from "../../../client/src/ui/controller";
 import { BLOCK_REGISTRY } from "../../../shared/src/blocks/registry";
+import { SURFACE_REGIONS } from "../../../shared/src/world/regions";
+import mapAnchorReview from "./map-anchor-review.json";
 
 const colors = [
   "#242932",
@@ -33,9 +40,88 @@ export const sampleContent = [
   "0.1.0",
   "eced20f",
   "ffffffffffffffffffffffffffffffffffffffff",
+  ...SURFACE_REGIONS.flatMap((region) => [
+    region.name,
+    ...(region.kanji ? [region.kanji] : []),
+    ...(region.discoverySentence ? [region.discoverySentence] : []),
+  ]),
 ];
+const mapBounds = { minX: -22528, minZ: -22528, maxX: 22528, maxZ: 22528 };
+/** Explicit gallery-only coloured cells; this is not WorldPlan geography proof. */
+function fixtureRegion(x: number, z: number) {
+  const column = Math.min(
+    3,
+    Math.max(0, Math.floor((x - mapBounds.minX) / 11264)),
+  );
+  const row = Math.min(
+    3,
+    Math.max(0, Math.floor((z - mapBounds.minZ) / 11264)),
+  );
+  return SURFACE_REGIONS[row * 4 + column]!;
+}
+function fixtureMap(request: MapRequest, main: boolean): MapFrame {
+  const clipped = {
+    minX: Math.max(mapBounds.minX, request.bounds.minX),
+    minZ: Math.max(mapBounds.minZ, request.bounds.minZ),
+    maxX: Math.min(mapBounds.maxX, request.bounds.maxX),
+    maxZ: Math.min(mapBounds.maxZ, request.bounds.maxZ),
+  };
+  request = {
+    ...request,
+    bounds: clipped,
+    width: Math.max(
+      1,
+      Math.round(
+        (request.width * (clipped.maxX - clipped.minX)) /
+          (request.bounds.maxX - request.bounds.minX),
+      ),
+    ),
+    height: Math.max(
+      1,
+      Math.round(
+        (request.height * (clipped.maxZ - clipped.minZ)) /
+          (request.bounds.maxZ - request.bounds.minZ),
+      ),
+    ),
+  };
+  const rgba = new Uint8ClampedArray(request.width * request.height * 4);
+  for (let y = 0; y < request.height; y++)
+    for (let x = 0; x < request.width; x++) {
+      const wx =
+        request.bounds.minX +
+        ((x + 0.5) * (request.bounds.maxX - request.bounds.minX)) /
+          request.width;
+      const wz =
+        request.bounds.minZ +
+        ((y + 0.5) * (request.bounds.maxZ - request.bounds.minZ)) /
+          request.height;
+      const color = main ? fixtureRegion(wx, wz).color : [100, 110, 120];
+      const at = (y * request.width + x) * 4;
+      rgba[at] = color[0]!;
+      rgba[at + 1] = color[1]!;
+      rgba[at + 2] = color[2]!;
+      rgba[at + 3] = 255;
+    }
+  return {
+    ...request,
+    rgba,
+    names: main
+      ? SURFACE_REGIONS.map((region, index) => ({
+          regionId: region.id,
+          x: mapBounds.minX + ((index % 4) + 0.5) * 11264,
+          z: mapBounds.minZ + (Math.floor(index / 4) + 0.5) * 11264,
+        }))
+      : [],
+  };
+}
 export function sampleSnapshot(): GameSnapshot {
   return {
+    world: {
+      id: 1,
+      identity: { kind: "main", seed: 1, generation: "gallery-only" },
+    },
+    loadStage: "terrain",
+    mapInfo: { bounds: mapBounds, regions: SURFACE_REGIONS },
     revision: 1,
     lifecycle: "ready",
     loadProgress: 0.6,
@@ -61,6 +147,11 @@ export function sampleSnapshot(): GameSnapshot {
     storage: "available",
     graphics: "available",
     debug: {
+      regionWeights: [
+        { regionId: "jungle", weight: 0.64 },
+        { regionId: "swamp", weight: 0.26 },
+        { regionId: "isles", weight: 0.1 },
+      ],
       feet: [-256.1, 24.5, 312.8],
       facing: "compass.nw",
       pitchDegrees: 55,
@@ -80,12 +171,27 @@ export function sampleSnapshot(): GameSnapshot {
 }
 export function fixtureController(
   scenario: string,
-  options: { manageInputScope?: boolean } = {},
+  options: { manageInputScope?: boolean; initialWorld?: WorldKind } = {},
 ) {
   let snapshot = sampleSnapshot();
   const listeners = new Set<(event: GameEvent) => void>();
   const commands: GameCommand[] = [];
   const browserActions: string[] = [];
+  const travels: TeleportRequest[] = [];
+  const cancelled: number[] = [];
+  const emit = (event: GameEvent): void => {
+    for (const listener of listeners) listener(event);
+  };
+  if (scenario.endsWith("-test"))
+    snapshot = {
+      ...snapshot,
+      world: {
+        id: 1,
+        identity: { kind: "test", seed: 1, generation: "gallery-only" },
+      },
+      mapInfo: { bounds: mapBounds, regions: [] },
+      debug: snapshot.debug ? { ...snapshot.debug, regionWeights: [] } : null,
+    };
   if (scenario.startsWith("title"))
     snapshot = { ...snapshot, lifecycle: "idle" };
   if (scenario.startsWith("loading"))
@@ -101,6 +207,16 @@ export function fixtureController(
     };
   if (scenario === "loading-failed")
     snapshot = { ...snapshot, lifecycle: "failed" };
+  if (scenario.startsWith("loading-plan"))
+    snapshot = {
+      ...snapshot,
+      loadStage: "plan",
+      loadProgress: scenario.endsWith("start")
+        ? 0
+        : scenario.endsWith("done")
+          ? 0.35
+          : 0.2,
+    };
   if (scenario === "system-storage")
     snapshot = { ...snapshot, storage: "blocked" };
   if (scenario === "system-context")
@@ -142,13 +258,95 @@ export function fixtureController(
         snapshot = { ...snapshot, hotbar: { ...snapshot.hotbar, slots } };
       }
       if (command.type === "start")
-        snapshot = { ...snapshot, lifecycle: "loading", seed: command.seed };
+        snapshot = {
+          ...snapshot,
+          lifecycle: "loading",
+          seed: command.seed,
+          world: {
+            id: (snapshot.world?.id ?? 0) + 1,
+            identity: {
+              kind: command.worldKind,
+              seed: command.seed,
+              generation: "gallery-only",
+            },
+          },
+        };
       if (command.type === "postcard")
         snapshot = {
           ...snapshot,
           mode: command.active ? "postcard" : "overhead",
         };
       publish();
+    },
+    async readMap(request) {
+      if (request.sessionId !== snapshot.world?.id) return null;
+      if (scenario.startsWith("map-review"))
+        return {
+          ...fixtureMap(request, false),
+          // Historical real anchors on a neutral fixture raster. This exercises
+          // collisions without masquerading as current WorldPlan geography.
+          names: mapAnchorReview.names.flatMap((anchor) => {
+            const region = SURFACE_REGIONS.find(
+              (item) => item.id === anchor.regionId,
+            );
+            return region ? [{ ...anchor, regionId: region.id }] : [];
+          }),
+        };
+      return fixtureMap(request, snapshot.world.identity.kind === "main");
+    },
+    inspectMap(request) {
+      if (
+        request.sessionId !== snapshot.world?.id ||
+        request.x < mapBounds.minX ||
+        request.x >= mapBounds.maxX ||
+        request.z < mapBounds.minZ ||
+        request.z >= mapBounds.maxZ
+      )
+        return null;
+      return {
+        x: request.x,
+        z: request.z,
+        regionId:
+          snapshot.world.identity.kind === "main"
+            ? fixtureRegion(request.x, request.z).id
+            : null,
+      };
+    },
+    async teleport(request) {
+      travels.push(request);
+      if (request.sessionId !== snapshot.world?.id)
+        return { sessionId: request.sessionId, committed: false };
+      const destination = request.target;
+      const index =
+        destination.kind === "region"
+          ? SURFACE_REGIONS.findIndex(
+              (region) => region.id === destination.regionId,
+            )
+          : -1;
+      const point =
+        request.target.kind === "point"
+          ? request.target
+          : {
+              x: mapBounds.minX + ((index % 4) + 0.5) * 11264,
+              z: mapBounds.minZ + (Math.floor(index / 4) + 0.5) * 11264,
+            };
+      snapshot = {
+        ...snapshot,
+        debug: snapshot.debug
+          ? { ...snapshot.debug, feet: [point.x, 24.5, point.z] }
+          : null,
+      };
+      publish();
+      if (snapshot.world?.identity.kind === "main")
+        emit({
+          type: "region-entered",
+          sessionId: request.sessionId,
+          regionId: fixtureRegion(point.x, point.z).id,
+        });
+      return { sessionId: request.sessionId, committed: true };
+    },
+    cancelTeleport(sessionId) {
+      cancelled.push(sessionId);
     },
     capturePng: () =>
       Promise.reject(new Error("Gallery adapter cannot capture a game world")),
@@ -181,6 +379,13 @@ export function fixtureController(
       ui.seedDraft.value = "123456789012345678901234567890";
     if (scenario === "title-empty") ui.seedDraft.value = "";
   }
+  if (scenario.startsWith("map")) ui.openMap();
+  if (scenario.startsWith("discovery-"))
+    emit({
+      type: "region-entered",
+      sessionId: 1,
+      regionId: scenario.slice(10) as SurfaceRegionId,
+    });
   if (scenario.startsWith("loading"))
     ui.blocking.value =
       scenario === "loading-failed" ? "load-failed" : "loading";
@@ -258,5 +463,5 @@ export function fixtureController(
     ui.blocking.value = "blocks";
     ui.toast.value = { id: "toast.shot" };
   }
-  return { ui, commands, browserActions };
+  return { ui, commands, browserActions, travels, cancelled, port, emit };
 }

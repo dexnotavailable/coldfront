@@ -1,13 +1,14 @@
 import {
   parseFlags,
   seedValue,
-  testWorldOnly,
   tuple,
   value,
+  worldValue,
 } from "../terrain-review/arguments.js";
 import type { AtlasRequest } from "./render.js";
 export interface AtlasCommand {
   readonly help: boolean;
+  readonly world: "main" | "test";
   readonly seed: number;
   readonly output: string;
   readonly request: AtlasRequest;
@@ -26,10 +27,26 @@ export function parseAtlas(args: readonly string[]): AtlasCommand {
     "relief",
     "out",
   ]);
-  testWorldOnly(flags);
-  if (value(flags, "mode", "height") !== "height")
+  const world = worldValue(flags),
+    mode = value(flags, "mode", "height"),
+    layer = value(flags, "layer", "surface");
+  if (mode !== "height" && mode !== "regions" && mode !== "sites")
     throw new Error(
-      "Phase 1.1 supports --mode height only; region, feature-mask and site maps need a WorldPlan",
+      "Mode must be height, regions or sites; feature masks arrive with the phase 1.3 toolkit",
+    );
+  if (
+    layer !== "surface" &&
+    layer !== "upper_deep" &&
+    layer !== "undercrown" &&
+    layer !== "maw" &&
+    layer !== "pit"
+  )
+    throw new Error("Unknown WorldPlan layer");
+  if (world === "test" && (mode !== "height" || layer !== "surface"))
+    throw new Error("The test world has no region/site WorldPlan");
+  if (mode === "height" && layer !== "surface")
+    throw new Error(
+      "Underground floor heights do not exist in phase 1.2; use regions or sites",
     );
   if (flags.has("bounds") && (flags.has("center") || flags.has("span")))
     throw new Error("Choose --bounds or --center/--span, not both");
@@ -42,7 +59,7 @@ export function parseAtlas(args: readonly string[]): AtlasCommand {
   )
     throw new Error("Size must be N or WxH in pixels");
   const center = tuple(value(flags, "center", "0,0"), 2, "Center"),
-    span = Number(value(flags, "span", "512"));
+    span = Number(value(flags, "span", world === "main" ? "45056" : "512"));
   if (!Number.isFinite(span) || span <= 0)
     throw new Error("Span must be a positive number of metres");
   const b = flags.has("bounds")
@@ -53,12 +70,23 @@ export function parseAtlas(args: readonly string[]): AtlasCommand {
         Number(center[0]) + span / 2,
         Number(center[1]) + span / 2,
       ];
-  const range = tuple(value(flags, "height-range", "-8,32"), 2, "Height range");
+  const range = tuple(
+    value(flags, "height-range", world === "main" ? "-256,1024" : "-8,32"),
+    2,
+    "Height range",
+  );
   return {
     help: flags.has("help"),
+    world,
     seed,
-    output: value(flags, "out", `out/atlas/seed-${seed}/surface-height.png`),
+    output: value(
+      flags,
+      "out",
+      `out/atlas/${world}/seed-${seed}/${layer}-${mode}.png`,
+    ),
     request: {
+      mode,
+      layer,
       width: Number(shape[0]),
       height: Number(shape[1] ?? shape[0]),
       bounds: {

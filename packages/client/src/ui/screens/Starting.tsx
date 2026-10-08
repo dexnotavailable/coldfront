@@ -1,10 +1,22 @@
 /** @jsxRuntime automatic */
 /** @jsxImportSource preact */
 import { Blocking } from "../components/Blocking";
-import { Bar, Button, Field, IconButton } from "../components/core";
+import {
+  Bar,
+  Button,
+  Field,
+  IconButton,
+  Select,
+  type SelectOption,
+} from "../components/core";
 import { RandomSeedIcon } from "../components/Icon";
 import { Text } from "../components/Text";
 import type { UiController } from "../controller";
+
+const worlds: readonly SelectOption<"main" | "test">[] = [
+  { value: "main", label: { kind: "catalogue", id: "title.world.main" } },
+  { value: "test", label: { kind: "catalogue", id: "title.world.test" } },
+];
 export function TitleScreen({ ui }: { ui: UiController }) {
   return (
     <Blocking onEnter={() => ui.play()}>
@@ -25,6 +37,14 @@ export function TitleScreen({ ui }: { ui: UiController }) {
             <RandomSeedIcon />
           </IconButton>
         </div>
+        <Select
+          id="title.world"
+          value={ui.worldKind.value}
+          options={worlds}
+          onChange={(value) => {
+            ui.worldKind.value = value;
+          }}
+        />
         <Button id="title.play" kind="primary" onClick={() => ui.play()} />
       </div>
     </Blocking>
@@ -52,7 +72,13 @@ export function LoadingScreen({
         ) : (
           <>
             <Bar id="load.bar" value={ui.game.value.loadProgress} />
-            <Text id="load.terrain" />
+            <Text
+              id={
+                ui.game.value.loadStage === "plan"
+                  ? "load.plan"
+                  : "load.terrain"
+              }
+            />
           </>
         )}
       </div>

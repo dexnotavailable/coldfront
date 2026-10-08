@@ -41,12 +41,14 @@ export function compact(value: number): string {
 }
 export function numeric(
   value: number,
-  style: "integer" | "one" | "compact" = "integer",
+  style: "integer" | "one" | "compact" | "weight" = "integer",
 ): string {
   if (!Number.isFinite(value)) throw new Error("Non-finite UI number");
   return style === "one"
     ? value.toFixed(1).replace("-", "−")
-    : style === "compact"
-      ? compact(value)
-      : String(Math.round(value));
+    : style === "weight"
+      ? String(Math.round(value * 1000) / 1000)
+      : style === "compact"
+        ? compact(value)
+        : String(Math.round(value));
 }

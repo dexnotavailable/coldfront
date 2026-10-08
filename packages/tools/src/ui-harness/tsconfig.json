@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": [
+    "../../../client/src/ui/**/*.ts",
+    "../../../client/src/ui/**/*.tsx",
+    "../../../client/src/contracts/game-ui.ts",
+    "../ui-strings/**/*.ts",
+    "../ui-lint/**/*.ts",
+    "../ui-shots/**/*.ts",
+    "./*.ts",
+    "./*.tsx",
+    "../../test/ui/**/*.ts"
+  ]
+}

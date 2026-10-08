@@ -75,4 +75,8 @@ Object.defineProperty(window, "__cf", {
   writable: false,
 });
 game.port.apply({ type: "input-scope", scope: "world" });
-game.port.apply({ type: "start", seed: Number(params.get("seed") ?? "1") });
+game.port.apply({
+  type: "start",
+  seed: Number(params.get("seed") ?? "1"),
+  worldKind: "test",
+});

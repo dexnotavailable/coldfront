@@ -8,8 +8,8 @@ import {
 } from "vite";
 
 const mode = process.argv[2] ?? "browser";
-if (mode !== "browser" && mode !== "postcards")
-  throw new Error("Expected browser or postcards");
+if (mode !== "browser" && mode !== "postcards" && mode !== "phase12")
+  throw new Error("Expected browser, phase12 or postcards");
 const urlIndex = process.argv.indexOf("--url");
 const existing = process.env.CF_URL;
 let server: ViteDevServer | PreviewServer | null = null;
@@ -44,6 +44,7 @@ try {
     process.env.CF_URL = url;
   }
   if (mode === "postcards") await import("../postcards/capture.js");
+  else if (mode === "phase12") await import("./phase12.js");
   else {
     await import("./smoke.js");
     await import("./drive.js");

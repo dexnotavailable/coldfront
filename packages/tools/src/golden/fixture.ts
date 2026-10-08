@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { contentHash, sourceFiles } from "../build/metadata.js";
 import {
   currentGoldenContract,
+  type GoldenCase,
   type GoldenFixture,
   goldenCases,
 } from "./core.js";
@@ -32,7 +33,10 @@ export function goldenSourceProvenance(): GoldenFixture["provenance"] {
     nodeVersion: process.version,
   };
 }
-export function validateFixture(value: unknown): GoldenFixture {
+export function validateFixture(
+  value: unknown,
+  cases: readonly GoldenCase[] = goldenCases(),
+): GoldenFixture {
   if (!value || typeof value !== "object")
     throw new Error("Golden fixture is not an object");
   const fixture = value as GoldenFixture;
@@ -41,12 +45,11 @@ export function validateFixture(value: unknown): GoldenFixture {
       throw new Error(
         `Golden ${key} differs; review generation/version changes and run golden:update`,
       );
-  const cases = goldenCases();
   if (
     !Array.isArray(fixture.records) ||
     fixture.records.length !== cases.length
   )
-    throw new Error("Golden fixture must contain all 150 cases");
+    throw new Error(`Golden fixture must contain all ${cases.length} cases`);
   for (let i = 0; i < cases.length; i++) {
     const row = fixture.records[i];
     if (!row || JSON.stringify(row.sample) !== JSON.stringify(cases[i]))
@@ -71,13 +74,18 @@ export function validateFixture(value: unknown): GoldenFixture {
 }
 export async function readGoldenFixture(
   path = GOLDEN_PATH,
+  cases: readonly GoldenCase[] = goldenCases(),
 ): Promise<GoldenFixture> {
-  return validateFixture(JSON.parse(await readFile(path, "utf8")) as unknown);
+  return validateFixture(
+    JSON.parse(await readFile(path, "utf8")) as unknown,
+    cases,
+  );
 }
 export async function writeGoldenFixture(
   fixture: GoldenFixture,
   path = GOLDEN_PATH,
+  cases: readonly GoldenCase[] = goldenCases(),
 ): Promise<void> {
-  validateFixture(fixture);
+  validateFixture(fixture, cases);
   await writeFile(path, `${JSON.stringify(fixture, null, 2)}\n`);
 }

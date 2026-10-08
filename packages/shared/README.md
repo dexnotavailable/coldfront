@@ -40,7 +40,7 @@ For hot loops, precompute `collectTestTrees(seed,minX,minZ,maxX,maxZ)` over the 
 
 Trees are candidates from 40m cells, identified by the cell-coordinate pair. Each has a varied trunk and ellipsoidal leaf blob; spawn, water and steep ground reject candidates. Both sides of a chunk boundary find the same features. `testTreeInCell`/`collectTestTrees` are exported; no neighbour-first generation exists.
 
-`Block` and `BLOCK_REGISTRY` preserve the original IDs: Air 0, Worldstone 1, Stone 2, Dirt 3, Grass 4, Sand 5, Water 6, Log 7, Leaves 8, DeepStone 9. IDs 10–31 extend this set without renumbering; `src/blocks/registry.ts` is the complete list and `src/blocks/textures/recipes.ts` supplies generated recipes. Definitions provide semantic keys/names, render type, solidity, opacity, breakability, light filtering and texture recipe keys. `WORLDGEN_VERSION = 1`.
+`Block` and `BLOCK_REGISTRY` preserve the original IDs: Air 0, Worldstone 1, Stone 2, Dirt 3, Grass 4, Sand 5, Water 6, Log 7, Leaves 8, DeepStone 9. IDs 10–31 extend this set without renumbering; `src/blocks/registry.ts` is the complete list and `src/blocks/textures/recipes.ts` supplies generated recipes. Definitions provide semantic keys/names, render type, solidity, opacity, breakability, light filtering and texture recipe keys. `WORLDGEN_VERSION = 2` adds the main WorldPlan; the original test-world generator remains unchanged.
 
 ## Noise and derivatives
 
@@ -51,6 +51,7 @@ Kernel coordinates are finite input-space coordinates with absolute magnitude be
 | `openSimplex2(seed,x,z,out)` | value, dx, dz, dxx, dxz, dzz | Continuous 2D OpenSimplex2 and analytic Hessian |
 | `openSimplex3(seed,x,y,z,out)` | value, dx, dy, dz | Pinned fast OpenSimplex2 3D compatibility |
 | `openSimplex2S3` / `terrainNoise3` | value, dx, dy, dz | Smooth production 3D, ImproveXZPlanes |
+| `psrd2(seed,x,z,out)` | value, dx, dz, dxx, dxz, dzz | Nonperiodic 2D psrdnoise profile with analytic gradient and Hessian |
 | `fbm2`, `billow2`, `ridged2`, `erosionFbm2` | value, dx, dz | Normalised scalar operators |
 | `warp2` | vx, vz, Jxx, Jxz, Jzx, Jzz | Vector displacement/Jacobian |
 | `warp3` | vx, vy, vz, then 3×3 row-major Jacobian | Smooth production displacement/Jacobian |
@@ -61,7 +62,11 @@ Lattice/hash rules and gradient tables come from FastNoiseLite revision `785f37a
 
 **Upstream fast-3D limitation:** for seed 1, y=0, swapping x/z between `1−1e−8` and `1+1e−8` changes the pinned upstream value by about 0.000404134. The compatibility export and a regression test preserve this tie-plane discontinuity. OpenSimplex2S passes the strict value/gradient continuity test at those boundaries; `terrainNoise3` and `warp3` select it. Test-world heights use continuous 2D noise.
 
-`erosionFbm2` accumulates amplitude-weighted gradients D and adds `a*n/(1+strength*|D|²)` per octave. Its analytic gradient differentiates the denominator using the kernel Hessian. Billow/ridged absolute-value and clamp cusps use symmetric zero derivatives. Rune's erosion filter, psrdnoise, Worley, SDFs, splines and region-specific operators remain future modules.
+`erosionFbm2` accumulates amplitude-weighted gradients D and adds `a*n/(1+strength*|D|²)` per octave. Its analytic gradient differentiates the denominator using the kernel Hessian. Billow/ridged absolute-value and clamp cusps use symmetric zero derivatives. Rune's erosion filter, Worley, SDFs, splines and region-specific operators remain future modules.
+
+`psrd2` ports Stefan Gustavson and Ian McEwan's MIT lattice/attenuation kernel at revision `419175a270862ce7ae692038fafafb42ec0427e9`. It retains the stretched simplex geometry, radius squared 0.8, fourth-power attenuation and normalization 10.9. Per the prior-art design, `hash3` selects from 256 deterministic unit directions, replacing upstream modulo-289 rotating gradients; optional tiling and animation parameters are omitted. It is therefore a separate seeded profile, not bit-compatible upstream output. The Hessian is analytic; callers scaling coordinates by frequency f must scale gradients by f and Hessians by f². Inputs require a signed/unsigned 32-bit seed, finite coordinates with magnitude below 2²⁸ and at least six output lanes; extra lanes remain unchanged.
+
+`npm run noise:calibrate:psrd2` measures 1,000,000 points in [−4096,4096)², cycling world seeds 1–3 with sequence seed `0xb7e15162`. `psrd2Quantile(p)` applies only to `psrd2-nonperiodic-hash3-unit256-v1` at frequency one. The independent 100,000-point sequence `0x8aed2a6b`, seeds 17–19, measured 45.321% above q(0.55) and 20.340% above q(0.8). These are empirical coverage checks; sampled extrema are not universal bounds. The port, scalar reference and complete licence are retained in source and the root notices.
 
 ## Quantile provenance
 

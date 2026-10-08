@@ -118,22 +118,26 @@ try {
       const prepared = await prepareFixture(page, fixture);
       pageErrors.push(...prepared.errors);
       if (strip) {
-        const times = fixture.id.startsWith("toast")
-          ? [0, 50, 100, 2000, 2150, 2300]
-          : fixture.id === "hud-name"
-            ? [0, 1000, 2000, 2250, 2500]
-            : fixture.id === "confirm-clear"
-              ? [0, 50, 100, 150]
-              : [0, 50, 100, 150, 200];
-        const selector = fixture.id.startsWith("tools")
-          ? ".cf-tools-frame>.cf-panel"
-          : fixture.id === "confirm-clear"
-            ? ".cf-modal"
+        const times =
+          fixture.motionCapture?.times ??
+          (fixture.id.startsWith("toast")
+            ? [0, 50, 100, 2000, 2150, 2300]
             : fixture.id === "hud-name"
-              ? ".cf-held-name"
-              : fixture.id.startsWith("toast")
-                ? ".cf-toast"
-                : ".cf-tooltip";
+              ? [0, 1000, 2000, 2250, 2500]
+              : fixture.id === "confirm-clear"
+                ? [0, 50, 100, 150]
+                : [0, 50, 100, 150, 200]);
+        const selector =
+          fixture.motionCapture?.selector ??
+          (fixture.id.startsWith("tools")
+            ? ".cf-tools-frame>.cf-panel"
+            : fixture.id === "confirm-clear"
+              ? ".cf-modal"
+              : fixture.id === "hud-name"
+                ? ".cf-held-name"
+                : fixture.id.startsWith("toast")
+                  ? ".cf-toast"
+                  : ".cf-tooltip");
         const clip = await page.locator(selector).evaluate((element) => {
           const rect = element.getBoundingClientRect();
           const x = Math.max(0, Math.floor(rect.x - 24));
@@ -145,7 +149,22 @@ try {
             height: Math.min(innerHeight - y, Math.ceil(rect.height + 48)),
           };
         });
-        const frames: { time: number; file: string; data: string }[] = [];
+        const animationEvidence = await page
+          .locator(selector)
+          .evaluate((element) => ({
+            timingFunction: getComputedStyle(element).animationTimingFunction,
+            easeOut: getComputedStyle(element).getPropertyValue("--ease-out"),
+            animations: element.getAnimations().map((animation) => ({
+              timing: animation.effect?.getTiming(),
+              keyframes: (animation.effect as KeyframeEffect).getKeyframes(),
+            })),
+          }));
+        const frames: {
+          time: number;
+          file: string;
+          data: string;
+          opacity: number;
+        }[] = [];
         for (const time of times) {
           await page.evaluate((time) => {
             for (const animation of document.getAnimations()) {
@@ -158,9 +177,26 @@ try {
             clip,
           });
           const file = resolve(out, `${fixture.id}-motion-${time}.png`);
+          const opacity = await page
+            .locator(selector)
+            .evaluate((element) => Number(getComputedStyle(element).opacity));
+          if (selector === ".cf-discovery") {
+            if (time === 150 && opacity < 0.9)
+              pageErrors.push(
+                "Discovery entrance did not use catalogue ease-out",
+              );
+            if (
+              [300, 2300, 4300].includes(time) &&
+              Math.abs(opacity - 1) > 0.001
+            )
+              pageErrors.push("Discovery four-second hold changed");
+            if ([0, 4600].includes(time) && opacity > 0.001)
+              pageErrors.push("Discovery endpoint is not invisible");
+          }
           frames.push({
             time,
             file,
+            opacity,
             data: (await readFile(file)).toString("base64"),
           });
         }
@@ -178,7 +214,12 @@ try {
         receipt.captures.push({
           fixture: fixture.id,
           times,
-          frames: frames.map(({ time, file }) => ({ time, file })),
+          animationEvidence,
+          frames: frames.map(({ time, file, opacity }) => ({
+            time,
+            file,
+            opacity,
+          })),
           strip: resolve(out, `${fixture.id}-strip.png`),
         });
         receipt.errors.push(...pageErrors);
@@ -186,6 +227,23 @@ try {
         continue;
       }
       if (fixture === fixtures[0] && profile === profiles[0]) {
+        await page.evaluate(() => {
+          const probe = document.createElement("button");
+          probe.id = "future-phase-probe";
+          probe.dataset.ui = "tools.postcard";
+          probe.style.cssText =
+            "position:absolute;left:0;top:0;width:32px;height:32px";
+          document.querySelector("#gallery-stage")!.append(probe);
+        });
+        const future = await inspectPage(page, rows, fixture.sampleContent);
+        if (!future.errors.includes("unknown/future control tools.postcard"))
+          throw new Error(
+            "Phase 1.3 control was incorrectly accepted in phase 1.2",
+          );
+        await page.evaluate(() =>
+          document.getElementById("future-phase-probe")!.remove(),
+        );
+        receipt.auditProbes.push("phase 1.3 control rejected in phase 1.2");
         await page.evaluate(() => {
           const probe = document.createElement("div");
           probe.id = "wrap-policy-probe";
@@ -305,8 +363,14 @@ try {
           path: resolve(out, `${fixture.id}-${profile.id}-field.png`),
           caret: "initial",
         });
-      const scrolls = page.locator("[data-scroll]");
+      const scrolls = page.locator(
+        fixture.prepare?.kind === "select-open"
+          ? '[role="listbox"][data-scroll]'
+          : "[data-scroll]",
+      );
       if (await scrolls.count()) {
+        if (fixture.prepare?.kind === "select-open")
+          await page.keyboard.press("End");
         await scrolls.evaluateAll((elements) => {
           for (const element of elements)
             element.scrollTop = element.scrollHeight;

@@ -74,8 +74,8 @@ This covers every screen, panel, control, key binding, camera move and word the 
 | `npm run build` | production build into `packages/client/dist` (used by Cloudflare Pages) |
 | `npm run build:site` | production build for the owner's `dex.place/coldfront/` mount |
 | `npm run publish:site -- --dist packages/client/dist --expected-sha <sha>` | publish a verified site build, preserving release checksums and rollback receipts |
-| `npm run atlas -- --seed 1 --layer surface --mode regions` | top-down map PNGs → `out/atlas/`. Phase 1.1 has no WorldPlan yet: run it on the test world in `height` mode |
-| `npm run slice -- --seed 1 --from -15556,15556 --to 15556,-15556` | the SW→NE cross-section (overview + windows) → `out/slices/`. Phase 1.1: on the test world |
+| `npm run atlas -- --seed 1 --layer surface --mode regions` | main-world map PNGs and receipts → `out/atlas/main/`; use `--world test --mode height` for the sandbox |
+| `npm run slice -- --seed 1 --from -15556,15556 --to 15556,-15556` | the main SW→NE cross-section (overview + windows) → `out/slices/main/`; `--world test` keeps the sandbox |
 | `npm run postcards -- --seed 1 [--only ID,ID] [--phase 1.3] [--commit]` | headless screenshots → `out/postcards/`; `--commit` writes phase-end renders to `docs/postcards/m1/`. Slow: up to ~60 s a shot |
 | `npm run terrain-report -- --seed 1 --region hellscape` | coverage, slopes, walkable share, crumbs, feature statistics |
 | `npm run bench:gen` | generation, lighting and meshing timings. Run it on its own, never alongside renders |

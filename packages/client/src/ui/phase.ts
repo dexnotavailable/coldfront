@@ -1,1 +1,1 @@
-export const UI_PHASE = "1.1" as const;
+export const UI_PHASE = "1.2" as const;

@@ -54,3 +54,15 @@
 .gallery-matrix {
   gap: var(--s-2);
 }
+.gallery-select-open {
+  top: 25%;
+  transform: translateX(-50%);
+}
+.gallery-discovery-backdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--ink-0);
+}
+.gallery-discovery-backdrop[data-discovery-backdrop="bright"] {
+  background: var(--text);
+}

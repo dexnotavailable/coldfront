@@ -64,7 +64,11 @@ describe("production input arbitration", () => {
     expect(reservedKey(key("KeyR", { metaKey: true }), true, true)).toBe(true);
   });
   it("routes shell keys once, releases held input on palette/blur, and closes E without moving", () => {
-    class ElementFixture extends EventTarget {}
+    class ElementFixture extends EventTarget {
+      closest() {
+        return null;
+      }
+    }
     const win = new EventTarget();
     const doc = Object.assign(new EventTarget(), {
       hidden: false,

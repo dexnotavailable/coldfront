@@ -1,19 +1,16 @@
-import { createNoise2Sample } from "../../../shared/src/noise/opensimplex2.js";
 import {
   WORLD_MAX_XZ,
   WORLD_MAX_Y,
   WORLD_MIN_XZ,
   WORLD_MIN_Y,
 } from "../../../shared/src/world/constants.js";
-import {
-  Column,
-  collectTestTrees,
-  createColumnSample,
-  createVoxelSample,
-  sampleTestColumn,
-  sampleTestVoxel,
-} from "../../../shared/src/worldgen/test-world.js";
-import { WORLDGEN_VERSION } from "../../../shared/src/worldgen/version.js";
+import type {
+  WorldContext,
+  WorldKind,
+  WorldPlan,
+} from "../../../shared/src/world/types.js";
+import { createWorldContext } from "../../../shared/src/world/world-context.js";
+import { buildWorldPlan } from "../../../shared/src/worldplan/index.js";
 
 export interface SurfaceSample {
   height: number;
@@ -36,6 +33,11 @@ export interface TerrainReviewSource {
   readonly world: string;
   readonly seed: number;
   readonly version: number;
+  /** Actual immutable plan; null for the accepted test generator. */
+  readonly plan?: Pick<
+    WorldPlan,
+    "sites" | "surfaceWeights" | "layerWeights" | "footprint"
+  > | null;
   readonly bounds: Readonly<{
     minXZ: number;
     maxXZ: number;
@@ -65,17 +67,16 @@ export function createSurfaceSample(): SurfaceSample {
  * Node tools adapt the accepted pointwise generator without changing it.
  * Scratch is local to this source instance; every result is determined only by
  * seed and requested position. No renderer, neighbour order, I/O or clock enters
- * sampling. A future WorldPlan source implements the same narrow interface.
+ * sampling. Context construction/plan building belongs outside sampling timings.
  */
-export function createTestWorldSource(seed: number): TerrainReviewSource {
-  if (!Number.isInteger(seed) || seed < 0 || seed > 0xffffffff)
-    throw new RangeError("Seed must be an unsigned 32-bit integer");
-  const raw = createColumnSample(),
-    noise = createNoise2Sample();
+export function sourceFromContext(context: WorldContext): TerrainReviewSource {
+  const raw = context.createColumn(),
+    layout = context.columns;
   return {
-    world: "test",
-    seed,
-    version: WORLDGEN_VERSION,
+    world: context.kind,
+    seed: context.seed,
+    version: context.worldgenVersion,
+    plan: context.plan,
     bounds: {
       minXZ: WORLD_MIN_XZ,
       maxXZ: WORLD_MAX_XZ,
@@ -84,25 +85,25 @@ export function createTestWorldSource(seed: number): TerrainReviewSource {
     },
     writeSurface(x, z, out) {
       checkXZ(x, z);
-      sampleTestColumn(seed, x, z, raw, noise);
-      out.height = Number(raw[Column.Height]);
-      out.dx = Number(raw[Column.Dx]);
-      out.dz = Number(raw[Column.Dz]);
-      const water = Number(raw[Column.WaterLevel]);
+      context.sampleColumn(x, z, raw);
+      out.height = Number(raw[layout.height]);
+      out.dx = Number(raw[layout.gradientX]);
+      out.dz = Number(raw[layout.gradientZ]);
+      const water = Number(raw[layout.waterLevel]);
       out.waterLevel = Number.isFinite(water) ? water : null;
     },
     column(x, z) {
       checkXZ(x, z);
-      const column = sampleTestColumn(seed, x, z, createColumnSample());
-      const trees = collectTestTrees(seed, x, z, x, z),
-        voxel = createVoxelSample();
+      const area = context.prepareArea({ minX: x, minZ: z, maxX: x, maxZ: z });
+      const column = area.sampleColumn(x, z, area.createColumn());
+      const voxel = { density: 0, block: 0, fluid: 0 };
       return {
         x,
         z,
         writeVoxel(y, out) {
           if (!Number.isFinite(y))
             throw new RangeError("Voxel height must be finite");
-          sampleTestVoxel(seed, x, y, z, voxel, column, trees);
+          area.sampleVoxel(x, y, z, voxel, column);
           out.block = voxel.block;
           out.fluid = voxel.fluid;
           out.density = voxel.density;
@@ -110,4 +111,21 @@ export function createTestWorldSource(seed: number): TerrainReviewSource {
       };
     },
   };
+}
+export function createReviewSource(
+  world: WorldKind,
+  seed: number,
+): TerrainReviewSource {
+  if (!Number.isInteger(seed) || seed < 0 || seed > 0xffffffff)
+    throw new RangeError("Seed must be an unsigned 32-bit integer");
+  return sourceFromContext(
+    createWorldContext(
+      world === "test"
+        ? { kind: "test", seed }
+        : { kind: "main", seed, plan: buildWorldPlan(seed) },
+    ),
+  );
+}
+export function createTestWorldSource(seed: number): TerrainReviewSource {
+  return createReviewSource("test", seed);
 }

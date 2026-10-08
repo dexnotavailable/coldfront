@@ -24,12 +24,16 @@ export function Text({
 export function ContentText({ value }: { value: string }) {
   return <span data-content={value}>{value}</span>;
 }
+/** D7 requires this separator between coordinates and the region name. */
+export function Punctuation({ kind }: { kind: "middle-dot" }) {
+  return <span data-punctuation={kind}>·</span>;
+}
 export function Value({
   value,
   style = "integer",
 }: {
   value: number;
-  style?: "integer" | "one" | "compact";
+  style?: "integer" | "one" | "compact" | "weight";
 }) {
   const text = numeric(value, style);
   return <span data-numeric={text}>{text}</span>;

@@ -8,6 +8,81 @@ export async function prepareFixture(
   const prepare = fixture.prepare;
   if (!prepare) return { errors: [], evidence: null };
   const errors: string[] = [];
+  if (prepare.kind === "select-open") {
+    await page.locator(prepare.selector).click();
+    await page.locator('[role="listbox"]').waitFor();
+    return {
+      errors,
+      evidence: { kind: prepare.kind, selector: prepare.selector },
+    };
+  }
+  if (prepare.kind === "map") {
+    await page.waitForTimeout(300);
+    const canvas = page.locator('[data-ui="map.view"]'),
+      box = await canvas.boundingBox();
+    if (!box) throw new Error("Map viewport missing");
+    await page.mouse.move(box.x + box.width * 0.7, box.y + box.height * 0.4);
+    if (prepare.action === "selected")
+      await page.mouse.click(box.x + box.width * 0.7, box.y + box.height * 0.4);
+    if (prepare.action === "pan") {
+      await page.keyboard.down("KeyW");
+      await page.waitForTimeout(250);
+      await page.keyboard.up("KeyW");
+      await page.waitForTimeout(1700);
+    }
+    if (prepare.action === "detail") {
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+      await page.mouse.wheel(0, -400);
+      await page.waitForTimeout(1800);
+    }
+    if (prepare.action === "edge") {
+      await page.keyboard.down("KeyD");
+      await page.keyboard.down("KeyS");
+      await page.waitForTimeout(1000);
+      await page.keyboard.up("KeyD");
+      await page.keyboard.up("KeyS");
+      await page.waitForTimeout(700);
+      const edge = await canvas.evaluate((element) => {
+        const data = (element as HTMLElement).dataset;
+        return {
+          x:
+            ((Number(data.mapMaxX) - 1 - Number(data.mapX)) /
+              Number(data.mapScale) +
+              Number(data.mapWidth) / 2) /
+            Number(data.mapWidth),
+          y:
+            ((Number(data.mapMaxZ) - 1 - Number(data.mapZ)) /
+              Number(data.mapScale) +
+              Number(data.mapHeight) / 2) /
+            Number(data.mapHeight),
+        };
+      });
+      await page.mouse.move(
+        box.x + box.width * edge.x,
+        box.y + box.height * edge.y,
+      );
+      await page.waitForTimeout(50);
+      const values = await page
+        .locator('[data-ui="map.where"] [data-numeric]')
+        .allTextContents();
+      const expected = await canvas.evaluate((element) => {
+        const data = (element as HTMLElement).dataset;
+        return [
+          String(Math.round(Number(data.mapMaxX) - 1)),
+          String(Math.round(Number(data.mapMaxZ) - 1)),
+        ];
+      });
+      if (values.join() !== expected.join())
+        errors.push(
+          `Map edge cursor did not reach ${expected.join()}: ${values.join()}`,
+        );
+    }
+    if (prepare.action === "zoom") {
+      for (let index = 0; index < 30; index++) await page.mouse.wheel(0, -1000);
+      await page.waitForTimeout(1600);
+    }
+    return { errors, evidence: { kind: prepare.kind, action: prepare.action } };
+  }
   if (prepare.kind === "field-endpoint") {
     const input = page.locator(prepare.selector);
     await input.focus();

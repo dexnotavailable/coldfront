@@ -441,35 +441,7 @@ export function Alert({ id }: Base) {
     </div>
   );
 }
-export function Select({
-  id,
-  value,
-  options,
-  onChange,
-}: Base & {
-  value: string;
-  options: readonly string[];
-  onChange: (value: string) => void;
-}) {
-  return (
-    <label class="cf-control-row">
-      <Text id={id} />
-      <select
-        data-ui={id}
-        class="cf-select"
-        aria-label={t(id)}
-        value={value}
-        onChange={(event) => onChange(event.currentTarget.value)}
-      >
-        {options.map((option) => (
-          <option key={option} value={option} data-content={option}>
-            {option}
-          </option>
-        ))}
-      </select>
-    </label>
-  );
-}
+export { Select, type SelectOption } from "./Select";
 export function Segmented({
   ids,
   selected,

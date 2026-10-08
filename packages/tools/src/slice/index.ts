@@ -1,17 +1,19 @@
 import { join } from "node:path";
 import { sliceReview } from "../terrain-review/annotate.js";
 import { sourceHashes, writeRaster } from "../terrain-review/output.js";
-import { createTestWorldSource } from "../terrain-review/source.js";
+import { createReviewSource } from "../terrain-review/source.js";
 import { parseSlice } from "./config.js";
 import { renderSection, validateSection } from "./render.js";
 
 const command = parseSlice(process.argv.slice(2));
 if (command.help) {
   console.log(
-    "slice --seed 1 --world test --from -15556,15556 --to 15556,-15556\n  --window x,z (repeatable) --len 2000 --px 1|2\n  --y-min -64 --y-max 48 --out out/slices/seed-1\nThe overview always covers the full requested line and world height at16m/px.\nWindows use the overview's bearing through each exact requested centre.\nWindow y bounds default to the test-world surface band; no caves or WorldPlan bands are invented.",
+    "slice --seed 1 --world main|test --from -15556,15556 --to 15556,-15556\n  --window x,z (repeatable) --len 2000 --px 1|2 --overlays plan|none\n  --y-min -1536 --y-max 1024 --out out/slices/main/seed-1\nThe overview covers the full line and world height at 16m/px.\nWindows use the overview's bearing through each exact requested centre.\nMain defaults to full-height windows with planned footprint/shelf tints on actual solid rock.\nTest defaults to -64..48m windows without plan tints. No caverns are carved in phase 1.2.",
   );
 } else {
-  const source = createTestWorldSource(command.seed),
+  const prepareStart = performance.now(),
+    source = createReviewSource(command.world, command.seed),
+    preparationMs = performance.now() - prepareStart,
     sources = await sourceHashes(process.cwd());
   const sections = [command.overview, ...command.windows];
   for (const section of sections) validateSection(section, source);
@@ -31,6 +33,7 @@ if (command.help) {
       raster,
       elapsed,
       sources,
+      preparationMs,
     );
     const reviewPath = image.replace(/\.png$/i, "-review.png"),
       reviewStart = performance.now(),
@@ -41,6 +44,7 @@ if (command.help) {
       review,
       performance.now() - reviewStart,
       sources,
+      preparationMs,
     );
     console.log(
       JSON.stringify({
@@ -51,6 +55,7 @@ if (command.help) {
         width: raster.width,
         height: raster.height,
         samplingMs: elapsed,
+        preparationMs,
         materials: raster.metadata.materials.map((m) => ({
           id: m.id,
           name: m.name,

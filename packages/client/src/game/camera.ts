@@ -35,6 +35,11 @@ export class AutomaticCut {
   private raisingFrom = 0;
   private raisingTo = 0;
   private raisingMs = 150;
+  reset(): void {
+    this.height = Infinity;
+    this.coveredFor = this.openFor = 0;
+    this.raisingMs = 150;
+  }
   update(dt: number, body: Point, cameraY: number, get: BlockQuery): void {
     const roof = (x: number, z: number): number => {
       for (let y = Math.ceil(body.y + 1.8); y < cameraY; y++) {
@@ -93,6 +98,33 @@ export class OverheadCamera {
   private snap: { from: number; to: number; time: number } | null = null;
   private cutTilt = { from: 55, to: 55, time: 300 };
   private underCover = false;
+  /** A committed jump preserves the player's view choices and clears old cover. */
+  relocate(
+    body: Point,
+    get: BlockQuery,
+    surface: (x: number, z: number, cut: number) => number,
+  ): void {
+    this.cut.reset();
+    this.snap = null;
+    this.underCover = false;
+    this.tilt = this.chosenTilt;
+    this.cutTilt = { from: this.chosenTilt, to: this.chosenTilt, time: 300 };
+    this.distance = this.requestedDistance;
+    this.focus = { x: body.x, y: body.y + 1, z: body.z };
+    this.step(0, body, get, surface, 0, 0);
+  }
+  destination(
+    body: Point,
+    get: BlockQuery,
+    surface: (x: number, z: number, cut: number) => number,
+  ): OverheadCamera {
+    const next = new OverheadCamera();
+    next.yaw = this.yaw;
+    next.chosenTilt = this.chosenTilt;
+    next.requestedDistance = this.requestedDistance;
+    next.relocate(body, get, surface);
+    return next;
+  }
   zoom(factor: number): void {
     this.requestedDistance = Math.max(
       10,

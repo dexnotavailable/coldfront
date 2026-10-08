@@ -62,6 +62,7 @@ export async function writeRaster<T>(
   raster: Raster<T>,
   timingMs: number,
   sources: readonly { path: string; sha256: string }[],
+  preparationMs = 0,
 ): Promise<string> {
   const encodeStart = performance.now(),
     bytes = encodeRaster(raster),
@@ -86,7 +87,7 @@ export async function writeRaster<T>(
   };
   await writeFile(
     receipt,
-    `${JSON.stringify({ schema: "coldfront.terrain-review/1", createdUtc: new Date().toISOString(), commit, image: relative(root, target).replaceAll("\\", "/"), imageSha256: createHash("sha256").update(bytes).digest("hex"), width: raster.width, height: raster.height, encoder: { name: "pngjs", version: pngjs.version }, timings: { samplingMs: timingMs, encodeMs, imageWriteMs }, sampling: raster.metadata, sources }, null, 2)}\n`,
+    `${JSON.stringify({ schema: "coldfront.terrain-review/1", createdUtc: new Date().toISOString(), commit, image: relative(root, target).replaceAll("\\", "/"), imageSha256: createHash("sha256").update(bytes).digest("hex"), width: raster.width, height: raster.height, encoder: { name: "pngjs", version: pngjs.version }, timings: { preparationMs, samplingMs: timingMs, encodeMs, imageWriteMs }, sampling: raster.metadata, sources }, null, 2)}\n`,
   );
   return receipt;
 }

@@ -1,5 +1,8 @@
 import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { createWorldContext } from "../../../shared/src/world/world-context.js";
+import { generateTestChunk } from "../../../shared/src/worldgen/chunk.js";
 import {
   KNOWN_WINDOWS_BROWSER_CACHE,
   selectBrowserCache,
@@ -14,8 +17,9 @@ import {
   encodeFloat64,
   encodeUint16,
   type GoldenRecord,
-  goldenCases,
+  hashChunk,
   sha256,
+  testGoldenCases,
 } from "../../src/golden/core.js";
 
 describe("portable golden bytes", () => {
@@ -48,7 +52,7 @@ describe("portable golden bytes", () => {
     expect(() => encodeFloat64(new Float64Array([NaN]))).toThrow("NaN");
   });
   it("has exactly50 distinct samples per seed with both spacings, vertical and boundary coverage", () => {
-    const samples = goldenCases();
+    const samples = testGoldenCases();
     expect(samples.length).toBe(150);
     expect(new Set(samples.map((sample) => sample.id)).size).toBe(150);
     for (const seed of [1, 2, 3]) {
@@ -71,7 +75,7 @@ describe("portable golden bytes", () => {
     }
   });
   it("reports the exact changed field and refuses missing results", () => {
-    const sample = goldenCases()[0];
+    const sample = testGoldenCases()[0];
     if (!sample) throw new Error("Missing sample");
     const row: GoldenRecord = {
       sample,
@@ -84,6 +88,35 @@ describe("portable golden bytes", () => {
       ),
     ).toEqual([`${sample.id}.density: expected c, received changed`]);
     expect(compareGoldenRecords([row], []).length).toBe(1);
+  });
+  it("retains every original test-world sample definition without rebuilding plans", () => {
+    const fixture = JSON.parse(
+      readFileSync(
+        new URL("../../../shared/test/golden/worldgen.json", import.meta.url),
+        "utf8",
+      ),
+    ) as { records: GoldenRecord[] };
+    expect(
+      fixture.records
+        .filter((record) => record.sample.world === "test")
+        .map((record) => record.sample),
+    ).toEqual(testGoldenCases());
+  });
+  it("rejects columns that do not match the supplied context layout", async () => {
+    const context = createWorldContext({ kind: "test", seed: 1 });
+    const chunk = generateTestChunk({ seed: 1, cx: 0, cy: 0, cz: 0 });
+    await expect(hashChunk(chunk, context.columns)).resolves.toHaveProperty(
+      "columns",
+    );
+    await expect(
+      hashChunk(chunk, {
+        ...context.columns,
+        stride: context.columns.stride + 1,
+      }),
+    ).rejects.toThrow("layout");
+    await expect(
+      hashChunk({ ...chunk, columns: chunk.columns.slice(1) }, context.columns),
+    ).rejects.toThrow("layout");
   });
 });
 describe("browser evidence policy", () => {

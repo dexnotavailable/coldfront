@@ -1,6 +1,7 @@
 import { effect } from "@preact/signals";
 import type { InputScope } from "../contracts/game-ui.js";
 import type { GameHandle } from "../game/create-game.js";
+import { dismissSelect } from "../ui/components/Select.js";
 import { dismissTooltip } from "../ui/components/TooltipHost.js";
 import type { UiController } from "../ui/controller.js";
 import type { CatalogueId } from "../ui/t.js";
@@ -8,6 +9,7 @@ import type { FullscreenState } from "./host.js";
 
 export const SHELL_BINDINGS = {
   KeyE: "key.pos.inventory",
+  KeyM: "key.all.map",
   F1: "key.all.hud",
   F2: "key.all.shot",
   F3: "key.all.debug",
@@ -53,6 +55,8 @@ export function reservedKey(
 
 function fieldElement(target: EventTarget | null): HTMLElement | null {
   if (!(target instanceof HTMLElement)) return null;
+  const select = target.closest<HTMLElement>("[data-select-input]");
+  if (select) return select;
   if (
     target.isContentEditable ||
     target instanceof HTMLTextAreaElement ||
@@ -92,7 +96,7 @@ export function bindInput(
       modal: ui.confirmSeed.value !== null,
       blocking: ui.blocking.value !== null,
       field: fieldElement(document.activeElement) !== null,
-      ready: snapshot.lifecycle === "ready",
+      ready: snapshot.lifecycle === "ready" && !ui.travelPending.value,
       postcard: snapshot.mode === "postcard",
     });
     if (next === scope) return;
@@ -103,6 +107,10 @@ export function bindInput(
   const stop = effect(synchronize);
   const resolveEscape = (): boolean => {
     if (dismissTooltip()) return true;
+    if (dismissSelect()) {
+      synchronize();
+      return true;
+    }
     const field = fieldElement(document.activeElement);
     if (field) {
       const blocking = field.closest<HTMLElement>("[data-blocking]");
@@ -142,12 +150,13 @@ export function bindInput(
     if (scope === "field" || scope === "modal" || systemBlocked()) return;
     if (scope === "blocking-screen") {
       if (
-        event.code === "KeyE" &&
-        ui.blocking.value === "blocks" &&
+        ((event.code === "KeyE" && ui.blocking.value === "blocks") ||
+          (event.code === "KeyM" && ui.blocking.value === "map")) &&
         !event.ctrlKey &&
         !event.shiftKey
       ) {
-        if (!event.repeat) ui.key("key.pos.inventory");
+        if (!event.repeat)
+          ui.key(event.code === "KeyM" ? "key.all.map" : "key.pos.inventory");
         consume(event);
       }
       return;

@@ -1512,7 +1512,7 @@ Replaces the settings rows inside the same Panel. One row per binding in B3, und
 ## D9. Moments
 
 ### Discovery card
-On first entering a region: its name in the display font (`--fs-28`), the first sentence of its story under it (`--fs-16`, `03-lore.md` §11), centred a quarter of the way down the screen, straight onto the world. A Court-speech name shows its kanji above it in `--font-kanji`. It fades in over 300 ms, holds 4 s, fades out over 300 ms, and never blocks input. Ships in phase 1.2. It has no strings of its own: all of it is content.
+On first entering a region: its name in the display font (`--fs-28`), the first sentence of its story under it (`--fs-16`, `03-lore.md` §11), centred a quarter of the way down the screen, straight onto the world. A Court-speech name shows its kanji above it in `--font-kanji`. It fades in over 300 ms, holds 4 s, fades out over 300 ms, and never blocks input. Card text uses `--text` fill with a 1 px `--ink-0` glyph stroke painted beneath the fill, so it remains readable over bright and dark terrain. Ships in phase 1.2. It has no strings of its own: all of it is content.
 
 First-entry memory belongs to the world save identity (world kind, seed and generation identity), so returning or reloading does not replay it. If storage is unavailable, it lasts for the current session. Clear my edits does not clear discoveries. The test world has no regional discovery cards.
 

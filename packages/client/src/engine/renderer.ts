@@ -30,6 +30,7 @@ import {
   SRGBColorSpace,
   Vector3,
   WebGLRenderer,
+  WebGLRenderTarget,
 } from "three";
 import { SunLight } from "three/addons/lights/SunLight.js";
 import { Sky } from "three/addons/objects/Sky.js";
@@ -49,6 +50,7 @@ export interface WorldColors {
   cap: ColorRepresentation;
 }
 interface RenderChunk {
+  readonly worldId: number;
   readonly group: Group;
   readonly depth: Group;
   readonly cap: CutCap;
@@ -105,6 +107,7 @@ export class WorldRenderer {
   private postcard = false;
   private ready = false;
   private cut = Infinity;
+  private worldId = 0;
   contextLost = false;
   onLost: () => void = () => {};
   onRestored: () => void = () => {};
@@ -138,6 +141,11 @@ export class WorldRenderer {
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = PCFShadowMap;
     this.renderer.info.autoReset = false;
+    this.renderer.debug.onShaderError = (gl, program, vertex, fragment) => {
+      throw new Error(
+        `Terrain shader preparation failed: ${gl.getProgramInfoLog(program) ?? ""}\n${gl.getShaderInfoLog(vertex) ?? ""}\n${gl.getShaderInfoLog(fragment) ?? ""}`,
+      );
+    };
     this.sun.position.set(-0.55, 0.8, -0.35);
     this.sun.castShadow = true;
     this.sun.shadow.camera.far = 256;
@@ -235,8 +243,8 @@ export class WorldRenderer {
       0.4;
   }
   upload(result: ChunkResult): void {
-    const key = chunkKey(result.address);
-    this.remove(key);
+    const key = `${result.world.id}:${chunkKey(result.address)}`;
+    this.remove(chunkKey(result.address), result.world.id);
     const group = new Group(),
       depth = new Group(),
       geometries: BufferGeometry[] = [];
@@ -264,7 +272,13 @@ export class WorldRenderer {
       group.add(mesh);
       if (index < 2) depth.add(new Mesh(g, this.depthMaterial));
     });
-    const capColor = new Color(this.colors.cap).lerp(new Color(0x627644), 0.1),
+    const region = new Color().setRGB(
+      result.regionColor[0] / 255,
+      result.regionColor[1] / 255,
+      result.regionColor[2] / 255,
+      SRGBColorSpace,
+    );
+    const capColor = new Color(this.colors.cap).lerp(region, 0.1),
       cap = new CutCap(result.blocks, result.address.cy, capColor);
     cap.mesh.position.set(
       result.address.cx * 32 + 16,
@@ -289,6 +303,7 @@ export class WorldRenderer {
     this.scene.add(group, cap.mesh, border);
     this.depthScene.add(depth, depthCap);
     this.chunks.set(key, {
+      worldId: result.world.id,
       group,
       depth,
       cap,
@@ -297,8 +312,12 @@ export class WorldRenderer {
       geometries,
       gpuBytes: bytes + 32768,
     });
+    group.visible = depth.visible = result.world.id === this.worldId;
+    cap.mesh.visible &&= result.world.id === this.worldId;
+    depthCap.visible = cap.mesh.visible;
   }
-  remove(key: string): void {
+  remove(addressKey: string, worldId = this.worldId): void {
+    const key = `${worldId}:${addressKey}`;
     const c = this.chunks.get(key);
     if (!c) return;
     this.scene.remove(c.group, c.cap.mesh, c.border);
@@ -309,8 +328,82 @@ export class WorldRenderer {
     c.border.geometry.dispose();
     this.chunks.delete(key);
   }
+  setWorld(worldId: number): void {
+    this.worldId = worldId;
+    for (const chunk of this.chunks.values()) {
+      const active = chunk.worldId === worldId;
+      chunk.group.visible = chunk.depth.visible = active;
+      chunk.cap.update(this.cut);
+      chunk.cap.mesh.visible &&= active;
+      chunk.depthCap.visible = chunk.cap.mesh.visible;
+      if (!active) chunk.border.visible = false;
+    }
+  }
+  removeWorld(worldId: number): void {
+    for (const key of [...this.chunks.keys()])
+      if (key.startsWith(`${worldId}:`))
+        this.remove(key.slice(key.indexOf(":") + 1), worldId);
+  }
+  /** Draw every destination mesh into an offscreen target before atomic commit.
+   * Compile alone does not upload vertex/index buffers. This preserves the visible
+   * source framebuffer and detects a lost context or failed destination draw. */
+  prepareView(worldId: number, position: Point, focus: Point): void {
+    if (this.contextLost)
+      throw new Error("WebGL context lost during view preparation");
+    const oldWorld = this.worldId,
+      oldPosition = this.camera.position.clone(),
+      oldQuaternion = this.camera.quaternion.clone();
+    const target = new WebGLRenderTarget(128, 72, {
+      depthBuffer: true,
+      stencilBuffer: true,
+    });
+    const oldTarget = this.renderer.getRenderTarget();
+    const screenPasses = this.composer.passes.map((pass) => ({
+      pass,
+      screen: pass.renderToScreen,
+    }));
+    const culling: { object: Mesh; value: boolean }[] = [];
+    try {
+      this.setWorld(worldId);
+      this.setView(position, focus);
+      for (const chunk of this.chunks.values())
+        if (chunk.worldId === worldId)
+          for (const group of [chunk.group, chunk.depth])
+            group.traverse((object) => {
+              if (object instanceof Mesh) {
+                culling.push({ object, value: object.frustumCulled });
+                object.frustumCulled = false;
+              }
+            });
+      this.compile();
+      // Warm the actual bloom/ACES chain as well, without touching the source
+      // framebuffer. Pass.renderToScreen is the public composer output switch.
+      for (const item of screenPasses) item.pass.renderToScreen = false;
+      this.composer.render(0);
+      this.renderer.setRenderTarget(target);
+      this.renderer.render(this.scene, this.camera);
+      this.renderer.render(this.depthScene, this.camera);
+      this.renderer.render(this.marks, this.camera);
+      const gl = this.renderer.getContext();
+      if (gl.isContextLost() || gl.getError() !== gl.NO_ERROR)
+        throw new Error("Destination render preparation failed");
+    } finally {
+      for (const item of screenPasses) item.pass.renderToScreen = item.screen;
+      for (const item of culling) item.object.frustumCulled = item.value;
+      this.renderer.setRenderTarget(oldTarget);
+      target.dispose();
+      this.camera.position.copy(oldPosition);
+      this.sky.position.copy(oldPosition);
+      this.camera.quaternion.copy(oldQuaternion);
+      this.camera.updateMatrixWorld();
+      this.setWorld(oldWorld);
+    }
+  }
   setView(position: Point, focus: Point): void {
     this.camera.position.set(position.x, position.y, position.z);
+    // Sky is a4500m box. Keep the camera inside it everywhere in the45km world;
+    // its shader derives the ray from worldPosition-cameraPosition.
+    this.sky.position.copy(this.camera.position);
     this.camera.lookAt(focus.x, focus.y, focus.z);
     this.camera.updateMatrixWorld();
   }
@@ -367,9 +460,10 @@ export class WorldRenderer {
     if (hit) this.outline.position.set(hit.x + 0.5, hit.y + 0.5, hit.z + 0.5);
     for (const c of this.chunks.values()) {
       c.cap.update(cut);
+      c.cap.mesh.visible &&= c.worldId === this.worldId;
       c.depthCap.visible = c.cap.mesh.visible;
       c.depthCap.position.copy(c.cap.mesh.position);
-      c.border.visible = tools.chunkBorders;
+      c.border.visible = tools.chunkBorders && c.worldId === this.worldId;
     }
     for (const m of this.terrain.materials) m.wireframe = tools.wireframe;
     this.fog.density = tools.fog ? 0.004 : 0;
@@ -434,12 +528,15 @@ export class WorldRenderer {
       saved.push({ object, visible: object.visible });
       object.visible = true;
     }
-    this.renderer.compile(this.scene, this.camera);
-    this.renderer.compile(this.depthScene, this.camera);
-    this.renderer.compile(this.marks, this.camera);
-    for (const s of saved) s.object.visible = s.visible;
-    this.scene.remove(...variants);
-    this.ready = true;
+    try {
+      this.renderer.compile(this.scene, this.camera);
+      this.renderer.compile(this.depthScene, this.camera);
+      this.renderer.compile(this.marks, this.camera);
+      this.ready = true;
+    } finally {
+      for (const s of saved) s.object.visible = s.visible;
+      this.scene.remove(...variants);
+    }
   }
   render(): void {
     if (!this.ready || this.contextLost) return;
@@ -481,7 +578,8 @@ export class WorldRenderer {
     this.resizeObserver.disconnect();
     this.canvas.removeEventListener("webglcontextlost", this.lost);
     this.canvas.removeEventListener("webglcontextrestored", this.restored);
-    for (const key of this.chunks.keys()) this.remove(key);
+    for (const chunk of [...this.chunks.values()])
+      this.removeWorld(chunk.worldId);
     this.avatar.dispose();
     this.effects.dispose();
     this.outline.geometry.dispose();

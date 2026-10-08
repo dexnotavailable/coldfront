@@ -135,9 +135,19 @@ describe("pointwise material sections", () => {
       ),
     ).toBeCloseTo(2000, 10);
   });
-  it("rejects future worlds/layers, excessive windows and zero/out-of-world routes", () => {
-    expect(() => parseSlice(["--world", "main"])).toThrow(/WorldPlan/);
-    expect(() => parseSlice(["--layer", "upper_deep"])).toThrow(/WorldPlan/);
+  it("rejects unknown worlds, layer clipping, excessive windows and zero/out-of-world routes", () => {
+    expect(parseSlice(["--world", "main"])).toMatchObject({
+      world: "main",
+      overview: { overlays: "plan" },
+      windows: [{ overlays: "plan", yMin: -1536, yMax: 1024 }],
+    });
+    expect(() => parseSlice(["--world", "future"])).toThrow(/main or test/);
+    expect(() => parseSlice(["--layer", "upper_deep"])).toThrow(
+      /span all depth/,
+    );
+    expect(() => parseSlice(["--world", "test", "--overlays", "plan"])).toThrow(
+      /WorldPlan/,
+    );
     expect(() => parseSlice(["--px", "3"])).toThrow(/1 or 2/);
     expect(() => parseSlice(["--len", "2001"])).toThrow(/2000/);
     expect(() => parseSlice(["--from", "0,0", "--to", "0,0"])).toThrow();

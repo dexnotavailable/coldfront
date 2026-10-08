@@ -1,8 +1,21 @@
 import { effect } from "@preact/signals";
+import type { WorldKind } from "../../../shared/src/world/types.js";
 import type { GamePort } from "../contracts/game-ui.js";
 import { appRoute } from "./host.js";
 
 const seedKey = "coldfront.seed";
+const worldKey = "coldfront.world";
+export function rememberedWorld(query: URLSearchParams): WorldKind {
+  const requested = query.get("world");
+  if (requested === "main" || requested === "test") return requested;
+  try {
+    const value = localStorage.getItem(worldKey);
+    if (value === "main" || value === "test") return value;
+  } catch {
+    /* Storage cannot prevent play. */
+  }
+  return "main";
+}
 export function rememberedSeed(query: URLSearchParams): string {
   const requested = query.get("seed");
   if (requested !== null && /^\d*$/.test(requested)) return requested;
@@ -24,6 +37,7 @@ export function bindWorldLifecycle(
 ): () => void {
   let guarded = false;
   let savedDraft: string | undefined;
+  let savedKind: WorldKind | undefined;
   let loading = false;
   let attempt: { seed: number; draft: string } | undefined;
   const beforeUnload = (event: BeforeUnloadEvent): void => {
@@ -59,6 +73,18 @@ export function bindWorldLifecycle(
         localStorage.setItem(seedKey, successfulDraft);
       } catch {
         /* The engine reports IndexedDB availability independently. */
+      }
+    }
+    if (
+      playing &&
+      snapshot.world &&
+      snapshot.world.identity.kind !== savedKind
+    ) {
+      savedKind = snapshot.world.identity.kind;
+      try {
+        localStorage.setItem(worldKey, savedKind);
+      } catch {
+        /* Storage cannot prevent play. */
       }
     }
   };

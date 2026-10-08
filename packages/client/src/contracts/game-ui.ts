@@ -1,4 +1,67 @@
 /** Plain-data UI boundary. No renderer objects and no game simulation in the UI. */
+import type {
+  BoundsXZ,
+  RegionDefinition,
+  SurfaceRegionId,
+  WorldIdentity,
+  WorldKind,
+} from "../../../shared/src/world/types.js";
+
+export type {
+  BoundsXZ,
+  SurfaceRegionId,
+  WorldIdentity,
+  WorldKind,
+} from "../../../shared/src/world/types.js";
+/** Stable for one loaded world; ordinary snapshot revisions never change it. */
+export interface WorldSession {
+  readonly id: number;
+  readonly identity: WorldIdentity;
+}
+export type RegionPresentation = Pick<
+  RegionDefinition,
+  "id" | "name" | "kanji" | "discoverySentence"
+>;
+export interface MapInfo {
+  readonly bounds: BoundsXZ;
+  readonly regions: readonly RegionPresentation[];
+}
+export interface MapRequest {
+  readonly sessionId: number;
+  readonly bounds: BoundsXZ;
+  readonly width: number;
+  readonly height: number;
+}
+export interface MapFrame extends MapRequest {
+  /** The receiver owns the buffer. Treat it as immutable after delivery. */
+  readonly rgba: Uint8ClampedArray;
+  readonly names: readonly Readonly<{
+    regionId: SurfaceRegionId;
+    x: number;
+    z: number;
+  }>[];
+}
+export interface MapPointRequest {
+  readonly sessionId: number;
+  readonly x: number;
+  readonly z: number;
+}
+export interface MapPoint {
+  readonly x: number;
+  readonly z: number;
+  readonly regionId: SurfaceRegionId | null;
+}
+export type TeleportTarget =
+  | Readonly<{ kind: "point"; x: number; z: number }>
+  | Readonly<{ kind: "region"; regionId: SurfaceRegionId }>;
+export interface TeleportRequest {
+  readonly sessionId: number;
+  readonly target: TeleportTarget;
+}
+export interface TeleportResult {
+  readonly sessionId: number;
+  readonly committed: boolean;
+}
 export type Vec3Data = readonly [number, number, number];
 export type HotbarIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 export type FlySpeed = 1 | 2 | 4 | 8 | 16;
@@ -28,6 +91,10 @@ export interface ToolState {
   readonly flySpeed: FlySpeed;
 }
 export interface DebugState {
+  readonly regionWeights: readonly Readonly<{
+    regionId: SurfaceRegionId;
+    weight: number;
+  }>[];
   readonly feet: Vec3Data;
   readonly facing: CompassId;
   readonly pitchDegrees: number;
@@ -44,6 +111,9 @@ export interface DebugState {
   readonly build: Readonly<{ version: string; commit: string }>;
 }
 export interface GameSnapshot {
+  readonly world: WorldSession | null;
+  readonly loadStage: "plan" | "terrain";
+  readonly mapInfo: MapInfo | null;
   readonly revision: number;
   readonly lifecycle: "idle" | "loading" | "ready" | "failed";
   readonly loadProgress: number;
@@ -69,7 +139,11 @@ export type InputScope =
   | "inactive";
 export type ToolBoolean = Exclude<keyof ToolState, "timeHours" | "flySpeed">;
 export type GameCommand =
-  | { readonly type: "start"; readonly seed: number }
+  | {
+      readonly type: "start";
+      readonly seed: number;
+      readonly worldKind: WorldKind;
+    }
   | { readonly type: "quit" }
   | { readonly type: "pause"; readonly paused: boolean }
   | { readonly type: "input-scope"; readonly scope: InputScope }
@@ -88,8 +162,13 @@ export type GameCommand =
     }
   | { readonly type: "hud-visible"; readonly visible: boolean }
   | { readonly type: "postcard"; readonly active: boolean }
-  | { readonly type: "clear-edits"; readonly seed: number };
+  | { readonly type: "clear-edits"; readonly world: WorldSession };
 export type GameEvent =
+  | {
+      readonly type: "region-entered";
+      readonly sessionId: number;
+      readonly regionId: SurfaceRegionId;
+    }
   | { readonly type: "snapshot"; readonly snapshot: GameSnapshot }
   | {
       readonly type: "item-changed";
@@ -101,13 +180,19 @@ export type GameEvent =
   | { readonly type: "storage-blocked" }
   | {
       readonly type: "clear-edits-finished";
-      readonly seed: number;
+      readonly world: WorldSession;
       readonly ok: boolean;
     };
 export interface GamePort {
   read(): GameSnapshot;
   subscribe(listener: (event: GameEvent) => void): () => void;
   apply(command: GameCommand): void;
+  /** Null means stale/cancelled; preparation failures throw for load.failed. */
+  readMap(request: MapRequest): Promise<MapFrame | null>;
+  inspectMap(request: MapPointRequest): MapPoint | null;
+  /** Resolves only after safe destination readiness and atomic body/camera commit. */
+  teleport(request: TeleportRequest): Promise<TeleportResult>;
+  cancelTeleport(sessionId: number): void;
   capturePng(): Promise<Blob>;
   dispose(): Promise<void>;
 }

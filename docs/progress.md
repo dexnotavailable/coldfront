@@ -10,7 +10,7 @@
 | Phase | Status | Notes |
 |---|---|---|
 | 1.1 Foundations | ✓ Complete, with recorded limits | 190 tests, check/build, clean Node22 build, complete UI lint and all-three-browser CI pass; accepted images/tools/save fixes published as d4c4c49. Public-site browser launch remains unavailable. |
-| 1.2 World plan | In progress | [Phase plan](plans/phase-1-2.md); isolated WorldPlan, engine and catalogue UI work. Independent psrd2 port passes focused checks; main geography is not accepted yet. |
+| 1.2 World plan | In progress | Runtime, three-seed geography, atlas/slice and all-region travel accepted; 292 tests and 300 goldens pass locally. Regional postcards and final publication gates remain. [Phase plan](plans/phase-1-2.md). |
 | 1.3 Terrain toolkit + Ibara | ☐ | |
 | 1.4 Far terrain | ☐ | |
 | 1.5 Kurogane + Selva | ☐ | |
@@ -23,8 +23,19 @@
 ## Current session
 **9 October 2026 · Codex · `codex/phase-1-2-world-plan`**
 
-Phase 1.1 is merged and live. The [1.2 plan](plans/phase-1-2.md) fixes shared world/context and client travel boundaries before integration. Current work: real rings/drainage/sites and first-pass terrain; world-safe worker/cache/persistence and atomic travel; the fifteen catalogue rows and discovery cards. Decisions 102–106 record the missing Frost ID/content, separate world identity, persistent discovery memory and map defaults. The verified standalone psrd2 port is staged with 1M measured samples and unchanged test-world goldens; it has not yet changed the live game.
+The integrated phase 1.2 candidate makes Kaldmark explorable: the full WorldPlan, first-pass surface terrain and owned water, main/test selection, real map, region travel and discovery cards. The [phase plan](plans/phase-1-2.md) defines the shared context and world/session boundaries. Decisions 102–108 cover missing Frost content, separate world identity, first-entry memory, map/water travel and readable discovery text. The public site still serves phase 1.1 until this candidate is published.
 
+**Current checks:** `npm test` passes 292 tests across 49 files; `npm run check`, `npm run build` and the local browser smoke/drive pass. Complete UI lint covers 96 gallery states with zero current rows missing and 23 input bindings. All 300 chunk baselines match in Node, Chromium and WebKit; the original 150 test-world records are byte-for-byte unchanged. Firefox is absent locally and remains an explicit CI check. The full UI capture produced 288 profiles; its one failure was an old palette test expecting three stone names while the real registry supplies eight. The assertion now checks the exact ordered registry names; all three repaired palette profiles pass. The original failed receipt remains available.
+
+**World evidence:** eighteen full invariant checks cover seeds 1–3, including independent drainage accounting, owned water, sites, all spawn candidates, voxel seams and conservative bounds. The independent atlas census places every one of the twelve ring regions inside 90–110 km² on all three seeds (observed range 97.388060–103.097808 km²). Seed 1 shows 30 Seats, 106 forts, 46 descents covering all 20 types, three broken causeways and 256 spawns. Minimum spawn radius is 16,030.016 m and minimum Seat clearance 3,027.858 m. The author opened all 22 atlas/slice images; a separate Astra reviewer checked the required views and found no consequential mismatch. Underground colours show planned footprints and shelves within solid rock; cavern carving comes later. Persistent numeric WorldPlan buffers occupy 17,892,900 bytes.
+
+**Actual play evidence:** the production browser tour visited all sixteen surface regions, opened the real map and returned to the test world: 19 cases passed, zero application errors, peak six workers, all closed afterward. Independent Astra review opened all nineteen JPEGs plus both fresh HUD captures. Actual snow discovery text is readable with the approved glyph edge, map labels are separate, arrivals show terrain and the avatar, and outline/ghost/silhouette proof is current. Runtime review closed failure-path worker cleanup and stale discovery-card findings using focused regressions. Earlier failed attempts are preserved rather than relabelled.
+
+**Map response:** skipping 3D draws behind the opaque map reduced an observed 541² raster request from 25.054 s to 2.791 s under SwiftShader, with identical resolution. Sampling took 2.178 s and yield waits 0.612 s in the repaired run. World clocks and map input continue; this is a local software-renderer observation, not a hardware-FPS benchmark.
+
+The all-region main-world benchmark passed; measured generation meets its target, while lighting and meshing remain work for phase 1.10. Sixteen ungraded regional postcards are being implemented through the existing camera resolver and capture path; the tour's HUD images are not substitutes. UI review is accepted, including 294 freshly opened images and explicitly reused unchanged primitives. A distant-camera test caught the sky box remaining at the origin: it now follows the camera, with two regressions and a separately opened far-camera capture. Both actual HUD captures were regenerated after that correction and opened again. A clean Node22 build and CI remain publication gates. Phase 1.2 stays in progress until the postcard and final review requirements hold.
+
+**Parallel content work requested by the owner:** separate Astra lanes are authoring one Ibara thorn cluster and grounded arch, one Hearthlands house and one Selva giant tree. Each uses isolated files, actual voxel captures, and independent image review before integration. These are prototypes, not content already present in the live world. The [terrain reference audit](reports/terrain-reference-audit.md) compares seven primary mod projects and maps their useful ideas to our underground plan. Decisions 109–111 record the research boundary and future topology rules. Avatar, Frostwolf and smithy briefs are queued for a later scouting wave; they are not running yet.
 The following startup/recovery record describes the completed foundation work.
 
 1. Prove headless Chromium, WebGL2, cross-origin isolation and image capture; open the result before game code.
@@ -65,18 +76,24 @@ The release is a creative test world. Kingdoms, multiplayer, civilization simula
 
 ## Bench (latest)
 
+Main world, all sixteen surface regions, seed 1; Node 24.18.0 / Windows / Ryzen 9 7950X. Five warmups were discarded before three passes over 800 distinct LOD0 chunks and 320 LOD1 chunks: 2,400 measured full pipelines and 960 LOD1 generations. The run took 326.074 s alone, with no renderer or other sampler running.
+
 | Metric | Median | p95 | Budget |
 |---|---|---|---|
-| TEST-1 total capture | One observed final run: 3.239 s | Not yet sampled | ≤60 s/shot |
-| LOD0 generation | 1.793 ms | 2.596 ms | Median ≤12 ms; p95 ≤40 ms |
-| Skylight solve | 19.554 ms | 26.555 ms | Median ≤3 ms; currently over target |
-| LOD0 meshing | 4.679 ms | 7.649 ms | Median ≤4 ms; currently over target |
-| Neighbourhood preparation | 28.767 ms | 37.933 ms | Separately measured work |
-| Complete measured kernel pipeline | 57.729 ms | 68.251 ms | Not a browser/worker/FPS measurement |
-| LOD1 voxel generation | 1.840 ms | 3.023 ms | LOD2+ tile budget does not apply |
+| LOD0 generation | 10.115 ms | 12.075 ms | ≤12 / ≤40 ms; passes |
+| Skylight solve | 18.022 ms | 25.479 ms | Median ≤3 ms; over target |
+| LOD0 meshing | 6.372 ms | 8.735 ms | Median ≤4 ms; over target |
+| Neighbourhood preparation | 97.552 ms | 113.165 ms | Separately measured work |
+| Halo light extraction | 0.208 ms | 0.258 ms | Separately measured work |
+| Complete measured kernel pipeline | 132.713 ms | 149.398 ms | Not browser/worker/FPS timing |
+| LOD1 voxel generation | 10.032 ms | 11.790 ms | LOD2+ tile budget does not apply |
+| WorldPlan cold build | One observed build: 1.409 s | Not sampled | ≤3 s target |
 
-The kernel benchmark ran alone on Node 24.18.0 / Windows / Ryzen 9 7950X, with five discarded warmups and three passes over 50 distinct LOD0 surface chunks and 20 LOD1 chunks (150 and 60 measured samples). It times the actual shared generator, 96³-neighbourhood skylight solve and mesher, with preparation and extraction separate. Source, harness and sample-set hashes plus all raw measurements are retained in its receipt. Lighting and meshing misses remain work for phase 1.10; feature-dense regions and far tiles do not exist yet. Software-renderer postcard timing is not hardware FPS. Quantile tests recompute nine million samples as a separate correctness check.
+Context hydration took 31.858 ms and sample selection 38.952 ms, separately from the cold plan. The report retains raw observations and per-region summaries, exact sample/source/harness hashes and physical evidence for dark submerged cases. Lighting and meshing remain above their phase 1.10 targets. Terrain is first-pass; detailed Ibara features, later LOD tiles, relighting, transfers, GPU uploads and FPS are not represented by these Node measurements.
 
+Single atlas timings: seed 1 regions 2.010 s, height 21.538 s and sites 2.216 s at 2048²; all below the 30 s target. The SW–NE overview took 0.147 s to sample. The earlier phase 1.1 TEST-1 capture took 3.239 s; phase 1.2 postcard timings are pending. Private full benchmark receipt: `out/step4/bench-gen-2026-10-08T21-12-50.522Z.json`.
+
+The following records describe the completed phase 1.1 tooling and acceptance.
 **Step 4 tooling:** 150 deterministic chunk baselines cover three seeds, LOD0/1, signed coordinates, vertical bands and world edges. Node, local Chromium 153 and local WebKit 26.6 match all 150. GitHub CI independently passed 150/150 in each of Chromium, Firefox and WebKit; Firefox is absent locally. An independent source review found no consequential golden/benchmark issue. The 2048² test-world height atlas took 877 ms to sample; the full SW→NE overview took 29 ms. All ten atlas/slice raw and annotated images were opened by their author, and the coordinator opened the four main annotated views. They show actual test-world height/material data, with matching metre scales and source hashes. They do not depict the future WorldPlan or cavern layout.
 
 **Phase acceptance:** canonical `npm test` (190), `npm run check`, `npm run build`, `ui:lint -- --complete`, the final `postcards -- --seed 1 --only TEST-1 --commit`, and a clean Node 22.23.3/npm 10.9.8 `npm ci` + build all pass. The final TEST-1 and one-tile HTML-grid contact sheet were opened; the postcard retains its accepted 16/20 score. The new `d4c4c49` site build was published through the checksummed publisher, and public readback confirmed that exact release, unchanged save-cache identity, HTTP200 and COOP/COEP headers. [CI evidence](https://github.com/dexnotavailable/coldfront/actions/runs/37818190065) includes all three actual browser golden passes.
@@ -84,7 +101,8 @@ The kernel benchmark ran alone on Node 24.18.0 / Windows / Ryzen 9 7950X, with f
 ## Known issues and next
 
 - First playable commit f8f9d95 is pushed and published at [dex.place/coldfront](https://dex.place/coldfront/), with [PR #2](https://github.com/dexnotavailable/coldfront/pull/2) merged as the working step-3 increment. GitHub CI and the clean Node 22.23.3/npm 10.9.8 checkout build pass. Public version, HTTP200 and isolation headers are verified.
-- Next: phase 1.2 WorldPlan, ring/sector boundaries, drainage, sites and first-pass regional terrain, followed by the catalogue's 1.2 map/teleport screens. Record its detailed approach before implementing.
+- Next: publish the verified phase 1.2 runtime increment, complete sixteen ungraded regional postcards, and record the full main-world benchmark and final phase report.
+- The upcoming main-world release uses generation version 2. As specified for Milestone 1, generation/registry changes invalidate prior saves: old phase 1.1 records remain stored but will not load into the new generation. Within version 2, main/test worlds, seeds and discovery memory are kept separate; Clear my edits affects only the current world's edits.
 - Save/transition corrections are published in d4c4c49: 11 targeted regressions, independent source review, and local production checks of a visible placed block through immediate Quit/Play and reload/Play. Reads and writes are ordered; failed reads cannot erase prior saves, storage errors do not poison later writes, and Clear cannot race new edits or another world. Queued Play readiness and postcard Escape routing have regressions too. Existing save keys/schema and worldgen cache identity are unchanged.
 - GPU uploads currently cap eight chunk results per frame, rather than eight individual meshes. CPU mesh arrays remain for context restoration; freeing them after upload is still pending. Postcards currently record total duration, not aggregated worker-stage durations.
 - Local production browser checks prove exact seed restoration and retained block edits after reload. Automatic approval review rejected launching the public-site browser check without giving a detailed reason. No public browser started; public gameplay verification remains unavailable. That action was not retried through another route.

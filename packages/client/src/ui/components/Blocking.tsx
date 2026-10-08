@@ -8,12 +8,14 @@ export function Blocking({
   onEnter,
   dim = false,
   onKey,
+  onKeyRelease,
 }: {
   children: ComponentChildren;
   onClose?: (() => void) | undefined;
   onEnter?: (() => void) | undefined;
   dim?: boolean;
   onKey?: (event: KeyboardEvent) => void;
+  onKeyRelease?: (event: KeyboardEvent) => void;
 }) {
   const root = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -29,13 +31,14 @@ export function Blocking({
       aria-modal="true"
       tabIndex={-1}
       ref={root}
+      onKeyUp={onKeyRelease}
       onKeyDown={(event) => {
         onKey?.(event);
         if (event.defaultPrevented) return;
         if (event.key === "Tab") {
           const controls = [
             ...(root.current?.querySelectorAll<HTMLElement>(
-              "button:not(:disabled),input:not(:disabled),select:not(:disabled),a[href]",
+              'button:not(:disabled):not([tabindex="-1"]),input:not(:disabled),select:not(:disabled),a[href]',
             ) ?? []),
           ];
           if (controls.length) {

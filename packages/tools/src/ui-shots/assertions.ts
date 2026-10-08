@@ -1,12 +1,13 @@
 import type { Page } from "playwright";
 import type { CatalogueRow } from "../ui-strings/index";
+import { auditPolicy } from "./policy";
 export async function inspectPage(
   page: Page,
   catalogue: Record<string, CatalogueRow>,
   sampleContent: readonly string[],
 ) {
   return page.evaluate(
-    ({ rows, content }) => {
+    ({ rows, content, policy }) => {
       const errors: string[] = [];
       const texts: string[] = [];
       const ids = new Set<string>();
@@ -63,7 +64,8 @@ export async function inspectPage(
           rect.top < innerHeight
         );
       };
-      const current = (id: string): boolean => rows[id]?.since === "1.1";
+      const allowedIds = new Set<string>(policy.currentIds);
+      const current = (id: string): boolean => allowedIds.has(id);
       const resolveText = (
         id: string,
         part: string,
@@ -115,7 +117,7 @@ export async function inspectPage(
         )
           continue;
         const owner = parent.closest<HTMLElement>(
-          "[data-text-id],[data-numeric],[data-content]",
+          "[data-text-id],[data-numeric],[data-content],[data-punctuation]",
         );
         if (!owner) errors.push(`unlisted drawn text: ${text}`);
         else if (owner.dataset.textId) {
@@ -139,6 +141,9 @@ export async function inspectPage(
             text !== owner.dataset.numeric
           )
             errors.push(`invalid numeric text ${text}`);
+        } else if (owner.dataset.punctuation !== undefined) {
+          if (owner.dataset.punctuation !== "middle-dot" || text !== "·")
+            errors.push(`unlisted punctuation: ${text}`);
         } else if (!content.includes(text))
           errors.push(`unregistered content ${text}`);
         texts.push(text);
@@ -180,9 +185,29 @@ export async function inspectPage(
           )
             errors.push(`text outside viewport: ${text}`);
       }
+      const openLists = [
+        ...stage.querySelectorAll<HTMLElement>('[role="listbox"]'),
+      ];
       const controls = [
         ...stage.querySelectorAll<HTMLElement>("button,input,select,a"),
-      ].filter(visible);
+      ].filter(
+        (el) =>
+          visible(el) &&
+          !openLists.some(
+            (list) =>
+              !list.contains(el) &&
+              (() => {
+                const box = el.getBoundingClientRect(),
+                  cover = list.getBoundingClientRect();
+                return (
+                  box.left >= cover.left &&
+                  box.right <= cover.right &&
+                  box.top >= cover.top &&
+                  box.bottom <= cover.bottom
+                );
+              })(),
+          ),
+      );
       const focusOutlines: {
         id: string;
         extent: number;
@@ -307,6 +332,11 @@ export async function inspectPage(
           const x = controls[a]!;
           const y = controls[b]!;
           if (x.contains(y) || y.contains(x)) continue;
+          // An open Select is an intentional overlay; siblings inside that
+          // same list are still audited against one another, as usual.
+          const xList = x.closest('.cf-select-list[role="listbox"]');
+          const yList = y.closest('.cf-select-list[role="listbox"]');
+          if (xList !== yList && (xList || yList)) continue;
           const r = visibleBox(x);
           const s = visibleBox(y);
           if (
@@ -315,6 +345,188 @@ export async function inspectPage(
           )
             errors.push(`overlapping controls ${x.dataset.ui}/${y.dataset.ui}`);
         }
+      let discoveryEvidence: unknown = null;
+      const discovery = stage.querySelector<HTMLElement>("[data-discovery]");
+      if (discovery) {
+        const style = getComputedStyle(discovery);
+        const probe = document.createElement("span");
+        probe.style.color = "var(--ink-0)";
+        probe.style.paintOrder = "stroke fill";
+        stage.append(probe);
+        const expectedStroke = getComputedStyle(probe).color;
+        const expectedPaintOrder = getComputedStyle(probe).paintOrder;
+        probe.remove();
+        const animations = discovery.getAnimations().map((animation) => ({
+          currentTime: animation.currentTime,
+          playState: animation.playState,
+          duration: animation.effect?.getTiming().duration,
+        }));
+        const opacity = Number(style.opacity),
+          strokeWidth = Number.parseFloat(style.webkitTextStrokeWidth),
+          strokeColor = style.webkitTextStrokeColor;
+        if (stage.querySelector("[data-discovery-backdrop]")) {
+          if (Math.abs(opacity - 1) > 0.001)
+            errors.push(
+              "Discovery contrast fixture is not at full hold opacity",
+            );
+          if (
+            animations.length !== 1 ||
+            animations.some(
+              (animation) =>
+                typeof animation.currentTime !== "number" ||
+                animation.currentTime < 300 ||
+                animation.currentTime > 4300 ||
+                animation.duration !== 4600,
+            )
+          )
+            errors.push(
+              "Discovery contrast fixture is outside its documented hold interval",
+            );
+          if (
+            strokeWidth !== 1 ||
+            strokeColor !== expectedStroke ||
+            style.paintOrder !== expectedPaintOrder
+          )
+            errors.push(
+              "Discovery glyph contrast treatment does not match Card rule",
+            );
+        }
+        discoveryEvidence = {
+          capturedAt: Date.now(),
+          performanceTime: performance.now(),
+          opacity,
+          strokeWidth,
+          strokeColor,
+          paintOrder: style.paintOrder,
+          animations,
+        };
+      }
+      let mapEvidence: unknown = null;
+      const regionNames = [
+        ...stage.querySelectorAll<HTMLElement>(
+          '[data-ui="f3.region"] [data-content]',
+        ),
+      ];
+      if (
+        regionNames.some(
+          (element) =>
+            Math.abs(
+              element.getBoundingClientRect().top -
+                regionNames[0]!.getBoundingClientRect().top,
+            ) > 1,
+        )
+      )
+        errors.push("F3 Region weights span more than one line");
+      const mapCanvas = stage.querySelector<HTMLCanvasElement>(
+        '[data-ui="map.view"]',
+      );
+      if (mapCanvas) {
+        const data = mapCanvas.dataset,
+          scale = Number(data.mapScale),
+          width = Number(data.mapWidth),
+          height = Number(data.mapHeight),
+          rect = mapCanvas.getBoundingClientRect();
+        const legend = stage.querySelector<HTMLElement>(
+            '[data-ui="map.scale"]',
+          ),
+          line = legend?.querySelector<HTMLElement>(".cf-map-scale-line");
+        const metres = Number(legend?.dataset.mapMetres),
+          linePixels = line
+            ? line.getBoundingClientRect().width /
+              (Number(getComputedStyle(stage).zoom) || 1)
+            : 0;
+        if (data.mapReady !== "true") errors.push("Map frame not ready");
+        if (!Number.isFinite(scale) || scale < 0.999)
+          errors.push("Map zoom is below1m/pixel");
+        if (Math.abs(linePixels - metres / scale) > 1)
+          errors.push("Map scale bar does not match actual metres per pixel");
+        const context = mapCanvas.getContext("2d");
+        let drawnSamples = 0;
+        if (context && mapCanvas.width && mapCanvas.height)
+          for (let row = 1; row < 8; row++)
+            for (let column = 1; column < 8; column++)
+              if (
+                context.getImageData(
+                  Math.floor((mapCanvas.width * column) / 8),
+                  Math.floor((mapCanvas.height * row) / 8),
+                  1,
+                  1,
+                ).data[3]
+              )
+                drawnSamples++;
+        if (!drawnSamples) errors.push("Map canvas is blank");
+        const labelElements = [
+          ...stage.querySelectorAll<HTMLElement>("[data-map-label]"),
+        ];
+        const labelRects = labelElements.map((element) => {
+          const box = element.getBoundingClientRect();
+          return {
+            id: element.dataset.mapLabel,
+            x: box.x,
+            y: box.y,
+            width: box.width,
+            height: box.height,
+          };
+        });
+        const expectedLabels = Number(
+          stage.querySelector<HTMLElement>("[data-map-label-count]")?.dataset
+            .mapLabelCount,
+        );
+        if (labelRects.length !== expectedLabels)
+          errors.push("Map omitted an on-screen anchor's name");
+        for (let i = 0; i < labelElements.length; i++) {
+          const a = labelElements[i]!.getBoundingClientRect();
+          if (
+            a.left < rect.left ||
+            a.right > rect.right ||
+            a.top < rect.top ||
+            a.bottom > rect.bottom
+          )
+            errors.push("Map label clips at viewport");
+          for (let j = i + 1; j < labelElements.length; j++) {
+            const b = labelElements[j]!.getBoundingClientRect();
+            if (
+              Math.min(a.right, b.right) - Math.max(a.left, b.left) > 0.5 &&
+              Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 0.5
+            )
+              errors.push(
+                `Map names overlap ${labelElements[i]!.dataset.mapLabel}/${labelElements[j]!.dataset.mapLabel}`,
+              );
+          }
+        }
+        const marker = stage.querySelector<HTMLElement>('[data-ui="map.pin"]');
+        let pinError: number | null = null;
+        if (marker && visible(marker)) {
+          const bounds = marker.getBoundingClientRect();
+          const x =
+            (((Number(data.mapPinX) - Number(data.mapX)) / scale + width / 2) *
+              rect.width) /
+              width +
+            rect.left;
+          const y =
+            (((Number(data.mapPinZ) - Number(data.mapZ)) / scale + height / 2) *
+              rect.height) /
+              height +
+            rect.top;
+          pinError = Math.hypot(
+            x - (bounds.left + bounds.width / 2),
+            y - (bounds.top + bounds.height / 2),
+          );
+          if (pinError > 2)
+            errors.push("Map pin diverges from its chosen world point");
+        }
+        mapEvidence = {
+          metresPerPixel: scale,
+          metres,
+          linePixels,
+          drawnSamples,
+          pinError,
+          labelRects,
+          expectedLabels,
+          scope:
+            "Map component against the declared gallery port; not real-world geography acceptance",
+        };
+      }
       return {
         errors: [...new Set(errors)],
         texts: [...new Set(texts)],
@@ -323,9 +535,12 @@ export async function inspectPage(
         dimensions: { width: innerWidth, height: innerHeight },
         toastAnchors,
         focusOutlines,
+        phase: policy.phase,
+        mapEvidence,
+        discoveryEvidence,
       };
     },
-    { rows: catalogue, content: [...sampleContent] },
+    { rows: catalogue, content: [...sampleContent], policy: auditPolicy() },
   );
 }
 export async function inspectKeys(page: Page, closeable: boolean) {
@@ -339,7 +554,7 @@ export async function inspectKeys(page: Page, closeable: boolean) {
     };
   const expected = await blocking
     .locator(
-      "button:not(:disabled),input:not(:disabled),select:not(:disabled),a[href]",
+      'button:not(:disabled):not([tabindex="-1"]),input:not(:disabled),select:not(:disabled),a[href]',
     )
     .evaluateAll((elements) =>
       elements.map((element, index) => ({
@@ -385,7 +600,7 @@ export async function inspectKeys(page: Page, closeable: boolean) {
   if (expected.length) {
     await blocking
       .locator(
-        "button:not(:disabled),input:not(:disabled),select:not(:disabled),a[href]",
+        'button:not(:disabled):not([tabindex="-1"]),input:not(:disabled),select:not(:disabled),a[href]',
       )
       .first()
       .focus();

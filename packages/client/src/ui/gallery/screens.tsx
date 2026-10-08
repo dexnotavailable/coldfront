@@ -1,6 +1,7 @@
 /** @jsxRuntime automatic */
 /** @jsxImportSource preact */
 import { useEffect, useMemo } from "preact/hooks";
+import { SURFACE_REGIONS } from "../../../../shared/src/world/regions";
 import {
   fixtureController,
   sampleContent,
@@ -41,6 +42,8 @@ function StateFixture({ scenario }: { scenario: string }) {
 const scenarios = [
   "title",
   "title-empty",
+  "title-test",
+  "title-world-open",
   "title-long",
   "title-long-home",
   "title-long-end",
@@ -48,12 +51,17 @@ const scenarios = [
   "loading",
   "loading-ready",
   "loading-failed",
+  "loading-plan-start",
+  "loading-plan",
+  "loading-plan-done",
   "hud",
   "hud-name",
   "hud-hidden",
   "menu",
   "tools",
   "tools-on",
+  "tools-test",
+  "tools-region-open",
   "debug",
   "debug-largest",
   "palette",
@@ -70,6 +78,15 @@ const scenarios = [
   "toast-held-name",
   "toast-palette",
   "confirm-clear",
+  "map-main",
+  "map-test",
+  "map-selected",
+  "map-zoom",
+  "map-edge",
+  "map-review",
+  "map-review-pan",
+  "map-review-detail",
+  ...SURFACE_REGIONS.map((region) => `discovery-${region.id}`),
 ] as const;
 const compass: readonly CatalogueId[] = [
   "compass.n",
@@ -92,6 +109,10 @@ function FixedWords() {
         <Value value={9} />
         <Text id="unit.mb" />
         <Text id="fmt.multiple" values={{ n: 16 }} />
+        <Value value={999} />
+        <Text id="unit.m" />
+        <Value value={1} />
+        <Text id="unit.km" />
       </div>
       <div class="gallery-buttons">
         {compass.map((id) => (
@@ -115,20 +136,46 @@ export const currentScreenFixtures: readonly GalleryFixture[] = [
       scenario === "menu" ||
       scenario.startsWith("palette") ||
       scenario === "toast-palette" ||
+      scenario.startsWith("map-") ||
       scenario === "confirm-clear",
-    ...(scenario.startsWith("title-long")
+    ...(scenario === "title-world-open" || scenario === "tools-region-open"
       ? {
           prepare: {
-            kind: "field-endpoint" as const,
-            endpoint:
-              scenario === "title-long-home"
-                ? ("Home" as const)
-                : ("End" as const),
-            selector: '[data-ui="title.seed"]',
-            value: "123456789012345678901234567890",
+            kind: "select-open" as const,
+            selector: scenario.startsWith("title")
+              ? '[data-ui="title.world"]'
+              : '[data-ui="tools.region"]',
           },
         }
-      : {}),
+      : scenario === "map-selected" ||
+          scenario === "map-zoom" ||
+          scenario === "map-edge" ||
+          scenario === "map-review-pan" ||
+          scenario === "map-review-detail"
+        ? {
+            prepare: {
+              kind: "map" as const,
+              action: scenario.split("-").at(-1) as
+                | "selected"
+                | "zoom"
+                | "edge"
+                | "pan"
+                | "detail",
+            },
+          }
+        : scenario.startsWith("title-long")
+          ? {
+              prepare: {
+                kind: "field-endpoint" as const,
+                endpoint:
+                  scenario === "title-long-home"
+                    ? ("Home" as const)
+                    : ("End" as const),
+                selector: '[data-ui="title.seed"]',
+                value: "123456789012345678901234567890",
+              },
+            }
+          : {}),
   })),
   ...(
     [

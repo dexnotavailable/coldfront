@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { SURFACE_REGIONS } from "../../../shared/src/world/regions.js";
+import { createWorldContext } from "../../../shared/src/world/world-context.js";
 import { benchmarkCases, benchmarkOptions } from "../../src/bench/samples.js";
 import { compareBudget, summariseTimings } from "../../src/bench/statistics.js";
 
@@ -37,7 +39,10 @@ describe("benchmark statistics and policy", () => {
   });
   it("fixes50/20 unique signed surface positions and requires actual warmup", () => {
     for (const lod of [0, 1] as const) {
-      const samples = benchmarkCases(1, lod);
+      const samples = benchmarkCases(
+        createWorldContext({ kind: "test", seed: 1 }),
+        lod,
+      );
       expect(samples.length).toBe(lod === 0 ? 50 : 20);
       expect(new Set(samples.map((s) => `${s.cx},${s.cy},${s.cz}`)).size).toBe(
         samples.length,
@@ -47,6 +52,8 @@ describe("benchmark statistics and policy", () => {
       expect(samples.every((s) => s.spacing === lod + 1)).toBe(true);
     }
     expect(benchmarkOptions([])).toEqual({
+      world: "main",
+      regions: SURFACE_REGIONS.map((region) => region.id),
       seed: 1,
       repetitions: 3,
       warmup: 5,
@@ -55,5 +62,17 @@ describe("benchmark statistics and policy", () => {
     expect(() => benchmarkOptions(["--repetitions", "0"])).toThrow();
     expect(() => benchmarkOptions(["--seed", "NaN"])).toThrow();
     expect(() => benchmarkOptions(["--seed", "1", "--seed", "2"])).toThrow();
+    expect(benchmarkOptions(["--world", "test"]).regions).toEqual([]);
+    expect(
+      benchmarkOptions(["--region", "hellscape,blackwater"]).regions,
+    ).toEqual(["hellscape", "blackwater"]);
+    for (const args of [
+      ["--world", "unknown"],
+      ["--region", "absent"],
+      ["--region", ""],
+      ["--region", "plains,plains"],
+      ["--world", "test", "--region", "plains"],
+    ])
+      expect(() => benchmarkOptions(args)).toThrow();
   });
 });

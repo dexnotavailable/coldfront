@@ -128,6 +128,12 @@ export class BlockEffects {
   placementActive(displayMs: number): boolean {
     return displayMs >= this.popTime && displayMs - this.popTime < 100;
   }
+  reset(): void {
+    this.grains = [];
+    this.popTime = -1000;
+    this.pop.visible = this.ghost.visible = false;
+    this.particles.count = 0;
+  }
   setGhost(position: Point | null, block: number): void {
     this.ghost.visible = position !== null;
     if (!position) return;

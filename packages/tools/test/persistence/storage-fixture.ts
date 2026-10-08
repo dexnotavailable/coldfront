@@ -1,5 +1,3 @@
-import type { VoxelEdit } from "../../../client/src/engine/worker-protocol.js";
-
 interface Request {
   result?: unknown;
   error?: Error;
@@ -9,19 +7,19 @@ interface Request {
 interface Transaction {
   mode: IDBTransactionMode;
   key?: string;
-  value?: readonly VoxelEdit[];
+  value?: unknown;
   request?: Request;
   oncomplete?: () => void;
   onerror?: () => void;
   onabort?: () => void;
   objectStore(): {
     get(key: string): Request;
-    put(value: readonly VoxelEdit[], key: string): Request;
+    put(value: unknown, key: string): Request;
   };
 }
 /** FIFO transaction scheduler: later-created reads cannot pass an existing write. */
 export class StorageFixture {
-  readonly records = new Map<string, readonly VoxelEdit[]>();
+  readonly records = new Map<string, unknown>();
   readonly pending: Transaction[] = [];
   readonly created: IDBTransactionMode[] = [];
   throwWrite = false;

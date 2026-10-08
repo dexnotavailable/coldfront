@@ -16,15 +16,18 @@ import {
   haloIndex,
   voxelIndex,
 } from "../../../shared/src/world/coordinates.js";
-import {
-  Column,
-  collectTestTrees,
-  createColumnSample,
-  createVoxelSample,
-  sampleTestColumn,
-  sampleTestVoxel,
-  type TreeFeature,
-} from "../../../shared/src/worldgen/test-world.js";
+import type {
+  SkyInput,
+  VoxelSample,
+  WorldAreaSampler,
+  WorldContext,
+} from "../../../shared/src/world/types.js";
+import { createWorldContext } from "../../../shared/src/world/world-context.js";
+import type { VoxelChunk } from "../../../shared/src/worldgen/chunk.js";
+import { generateWorldChunk } from "../../../shared/src/worldgen/main/chunk.js";
+import type { WorldSession } from "../contracts/game-ui.js";
+import { sameSession } from "../game/session.js";
+import { insideFrame } from "../game/world-save.js";
 import {
   type Address,
   chunkKey,
@@ -39,21 +42,26 @@ interface ColumnCache {
   readonly x: number;
   readonly z: number;
   readonly columns: Float64Array;
-  readonly trees: readonly TreeFeature[];
 }
 interface LitCache {
   readonly address: Address;
   readonly volume: LightVolume;
   readonly blocks: Uint16Array;
+  readonly chunk: VoxelChunk;
 }
-let seed = 1;
+let world: WorldSession | null = null;
+let context: WorldContext;
 const edits = new Map<number, number>();
 const columns = new Map<string, ColumnCache>();
 const volumes = new Map<string, LitCache>();
-const voxel = createVoxelSample();
-function columnTile(cx: number, cz: number): ColumnCache {
-  const key = `${cx},${cz}`;
-  const old = columns.get(key);
+const voxel: VoxelSample = { density: 0, block: 0, fluid: 0 };
+function columnTile(
+  cx: number,
+  cz: number,
+  area: WorldAreaSampler,
+): ColumnCache {
+  const key = `${cx},${cz}`,
+    old = columns.get(key);
   if (old) {
     columns.delete(key);
     columns.set(key, old);
@@ -61,97 +69,92 @@ function columnTile(cx: number, cz: number): ColumnCache {
   }
   const x = cx * 32,
     z = cz * 32,
-    values = new Float64Array(32 * 32 * Column.Stride),
-    c = createColumnSample();
+    stride = area.columns.stride;
+  const values = new Float64Array(32 * 32 * stride),
+    c = area.createColumn();
   for (let iz = 0; iz < 32; iz++)
     for (let ix = 0; ix < 32; ix++) {
-      sampleTestColumn(seed, x + ix + 0.5, z + iz + 0.5, c);
-      values.set(c, (ix + 32 * iz) * Column.Stride);
+      area.sampleColumn(x + ix + 0.5, z + iz + 0.5, c);
+      values.set(c, (ix + 32 * iz) * stride);
     }
-  const tile = {
-    x,
-    z,
-    columns: values,
-    trees: collectTestTrees(seed, x + 0.5, z + 0.5, x + 31.5, z + 31.5),
-  };
+  const tile = { x, z, columns: values };
   columns.set(key, tile);
   if (columns.size > 96) columns.delete(columns.keys().next().value as string);
   return tile;
 }
 function sample(
+  area: WorldAreaSampler,
   x: number,
   y: number,
   z: number,
   c: Float64Array,
-  trees: readonly TreeFeature[],
 ): number {
-  const edit = edits.get(editKey(x, y, z));
-  if (edit !== undefined) return edit;
-  return sampleTestVoxel(seed, x + 0.5, y + 0.5, z + 0.5, voxel, c, trees)
-    .block;
-}
-function cachedColumn(
-  x: number,
-  z: number,
-): { c: Float64Array; trees: readonly TreeFeature[] } {
-  const tile = columnTile(Math.floor(x / 32), Math.floor(z / 32));
-  const start = (x - tile.x + 32 * (z - tile.z)) * Column.Stride;
-  return {
-    c: tile.columns.subarray(start, start + Column.Stride),
-    trees: tile.trees,
-  };
+  const edit = insideFrame(x, y, z) ? edits.get(editKey(x, y, z)) : undefined;
+  return edit ?? area.sampleVoxel(x + 0.5, y + 0.5, z + 0.5, voxel, c).block;
 }
 function buildVolume(a: Address): LitCache {
+  const chunk = generateWorldChunk(context, a.cx, a.cy, a.cz);
   const v = createLightVolume(96, 96, 96),
     blocks = new Uint16Array(v.light.length);
   const ox = a.cx * 32 - 32,
     oy = a.cy * 32 - 32,
     oz = a.cz * 32 - 32;
+  const area = context.prepareArea({
+    minX: ox + 0.5,
+    minZ: oz + 0.5,
+    maxX: ox + 95.5,
+    maxZ: oz + 95.5,
+  });
+  const sky: SkyInput = { solidBelowY: 0, highestFilterY: 0 };
   for (let z = 0; z < 96; z++)
     for (let x = 0; x < 96; x++) {
       const wx = ox + x,
         wz = oz + z,
-        { c, trees } = cachedColumn(wx, wz);
+        tile = columnTile(Math.floor(wx / 32), Math.floor(wz / 32), area);
+      const start = (wx - tile.x + 32 * (wz - tile.z)) * area.columns.stride;
+      const c = tile.columns.subarray(start, start + area.columns.stride);
       for (let y = 0; y < 96; y++) {
-        const i = lightIndex(v, x, y, z),
-          id = sample(wx, oy + y, wz, c, trees);
+        const i = lightIndex(v, x, y, z);
+        const inHalo =
+          x >= 31 && x <= 64 && z >= 31 && z <= 64 && y >= 31 && y < 72;
+        const edit = insideFrame(wx, oy + y, wz)
+          ? edits.get(editKey(wx, oy + y, wz))
+          : undefined;
+        const id =
+          edit ??
+          (inHalo
+            ? (chunk.haloBlocks[haloIndex(x - 32, y - 32, z - 32)] as number)
+            : sample(area, wx, oy + y, wz, c));
         blocks[i] = id;
         v.opacity[i] = BLOCK_REGISTRY[id]?.lightFiltering ?? 15;
+        if (inHalo) chunk.haloBlocks[haloIndex(x - 32, y - 32, z - 32)] = id;
+        if (x >= 32 && x < 64 && y >= 32 && y < 64 && z >= 32 && z < 64)
+          chunk.blocks[voxelIndex(x - 32, y - 32, z - 32)] = id;
       }
-      // Height-map seed: look only at the surface/feature band, never a 2.5km shaft.
-      // Blockers >64m above this volume's top deliberately do not darken it.
-      let highest = c[Column.Height] as number;
-      for (const tree of trees)
-        highest = Math.max(
-          highest,
-          tree.crownY + tree.crownHeight,
-          tree.trunkTop,
-        );
+      // Actual surface/feature/water bound; only the64m incoming-light window is
+      // evaluated. Shared skyInput owns natural bounds, never test-tree guesses.
+      area.skyInput(wx + 0.5, wz + 0.5, sky, c);
       const topY = oy + 95;
-      let incoming =
-        highest > topY + 64
-          ? 15
-          : topY < (c[Column.Height] as number) - 1
-            ? 0
-            : 15;
+      let incoming = 15;
       for (
-        let wy = Math.min(topY + 64, Math.ceil(highest));
+        let wy = Math.min(topY + 64, Math.ceil(sky.highestFilterY));
         incoming > 0 && wy > topY;
         wy--
       )
         incoming = Math.max(
           0,
           incoming -
-            (BLOCK_REGISTRY[sample(wx, wy, wz, c, trees)]?.lightFiltering ??
-              15),
+            (BLOCK_REGISTRY[sample(area, wx, wy, wz, c)]?.lightFiltering ?? 15),
         );
-      // Persisted roof edits may sit above the natural surface band.
+      // Persisted roof edits can rise above the natural bound.
       for (
-        let wy = Math.max(topY + 1, Math.ceil(highest) + 1);
+        let wy = Math.max(topY + 1, Math.ceil(sky.highestFilterY) + 1);
         incoming > 0 && wy <= topY + 64;
         wy++
       ) {
-        const id = edits.get(editKey(wx, wy, wz));
+        const id = insideFrame(wx, wy, wz)
+          ? edits.get(editKey(wx, wy, wz))
+          : undefined;
         if (id !== undefined)
           incoming = Math.max(
             0,
@@ -159,19 +162,19 @@ function buildVolume(a: Address): LitCache {
           );
       }
       const top = lightIndex(v, x, 95, z);
-      incoming = Math.max(0, incoming - (v.opacity[top] as number));
-      v.sources[top] = incoming << 12;
+      v.sources[top] = Math.max(0, incoming - (v.opacity[top] as number)) << 12;
     }
-  return { address: a, volume: v, blocks };
+  return { address: a, volume: v, blocks, chunk };
 }
 function applyEdit(edit: VoxelEdit): void {
+  if (!insideFrame(edit.x, edit.y, edit.z))
+    throw new RangeError("Edit outside world frame");
   edits.set(editKey(edit.x, edit.y, edit.z), edit.block);
   for (const [key, cached] of volumes) {
     const x = edit.x - cached.address.cx * 32 + 32,
       y = edit.y - cached.address.cy * 32 + 32,
       z = edit.z - cached.address.cz * 32 + 32;
     if (x < 0 || x >= 96 || z < 0 || z >= 96 || y < 0 || y >= 160) continue;
-    // Changes on/above the incoming boundary need a fresh height-map seed.
     if (y >= 95) {
       volumes.delete(key);
       continue;
@@ -179,6 +182,10 @@ function applyEdit(edit: VoxelEdit): void {
     const i = lightIndex(cached.volume, x, y, z);
     cached.blocks[i] = edit.block;
     cached.volume.opacity[i] = BLOCK_REGISTRY[edit.block]?.lightFiltering ?? 15;
+    if (x >= 31 && x <= 64 && z >= 31 && z <= 64 && y >= 31 && y < 72)
+      cached.chunk.haloBlocks[haloIndex(x - 32, y - 32, z - 32)] = edit.block;
+    if (x >= 32 && x < 64 && y >= 32 && y < 64 && z >= 32 && z < 64)
+      cached.chunk.blocks[voxelIndex(x - 32, y - 32, z - 32)] = edit.block;
     relightEdits(cached.volume, [i]);
   }
 }
@@ -188,6 +195,7 @@ function generate(request: Extract<WorkerRequest, { type: "chunk" }>): void {
   ) =>
     self.postMessage({
       type: "progress",
+      world: request.world,
       id: request.id,
       stage,
     } satisfies WorkerResponse);
@@ -206,24 +214,20 @@ function generate(request: Extract<WorkerRequest, { type: "chunk" }>): void {
   if (volumes.size > 2) volumes.delete(volumes.keys().next().value as string);
   const t2 = performance.now();
   progress("meshing");
-  const core = new Uint16Array(CHUNK_VOLUME),
+  // The shared assembler owns block ordering; lighting only extracts its halo.
+  const core = cache.chunk.blocks.slice(),
     coreLight = new Uint16Array(CHUNK_VOLUME),
-    halo = new Uint16Array(HALO_VOLUME),
     light = new Uint16Array(HALO_VOLUME);
   for (let y = -1; y < 40; y++)
     for (let z = -1; z <= 32; z++)
       for (let x = -1; x <= 32; x++) {
         const i = lightIndex(cache.volume, x + 32, y + 32, z + 32),
           h = haloIndex(x, y, z);
-        halo[h] = cache.blocks[i] as number;
         light[h] = cache.volume.light[i] as number;
-        if (x >= 0 && x < 32 && y >= 0 && y < 32 && z >= 0 && z < 32) {
-          const j = voxelIndex(x, y, z);
-          core[j] = halo[h] as number;
-          coreLight[j] = light[h] as number;
-        }
+        if (x >= 0 && x < 32 && y >= 0 && y < 32 && z >= 0 && z < 32)
+          coreLight[voxelIndex(x, y, z)] = light[h] as number;
       }
-  const mesh = meshChunk(halo, light),
+  const mesh = meshChunk(cache.chunk.haloBlocks, light),
     t3 = performance.now();
   let cacheBytes = 0;
   for (const column of columns.values())
@@ -233,15 +237,21 @@ function generate(request: Extract<WorkerRequest, { type: "chunk" }>): void {
       lit.blocks.byteLength +
       lit.volume.opacity.byteLength +
       lit.volume.light.byteLength +
-      lit.volume.sources.byteLength;
+      lit.volume.sources.byteLength +
+      lit.chunk.blocks.byteLength +
+      lit.chunk.haloBlocks.byteLength +
+      lit.chunk.columns.byteLength +
+      lit.chunk.density.byteLength;
   const result: WorkerResponse = {
     type: "chunk",
+    world: request.world,
     id: request.id,
     address: request.address,
     revision: request.revision,
     blocks: core,
     light: coreLight,
     mesh,
+    regionColor: regionColor(request.address),
     timings: { generate: t1 - t0, light: t2 - t1, mesh: t3 - t2 },
     cacheBytes,
   };
@@ -249,20 +259,58 @@ function generate(request: Extract<WorkerRequest, { type: "chunk" }>): void {
     transfer: [core.buffer, coreLight.buffer, ...meshTransfers(mesh)],
   });
 }
+function regionColor(address: Address): readonly [number, number, number] {
+  if (!context.regions.length) return [98, 118, 68];
+  const weights = context.surfaceWeights(
+    address.cx * 32 + 16,
+    address.cz * 32 + 16,
+    { count: 0, ids: new Uint8Array(16), weights: new Float64Array(16) },
+  );
+  const color: [number, number, number] = [0, 0, 0];
+  for (let i = 0; i < weights.count; i++) {
+    const region = context.regions.find(
+      (value) => value.index === weights.ids[i],
+    );
+    if (region)
+      for (let channel = 0; channel < 3; channel++)
+        color[channel] =
+          (color[channel] as number) +
+          (region.color[channel] as number) * (weights.weights[i] as number);
+  }
+  return color;
+}
 self.onmessage = (event: MessageEvent<WorkerRequest>) => {
   const message = event.data;
   try {
     if (message.type === "init") {
-      seed = message.seed;
+      if (message.world.identity.kind === "main") {
+        if (!message.plan)
+          throw new Error("Main terrain requires its WorldPlan");
+        context = createWorldContext({
+          kind: "main",
+          seed: message.world.identity.seed,
+          plan: message.plan,
+        });
+      } else
+        context = createWorldContext({
+          kind: "test",
+          seed: message.world.identity.seed,
+        });
+      world = message.world;
       edits.clear();
       columns.clear();
       volumes.clear();
-      for (const e of message.edits) edits.set(editKey(e.x, e.y, e.z), e.block);
-    } else if (message.type === "edit") applyEdit(message.edit);
-    else generate(message);
+      for (const edit of message.edits)
+        edits.set(editKey(edit.x, edit.y, edit.z), edit.block);
+      self.postMessage({ type: "ready", world } satisfies WorkerResponse);
+    } else if (sameSession(world, message.world)) {
+      if (message.type === "edit") applyEdit(message.edit);
+      else generate(message);
+    }
   } catch (error) {
     self.postMessage({
       type: "error",
+      world: message.world,
       id: message.type === "chunk" ? message.id : -1,
       message: error instanceof Error ? error.message : String(error),
     } satisfies WorkerResponse);

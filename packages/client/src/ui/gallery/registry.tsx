@@ -18,6 +18,7 @@ import {
 } from "../components/core";
 import { Stat, Text, Value } from "../components/Text";
 import { matrixFixtures } from "./matrices";
+import { phase12PrimitiveFixtures } from "./phase12";
 import { currentScreenFixtures } from "./screens";
 import { worldFixtures } from "./world-fixtures";
 export interface GalleryFixture {
@@ -27,7 +28,16 @@ export interface GalleryFixture {
   readonly sampleContent: readonly string[];
   readonly closeable?: boolean;
   readonly motion?: boolean;
+  readonly motionCapture?: Readonly<{
+    selector: string;
+    times: readonly number[];
+  }>;
   readonly prepare?:
+    | { readonly kind: "select-open"; readonly selector: string }
+    | {
+        readonly kind: "map";
+        readonly action: "selected" | "zoom" | "edge" | "pan" | "detail";
+      }
     | {
         readonly kind: "field-endpoint";
         readonly endpoint: "Home" | "End";
@@ -143,5 +153,6 @@ export const screenFixtures: readonly GalleryFixture[] = [
 export const galleryFixtures: readonly GalleryFixture[] = [
   ...primitiveFixtures,
   ...matrixFixtures,
+  ...phase12PrimitiveFixtures,
   ...screenFixtures,
 ];

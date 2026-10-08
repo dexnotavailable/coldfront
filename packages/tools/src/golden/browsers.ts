@@ -23,6 +23,7 @@ import {
   REPO_ROOT,
   readGoldenFixture,
 } from "./fixture.js";
+import { createWorldResolver } from "./worlds.js";
 
 interface BrowserResult {
   browser: BrowserName;
@@ -44,13 +45,19 @@ if (cache.path !== undefined) process.env.PLAYWRIGHT_BROWSERS_PATH = cache.path;
 const { chromium, firefox, webkit } = await import("playwright");
 const { browserExecutable } = await import("../browser-tests/browser.js");
 const policy = browserPolicy(process.argv.slice(2), process.env.CI);
-const fixture = await readGoldenFixture();
-const samples = goldenCases();
+const samples = goldenCases(createWorldResolver());
+const fixture = await readGoldenFixture(undefined, samples);
 const output = join(REPO_ROOT, "out/step4/golden-browsers.json");
+const startedAt = new Date().toISOString();
+const attemptOutput = join(
+  REPO_ROOT,
+  `out/step4/golden-browsers-${startedAt.replaceAll(":", "-")}.json`,
+);
 const results: BrowserResult[] = [];
 const receipt = {
   schema: 1,
-  startedAt: new Date().toISOString(),
+  startedAt,
+  attemptOutput,
   policy,
   browserCache: cache,
   expected: currentGoldenContract(),
@@ -62,7 +69,9 @@ const receipt = {
 };
 await mkdir(join(REPO_ROOT, "out/step4"), { recursive: true });
 const save = async (): Promise<void> => {
-  await writeFile(output, `${JSON.stringify(receipt, null, 2)}\n`);
+  const json = `${JSON.stringify(receipt, null, 2)}\n`;
+  await writeFile(attemptOutput, json);
+  await writeFile(output, json);
 };
 await save();
 const server = await createServer({
@@ -140,13 +149,18 @@ try {
           const harness = (await import(
             entry
           )) as typeof import("./browser-entry.js");
+          const worlds = harness.createWorldResolver();
           return {
             contract: harness.currentGoldenContract(),
-            cases: harness.goldenCases(),
-            records: await harness.computeGoldens(cases, (done, total) => {
-              if (done % 25 === 0)
-                console.log(`golden-progress ${done}/${total}`);
-            }),
+            cases: harness.goldenCases(worlds),
+            records: await harness.computeGoldens(
+              cases,
+              (done, total) => {
+                if (done % 25 === 0)
+                  console.log(`golden-progress ${done}/${total}`);
+              },
+              worlds,
+            ),
           };
         },
         {
@@ -200,5 +214,5 @@ try {
   await server.close();
   receipt.serverClosed = true;
   await save();
-  console.log(`Browser golden receipt: ${output}`);
+  console.log(`Browser golden receipt: ${attemptOutput} (latest: ${output})`);
 }

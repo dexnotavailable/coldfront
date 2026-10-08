@@ -57,6 +57,7 @@ describe("build and postcard boundaries", () => {
       for (const path of [
         "packages/shared/src/blocks/registry.ts",
         "packages/shared/src/worldgen/terrain.ts",
+        "packages/shared/src/worldplan/drainage.ts",
         "packages/shared/src/math/hash.ts",
         "packages/shared/src/noise/noise.ts",
         "packages/shared/src/world/constants.ts",
@@ -88,6 +89,12 @@ describe("build and postcard boundaries", () => {
       expect(registry.cacheTag).not.toBe(first.cacheTag);
       write("packages/shared/src/worldgen/terrain.ts", "new terrain");
       expect(sourceFingerprints(root).cacheTag).not.toBe(registry.cacheTag);
+      const terrain = sourceFingerprints(root);
+      write(
+        "packages/shared/src/worldplan/drainage.ts",
+        "new immutable plan input",
+      );
+      expect(sourceFingerprints(root).cacheTag).not.toBe(terrain.cacheTag);
       expect(sourceFingerprints(root, "/coldfront/").cacheTag).toBe(
         sourceFingerprints(root).cacheTag,
       );
