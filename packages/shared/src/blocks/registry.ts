@@ -1,0 +1,232 @@
+/** Minimal phase 1.1 step 1 registry. Texture recipes expand this in step 2. */
+export const Block = Object.freeze({
+  Air: 0,
+  Worldstone: 1,
+  Stone: 2,
+  Dirt: 3,
+  Grass: 4,
+  Sand: 5,
+  Water: 6,
+  Log: 7,
+  Leaves: 8,
+  DeepStone: 9,
+  Cobblestone: 10,
+  StoneBricks: 11,
+  Planks: 12,
+  Gravel: 13,
+  Clay: 14,
+  Snow: 15,
+  PackedIce: 16,
+  Glass: 17,
+  Basalt: 18,
+  Limestone: 19,
+  Slate: 20,
+  Granite: 21,
+  Sandstone: 22,
+  MossyStone: 23,
+  CoalOre: 24,
+  IronOre: 25,
+  CopperOre: 26,
+  GoldOre: 27,
+  Mud: 28,
+  Ash: 29,
+  DarkPlanks: 30,
+  Bricks: 31,
+} as const);
+export type BlockId = (typeof Block)[keyof typeof Block];
+export type RenderType = "opaque" | "cutout" | "translucent" | "fluid";
+export interface BlockDefinition {
+  readonly id: BlockId;
+  readonly key: string;
+  readonly name: string;
+  readonly renderType: RenderType;
+  readonly solid: boolean;
+  readonly opaque: boolean;
+  readonly breakable: boolean;
+  /** Light loss per voxel; sky/block light itself is implemented in step 2. */
+  readonly lightFiltering: number;
+  /** Semantic recipe key, not a texture index or downloaded asset. */
+  readonly texture: string;
+  readonly variantCount: number;
+}
+function define(
+  id: BlockId,
+  key: string,
+  name: string,
+  renderType: RenderType,
+  solid: boolean,
+  opaque: boolean,
+  breakable: boolean,
+  lightFiltering: number,
+  texture = key,
+): Readonly<BlockDefinition> {
+  return Object.freeze({
+    id,
+    key,
+    name,
+    renderType,
+    solid,
+    opaque,
+    breakable,
+    lightFiltering,
+    texture,
+    variantCount: id === Block.Air ? 0 : 3,
+  });
+}
+export const BLOCK_REGISTRY: readonly Readonly<BlockDefinition>[] =
+  Object.freeze([
+    define(Block.Air, "air", "Air", "cutout", false, false, false, 0),
+    define(
+      Block.Worldstone,
+      "worldstone",
+      "Worldstone",
+      "opaque",
+      true,
+      true,
+      false,
+      15,
+    ),
+    define(Block.Stone, "stone", "Stone", "opaque", true, true, true, 15),
+    define(Block.Dirt, "dirt", "Dirt", "opaque", true, true, true, 15),
+    define(Block.Grass, "grass", "Grass", "opaque", true, true, true, 15),
+    define(Block.Sand, "sand", "Sand", "opaque", true, true, true, 15),
+    define(Block.Water, "water", "Water", "fluid", false, false, false, 2),
+    define(Block.Log, "log", "Log", "opaque", true, true, true, 15),
+    define(Block.Leaves, "leaves", "Leaves", "cutout", true, false, true, 1),
+    define(
+      Block.DeepStone,
+      "deep_stone",
+      "Deep stone",
+      "opaque",
+      true,
+      true,
+      true,
+      15,
+    ),
+    define(
+      Block.Cobblestone,
+      "cobblestone",
+      "Cobblestone",
+      "opaque",
+      true,
+      true,
+      true,
+      15,
+    ),
+    define(
+      Block.StoneBricks,
+      "stone_bricks",
+      "Stone bricks",
+      "opaque",
+      true,
+      true,
+      true,
+      15,
+    ),
+    define(Block.Planks, "planks", "Planks", "opaque", true, true, true, 15),
+    define(Block.Gravel, "gravel", "Gravel", "opaque", true, true, true, 15),
+    define(Block.Clay, "clay", "Clay", "opaque", true, true, true, 15),
+    define(Block.Snow, "snow", "Snow", "opaque", true, true, true, 15),
+    define(
+      Block.PackedIce,
+      "packed_ice",
+      "Packed ice",
+      "opaque",
+      true,
+      true,
+      true,
+      15,
+    ),
+    define(Block.Glass, "glass", "Glass", "translucent", true, false, true, 1),
+    define(Block.Basalt, "basalt", "Basalt", "opaque", true, true, true, 15),
+    define(
+      Block.Limestone,
+      "limestone",
+      "Limestone",
+      "opaque",
+      true,
+      true,
+      true,
+      15,
+    ),
+    define(Block.Slate, "slate", "Slate", "opaque", true, true, true, 15),
+    define(Block.Granite, "granite", "Granite", "opaque", true, true, true, 15),
+    define(
+      Block.Sandstone,
+      "sandstone",
+      "Sandstone",
+      "opaque",
+      true,
+      true,
+      true,
+      15,
+    ),
+    define(
+      Block.MossyStone,
+      "mossy_stone",
+      "Mossy stone",
+      "opaque",
+      true,
+      true,
+      true,
+      15,
+    ),
+    define(
+      Block.CoalOre,
+      "coal_ore",
+      "Coal ore",
+      "opaque",
+      true,
+      true,
+      true,
+      15,
+    ),
+    define(
+      Block.IronOre,
+      "iron_ore",
+      "Iron ore",
+      "opaque",
+      true,
+      true,
+      true,
+      15,
+    ),
+    define(
+      Block.CopperOre,
+      "copper_ore",
+      "Copper ore",
+      "opaque",
+      true,
+      true,
+      true,
+      15,
+    ),
+    define(
+      Block.GoldOre,
+      "gold_ore",
+      "Gold ore",
+      "opaque",
+      true,
+      true,
+      true,
+      15,
+    ),
+    define(Block.Mud, "mud", "Mud", "opaque", true, true, true, 15),
+    define(Block.Ash, "ash", "Ash", "opaque", true, true, true, 15),
+    define(
+      Block.DarkPlanks,
+      "dark_planks",
+      "Dark planks",
+      "opaque",
+      true,
+      true,
+      true,
+      15,
+    ),
+    define(Block.Bricks, "bricks", "Bricks", "opaque", true, true, true, 15),
+  ]);
+export function getBlockDefinition(id: number): Readonly<BlockDefinition> {
+  const block = BLOCK_REGISTRY[id];
+  if (!block) throw new RangeError("Unknown block ID");
+  return block;
+}

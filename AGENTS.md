@@ -72,6 +72,8 @@ This covers every screen, panel, control, key binding, camera move and word the 
 | `npm test` | unit, golden-determinism and forbidden-token tests. **Node only:** it must not need a browser, because CI runs it on a plain runner |
 | `npm run check` | TypeScript, Biome and `ui:lint`. Node only, like `npm test` |
 | `npm run build` | production build into `packages/client/dist` (used by Cloudflare Pages) |
+| `npm run build:site` | production build for the owner's `dex.place/coldfront/` mount |
+| `npm run publish:site -- --dist packages/client/dist --expected-sha <sha>` | publish a verified site build, preserving release checksums and rollback receipts |
 | `npm run atlas -- --seed 1 --layer surface --mode regions` | top-down map PNGs → `out/atlas/`. Phase 1.1 has no WorldPlan yet: run it on the test world in `height` mode |
 | `npm run slice -- --seed 1 --from -15556,15556 --to 15556,-15556` | the SW→NE cross-section (overview + windows) → `out/slices/`. Phase 1.1: on the test world |
 | `npm run postcards -- --seed 1 [--only ID,ID] [--phase 1.3] [--commit]` | headless screenshots → `out/postcards/`; `--commit` writes phase-end renders to `docs/postcards/m1/`. Slow: up to ~60 s a shot |

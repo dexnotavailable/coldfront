@@ -1,0 +1,27 @@
+{
+  "id": "TEST-1",
+  "seed": 1,
+  "position": {
+    "x": 65.9076670010966,
+    "y": 5.62,
+    "z": 33.87595031908516
+  },
+  "target": {
+    "x": 44,
+    "y": -0.5,
+    "z": 24
+  },
+  "hours": 17.25,
+  "radius": 160,
+  "validation": {
+    "eyeClear": true,
+    "walkable": true,
+    "centralClear": true,
+    "skyFraction": 0.2348090277777778,
+    "waterFraction": 0.15234375,
+    "treeFraction": 0.01953125,
+    "horizonFraction": 0.31814465513232976,
+    "sunOffsetDegrees": 114.81982153924723
+  },
+  "score": 102.90029482698495
+}

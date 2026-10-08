@@ -1,0 +1,78 @@
+:root {
+  /* surfaces */
+  --ink-0: #0b0d10;
+  --ink-1: #11151a;
+  --panel: rgba(13, 16, 21, 0.92);
+  --panel-hi: rgba(26, 32, 40, 0.96);
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  /* text */
+  --text: #e6eaef;
+  --text-2: #a7b0bc;
+  --text-3: #6b7683;
+  /* accent: cold steel */
+  --steel: #8fb3d9;
+  --steel-2: #5f86b0;
+  /* meaning (always paired with an icon or shape) */
+  --gold: #d8b765;
+  --silver: #c9d1db;
+  --mana: #5fe0dc;
+  --danger: #e2635a;
+  --warn: #e0b056;
+  --ok: #74b98a;
+  /* type */
+  --font-ui: "Inter", system-ui, sans-serif;
+  --font-display: "Cormorant SC", Georgia, serif;
+  --font-kanji: "Noto Serif JP", serif;
+  --fs-12: 12px;
+  --fs-13: 13px;
+  --fs-14: 14px;
+  --fs-16: 16px;
+  --fs-20: 20px;
+  --fs-28: 28px;
+  /* space and radius */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --r-ctl: 4px;
+  --r-panel: 6px;
+  /* control sizes */
+  --h-ctl: 32px; /* buttons, fields, selects; an icon button is this size square */
+  --h-row: 28px; /* list and table rows */
+  --slot: 40px; /* one inventory slot */
+  --slot-lg: 48px; /* one Build palette tile */
+  /* layout sizes */
+  --h-topbar: 40px;
+  --h-bar: 44px; /* the command bar, the map's bar */
+  --w-column: 320px; /* title screen, loading, lobby, menu */
+  --w-modal: 360px; /* confirmations, founding */
+  --w-inspector: 360px; /* the inspector, the list of sites */
+  --w-panel: 440px; /* side panels: Routes, Army, Realm, Trade, Tools */
+  --w-centre: 480px; /* Find, the Warden card's bar */
+  --w-page: 560px; /* settings, an open Ledger entry */
+  --w-palette: 720px;
+  --h-palette: 168px; /* Build and Zones */
+  --w-minimap: 208px;
+  --w-tabs: 200px;
+  --w-list: 280px; /* the Ledger's two left columns */
+  --w-tooltip: 280px;
+  /* shadow and motion */
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --t-press: 60ms;
+  --t-quick: 100ms;
+  --t-drawer: 200ms;
+  --t-fade: 300ms;
+  --t-tip-delay: 300ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1); /* what appears or answers */
+  --ease-in: cubic-bezier(0.64, 0, 0.78, 0); /* what you dismiss */
+  --ease-move: cubic-bezier(
+    0.65,
+    0,
+    0.35,
+    1
+  ); /* what goes from place to place */
+}

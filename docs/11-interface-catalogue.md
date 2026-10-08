@@ -24,7 +24,7 @@ The owner's rule: no filler text. Explanations live in tooltips.
 
 - **A screen shows a title (optional, 3 words at most), its controls and its data. Nothing else.** No subtitle, tagline, intro sentence, helper line under a control, section note, caption, footer or tip. No small uppercase label above a title.
 - **Labels:** 3 words and 24 characters at most. Sentence case. No full stop. A noun for a thing ("Render distance"), a verb for an action ("Demolish").
-- **Tooltips carry the explanation.** One line, 100 characters at most. Say what the control does first; add a cost, limit or condition after a `·`. No full stop. Never repeat the label. The key binding is added by the tooltip component from the **Key** column, so don't type it into the text. If one line can't explain a control, the control is wrong: raise it in the report. An icon's tooltip shows its Label above that line. Three tooltips are assembled from several rows: the building tooltip (D3), the item tooltip (D6) and the skill tooltip (D4).
+- **Tooltips carry the explanation.** One concise explanation, 100 characters at most. It may wrap naturally within the tooltip's prescribed width; it must never be clipped or truncated. Say what the control does first; add a cost, limit or condition after a `·`. No full stop. Never repeat the label. The key binding is added by the tooltip component from the **Key** column, so don't type it into the text. If one short explanation can't explain a control, the control is wrong: raise it in the report. An icon's tooltip shows its Label above that explanation. Three tooltips are assembled from several rows: the building tooltip (D3), the item tooltip (D6) and the skill tooltip (D4).
 - **A control that can't be used is hidden.** It is shown disabled only where its row says so. Its tooltip is then replaced by the reason, which is the `why.*` or `note.*` row that the row names (E2, E3), in the form "No Envoy appointed".
 - **A Field with an invalid value** shows its one-line reason directly under it in `--danger` for as long as it is invalid. This is the only text that ever sits under a control.
 - **Messages** (alerts, notes, errors): 14 words at most. The fact first, then what to do if that isn't obvious. No full stop.
@@ -48,7 +48,7 @@ Use the tokens in `06-ui-art.md` §5 and only these components. Each has one loo
 | Select | one of many | button showing the current value, list opens below, 8 rows before it scrolls |
 | Segmented | one of 2–4 | joined buttons, selected = `--panel-hi` fill and `--text` |
 | Stepper | a whole number | value between `−` and `+`; typing allowed |
-| Field | text entry | `--h-ctl` tall, `--line-strong` border, `--steel` border on focus, `--danger` border while its value is invalid (A2) |
+| Field | text entry | `--h-ctl` tall, `--line-strong` border, `--steel` border on focus, `--danger` border while its value is invalid (A2). Values wider than the field scroll horizontally while editing; never shorten the stored value or add an ellipsis |
 | Tabs | sections of one panel | text tabs, selected = `--text` with a 2 px `--steel` underline |
 | Row | list item | `--h-row` tall, hover = `--panel-hi`, selected = 2 px `--steel` bar at the left |
 | Table | dense lists | numbers right-aligned. A header row (`--text-3`, click to sort) only where the row names its columns (`col.*`, E7) |
@@ -209,7 +209,7 @@ It ships in every build through Milestone 4 so the owner can browse the interfac
 
 **The checklist (a screen is done when all hold):**
 1. Every row for this phase is there, with its exact label. Nothing else is there: no word, icon, line, tint or frame that isn't a row, a component or sample data.
-2. No text is clipped, wrapped by accident or overlapping, in any state, at both sizes and at 150%.
+2. No text is clipped, wrapped by accident or overlapping, in any state, at both sizes and at 150%. An editable Field may intentionally scroll a value wider than itself: Home/End captures must show the complete endpoint characters and the caret, and a value-retention check must prove that no characters were lost. This exception does not apply to labels, readouts or other displayed text.
 3. Edges line up: one left edge per panel, equal gaps, the same control heights.
 4. Each control looks like its component on the Components page, and each disabled control names its reason row.
 5. The layout matches this doc's description of the screen: what is where, and in which order.

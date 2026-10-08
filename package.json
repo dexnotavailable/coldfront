@@ -1,0 +1,35 @@
+{
+  "name": "coldfront",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "check": "tsc -p packages/shared/tsconfig.json --noEmit && tsc -p packages/shared/tsconfig.test.json --noEmit && tsc -p packages/client/tsconfig.json --noEmit && tsc -p packages/tools/tsconfig.json --noEmit && biome check . && npm run ui:lint",
+    "build": "tsx packages/tools/src/build/client.ts",
+    "build:site": "tsx packages/tools/src/build/client.ts --site",
+    "publish:site": "tsx packages/tools/src/build/publish.ts",
+    "dev": "vite --config packages/client/vite.config.ts",
+    "preview": "vite preview --config packages/client/vite.config.ts",
+    "noise:calibrate": "tsx packages/shared/test/calibrate-quantiles.ts",
+    "ui:strings": "tsx --tsconfig packages/tools/tsconfig.json packages/tools/src/ui-strings/index.ts",
+    "ui:lint": "tsx --tsconfig packages/tools/tsconfig.json packages/tools/src/ui-lint/index.ts",
+    "ui:shots": "tsx --tsconfig packages/tools/tsconfig.json packages/tools/src/ui-shots/index.ts",
+    "test:browser": "node --import tsx packages/tools/src/browser-tests/run.ts browser",
+    "postcards": "node --import tsx packages/tools/src/browser-tests/run.ts postcards"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.15",
+    "@types/node": "22.19.15",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "vite": "8.3.4",
+    "vitest": "5.0.3"
+  }
+}

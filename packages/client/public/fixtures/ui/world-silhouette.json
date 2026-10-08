@@ -1,0 +1,58 @@
+{
+  "camera": {
+    "position": {
+      "x": 0,
+      "y": 26.659649062935802,
+      "z": 13.765834472425109
+    },
+    "focus": {
+      "x": 0,
+      "y": 7,
+      "z": 0
+    },
+    "distance": 24.000000000000004,
+    "requestedDistance": 24,
+    "yaw": 0,
+    "tilt": 55,
+    "chosenTilt": 55,
+    "cut": null,
+    "fov": 40
+  },
+  "body": {
+    "x": 0,
+    "y": 6,
+    "z": 0,
+    "vx": 0,
+    "vy": -0.0784,
+    "vz": 0,
+    "grounded": true,
+    "swimming": false,
+    "sneaking": false,
+    "sprinting": false,
+    "flying": false,
+    "walkDistance": 0,
+    "stepRise": 0,
+    "yaw": 3.1413724238815477,
+    "headYaw": 3.141592653589793
+  },
+  "target": null,
+  "ghost": null,
+  "loaded": 59,
+  "queued": 0,
+  "ready": true,
+  "displayTimeMs": 1199.9550000000004,
+  "editCount": 15,
+  "lastAction": null,
+  "lastEdit": {
+    "x": 1,
+    "y": 10,
+    "z": 1,
+    "block": 2
+  },
+  "worldTimeSeconds": 1201.2999499999999,
+  "rendered": {
+    "outline": false,
+    "silhouette": true,
+    "ghost": false
+  }
+}

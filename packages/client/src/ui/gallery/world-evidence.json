@@ -1,0 +1,357 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "outline-ghost",
+      "rows": ["hud.outline", "hud.ghost"],
+      "image": "fixtures/ui/world-outline-ghost.jpg",
+      "imageSha256": "ffff24f6bba0cd6eae1b3544a55dd59f876d7951e32e15e98ca2971c3c295d9b",
+      "telemetry": "fixtures/ui/world-outline-ghost.json",
+      "telemetrySha256": "f130475b40bac72365963475b94f5384c1eefa8ffd69578f52d0aa4e645502fb",
+      "runReceipt": "fixtures/ui/world-run.json",
+      "runReceiptSha256": "9f2ef60ff6a26db4afeccf2f948f4bbb112d6e4468eed46b92bf26f006837f4b",
+      "sources": [
+        {
+          "path": "packages/client/src/dev/harness.ts",
+          "sha256": "29a94e707f83ef5e6896cfe32480d88813281b75e36bc4fba349c22aaaa94ae2"
+        },
+        {
+          "path": "packages/client/src/dev/test-scenes.ts",
+          "sha256": "1ab3207179b29a58d332e8e2d6c8812382e3d151d83110cb7068e0061f5409c2"
+        },
+        {
+          "path": "packages/client/src/engine/avatar.ts",
+          "sha256": "2f3dd2b96d98fb2fcea620a3d6557bc5dd41078157f0519a117f9e2d6c829242"
+        },
+        {
+          "path": "packages/client/src/engine/chunk-store.ts",
+          "sha256": "b08b5c193057b95aae4b38189fc96dd8780efe3e57a1133683d1a9a08beb2e42"
+        },
+        {
+          "path": "packages/client/src/engine/cut-cap.ts",
+          "sha256": "dec444d1ebb51e99dab26a2b3d02bc1122a68a6d71995b5ecc3f6b071e6cbf4a"
+        },
+        {
+          "path": "packages/client/src/engine/effects.ts",
+          "sha256": "d3483a4f1c7a1caa8b62dc5882d437dd2451b206da873ccf1106e887023cfe48"
+        },
+        {
+          "path": "packages/client/src/engine/motion.ts",
+          "sha256": "a1564edb03f7314d2dff2feb1addd5aa1d5ed39f3d459bb000b26638cf37ea28"
+        },
+        {
+          "path": "packages/client/src/engine/renderer.ts",
+          "sha256": "e818d25a78785b51765e82f7b25bc1e34ce2b874de8bbf4a4974b806d9c4f5d1"
+        },
+        {
+          "path": "packages/client/src/engine/terrain-material.ts",
+          "sha256": "c093ded495088ccd11f3a45e41043f2e27752fd3fdf7d4cd8603251711ac5677"
+        },
+        {
+          "path": "packages/client/src/engine/terrain-worker.ts",
+          "sha256": "f3a93c677535c4a15362214bc03c20669e1589679df0c6ec9c89523163ba00e1"
+        },
+        {
+          "path": "packages/client/src/engine/worker-pool.ts",
+          "sha256": "2eaaee4131b932e32c06a331e59252ebbd8b230caadf68f9c656ad291531b48a"
+        },
+        {
+          "path": "packages/client/src/engine/worker-protocol.ts",
+          "sha256": "21c979885b70501dd94238db355a700b3e95663177c75b4c6958139ff8281a29"
+        },
+        {
+          "path": "packages/client/src/game/bindings.ts",
+          "sha256": "ddb6545e4286a4a295ab06e4e4172dc0926ac8a5aad2ecc87f87a5ba34500b83"
+        },
+        {
+          "path": "packages/client/src/game/camera.ts",
+          "sha256": "98b67ff9c6438062deb19a4969d108c3dd93c6f64b85c27c636c6958490f7c2f"
+        },
+        {
+          "path": "packages/client/src/game/controller.ts",
+          "sha256": "9f3b749f9e460c962f4678b121ed0a94fcba3b9480cd31a653141c5053d9a0ea"
+        },
+        {
+          "path": "packages/client/src/game/create-game.ts",
+          "sha256": "270d4768639cdc59da8da3740dc28d6c433089859d7ecb1a49b15bc4d4d17547"
+        },
+        {
+          "path": "packages/client/src/game/input.ts",
+          "sha256": "8415b144522be77c200c6e5d713804d59e39524bccf9300b87a2f2b2c7eac22d"
+        },
+        {
+          "path": "packages/client/src/game/persistence.ts",
+          "sha256": "11c66d5f49740fa4f12e7542b7d419fabee896a0bb8a7a8c06e769329a61c34f"
+        },
+        {
+          "path": "packages/client/src/game/raycast.ts",
+          "sha256": "a4e3dc19d1baa7a75cf436a2fdf3975d99fc4d0cfc9ddd7ddf7f55e3dff61df9"
+        },
+        {
+          "path": "packages/shared/src/blocks/registry.ts",
+          "sha256": "bf0e9d4b480f67949101e1fe91d415963c597939f77f3671bcab8e165f585fee"
+        },
+        {
+          "path": "packages/shared/src/blocks/textures/recipes.ts",
+          "sha256": "3f39718fde0ef538fb112e684e26afea8bf3ea6b816455f0a732193a0112d27e"
+        },
+        {
+          "path": "packages/shared/src/index.ts",
+          "sha256": "10f6abc35436436c02a0d427991e86f5c1b8cf76da6751ab3e7d414113381089"
+        },
+        {
+          "path": "packages/shared/src/lighting/flood.ts",
+          "sha256": "56233970dd05ead94a491feb01829578534502dcafef08e28498e62cbce0eb5a"
+        },
+        {
+          "path": "packages/shared/src/math/det.ts",
+          "sha256": "c781242babe43c8fa1ee55c3a320e04d8d619c0e60628cbff09b66030f5e52a6"
+        },
+        {
+          "path": "packages/shared/src/math/hash.ts",
+          "sha256": "e26474927d6f4ba087e5f1c2502736dadbac1f1b0f6c0c6cdcf85024cec1f11f"
+        },
+        {
+          "path": "packages/shared/src/meshing/cap.ts",
+          "sha256": "6ecc01a82d1e7d66747810d4cab55bfff116c08a12a46051bfb3041ebb75f05c"
+        },
+        {
+          "path": "packages/shared/src/meshing/greedy.ts",
+          "sha256": "4cff76bec4a05b30baa314ebf749310e950fd5f77608f89667a39e01df8afea3"
+        },
+        {
+          "path": "packages/shared/src/noise/fractal.ts",
+          "sha256": "c554f207189ee61b873269646cbafa8117b5e4f2070d5f4d2a64ec6fffa80338"
+        },
+        {
+          "path": "packages/shared/src/noise/gradients.ts",
+          "sha256": "9d932d42b51bf651188b4a339cf14ae42b458bdbee85ebe36a9474f261881b7f"
+        },
+        {
+          "path": "packages/shared/src/noise/opensimplex2.ts",
+          "sha256": "5b15190f41aef2b80bbda47c0e5d4f076d177757e9c9d1049e5054ff826564ee"
+        },
+        {
+          "path": "packages/shared/src/noise/opensimplex2s.ts",
+          "sha256": "abfcc9e6e44664b7c3fd83e7c5e209d98fcbb70a288f1271b5c4408206ab0c82"
+        },
+        {
+          "path": "packages/shared/src/noise/quantiles.generated.ts",
+          "sha256": "882782eeaf4bb3479f707e035aef459ac8a108ca9f7f02e71f5dd78781f4502c"
+        },
+        {
+          "path": "packages/shared/src/noise/quantiles.ts",
+          "sha256": "392db67b3d46dfb753863f7d8ed743f6d9909378c145f0628c0042cae245fc9d"
+        },
+        {
+          "path": "packages/shared/src/world/constants.ts",
+          "sha256": "973ee99721efdf211ed69934b9cbad7b13bb0ef1d4c8e5ebfa73748cbea31869"
+        },
+        {
+          "path": "packages/shared/src/world/coordinates.ts",
+          "sha256": "5a5bb19808aaa0a27c2cf819068ab22676a7acd46bd55aa9e2e5ba0da8efc982"
+        },
+        {
+          "path": "packages/shared/src/worldgen/chunk.ts",
+          "sha256": "9d1326bdf38ba2af4f639597d09c11ae08fe0a482e623e890da34aaa2f728c09"
+        },
+        {
+          "path": "packages/shared/src/worldgen/test-world.ts",
+          "sha256": "ae0477e8edf397c7f17ab2bb8ed9be3d50d8a93fde211a192134be80787daf4b"
+        },
+        {
+          "path": "packages/shared/src/worldgen/version.ts",
+          "sha256": "da4ed8692e2ae8466b45b40132ae6f533c8855016dd77bd964257e0d34e1fce5"
+        }
+      ],
+      "encoding": {
+        "sourceFormat": "png",
+        "sourceImage": "out/engine/hud-repair/outline-ghost.png",
+        "sourceImageSha256": "3c1bf083820f9c62306c3f52430357659d373190b601871ed97f9c00f897c32c",
+        "encoder": "sharp",
+        "encoderVersion": "0.35.5",
+        "format": "jpeg",
+        "quality": 85,
+        "width": 1280,
+        "height": 720,
+        "resized": false
+      }
+    },
+    {
+      "id": "silhouette",
+      "rows": ["hud.silhouette"],
+      "image": "fixtures/ui/world-silhouette.jpg",
+      "imageSha256": "8ddafcb9295e81908882fde1f73a85d532b85c7b0323e9328685aa93de5899aa",
+      "telemetry": "fixtures/ui/world-silhouette.json",
+      "telemetrySha256": "bee452c56232891dd6eb9675764a955948faecfc38bbd29ce197cc723400fc45",
+      "runReceipt": "fixtures/ui/world-run.json",
+      "runReceiptSha256": "9f2ef60ff6a26db4afeccf2f948f4bbb112d6e4468eed46b92bf26f006837f4b",
+      "sources": [
+        {
+          "path": "packages/client/src/dev/harness.ts",
+          "sha256": "29a94e707f83ef5e6896cfe32480d88813281b75e36bc4fba349c22aaaa94ae2"
+        },
+        {
+          "path": "packages/client/src/dev/test-scenes.ts",
+          "sha256": "1ab3207179b29a58d332e8e2d6c8812382e3d151d83110cb7068e0061f5409c2"
+        },
+        {
+          "path": "packages/client/src/engine/avatar.ts",
+          "sha256": "2f3dd2b96d98fb2fcea620a3d6557bc5dd41078157f0519a117f9e2d6c829242"
+        },
+        {
+          "path": "packages/client/src/engine/chunk-store.ts",
+          "sha256": "b08b5c193057b95aae4b38189fc96dd8780efe3e57a1133683d1a9a08beb2e42"
+        },
+        {
+          "path": "packages/client/src/engine/cut-cap.ts",
+          "sha256": "dec444d1ebb51e99dab26a2b3d02bc1122a68a6d71995b5ecc3f6b071e6cbf4a"
+        },
+        {
+          "path": "packages/client/src/engine/effects.ts",
+          "sha256": "d3483a4f1c7a1caa8b62dc5882d437dd2451b206da873ccf1106e887023cfe48"
+        },
+        {
+          "path": "packages/client/src/engine/motion.ts",
+          "sha256": "a1564edb03f7314d2dff2feb1addd5aa1d5ed39f3d459bb000b26638cf37ea28"
+        },
+        {
+          "path": "packages/client/src/engine/renderer.ts",
+          "sha256": "e818d25a78785b51765e82f7b25bc1e34ce2b874de8bbf4a4974b806d9c4f5d1"
+        },
+        {
+          "path": "packages/client/src/engine/terrain-material.ts",
+          "sha256": "c093ded495088ccd11f3a45e41043f2e27752fd3fdf7d4cd8603251711ac5677"
+        },
+        {
+          "path": "packages/client/src/engine/terrain-worker.ts",
+          "sha256": "f3a93c677535c4a15362214bc03c20669e1589679df0c6ec9c89523163ba00e1"
+        },
+        {
+          "path": "packages/client/src/engine/worker-pool.ts",
+          "sha256": "2eaaee4131b932e32c06a331e59252ebbd8b230caadf68f9c656ad291531b48a"
+        },
+        {
+          "path": "packages/client/src/engine/worker-protocol.ts",
+          "sha256": "21c979885b70501dd94238db355a700b3e95663177c75b4c6958139ff8281a29"
+        },
+        {
+          "path": "packages/client/src/game/bindings.ts",
+          "sha256": "ddb6545e4286a4a295ab06e4e4172dc0926ac8a5aad2ecc87f87a5ba34500b83"
+        },
+        {
+          "path": "packages/client/src/game/camera.ts",
+          "sha256": "98b67ff9c6438062deb19a4969d108c3dd93c6f64b85c27c636c6958490f7c2f"
+        },
+        {
+          "path": "packages/client/src/game/controller.ts",
+          "sha256": "9f3b749f9e460c962f4678b121ed0a94fcba3b9480cd31a653141c5053d9a0ea"
+        },
+        {
+          "path": "packages/client/src/game/create-game.ts",
+          "sha256": "270d4768639cdc59da8da3740dc28d6c433089859d7ecb1a49b15bc4d4d17547"
+        },
+        {
+          "path": "packages/client/src/game/input.ts",
+          "sha256": "8415b144522be77c200c6e5d713804d59e39524bccf9300b87a2f2b2c7eac22d"
+        },
+        {
+          "path": "packages/client/src/game/persistence.ts",
+          "sha256": "11c66d5f49740fa4f12e7542b7d419fabee896a0bb8a7a8c06e769329a61c34f"
+        },
+        {
+          "path": "packages/client/src/game/raycast.ts",
+          "sha256": "a4e3dc19d1baa7a75cf436a2fdf3975d99fc4d0cfc9ddd7ddf7f55e3dff61df9"
+        },
+        {
+          "path": "packages/shared/src/blocks/registry.ts",
+          "sha256": "bf0e9d4b480f67949101e1fe91d415963c597939f77f3671bcab8e165f585fee"
+        },
+        {
+          "path": "packages/shared/src/blocks/textures/recipes.ts",
+          "sha256": "3f39718fde0ef538fb112e684e26afea8bf3ea6b816455f0a732193a0112d27e"
+        },
+        {
+          "path": "packages/shared/src/index.ts",
+          "sha256": "10f6abc35436436c02a0d427991e86f5c1b8cf76da6751ab3e7d414113381089"
+        },
+        {
+          "path": "packages/shared/src/lighting/flood.ts",
+          "sha256": "56233970dd05ead94a491feb01829578534502dcafef08e28498e62cbce0eb5a"
+        },
+        {
+          "path": "packages/shared/src/math/det.ts",
+          "sha256": "c781242babe43c8fa1ee55c3a320e04d8d619c0e60628cbff09b66030f5e52a6"
+        },
+        {
+          "path": "packages/shared/src/math/hash.ts",
+          "sha256": "e26474927d6f4ba087e5f1c2502736dadbac1f1b0f6c0c6cdcf85024cec1f11f"
+        },
+        {
+          "path": "packages/shared/src/meshing/cap.ts",
+          "sha256": "6ecc01a82d1e7d66747810d4cab55bfff116c08a12a46051bfb3041ebb75f05c"
+        },
+        {
+          "path": "packages/shared/src/meshing/greedy.ts",
+          "sha256": "4cff76bec4a05b30baa314ebf749310e950fd5f77608f89667a39e01df8afea3"
+        },
+        {
+          "path": "packages/shared/src/noise/fractal.ts",
+          "sha256": "c554f207189ee61b873269646cbafa8117b5e4f2070d5f4d2a64ec6fffa80338"
+        },
+        {
+          "path": "packages/shared/src/noise/gradients.ts",
+          "sha256": "9d932d42b51bf651188b4a339cf14ae42b458bdbee85ebe36a9474f261881b7f"
+        },
+        {
+          "path": "packages/shared/src/noise/opensimplex2.ts",
+          "sha256": "5b15190f41aef2b80bbda47c0e5d4f076d177757e9c9d1049e5054ff826564ee"
+        },
+        {
+          "path": "packages/shared/src/noise/opensimplex2s.ts",
+          "sha256": "abfcc9e6e44664b7c3fd83e7c5e209d98fcbb70a288f1271b5c4408206ab0c82"
+        },
+        {
+          "path": "packages/shared/src/noise/quantiles.generated.ts",
+          "sha256": "882782eeaf4bb3479f707e035aef459ac8a108ca9f7f02e71f5dd78781f4502c"
+        },
+        {
+          "path": "packages/shared/src/noise/quantiles.ts",
+          "sha256": "392db67b3d46dfb753863f7d8ed743f6d9909378c145f0628c0042cae245fc9d"
+        },
+        {
+          "path": "packages/shared/src/world/constants.ts",
+          "sha256": "973ee99721efdf211ed69934b9cbad7b13bb0ef1d4c8e5ebfa73748cbea31869"
+        },
+        {
+          "path": "packages/shared/src/world/coordinates.ts",
+          "sha256": "5a5bb19808aaa0a27c2cf819068ab22676a7acd46bd55aa9e2e5ba0da8efc982"
+        },
+        {
+          "path": "packages/shared/src/worldgen/chunk.ts",
+          "sha256": "9d1326bdf38ba2af4f639597d09c11ae08fe0a482e623e890da34aaa2f728c09"
+        },
+        {
+          "path": "packages/shared/src/worldgen/test-world.ts",
+          "sha256": "ae0477e8edf397c7f17ab2bb8ed9be3d50d8a93fde211a192134be80787daf4b"
+        },
+        {
+          "path": "packages/shared/src/worldgen/version.ts",
+          "sha256": "da4ed8692e2ae8466b45b40132ae6f533c8855016dd77bd964257e0d34e1fce5"
+        }
+      ],
+      "encoding": {
+        "sourceFormat": "png",
+        "sourceImage": "out/engine/hud-repair/silhouette.png",
+        "sourceImageSha256": "1663606e8dc3f796b510775bf82130b45a4edab158f431c08ca598df03f8722b",
+        "encoder": "sharp",
+        "encoderVersion": "0.35.5",
+        "format": "jpeg",
+        "quality": 85,
+        "width": 1280,
+        "height": 720,
+        "resized": false
+      }
+    }
+  ]
+}
