@@ -70,7 +70,7 @@ Nothing else:
 - no other `Math` member (`hypot`, `sin`, `pow`, `log2`, … all vary between engines)
 - no `Date`, `performance`, `crypto`, `Intl`, `localeCompare` or `toLocale*`
 
-`packages/shared/src/math/det.ts` provides `detPow` (via exp2/log2 minimax, relative error ≤ 1e−7), `detLog`, `detExp` and `detSinCos`, all with tests. A Vitest test scans `packages/shared/src` for forbidden tokens and fails the build if it finds any. It scans TypeScript tokens with comments and strings stripped, so a JSDoc `/**` isn't mistaken for `**`.
+`packages/shared/src/math/det.ts` provides `detPow` (via tested range-reduced exp2/log2 polynomials, relative error ≤ 1e−7 over the documented finite-normal terrain-shaping domain), `detLog`, `detExp` and `detSinCos`, all with tests. The first implementation uses degree-16/19 series rather than claiming an unverified minimax fit; `packages/shared/README.md` records its domains, empirical errors and special-value tests. A Vitest test scans `packages/shared/src` for forbidden tokens and fails the build if it finds any. It scans TypeScript tokens with comments and strings stripped, so a JSDoc `/**` isn't mistaken for `**`.
 
 Coding rules for deterministic code:
 - **Randomness:** only from integer hashing, with fixed-arity `hash2(seed, a)` … `hash5(seed, a, b, c, d)` built on `Math.imul` (fixed arity avoids allocating arrays), plus `rand01(h)`.

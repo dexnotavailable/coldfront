@@ -9,7 +9,7 @@
 
 | Phase | Status | Notes |
 |---|---|---|
-| 1.1 Foundations | In progress | Screenshot proof first; deterministic foundation, then the catalogue pipeline before screens |
+| 1.1 Foundations | In progress | Step 1 accepted: 82 tests, check and shared build pass; UI primitive gate 9/9; engine integration underway |
 | 1.2 World plan | ☐ | |
 | 1.3 Terrain toolkit + Ibara | ☐ | |
 | 1.4 Far terrain | ☐ | |
@@ -36,6 +36,12 @@ Source is `D:\Dex\Projects\coldfront`, cloned from `dexnotavailable/coldfront` a
 **Hosting integration:** [dex.place PR #2](https://github.com/dexnotavailable/dex.place/pull/2) merged and deployed as `453aa632a58a9d21490710a7dfcd4aa6687822f3`. Its isolated `/coldfront/` mount passed all 50 origin/deployer tests, 127 site tests, TypeScript checks and the site production build. Public readback confirmed that SHA, a query-preserving 308 redirect, both isolation headers, and healthy site status. It serves only a separately published game distribution; the game is not playable yet and `/coldfront/` correctly returns 404 until one is published. Existing site and SP13 routes keep their headers. The normal site puller owns deployment; no extra server, tunnel or scheduled task was created.
 
 **Implementation lanes:** Astra is implementing the deterministic shared foundation, the catalogue pipeline/screens, and the engine/game in three isolated copies. They share explicit typed contracts and disjoint file ownership. Integration accepts the shared foundation before the UI/engine. The UI tooling must pass on primitives before screens are authored. The phase-1.1 catalogue inventory is 91 rows: 41 controls, 28 texts, 22 bindings.
+
+**Step 1 accepted after recovery:** the canonical checkout passes all 82 tests (including nine distributions sampled at one million points each), TypeScript/Biome checks and the shared build. An independent Astra review found a destructuring escape in the determinism guard; seven failing regression cases proved it, the guard was corrected, and the reviewer closed the finding. The guard also rejects reflection descriptors and reserves forbidden API keys in object literals. The exact pinned fast OpenSimplex2 3D export retains its documented upstream tie-plane limitation; the production 3D/warp path uses the separately tested continuous OpenSimplex2S kernel. Pointwise test terrain, reusable Float64 halos, pond and tree seam checks are in place. This checkpoint still has no client build or gameplay acceptance.
+
+**Math method:** tested range-reduced degree-16/19 series replace the spec's unverified minimax assumption, preserving the error requirement. Measured maximum power relative error is about 4.09e-14 on Node 22 against the 1e-7 bar. Exact domains, API layouts, sampling provenance and held-out coverage are recorded in `packages/shared/README.md`; terrain §3 now names the implemented method.
+
+**UI prerequisite:** all nine corrected primitive captures passed and were opened by Astra, after preserving three earlier tooltip-wrap failures. Decision 100 resolves the conflicting fixed-width/one-line tooltip rules without changing any row wording or token. Game screens are now being built; their acceptance is still pending.
 
 ## Rubric scores (latest; score of record = min(self, blind))
 | Postcard | Seed | Self | Blind | Record | Critique |
