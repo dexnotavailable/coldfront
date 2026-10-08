@@ -1,15 +1,15 @@
 # Progress log
 
 **Current milestone:** 1 · The World
-**Current phase:** 1.1 · Foundations (in progress)
-**Playable link:** [dex.place/coldfront](https://dex.place/coldfront/) · [Interface gallery](https://dex.place/coldfront/?gallery) · [First playable PR #2](https://github.com/dexnotavailable/coldfront/pull/2). The unrelated `coldfront.pages.dev` site is not this game's preview.
+**Current phase:** 1.1 · Foundations complete; 1.2 · World plan next
+**Playable link:** [dex.place/coldfront](https://dex.place/coldfront/) · [Interface gallery](https://dex.place/coldfront/?gallery) · [Foundation completion PR #3](https://github.com/dexnotavailable/coldfront/pull/3). Live game commit: `d4c4c49`. The unrelated `coldfront.pages.dev` site is not this game's preview.
 **Agent guide:** `AGENTS.md` (Codex and Claude Code both follow it). **Interface:** only what `docs/11-interface-catalogue.md` lists.
 
 ## Status board
 
 | Phase | Status | Notes |
 |---|---|---|
-| 1.1 Foundations | Final validation | 190 tests, check/build and complete UI lint pass locally; atlas/slice/goldens/bench and save fixes accepted. Clean checkout and all-three-browser CI for this increment are next. |
+| 1.1 Foundations | ✓ Complete, with recorded limits | 190 tests, check/build, clean Node22 build, complete UI lint and all-three-browser CI pass; accepted images/tools/save fixes published as d4c4c49. Public-site browser launch remains unavailable. |
 | 1.2 World plan | ☐ | |
 | 1.3 Terrain toolkit + Ibara | ☐ | |
 | 1.4 Far terrain | ☐ | |
@@ -73,13 +73,15 @@ The release is a creative test world. Kingdoms, multiplayer, civilization simula
 
 The kernel benchmark ran alone on Node 24.18.0 / Windows / Ryzen 9 7950X, with five discarded warmups and three passes over 50 distinct LOD0 surface chunks and 20 LOD1 chunks (150 and 60 measured samples). It times the actual shared generator, 96³-neighbourhood skylight solve and mesher, with preparation and extraction separate. Source, harness and sample-set hashes plus all raw measurements are retained in its receipt. Lighting and meshing misses remain work for phase 1.10; feature-dense regions and far tiles do not exist yet. Software-renderer postcard timing is not hardware FPS. Quantile tests recompute nine million samples as a separate correctness check.
 
-**Step 4 tooling:** 150 deterministic chunk baselines now cover three seeds, LOD0/1, signed coordinates, vertical bands and world edges. Node, Chromium 153 and WebKit 26.6 each match all 150; Firefox is absent locally and will be required with the other two engines by CI. An independent source review found no consequential golden/benchmark issue. The 2048² test-world height atlas took 877 ms to sample; the full SW→NE overview took 29 ms. All ten atlas/slice raw and annotated images were opened by their author, and the coordinator opened the four main annotated views. They show actual test-world height/material data, with matching metre scales and source hashes. They do not depict the future WorldPlan or cavern layout.
+**Step 4 tooling:** 150 deterministic chunk baselines cover three seeds, LOD0/1, signed coordinates, vertical bands and world edges. Node, local Chromium 153 and local WebKit 26.6 match all 150. GitHub CI independently passed 150/150 in each of Chromium, Firefox and WebKit; Firefox is absent locally. An independent source review found no consequential golden/benchmark issue. The 2048² test-world height atlas took 877 ms to sample; the full SW→NE overview took 29 ms. All ten atlas/slice raw and annotated images were opened by their author, and the coordinator opened the four main annotated views. They show actual test-world height/material data, with matching metre scales and source hashes. They do not depict the future WorldPlan or cavern layout.
+
+**Phase acceptance:** canonical `npm test` (190), `npm run check`, `npm run build`, `ui:lint -- --complete`, the final `postcards -- --seed 1 --only TEST-1 --commit`, and a clean Node 22.23.3/npm 10.9.8 `npm ci` + build all pass. The final TEST-1 and one-tile HTML-grid contact sheet were opened; the postcard retains its accepted 16/20 score. The new `d4c4c49` site build was published through the checksummed publisher, and public readback confirmed that exact release, unchanged save-cache identity, HTTP200 and COOP/COEP headers. [CI evidence](https://github.com/dexnotavailable/coldfront/actions/runs/37818190065) includes all three actual browser golden passes.
 
 ## Known issues and next
 
 - First playable commit f8f9d95 is pushed and published at [dex.place/coldfront](https://dex.place/coldfront/), with [PR #2](https://github.com/dexnotavailable/coldfront/pull/2) merged as the working step-3 increment. GitHub CI and the clean Node 22.23.3/npm 10.9.8 checkout build pass. Public version, HTTP200 and isolation headers are verified.
-- The combined checkout passes 190 tests, strict check, production build and complete UI lint. Finish the clean Node 22 checkout, full three-browser CI, and publication of this increment.
-- Save/transition corrections are accepted: 11 targeted regressions, independent source review, and local production checks of a visible placed block through immediate Quit/Play and reload/Play. Reads and writes are ordered; failed reads cannot erase prior saves, storage errors do not poison later writes, and Clear cannot race new edits or another world. Queued Play readiness and postcard Escape routing have regressions too. Existing save keys/schema and worldgen cache identity are unchanged. The first live build still contains the old edge cases until this increment is published.
+- Next: phase 1.2 WorldPlan, ring/sector boundaries, drainage, sites and first-pass regional terrain, followed by the catalogue's 1.2 map/teleport screens. Record its detailed approach before implementing.
+- Save/transition corrections are published in d4c4c49: 11 targeted regressions, independent source review, and local production checks of a visible placed block through immediate Quit/Play and reload/Play. Reads and writes are ordered; failed reads cannot erase prior saves, storage errors do not poison later writes, and Clear cannot race new edits or another world. Queued Play readiness and postcard Escape routing have regressions too. Existing save keys/schema and worldgen cache identity are unchanged.
 - GPU uploads currently cap eight chunk results per frame, rather than eight individual meshes. CPU mesh arrays remain for context restoration; freeing them after upload is still pending. Postcards currently record total duration, not aggregated worker-stage durations.
 - Local production browser checks prove exact seed restoration and retained block edits after reload. Automatic approval review rejected launching the public-site browser check without giving a detailed reason. No public browser started; public gameplay verification remains unavailable. That action was not retried through another route.
 - The build reports a large main chunk (about 873 kB, 218 kB gzip); optimization follows measurements. Biome has 27 warnings and two information notes, with no errors. Most warnings are controlled test/gallery assertions and motion CSS overrides.
@@ -98,6 +100,8 @@ Local development: run **npm ci**, then **npm run dev** and open the printed add
 
 ## Session log (newest first)
 *(Date, phase, summary, PR link.)*
+
+- **2026-10-09 · 1.1 complete · [PR #3](https://github.com/dexnotavailable/coldfront/pull/3).** Shipped real atlas/slice tools, 150-case browser goldens and measured benchmarks; fixed save/lifecycle races and regenerated source-bound HUD/postcard proof. 190 tests, checks/build, clean Node22 build and Chromium/Firefox/WebKit CI all pass. Live release d4c4c49 verified by public metadata/headers. Public gameplay automation remains unavailable after the recorded approval-review rejection; local production save/reload behavior passed.
 
 - **2026-10-08 · 1.1 steps 1–3 · [PR #2](https://github.com/dexnotavailable/coldfront/pull/2), merged as 554f71b.** Recovered after the PC crash, accepted deterministic foundation and first engine/interface, published f8f9d95 at dex.place/coldfront. Local production play and inspected screenshots pass; 155 tests, check, build, clean Node22 build and GitHub CI pass. Public HTTP/version/isolation pass; public browser launch was rejected by automatic approval review and remains unverified. Continuing atlas/slice/goldens/bench in isolated Astra lanes.
 
