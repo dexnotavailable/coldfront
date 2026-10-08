@@ -335,8 +335,8 @@ function checkTiming(s, bad) {
     if (cost) bad(s, `a ${slot} has no cost`);
     return;
   }
-  if (!reach || !/^(Self|Target|Point|Direction|Aura|Blocks)\b/.test(reach)) {
-    bad(s, `reach must start with Self, Target, Point, Direction, Aura or Blocks (13 §11.4): "${reach}"`);
+  if (!reach || !/^(Self|Target|Point|Direction|Aura|Blocks|Jurisdiction)\b/.test(reach)) {
+    bad(s, `reach must start with Self, Target, Point, Direction, Aura, Blocks or Jurisdiction (13 §11.4): "${reach}"`);
   }
   if (slot === 'Ultimate') {
     if (ready !== 'Resolve') bad(s, 'an Ultimate is ready "Resolve"');
@@ -372,7 +372,7 @@ export function ladder() {
     const end = 12 + g;
     const might = 1 + 0.5 * (g - 1);
     const health = (60 + 4 * end + 6 * (level - 1)) * might;
-    const armour = 10 + 30 * g;
+    const armour = 10 + 20 * g;
     const weapon = 10 + 10 * g;
     const prof = Math.min(100, 10 + 15 * g);
     const increased = 3 * (str - 10) + 0.4 * prof + level + 50 * (g - 1) + quality[k];
