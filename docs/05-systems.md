@@ -57,9 +57,9 @@ Milestones 2–8 build these systems. Milestone 1 builds none of them, but its a
 
 Every screen, control and key of both modes is listed in `11-interface-catalogue.md`.
 
-You see live information only inside your connected network coverage. Outside it is fog, with stale last-seen markers.
+You see only what your people see (`16-sight.md`), and you see it live only inside your connected network coverage. Outside it, what they saw comes as news and stays as last-seen marks.
 
-**Possess mode plays a unit.** The owner's rules (8 October 2026): there is no first-person view; a played unit moves, digs, builds and fights like a Minecraft player, seen from above (**Overhead**) or over its shoulder (**Shoulder**), and F5 switches between them (`13-units-classes-power.md` §3, `11-interface-catalogue.md` C4).
+**Possess mode plays a unit.** The owner's rules (8 October 2026): a played unit moves, digs, builds and fights like a Minecraft player, seen from above (**Overhead**, the Command camera locked on it), never in first person or over its shoulder, and it looks where the cursor points (`13-units-classes-power.md` §3, `11-interface-catalogue.md` C4).
 - Minecraft's controls (`11-interface-catalogue.md` B3–B4) and movement feel: walk, sprint, sneak, jump, swim, climb, fall damage, the same player box.
 - Breaking a block takes time set by the block's hardness and the tool in hand; placing uses real items from the unit's inventory.
 - Attack, use, interact and manage inventory as in Minecraft; shields block with the right mouse button. The unit's skills sit on Z, X, C, V, R and G (`13-units-classes-power.md` §3.6, §11).
@@ -86,22 +86,22 @@ The network is your eyes, voice and reach. **It defines your territory.**
 |---|---|---|---|
 | The king himself | 96 m | — (always counts) | — |
 | Keep or hall (the capital's keep is the root) | 160 m | overlapping coverage | staffed |
-| Watchtower | 128 m (sight 160 m) | overlapping coverage | 1 watcher |
+| Watchtower | 128 m | overlapping coverage | 1 watcher, who sees all round from its top (`16-sight.md` §6) |
 | Signal tower | 160 m | signal towers within 1.5 km, line of sight | 2 operators, fuel for fires |
 | Mana relay | 256 m | relays within 4 km | moonsilver, a mage's attunement, mana |
 | Rider post (stable) | 96 m | no live link; dispatches riders | horses, fodder |
 
 *(tune)*
 
-- **Connected coverage.** A node counts only while a chain of links connects it to your capital: overlapping coverage between neighbouring nodes, signal-tower links, or relay links. The king's own 96 m bubble always counts. Inside connected coverage you see live, command and possess.
+- **Connected coverage.** A node counts only while a chain of links connects it to your capital: overlapping coverage between neighbouring nodes, signal-tower links, or relay links. The king's own 96 m bubble always counts. Inside connected coverage, what your people see reaches you live, and you command and possess.
 - **Cut-off areas.** When a link breaks (a tower destroyed, captured or unstaffed, or a relay out of mana), everything beyond it **goes dark**. You're left with last-seen markers and rider reports, and you can't possess anyone there until it's reconnected.
 - **Territory.** Where two kingdoms' connected coverage overlaps, the nearer node controls the building rights. **Capturing a node** means holding it with your units, unopposed, for 60 s. It then joins the captor's network (if it's connected to it), and its land flips.
 - **News.** Every event that needs a reaction creates a news item at its origin: an enemy sighted, a settlement attacked, a caravan lost, a king's order.
   - Inside connected coverage, news moves along the links: instantly across overlapping local nodes, ~20 s per signal-tower hop (fog, night and storms cut range), near-instantly across relays (each message costs mana; mana storms disrupt them).
   - Between places that aren't connected (early game, frontier outposts, cut-off areas), news travels by **rider**, physically along roads (~10 m/s on roads, 6 off-road), changing horses at rider posts. A rider can be killed, and then the news is lost.
-- **Reactions wait for news.** Garrisons, officials and the offline king react only when news arrives. Units react instantly to what they *see* themselves.
+- **Reactions wait for news.** Garrisons, officials and the offline king react only when news arrives. Units react instantly to what they *see* and hear themselves (`16-sight.md` §7).
 - **Orders travel outward** the same way: along the links inside connected coverage, and by rider to a place that is cut off. The UI shows each order in transit with an ETA (`11-interface-catalogue.md` A4).
-- **Messenger raids are a core tactic:** cut a tower, run down the riders, and the defender reacts too late. You see enemy riders when they're inside your coverage.
+- **Messenger raids are a core tactic:** cut a tower, run down the riders, and the defender reacts too late. You see enemy riders when your people see them inside your coverage.
 
 ---
 
@@ -398,7 +398,7 @@ These raise a target's attraction toward you. Once their own loyalty falls low e
   - Destroying outposts shrinks it.
 - **Roamers:** war-bands wander inside and just beyond their territory and attack weak targets.
 - **Scouts** wander wider, into player land.
-  1. A scout sees your structures or units.
+  1. A scout sees your structures or units (by the rules of `16-sight.md`).
   2. It walks back to the nearest muster or fort to report.
   3. The faction raises its awareness of that target.
   4. A war party sized to your estimated strength and distance forms and marches.
@@ -449,7 +449,7 @@ These raise a target's attraction toward you. Once their own loyalty falls low e
 - **Siege engines:** ballista, catapult, trebuchet, ram, titan-bone engines, and later mana artillery. They break blocks and hurt fortress Wardens.
 - **Capture:** hold buildings and network nodes to take them. Surrendered people become captives.
 - **Taking a kingdom:** capture its capital and a large share of its people, or kill its king.
-- **Diplomacy:** alliances (shared coverage view), non-aggression pacts, trade agreements. Broken treaties go into the Chronicle.
+- **Diplomacy:** alliances (shared sight), non-aggression pacts, trade agreements. Broken treaties go into the Chronicle.
 
 ---
 

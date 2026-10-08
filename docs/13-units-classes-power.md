@@ -8,7 +8,7 @@ Every number is a starting value for playtests *(tune)* unless it is marked **fi
 
 ## 1. The owner's rules (8 October 2026)
 
-1. **There is no first-person view.** You act through a unit from the Command view or from a third-person camera (§3).
+1. **Bird's-eye only.** There is no first-person view and, since later the same day, no over-the-shoulder camera either: you act through a unit from the Command view, or play it from above (§3).
 2. **Every unit has skills:** an Active from early on, and an Ultimate once it has met a gameplay requirement. Most skills are weak and useful: they gather information, highlight things and help the unit do its job. The strongest can be outright broken.
 3. **Balanced early, broken late.** Unbalanced and broken power comes only from the endgame.
 4. **The player plays many units.** Playing them, levelling a lot of them and min-maxing them is half the game; building the logistics is the other half.
@@ -17,6 +17,7 @@ Every number is a starting value for playtests *(tune)* unless it is marked **fi
 7. **The power ladder is linear in power and extremely hard to climb.** At its top is the **Calamity**: one unit that can level mountains, destroy a small kingdom, solo an easier Warden, or hold a kingdom alone. Keeping one is a burden: worshippers burning resources, hearths built to uphold it, or a soldier sworn to die.
 8. **Calamities are strategic pieces.** Like the king, they are not to be spent recklessly.
 9. **For now, every person looks like a Minecraft avatar** (§3.2).
+10. **People see like people** (added later the same day). Every unit has a human field of view, and you see only what your units see. `16-sight.md` holds these rules.
 
 ## 2. Words
 
@@ -34,7 +35,8 @@ Every number is a starting value for playtests *(tune)* unless it is marked **fi
 | **Role** | a military unit's place in a fight: Assault, Guard, Support or Secondary (§12) |
 | **Rank** | a place on a ladder: military ranks, trade ranks, and offices (§13) |
 | **Band** | the player's short list of favourite people, for switching between them (§3.8) |
-| **Played** | being driven by the player, in either Possess camera |
+| **Played** | being driven by the player (§3.4) |
+| **Sight** | what a person sees: a view cone, out to a range, along clear lines (`16-sight.md`) |
 | **Calamity** | the top grade, and a person who holds it (§15) |
 | **Flame** | a Calamity's second life pool, fed by its upkeep (§15.2) |
 
@@ -44,54 +46,49 @@ Every number is a starting value for playtests *(tune)* unless it is marked **fi
 
 ## 3. Playing a unit
 
-### 3.1 Three ways to act
+### 3.1 Two ways to act
 
 | Way | Camera | How it works |
 |---|---|---|
 | **Order** | Command view | select a person or a company and give orders: right click to go, fight or work there (B2 of `11-interface-catalogue.md`), the inspector's buttons for everything else, including skills (§3.7) |
-| **Play from above** | **Overhead** (§3.4) | the Command camera locked on one unit: W A S D move it, the cursor aims, the mouse works its hands |
-| **Play behind** | **Shoulder** (§3.3) | a third-person camera over the unit's shoulder, pointer locked, a crosshair at the centre |
+| **Play** | **Overhead** (§3.4) | the Command camera locked on one unit: W A S D move it, the cursor aims and the unit looks where it points, the mouse works its hands |
 
-Tab switches between Command view and playing (as before). **F5 switches between Overhead and Shoulder** while playing. Play opens in the camera the player used last; the first time on a device it opens in Overhead, because that switch needs no pointer lock and no change of lens.
+Tab switches between Command view and playing (as before).
 
-The camera never goes inside a unit's head, in any mode, at any time.
+The camera is always above. It never goes inside a unit's head or behind its shoulder, in any mode, at any time, and the pointer is never locked.
 
 ### 3.2 What stays Minecraft, and the avatar
 
-A played unit moves, digs, builds and carries exactly as a Minecraft player does: the same box (0.6 × 1.8 m), walk, sprint, sneak, jump, step-up, swim, climb, fall, block-breaking times, placing rules, reach, hotbar and inventory slots, and the attack cooldown. `11-interface-catalogue.md` B4 keeps those details. What changes: you watch the body from outside, you aim with the cursor or a crosshair, and the unit's sheet, skills and conditions (§4–§6) apply.
+A played unit moves, digs, builds and carries exactly as a Minecraft player does: the same box (0.6 × 1.8 m), walk, sprint, sneak, jump, step-up, swim, climb, fall, block-breaking times, placing rules, reach, hotbar and inventory slots, and the attack cooldown. `11-interface-catalogue.md` B4 keeps those details. What changes: you watch the body from above, you aim with the cursor, the unit sees only what its eyes can (`16-sight.md`), and its sheet, skills and conditions (§4–§6) apply.
 
 **Fall damage:** 5% of max Health for every metre fallen beyond 3 m, so a 23 m fall kills, as in Minecraft.
 
 **The avatar** (everyone, the king and the free camera included). A blocky figure with a Minecraft avatar's proportions, 1.8 m tall: head 8 × 8 × 8 px, body 8 × 12 × 4, arms and legs 4 × 12 × 4, one px being 1.8 m ÷ 32. Its look is generated in code from the person's identity (golden rule 6): skin and hair from their stored traits, clothes by class and needs tier, a trim in the kingdom's colours (wider from Champion), worn armour drawn as a layer by material; a Calamity burns with a visible fire. Nothing reproduces a skin from Minecraft. It animates as a Minecraft avatar does: limbs swing with speed, the body leans to sprint and crouches to sneak, the arm swings to hit, dig and place, a shield rises, a bow draws, the body flashes red when hurt. Skills add a pose and a wind-up (§11.5). A Downed person lies on the ground (§5.9). This is the owner's "for now": a later art pass may replace it.
 
-### 3.3 Shoulder
+### 3.3 Sight
 
-- **Where the camera sits.** It orbits a pivot 1.75 m above the unit's feet (1.40 m while sneaking), 3.6 m behind it and 0.55 m to the right, looking where the mouse points. The mouse turns it as B4 says ("Looking"). Pitch stops at 80° up and 80° down. The field of view is `set.video.fov` (70° by default).
-- **Walls.** When something solid lies between the pivot and the camera, the camera slides in, but never closer than 1.2 m behind the pivot, and the shoulder offset shrinks with it. When even 1.2 m isn't free (backed into a wall), the blocks between the camera and the pivot are cut away for as long as that lasts, with the cut's clip (C2). Inside 2 m the avatar is drawn at 35% opacity, so what it aims at stays visible.
-- **The body** turns to face the camera's yaw. Moving is relative to the camera, as in Minecraft.
-- **Aim.** The crosshair sits at the screen's centre. The **aim point** is the first thing the camera ray meets beyond the unit (anything nearer the camera than the unit is skipped), up to 64 m away. The unit acts along its **action ray**, from its eyes (1.62 m up) to the aim point. What it can touch is the first block or creature on the action ray within reach (§3.5), so a wall between the unit and the aim point is what gets hit. The target outline is drawn on that, never on something the unit can't touch.
-- **Sprinting** widens the view by 8%, eased over 150 ms (`set.ui.fov-effects` scales it). Nothing shakes or tilts the camera.
+What a person sees, and so what the player sees, is `16-sight.md`: a human view cone, 120° across, that points where the head points (for a played unit, toward the cursor), out to a range set by the light and by how high the eyes stand. You see other creatures only while one of your people does; the land is always drawn, a little darker where nobody of yours is looking; and underground, the cut shows only what your people have seen.
 
 ### 3.4 Overhead
 
 - **The camera** is the Command camera of C1 with its focus locked on the unit's feet + 1 m (following with a 100 ms time constant), `d` from 10 to 80 m (24 m to start), the same 40° lens, and the cursor free.
 - **Tilt** is the player's own, 30°–85° (55° to start): no curve with distance here. Turn with ← and → (hold to turn at 100° a second, tap to snap 45°), tilt with ↑ and ↓, or middle-drag to orbit (it starts after 120 ms *and* 6 px, as a right drag does in Command view). The wheel zooms, toward the unit.
-- **Moving.** W A S D move the unit relative to the screen: W is up the screen. Sprint, sneak and jump as in Minecraft.
-- **Facing.** The body faces where it is going, except while it acts: while a mouse button is held, a shield is up, a bow is drawn or a skill is being aimed, and for one second after, it faces the aim point and W A S D strafe.
-- **Aim.** The aim point is what the cursor's ray meets first (C1's rule for rays, the cut face included). The action ray runs from the unit's eyes to that point, with the same reach and line-of-sight rule as Shoulder. The outline shows the block or creature the unit would touch, and nothing when there is none in reach.
-- **Under cover.** The cut (C2) follows the unit: whenever there is a solid, non-plant block within 32 m above the unit's head (the lowest of a 3 × 3 patch of columns around it), the cut sits half a metre below it, easing over 150 ms. PageUp and PageDown still move it by hand until the unit next walks under or out of cover. What you may see under a cut follows C2.
+- **Moving.** W A S D move the unit relative to the screen: W is up the screen. Sneak and jump as in Minecraft. Sprinting works while the unit moves within 45° of where it looks, as Minecraft's sprint works only forward.
+- **Facing.** The head turns toward the aim point, so the unit looks where the cursor is, and its view cone turns with it (`16-sight.md` §3.1). The body faces where it is going, as far as the neck allows, and turns toward the head when it stops, as Minecraft's avatar does. While a mouse button is held, a shield is up, a bow is drawn or a skill is being aimed, and for one second after, the body faces the aim point too and W A S D strafe.
+- **Aim.** The **aim point** is what the cursor's ray meets first (C1's rule for rays, the cut face included). The unit acts along its **action ray**, from its eyes (1.62 m up) to the aim point. What it can touch is the first block or creature on the action ray within reach (§3.5), so a wall between the unit and the aim point is what gets hit. The outline shows the block or creature the unit would touch, and nothing when there is none in reach.
+- **Under cover.** The cut (C2) follows the unit: whenever there is a solid, non-plant block within 32 m above the unit's head (the lowest of a 3 × 3 patch of columns around it), the cut sits half a metre below it, but never lower than just above the unit's head. It moves once the cover has held for 0.25 s and eases over 150 ms, so running under an arch doesn't make it flicker. PageUp and PageDown still move it by hand until the unit next walks under or out of cover. What you may see under a cut follows C2 and `16-sight.md` §5.4. This is how the underground is played: the layers above are cut away as the unit goes down, and put back as it comes up.
 - **Picking a block** is a middle click that doesn't turn into a drag.
 
 ### 3.5 In the hands
 
-- **Reach:** 4.5 m for blocks; for people and creatures, the weapon's reach (3 m for most; `15-item-library.md` gives each), measured from the eyes along the action ray. A unit never touches what it can't see from its own eyes.
+- **Reach:** 4.5 m for blocks; for people and creatures, the weapon's reach (3 m for most; `15-item-library.md` gives each), measured from the eyes along the action ray. A unit never touches anything it has no clear line to from its own eyes.
 - **Melee** strikes toward the aim point. The **primary target** is the creature under the aim point when it is within reach; otherwise the creature within reach nearest to the action ray inside the weapon's arc (90° for most). Weapons with **Sweep** also hit everything else in the arc for the share their row gives. The cooldown, and the weaker hit when you swing early, are Minecraft's: a hit does `0.2 + 0.8 × r²` of its damage, where `r` is how far the cooldown has recovered (0–1). AI units always wait for a full swing.
-- **Ranged** shots are aimed at a point. Draw (hold the use button) and release: the shot leaves the unit's hand on the arc that passes through the aim point, when the point is within the weapon's range; beyond it, on the arc that goes farthest that way. Gravity and travel time are real, so a moving target must be led. Spread comes from the weapon and proficiency (§5.7). The same rule serves both cameras and the AI.
+- **Ranged** shots are aimed at a point. Draw (hold the use button) and release: the shot leaves the unit's hand on the arc that passes through the aim point, when the point is within the weapon's range; beyond it, on the arc that goes farthest that way. Gravity and travel time are real, so a moving target must be led. Spread comes from the weapon and proficiency (§5.7). The same rule serves the player and the AI.
 - **Breaking and placing** are Minecraft's, along the action ray. A ghost of the block about to be placed is drawn on the face it would go on.
 
 ### 3.6 Skills on keys
 
-While playing: **Z** Active, **X** Ultimate, **C** Art, **V** first relic, **R** second relic, **G** Cataclysm, which must be held for 1 s: a shorter press does nothing, and for the Oathsworn the hold is the confirmation that calls the fire. A skill that needs a place or a direction shows its shape on the ground while its key is held and fires on release; a tap fires at once at the aim point. Esc or the right mouse button, while the key is held, cancels it; so does losing the pointer lock. A skill pressed within the last 0.3 s of another action fires as soon as the unit is free. The rest of a skill's behaviour is in §11.
+While playing: **Z** Active, **X** Ultimate, **C** Art, **V** first relic, **R** second relic, **G** Cataclysm, which must be held for 1 s: a shorter press does nothing, and for the Oathsworn the hold is the confirmation that calls the fire. A skill that needs a place or a direction shows its shape on the ground while its key is held and fires on release; a tap fires at once at the aim point. Esc or the right mouse button, while the key is held, cancels it; so does anything that takes the keys (A4 of the catalogue). A skill pressed within the last 0.3 s of another action fires as soon as the unit is free. The rest of a skill's behaviour is in §11.
 
 ### 3.7 Ordering one unit from Command view
 
@@ -109,7 +106,7 @@ While playing: **Z** Active, **X** Ultimate, **C** Art, **V** first relic, **R**
 
 ### 3.9 Milestone 1
 
-There are no people yet. **The free camera** is an avatar in creative mode (B4): it walks, flies, breaks and places, and is seen in Shoulder from phase 1.1. From phase 1.4, when the Command camera exists, F5 also gives it Overhead. Postcard mode (`04-terrain.md` §14.3) is a separate camera and is unchanged.
+There are no people yet. **The free camera** is an avatar in creative mode (B4): it walks, flies, breaks and places, and is seen in Overhead from phase 1.1, with wider limits than a person's so the owner can look across the land (C4 of the catalogue). The cut follows it under cover from the start. There is no sight in Milestone 1: everything is drawn. Postcard mode (`04-terrain.md` §14.3) is a separate camera and is unchanged.
 
 ---
 ## 4. A person's sheet
@@ -138,7 +135,7 @@ Everyone is born with six attributes from 1 to 20, as `05-systems.md` §5 descri
 | Speed | Minecraft's walk 4.317, sprint 5.612 and sneak 1.31 m/s, × `(1 + 0.01 × (AGI − 10))` × the armour factor × the load factor |
 | Armour factor | cloth and leather 1.00, mail 0.95, plate 0.90 |
 | Carrying | `10 + 2 × STR` kg freely (30 kg for an average person, the porter of `05-systems.md` §15). Up to twice that at −40% speed and no sprint; no more |
-| Sight | 48 m by day; 16 m at night, underground and anywhere the light is under 7 |
+| Sight | a 120° view cone; 4 m plus 4 m for each level of light on what it looks at (64 m by day, 20 m on a dark night, 4 m in total darkness), and farther from higher up (`16-sight.md` §3) |
 | Reach | 4.5 m for blocks; the weapon's reach for people and creatures (§3.5) |
 | Work speed | `base × (1 + P ÷ 100) × (1 + 0.02 × (A − 10))` × tool × workplace × needs tier (`05-systems.md` §7) × skills, where `P` is the trade's proficiency and `A` its attribute |
 
@@ -176,6 +173,7 @@ Elemental resistances come only from items, runes, conditions and skills; everyo
 
 - Seen from the target, **front** is within 60° of where it faces, **flank** from 60° to 135°, **rear** beyond 135°.
 - A melee hit, or a ranged hit from closer than 6 m, is ×1.15 more from the flank and ×1.5 more from the rear.
+- A hit on a creature that isn't yet alert to its attacker (`16-sight.md` §7.1) counts as from the rear, wherever it comes from.
 - A **falling strike**, a melee hit while falling (not on the ground, not climbing, swimming or riding), is ×1.5 more, as Minecraft's critical hit.
 - Ranged weapons reach 10% farther for every 4 m their shooter stands above the aim point, 50% farther at most.
 
@@ -253,7 +251,7 @@ The full list. Skills and items may apply only these, by name, in **bold** (§19
 | `cond.staggered` | Staggered | Can't attack or use skills · moves at half speed | can't attack or use skills; speed −50%. Breaks a wind-up. Immune to Staggered for 3 s after. Wardens can't be Staggered except by a parry; generals hold it a quarter as long | 1 s | no |
 | `cond.slowed` | Slowed | Moves slower | speed −40% | 4 s | refreshes, keeps the larger |
 | `cond.rooted` | Rooted | Can't move · can still act | can't move. Immune to Rooted for 4 s after | 3 s | no |
-| `cond.blinded` | Blinded | Sees only a few metres | sight 4 m; ranged spread ×4. A played unit's view darkens beyond 4 m | 4 s | refreshes |
+| `cond.blinded` | Blinded | Sees only a few metres | sight 4 m, whatever the light (`16-sight.md` §3.2); ranged spread ×4 | 4 s | refreshes |
 | `cond.marked` | Marked | Takes more damage from everyone | +15% damage taken (increased, for every attacker). Shown to the marking kingdom through walls | 10 s | refreshes |
 | `cond.feared` | Feared | Shaken · can't attack or use skills | morale −20 at once. AI units run from the source; a played unit can't attack or use skills. Immune for 10 s after | 3 s | no |
 | `cond.exposed` | Exposed | Armour weakened | armour −30% | 6 s | refreshes |
@@ -819,11 +817,10 @@ Most people, most of the time, are in the ledger (`05-systems.md` §22). Its ver
 
 | Phase | People and power |
 |---|---|
-| 1.1 | the avatar (§3.2); Shoulder for the free camera |
-| 1.4 | Overhead for the free camera |
-| M2 | attributes, Health and Stamina; levels and experience, with played time and First light; proficiencies and trade ranks; the classes marked M2; Knacks and Actives on keys, by order and by autocast; Common and Proven; the Band; the charm slot; the conditions of food, drink, needs and work (Well fed, Merry, Hungry, Exhausted); the Reeve |
+| 1.1 | the avatar (§3.2), seen in Overhead, with the cut following it under cover |
+| M2 | attributes, Health and Stamina; levels and experience, with played time and First light; proficiencies and trade ranks; the classes marked M2; Knacks and Actives on keys, by order and by autocast; Common and Proven; the Band; the charm slot; the conditions of food, drink, needs and work (Well fed, Merry, Hungry, Exhausted); the Reeve; sight (`16-sight.md` §10) |
 | M3 | the classes marked M3; deeds, Resolve and Ultimates; Tempered and Elite, Speciality and Backgrounds; Foremen and Overseers; the Chancellor, Treasurer, Quartermaster, Governors, Bailiffs, Storekeepers, Paymasters, the High Hearthkeeper and Hearthkeepers; office skills |
-| M4 | fighting (§5), the other conditions, Downed and Wounded; Overmatch; the classes marked M4, roles, and ranks up to Captain; Champions, Trials and the civilian Masteries; the first relic slot and the relics of the Wardens that ship then. Until Milestone 6 a bound relic gives its powers but no promotion |
+| M4 | fighting (§5), the other conditions, Downed and Wounded; Overmatch; the classes marked M4, roles, and ranks up to Captain; Champions, Trials and the civilian Masteries; the first relic slot and the relics of the Wardens that ship then; foes' sight, awareness and hiding (`16-sight.md` §10). Until Milestone 6 a bound relic gives its powers but no promotion |
 | M5 | advanced classes, their Arts and Masteries; Commanders and Marshals; the Envoy and the Spymaster; balance for war between kings |
 | M6 | Mana and the mage classes; runes; Paragons, the second relic slot, the Marrow Rite and the relics of the Wardens that ship then; the Magister |
 | M7 | Calamities: the four paths, the Great Hearth, the Broken Crown, the remaining relics and Cataclysms |

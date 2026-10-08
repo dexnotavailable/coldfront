@@ -11,11 +11,11 @@ Prompts 1–7 run whole phases. Prompts 8–10 are for the interface and the cam
 In Claude Code, type `/effort ultracode` and press Enter before pasting it. In Codex, just paste it.
 
 ```
-You're starting COLDFRONT: a seasonal multiplayer voxel civilization builder that runs in the browser. In one line: Minecraft extended downwards, with Big Globe-class terrain and a bird's-eye view, where every unit is a Minecraft-player equivalent run by the game, and playing one moves exactly like Minecraft, seen from above or over its shoulder. This repository contains only the design docs so far. You're writing the first code.
+You're starting COLDFRONT: a seasonal multiplayer voxel civilization builder that runs in the browser. In one line: Minecraft extended downwards, with Big Globe-class terrain and a bird's-eye view, where every unit is a Minecraft-player equivalent run by the game, and playing one moves exactly like Minecraft, seen from above. This repository contains only the design docs so far. You're writing the first code.
 
 I'm the owner. I don't code. I make design calls; you make every technical call.
 
-Before writing code, read in this order: AGENTS.md, docs/01-vision.md, docs/08-roadmap.md (Milestone 1), docs/04-terrain.md (§1–§7, §10, the test world in §11, and §13–§16; the other sections when a phase needs them), docs/07-architecture.md, docs/10-prior-art.md (§1, §2 and §4), docs/02-world.md, docs/12-sessions.md. From docs/11-interface-catalogue.md read Part A, B3–B4 and C4, and the sections of the 1.1 screens when you build them; from docs/13-units-classes-power.md read §3.2–§3.3 (the avatar and the Shoulder camera). Leave the other docs until a phase needs them.
+Before writing code, read in this order: AGENTS.md, docs/01-vision.md, docs/08-roadmap.md (Milestone 1), docs/04-terrain.md (§1–§7, §10, the test world in §11, and §13–§16; the other sections when a phase needs them), docs/07-architecture.md, docs/10-prior-art.md (§1, §2 and §4), docs/02-world.md, docs/12-sessions.md. From docs/11-interface-catalogue.md read Part A, B3–B4, C1, C2 and C4 (the Overhead camera uses C1's maths, and the cut follows the avatar under cover from phase 1.1), and the sections of the 1.1 screens when you build them; from docs/13-units-classes-power.md read §3.2 and §3.4 (the avatar and the Overhead camera). Leave the other docs until a phase needs them.
 
 This session: Milestone 1, phase 1.1 (Foundations). If it's done and verified and you still have plenty of room, continue into phase 1.2 (World plan) on the same branch, but only after the 1.1 report is in the pull request.
 
@@ -176,7 +176,7 @@ Done when npm run ui:lint and npm run ui:shots pass and your report shows the be
 ## 10. Tune how a camera or a control feels
 
 ```
-<The Command camera / the Overhead view / the Shoulder view / switching between views / a control in Command view> feels <too fast, floaty, jerky, stiff…> when I <what you were doing>.
+<The Command camera / the Overhead view / switching between them / the cut / a control in Command view> feels <too fast, floaty, jerky, stiff…> when I <what you were doing>.
 
 Only numbers marked (tune) in docs/11-interface-catalogue.md Part C (C1 for Command view, C4 and C5 for playing a unit) may change. Possess movement is Minecraft's and is fixed (its B4): if that's what I'm describing, change nothing and tell me which setting adjusts it. Otherwise change at most two numbers, in the doc and the code together, keep the tests in C7 passing as they are, and report each number as old → new with the steps to try it, so I can ask for more or less.
 ```

@@ -2,7 +2,7 @@
 
 > **COLDFRONT** is a seasonal, ~100-player voxel civilization builder in the browser. You rule an empire from above and possess its people on the ground. You push supply lines down a funnel-shaped world of hostile regions to break boss strongholds that fight back.
 
-**The owner's technical TL;DR:** *Minecraft, but it extends downwards, with Big Globe installed, and you have a bird's-eye view. All the NPCs and units are controlled by the game computer in an optimised way; each one can break blocks and has an inventory, HP and so on, like a Minecraft player. Possessing one should be the same as controlling a Minecraft player.* (8 October 2026: the camera part is superseded. There is no first-person view; units are played from above or over the shoulder, §6 and `13-units-classes-power.md` §3.)
+**The owner's technical TL;DR:** *Minecraft, but it extends downwards, with Big Globe installed, and you have a bird's-eye view. All the NPCs and units are controlled by the game computer in an optimised way; each one can break blocks and has an inventory, HP and so on, like a Minecraft player. Possessing one should be the same as controlling a Minecraft player.* (8 October 2026: the camera part is superseded. There is no first-person view and no over-the-shoulder view: units are played from above, and you see only what your units see. See §6, `13-units-classes-power.md` §3 and `16-sight.md`.)
 
 This file is the "why". Everything else in `docs/` is the "what" and the "how". When a detail elsewhere seems to conflict with this file, this file wins. Flag the conflict in `09-open-questions.md`.
 
@@ -36,7 +36,7 @@ You win the long game by expanding your **front**: territory, logistics and indu
 ### Design rules that follow from the pillars
 
 - **Systems stack on real demand.** Deeper content needs better gear, which needs rarer materials, which come from harsher regions. Getting them needs better buildings and logistics, which need more people and money, and those need safety. Nothing is unlocked by a menu.
-- **Information has a cost.** You see, command and possess only where your connected network reaches. News travels by rider, signal tower or mana relay, and it can be intercepted.
+- **Information has a cost.** You see only what your people see. You see it live, and command and possess, only where your connected network reaches. News travels by rider, signal tower or mana relay, and it can be intercepted.
 - **Scarcity creates politics.** Key resources exist in one region only. Whoever holds the gold and silver mints the money; whoever holds skystone controls the fast way down.
 - **Depth costs.** Each layer down is harsher, and climbing back up hurts more.
 - **Loyalty is the glue.** People pledge to kings. War is won by breaking loyalty as much as by killing.
@@ -119,11 +119,12 @@ These are settled. Don't re-open them without the owner. Unmarked items are the 
 ### Command and possession
 - Two modes, **Command** (top-down macro) and **Possess** (be any of your units) (default).
 - Possession is a whole separate player instance: WASD, attack, break and place blocks, interact, manage inventory. A played unit moves, digs, builds and fights like a Minecraft player: Minecraft's controls, movement and block breaking. Possessing officials and high-ranking units also lets you change classes, jobs and assignments.
-- **No first-person view** (8 October 2026, replacing "possessing must feel the same as Minecraft" for the camera). Units are ordered from the Command view or played from above (**Overhead**) or over the shoulder (**Shoulder**) (`13-units-classes-power.md` §3).
+- **Bird's-eye only** (8 October 2026, replacing "possessing must feel the same as Minecraft" for the camera). No first-person view and no over-the-shoulder view: units are ordered from the Command view or played from above (**Overhead**). Underground, the cut takes away the layers above as the camera goes down, and puts them back as it comes up (`13-units-classes-power.md` §3, `11-interface-catalogue.md` C2).
+- **Sight** (8 October 2026). Every unit has a human field of view: a cone in front of it, out to a range that grows with height. NPCs notice, target and remember by it, and losing sight of you doesn't make them forget you. You see enemies, beasts and every other creature only while one of your units sees them. The land is always drawn, slightly darker outside your units' sight, and anything buried stays in total darkness until your people see it. So watchtowers, vantage points and terrain that blocks sight matter (`16-sight.md`).
 - **Every unit is a Minecraft-player equivalent** (break blocks, inventory, HP), run by the game's AI in an optimised way. AI and possession drive the same controller, physics and actions (default design, `05-systems.md` §3).
 - An officer is a unit with a **command radius**. Possess a Captain and you lead his company directly (default).
 - **Classes, skills and a power ladder** (8 October 2026). Every unit has a class and skills: an Active early, an Ultimate once it has met a gameplay requirement. Most skills are weak and useful (information, highlighting, help with the job); the strongest are outright broken, and only at the endgame. Players play, level and min-max many units. Military units have a class, a role (Assault, Guard, Support, Secondary) and a rank; civilians climb trade ranks; the government has a ladder of offices. The ladder is linear in power and extremely hard to climb. Its top, the **Calamity**, can level mountains, break a small kingdom, solo an easier Warden or hold a kingdom alone, and is costly to keep: worshippers burning offerings, hearths built to uphold it, or a soldier sworn to die. Like kings, Calamities are not to be spent recklessly. For now every person looks like a Minecraft avatar. (`13-units-classes-power.md`, `14-class-library.md`, `15-item-library.md`.)
-- The **network** (watchtowers, signal towers, mana relays) defines where you can see, command and possess. Coverage must be **connected** to your capital. Capturing relays flips land, and cutting a relay cuts off everyone beyond it (default).
+- The **network** (watchtowers, signal towers, mana relays) defines where your people's sight reaches you live, and where you command and possess. Coverage must be **connected** to your capital. Capturing relays flips land, and cutting a relay cuts off everyone beyond it (default).
 - **News travels physically:** riders early, signal towers later, mana relays late (default). Automated responses wait for the news, so human-led raids that run down messengers beat the AI's reactions.
 
 ### People
@@ -200,13 +201,14 @@ These are settled. Don't re-open them without the owner. Unmarked items are the 
 | **Command view / Possess** | The two play modes |
 | **The cut** | Command view's way of seeing underground: a level slice that hides everything above it (`11-interface-catalogue.md` C2) |
 | **The catalogue** | `11-interface-catalogue.md`: the complete list of what the interface contains. If it isn't there, it isn't in the game |
-| **Network** | Watchtowers, signal towers and mana relays. Its *connected* coverage is where you can see, command and possess |
+| **Network** | Watchtowers, signal towers and mana relays. Its *connected* coverage is where your people's sight reaches you live, and where you command and possess |
 | **News** | Any report or order; it travels physically through the network or by rider |
 | **Reeve · Quartermaster · Captain · Marshal · Magister · Treasurer · Envoy** | Officials: town · supply · company · army · mana and mages · coin · trade and diplomacy. The full ladder of offices and posts is in `13-units-classes-power.md` §13 |
 | **Class · Role · Rank · Grade** | A person's trade · a soldier's place in a fight · a step on a ladder of command, trade or office · a step on the power ladder, from Common to Calamity (`13-units-classes-power.md`) |
 | **Skill** | A power on a slot: Knack, Active, Ultimate, Art, Mastery, a relic's, or a Cataclysm (`14-class-library.md`) |
 | **Calamity** | The top grade: one person who can break a small kingdom, kept alive by costly upkeep |
-| **Overhead · Shoulder** | The two cameras for playing a unit: from above, or over its shoulder |
+| **Overhead** | The camera for playing a unit: the Command camera locked on it, from above |
+| **Sight** | What a unit sees: a view cone with a range. You see only what your units see (`16-sight.md`) |
 | **Band** | The player's short list of people to switch between while playing |
 | **Warden** | A region boss (29 of them) |
 | **Seat** | A Warden's arena and fortress at the desolate heart of its region |

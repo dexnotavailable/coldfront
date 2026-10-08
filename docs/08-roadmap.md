@@ -17,17 +17,18 @@ The goal: Big Globe-class terrain for the whole of Kaldmark, walkable in the bro
 ### 1.1 Foundations
 - **Build, in this order** (push a playable build at the end of step 3, so the owner has a link early):
   1. Monorepo scaffold (npm workspaces, Vite, TS strict, Biome, Vitest, `.node-version`); constants; deterministic math (`det.ts`) and the forbidden-token test; hashes and OpenSimplex2 noise, with measured quantiles and tests; the test world (rolling plains with a pond at y = 0, placeholder trees).
-  2. **The interface foundation, before the first screen** (`11-interface-catalogue.md` A3, A6, A7): `tokens.css`, the components the 1.1 screens use, the string table (`ui:strings`), the gallery (`/?gallery`), `ui:lint` inside `npm run check`, and `ui:shots`. Then: block registry and the first ~30 texture recipes; chunk store; worker pool; the bitwise greedy mesher with AO (ported, `10-prior-art.md` §2); the renderer: `SunLight` shadows, three's `Sky`, fog, pmndrs postprocessing; sky light (seeded from column heightmaps, then the ported light queues; coloured block light waits for 1.3); time of day (the cycle, a slider, a fixed postcard time); the player controller: the avatar (`13-units-classes-power.md` §3.2) seen in Shoulder (`11-interface-catalogue.md` C4), Minecraft's controls, and Minecraft's movement constants at a fixed 20 Hz (walk, sprint, sneak, jump, step-up 0.6 m, fly); break and place with a hotbar; the title screen, the loading bar and the menu (the rows marked 1.1).
+  2. **The interface foundation, before the first screen** (`11-interface-catalogue.md` A3, A6, A7): `tokens.css`, the components the 1.1 screens use, the string table (`ui:strings`), the gallery (`/?gallery`), `ui:lint` inside `npm run check`, and `ui:shots`. Then: block registry and the first ~30 texture recipes; chunk store; worker pool; the bitwise greedy mesher with AO (ported, `10-prior-art.md` §2); the renderer: `SunLight` shadows, three's `Sky`, fog, pmndrs postprocessing; sky light (seeded from column heightmaps, then the ported light queues; coloured block light waits for 1.3); time of day (the cycle, a slider, a fixed postcard time); the player controller: the avatar (`13-units-classes-power.md` §3.2) seen from above in Overhead (`11-interface-catalogue.md` C4, with the free camera's limits), which brings the Command camera's maths (C1's lens, rays, zoom and turning) and the cut's clip and cap following the avatar under cover (C2); Minecraft's controls, and Minecraft's movement constants at a fixed 20 Hz (walk, sprint, sneak, jump, step-up 0.6 m, fly); break and place with a hotbar; the title screen, the loading bar and the menu (the rows marked 1.1).
   3. COOP/COEP headers (Pages `_headers`, and the Vite dev and preview servers); a build that works on Cloudflare Pages; the "WebGL2 unavailable" screen; the postcard screenshot pipeline and TEST-1. **Push a playable build and open the draft PR.**
   4. Golden test and `golden:update`; atlas and slice (on the test world, `height` mode); postcards; `bench:gen`; the shipped CI workflow passing, with `test:golden:browsers` defined.
   5. Edits saved in IndexedDB; the F3 overlay, the Tools panel (F4), the block palette and every other row marked 1.1 (the system states, the toasts, F1, F2, F11, Licences); the remaining textures; `THIRD_PARTY_NOTICES.md`.
 - **Owner tries:**
-  1. Open the link and walk around. (Click to play: the game goes fullscreen and locks the keyboard so Ctrl-sprint works; without that, sprint is double-tap W.)
+  1. Open the link, press Play and walk around. The camera looks down from above: the wheel zooms, ← and → turn it, ↑ and ↓ tilt it. (Play goes fullscreen and locks the keyboard so Ctrl-sprint works; without that, sprint is double-tap W.)
   2. Double-tap Space to fly (like Minecraft creative mode).
   3. Break and place blocks.
-  4. Press F3 to see the debug info, and F4 for the tools (time of day, fog, fly speed).
-  5. Reload: your edits are still there.
-  6. Open `<link>/?gallery` to see every interface screen built so far.
+  4. Dig down a few blocks: the ground above you is cut away, so you still see yourself.
+  5. Press F3 to see the debug info, and F4 for the tools (time of day, fog, fly speed).
+  6. Reload: your edits are still there.
+  7. Open `<link>/?gallery` to see every interface screen built so far.
 - **Done when:** tests, check and build pass; the tools produce images; **TEST-1 ≥ 12/20** (self-scored); the 1.1 screens pass the checklist in `11-interface-catalogue.md` A7 from their screenshots, and `npm run ui:lint -- --complete` passes. Step 5 items and the CI's cross-browser job may slip into 1.2 if the session runs out: `--complete` then fails on those rows only, and the report lists them.
 
 ### 1.2 World plan
@@ -75,14 +76,12 @@ The goal: Big Globe-class terrain for the whole of Kaldmark, walkable in the bro
   - far shadows (horizon map); depth-precision setup; floating origin
   - per-region sky and atmosphere; takram aerial perspective for the far haze
   - the Command camera as king's view, on Tab (`11-interface-catalogue.md` C1, C6), with its tests (C7)
-  - Overhead for the free camera on F5 (`11-interface-catalogue.md` C4), with its C7 tests
-  - settings: the rows marked 1.4 (render distance, far terrain, FOV, shadows, bloom, haze, sensitivity, invert look, fullscreen on play, interface size)
+  - settings: the rows marked 1.4 (render distance, far terrain, shadows, bloom, haze, fullscreen on play, interface size)
 - **Owner tries:**
   1. Climb a high point in Ibara and look at the colossal thorns far away.
   2. Press Tab and zoom out to ~3 km. Pan with W A S D, turn with a right-drag, grab the ground with a middle-drag.
   3. Look across the Blackwater at the Nadir.
   4. Note the FPS from F3 on your laptop.
-  5. Press F5 to switch the free camera between Overhead and Shoulder.
 
 - **Done when:** HELL-3, HELL-4, VISTA-1, MTN-2 and KING-1 show ≥ 5 km of real terrain with no LOD artifacts (rings, terraces, cracks, flattened peaks). Kurogane can still be first-pass here.
 
@@ -128,7 +127,7 @@ The goal: Big Globe-class terrain for the whole of Kaldmark, walkable in the bro
   - descents from the surface
   - underground light (ambient, fog in-scatter, region lights)
   - aquifers
-  - **the cut** (`11-interface-catalogue.md` C2): king's view can look underground. Its keys, the depth gauge, and the map's layer tabs (the rows marked 1.8)
+  - **the cut's keys** (`11-interface-catalogue.md` C2): king's view can look underground at any depth. The depth gauge and the map's layer tabs (the rows marked 1.8)
 - **Owner tries:**
   1. Find a cave mouth and follow it down.
   2. Go down a cenote or lava tube into Layer 1.
@@ -166,7 +165,7 @@ The goal: Big Globe-class terrain for the whole of Kaldmark, walkable in the bro
 
 ## Milestone 2 · A Tiny Kingdom (solo, in the browser)
 The simulation runs in a worker using `shared` code, standing in for the future server.
-- **The unit model** (`07-architecture.md` §5): controllers emit InputFrames into shared Minecraft physics (the prismarine-physics port, 20 Hz) and a shared action API; bitECS. The player's M1 controller is replaced by the same physics, so playing anyone moves like Minecraft, from Overhead or Shoulder.
+- **The unit model** (`07-architecture.md` §5): controllers emit InputFrames into shared Minecraft physics (the prismarine-physics port, 20 Hz) and a shared action API; bitECS. The player's M1 controller is replaced by the same physics, so playing anyone moves like Minecraft, seen from above.
 - The king, 20 people and the Steward (who also teaches the basics) on a spawn site; identities, attributes, classes, levels and proficiencies; Knacks and Actives; the Band (`13-units-classes-power.md` §20).
 - The content pipeline: `npm run content:build` from docs 13–15 (`07-architecture.md` §7).
 - Items as physical stacks; stockpiles; hauling.
@@ -174,9 +173,10 @@ The simulation runs in a worker using `shared` code, standing in for the future 
 - The job system and the Reeve.
 - Farming, woodcutting, quarrying, simple crafting.
 - Templates (house, stockpile, farm, workshop) built block by block; freeform validation for 2–3 building types.
-- Command view (select, blueprints, zones) and possession (Overhead and Shoulder; Minecraft controls; break and place using real items; skills on keys).
+- Command view (select, blueprints, zones) and possession (Overhead; Minecraft controls; break and place using real items; skills on keys).
+- **Sight** (`16-sight.md` §10): your people's view cones, the darkened land, creatures shown only while seen, and the underground shown only where your people have seen it.
 - Tier-1 needs, the calendar and a first winter.
-- The interface rows marked M2 in `11-interface-catalogue.md`: the top bar, alerts, minimap, the command bar, Build and Zones, the inspector, Realm, the Ledger, Find, the key list, inventories, the Dig tool, the death screen, and the cut's rule that you see underground only where your people have been (its C2).
+- The interface rows marked M2 in `11-interface-catalogue.md`: the top bar, alerts, minimap, the command bar, Build and Zones, the inspector, Realm, the Ledger, Find, the key list, inventories, the Dig tool, the death screen, and the cut's rule that you see underground only where your people have seen (its C2).
 
 ## Milestone 3 · Production and logistics
 - Medium chains (bread, tools, iron, weapons) and workstations; tool wear, quality, spoilage and preservation.
@@ -192,11 +192,12 @@ The simulation runs in a worker using `shared` code, standing in for the future 
 - The network (watchtowers, riders, signal towers, connection to the capital) and news delivery.
 - Enemies: musters, roamers, scouts and reports, war parties, occupation.
 - Fighting (`13-units-classes-power.md` §5–§6); the military classes, roles and ranks; Champions and Trials; companies and Captains; the officer command radius.
+- Sight for foes (`16-sight.md` §10): awareness, hearing, memory and search; hiding; people on watch, watchtowers, spyglasses and lights at night; last-seen marks.
 - The first Seat and Warden: Marshal Varn.
 
 ## Milestone 5 · Multiplayer
 - The authoritative, self-hosted server (Node 24 LTS, `ws`, better-sqlite3): protocol, persistence, Discord login (redirect flow).
-- Many kings; interest management; simulation tiers T0–T3 (`05-systems.md` §22).
+- Many kings; interest management by sight (`16-sight.md` §9.5); simulation tiers T0–T3 (`05-systems.md` §22).
 - PvP, morale and surrender, capture, swaying people; Commanders, Marshals and armies; siege engines; the advanced classes.
 - Market board and trading posts; diplomacy.
 - Self-hosting guide and Docker setup; a 10–20 player playtest.

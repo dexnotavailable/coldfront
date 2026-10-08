@@ -12,8 +12,9 @@ This repository starts as **design docs only**. AI coding sessions build the gam
 | `docs/01-vision.md` … `docs/10-prior-art.md` | The design: vision, world, lore, terrain spec, systems, UI and art, architecture, roadmap, open questions, and the audit of open-source code we can reuse |
 | `docs/11-interface-catalogue.md` | **The interface bible.** The cameras, the controls, and every screen, button, menu, slider, key and sentence in the game. If it isn't listed there, the agent doesn't build it |
 | `docs/12-sessions.md` | How a session runs: screenshots, branches, pushes, preview links, and what differs between Codex and Claude Code |
-| `docs/13-units-classes-power.md` | **People's rulebook.** How you play a unit (from above or over its shoulder, never first person), how people fight, learn and grow, and the power ladder up to the Calamity |
+| `docs/13-units-classes-power.md` | **People's rulebook.** How you play a unit (always from above), how people fight, learn and grow, and the power ladder up to the Calamity |
 | `docs/14-class-library.md` · `docs/15-item-library.md` | Every class and skill, and every item, as tables the game is built from |
+| `docs/16-sight.md` | **Sight.** What every unit can see, why you only see what your units see, how unseen land and the underground look, hiding and watchtowers, and how enemies notice and remember you |
 | `docs/tools/ui-catalogue.mjs` · `docs/tools/content-check.mjs` | Small checkers for the catalogue and for the class and item libraries: they fail if a name is too long, a skill breaks its budget, a recipe uses an item that doesn't exist, and so on |
 | `docs/progress.md` | The live progress log. Read this after each session. |
 | `docs/diagrams/` | The world map and funnel diagrams (and the script that draws them) |
@@ -208,7 +209,8 @@ The session can run for a long time. **You can close the tab**; it keeps working
 | Gallery | A page in every build (`/?gallery`) that shows each interface screen with sample data |
 | Seed | The number a world is generated from. Same seed, same world. |
 | Possess | Playing one of your people yourself (Tab) |
-| Overhead · Shoulder | The two ways to see the person you play: from above, or over their shoulder (F5 switches) |
+| Overhead | How you see the person you play: from above, the camera following them (the wheel zooms, the arrow keys turn and tilt) |
+| Sight | What a unit can see: a cone in front of it, farther by day and from higher up. You only see what your units see |
 | Band | Your short list of people to switch between while playing (`,` and `.`) |
 | Reasoning effort | How long the model thinks before it acts. Higher is slower and uses more of your plan |
 | Ultracode | A Claude Code setting (on in this repo) that makes the agent plan "workflows": many helper agents working in parallel. Stronger, and it uses your usage limit faster. `/effort ultracode off` turns it off for one session |

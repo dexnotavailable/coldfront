@@ -30,7 +30,7 @@ The owner's brief for UI: **clean, minimalistic, uncluttered, organised**, with 
 Every screen's layout is in `11-interface-catalogue.md` Part D. In short:
 
 - **Command view:** the kingdom's name, lives and the date as plain text along the top; up to three alerts under the date; the minimap, overlay switches and a depth gauge at the left; the command bar at the bottom centre; the inspector at the right while something is selected. Build and Zones open as a low palette above the command bar; Routes, Army, Realm and Trade open as a panel down the left edge.
-- **Possess:** Minecraft's screen, seen from outside: the crosshair (Shoulder only), the hotbar with health and stamina above it and the level and experience under it, the unit's skills beside it, its name at the bottom left, the band at the left edge, alerts at the top right. Nothing else.
+- **Possess:** Minecraft's screen, seen from above, with the cursor for aiming: the hotbar with health and stamina above it and the level and experience under it, the unit's skills beside it, its name at the bottom left, the band at the left edge, alerts at the top right. Nothing else.
 - **Map and Ledger:** full screen.
 
 ---
@@ -56,6 +56,7 @@ The component set, each with its one look, is the table in `11-interface-catalog
 | Hazards | intensity heat map for the current region's hazard |
 | Territory | kingdom borders, enemy territory, Seats |
 | Mana | the mana grid: load, losses and storage |
+| Sight | who watches where; the dead ground no one sees (`16-sight.md` §6) |
 
 One overlay at a time. An overlay takes a third of the colour out of the world so the data reads clearly. The switches, their tooltips and the milestone each arrives in are in `11-interface-catalogue.md` D2.
 
@@ -132,7 +133,7 @@ Implement as CSS custom properties in one file (`packages/client/src/ui/tokens.c
 
 All input is specified in `11-interface-catalogue.md`: Part B (what a browser allows, mouse, every key binding, rebinding) and Part C (the cameras). In short:
 
-- **Possess mode uses Minecraft's default controls and feel, seen from outside.** The owner's rules: a played unit moves, digs, builds and fights like a Minecraft player, from above (Overhead) or over its shoulder (Shoulder), never in first person. Muscle memory from Minecraft must just work; F5 switches the camera, and Z X C V R G hold the unit's skills.
+- **Possess mode uses Minecraft's default controls and feel, seen from above.** The owner's rules: a played unit moves, digs, builds and fights like a Minecraft player, seen from above (Overhead), never in first person or over its shoulder; the cursor aims and the unit looks where it points. Muscle memory from Minecraft must just work, except that the wheel zooms: the hotbar is on 1–9, ← → ↑ ↓ turn and tilt the camera, and Z X C V R G hold the unit's skills.
 - **Command view is a strategy-game camera:** W A S D or the screen edge pans, the wheel zooms toward the cursor, right-drag orbits, middle-drag grabs the ground, and Q and E turn. Left click selects or places; right click orders, cancels or deselects. There are no right-click menus: everything a thing can do is in its inspector.
 - **Tab switches between the two.**
 - **Ctrl + W closes a browser tab** on Windows and Linux, and Minecraft players sprint by holding Left Ctrl with W. So entering the world goes fullscreen, where the browser hands those keys to the game. In a window, Left Ctrl is switched off on Windows and Linux, sprint is double-tap W, and the browser asks before the tab closes.
@@ -155,9 +156,9 @@ All input is specified in `11-interface-catalogue.md`: Part B (what a browser al
 Part F of `11-interface-catalogue.md` lists what the interface contains at the end of each phase. For Milestone 1 that is:
 
 - the title screen (seed, Play) and the loading bar
-- the free camera's screen, seen in Shoulder with the avatar (and from phase 1.4 in Overhead, on F5): crosshair, target outline, placement ghost, hotbar with the held item's name, and a block palette (all terrain blocks plus a few building blocks)
+- the free camera's screen, seen from above with the avatar (Overhead, with the cut following it under cover): target outline, placement ghost, hotbar with the held item's name, and a block palette (all terrain blocks plus a few building blocks)
 - the map (M) with teleport, and discovery cards on entering regions
-- Tab: the Command camera as a king's view (camera only, no command features yet), and from phase 1.8 the cut and its depth gauge, for looking into the caves from above
+- Tab: the Command camera as a king's view (camera only, no command features yet), and from phase 1.8 the cut's keys and its depth gauge, for looking into the caves from above
 - the menu (with Licences), and the settings rows marked 1.4 and 1.10
 - **in every build through Milestone 4, previews included** (the owner tests with these): the F3 overlay, the Tools panel (F4) with the region and postcard teleports, the time slider, view modes and render toggles, fly, postcard mode, and the interface gallery (`/?gallery`)
 - only the `lil-gui` parameter panel is hidden, behind `?dev`
@@ -198,6 +199,8 @@ Even this small UI goes through the catalogue's pipeline (string table, lint, ga
 Keep contrast *low inside* a texture, so big surfaces don't look noisy, and put the variation in macro tinting (`04-terrain.md` §10.5).
 
 **Light.** Soft AO, a warm or cool sun, strong fog and aerial perspective for scale. Emissives with bloom: lava, crystal, glowcaps, moonsilver, skystone, ember crust, ichor, the Wellspring.
+
+**Sight** (from Milestone 2, `16-sight.md` §5). Land that none of your people see now is drawn a fifth darker, never more: the world stays readable. Underground that your people know is survey-lit under the cut, so tunnels and caverns read clearly; underground they have never seen is total darkness.
 
 **People (the avatar from phase 1.1).**
 - Blocky figures with a Minecraft avatar's proportions, 1.8 m tall, generated in code with simple rigid-part animation (`13-units-classes-power.md` §3.2). This is the owner's look for now.

@@ -59,13 +59,13 @@ Use the tokens in `06-ui-art.md` §5 and only these components. Each has one loo
 | Slot | one item stack | `--slot` square, count bottom-right, durability bar at the bottom |
 | Tooltip | explanations | `--w-tooltip` wide at most, `--ink-1` fill, `--fs-13` |
 | Alert | news | one row: icon, text, age |
-| Note | a reason at the cursor | one line of `--fs-13` text, 16 px right of the cursor (in Shoulder, of the crosshair) |
+| Note | a reason at the cursor | one line of `--fs-13` text, 16 px right of the cursor |
 | Toast | confirmation of a keypress | one line, bottom centre, 16 px above whatever stands there (the command bar, an open palette, or the item name over the hotbar), 2 s |
 | Banner | a system state that doesn't stop play | one line at the top centre, 8 px under the top bar (under the Warden card when one shows), with one Button at most (D11) |
 | Spinner | waiting inside a control or a panel | a 16 px ring in `--text-2`, shown only after 400 ms of waiting |
 | Modal | confirmations, fatal errors | centred panel 360 px wide, world dimmed 40% |
 | Card | discovery card, Warden card | text over the world with no panel (D9) |
-| Wheel | the order wheel | four wedges around the crosshair, or around the cursor in Overhead (D6) |
+| Wheel | the order wheel | four wedges around the cursor (D6) |
 
 **Layout**
 - One column of controls per panel. Settings rows put the label left and the control right.
@@ -95,7 +95,7 @@ Use the tokens in `06-ui-art.md` §5 and only these components. Each has one loo
 - **Lists:** the wheel scrolls; click selects; double-click does the row's main action (usually: jump the camera to it). A list with nothing in it shows its `*.none` row (E3) if it has one, and otherwise nothing.
 - **The wheel belongs to whatever is under the cursor:** a panel scrolls, the world zooms.
 - **Nothing moves under the cursor.** While the cursor is over the alert stack or a list, new rows wait instead of pushing the others down.
-- **Cursors:** `default` over the world, `pointer` over controls, `grabbing` while panning, `move` while orbiting, `crosshair` while placing or targeting, `not-allowed` over an invalid spot, `text` in fields.
+- **Cursors:** `default` over the world, `pointer` over controls, `grabbing` while panning, `move` while orbiting, `crosshair` while placing or targeting and over the world while playing a unit, `not-allowed` over an invalid spot, `text` in fields.
 - **Reduced motion** (the system setting or D8): slides and fades become instant, camera transitions become a 150 ms fade.
 
 **Who has the keys.** One thing at a time owns the keyboard. From the top:
@@ -103,11 +103,11 @@ Use the tokens in `06-ui-art.md` §5 and only these components. Each has one loo
 1. **A text field on the play screen** that was clicked, or opened by its key (chat, Find). Typing goes to it; Enter does its action; Esc or a click outside gives the keys back. Tab does nothing here, except in chat (D10).
 2. **Key capture** on the key list: the next key or mouse button pressed becomes the binding, except Esc, which cancels (D8).
 3. **A modal.** Enter is its verb, Esc is Cancel, Tab moves between its two buttons.
-4. **A blocking screen:** the title screen and the screens after it (D1), the menu, settings and the key list, the map, the Ledger, the inventory, a container or workstation, the block palette, the office, and the death, eliminated and Frost screens. It takes every key and the wheel, and it frees the pointer. Inside it Tab and Shift + Tab move focus in reading order, the arrow keys move a list's selection or step a focused slider (Shift + arrow steps ×10), and Enter presses the focused button, or else the row whose Key is Enter. A text field in it is one of its controls: it takes typing while it has focus, Tab leaves it, and Enter goes to the screen's Enter row. A screen that can be left without choosing something (the menu, settings, the key list, the map, the Ledger, the inventory, a container or workstation, the block palette, the office) closes on the key that opened it and on Esc. The others close only through their own buttons.
+4. **A blocking screen:** the title screen and the screens after it (D1), the menu, settings and the key list, the map, the Ledger, the inventory, a container or workstation, the block palette, the office, and the death, eliminated and Frost screens. It takes every key and the wheel. Inside it Tab and Shift + Tab move focus in reading order, the arrow keys move a list's selection or step a focused slider (Shift + arrow steps ×10), and Enter presses the focused button, or else the row whose Key is Enter. A text field in it is one of its controls: it takes typing while it has focus, Tab leaves it, and Enter goes to the screen's Enter row. A screen that can be left without choosing something (the menu, settings, the key list, the map, the Ledger, the inventory, a container or workstation, the block palette, the office) closes on the key that opened it and on Esc. The others close only through their own buttons.
 5. **The world.** The bindings of B3 for the current mode.
 
 - **Panels on the play screen never take the keys.** Drawers, the inspector, the alert stack and the Tools panel are worked with the mouse. While they are open W A S D still move, and a click on one of their buttons doesn't leave focus on it, so Space and Enter can never press a button by accident. A text field inside one takes the keys only after a click (level 1).
-- **The pointer in Shoulder** (C4) is locked only while the world has the keys; Overhead never locks it. Anything in levels 1–4 frees it, and closing it locks it again (B1 says when the browser makes that wait for a click). The Tools panel frees it too, without taking the keys.
+- **The pointer is never locked,** in any mode: the cursor aims when playing a unit (C4), so nothing has to free it or lock it again.
 
 **Esc closes one thing per press,** the first of these that applies: a tooltip → an open select → key capture → chat, Find or another focused text field → a modal → a blocking screen that can be left (the key list goes back to settings; settings goes back to where it was opened from; the menu resumes) → postcard mode → the Tools panel → a skill being aimed → a drag in progress → order targeting → the active tool → the open drawer → the selection (the inspector closes). With nothing left, it opens the menu.
 
@@ -206,7 +206,7 @@ It ships in every build through Milestone 4 so the owner can browse the interfac
 
 # Part B · Input
 
-Two modes share one keyboard. **Command view** is a strategy game: cursor visible, camera from above. **Possess** plays one unit as Minecraft does, seen from above (Overhead) or over its shoulder (Shoulder), never through its eyes (C4). Tab switches between them. The **free camera** (owner tool through Milestone 4, and the only body in Milestone 1) uses the Possess keys.
+Two modes share one keyboard. **Command view** is a strategy game: cursor visible, camera from above. **Possess** plays one unit as Minecraft does, seen from above (Overhead, C4), never through its eyes or over its shoulder; the cursor aims, and the unit looks where it points. Tab switches between them. The **free camera** (owner tool through Milestone 4, and the only body in Milestone 1) uses the Possess keys. The pointer is never locked.
 
 ## B1. What a browser allows
 
@@ -214,8 +214,8 @@ These are facts about browsers, checked in October 2026. They shape every bindin
 
 - **A window keeps some keys for itself.** A page in a normal window can't stop these, so nothing is bound to them: Ctrl/⌘ + W, T, N, Tab, PageUp, PageDown; Ctrl/⌘ + Shift + W, T, N; Ctrl + Q (Firefox on Linux) and ⌘ + Q; Alt + F4; F12; ⌘ + R and ⌘ + L (Safari).
 - **Cancel everything else.** While the world has the keys (A4), call `preventDefault` on every `keydown` except F12. A sprinting player holds Left Ctrl, so every letter their fingers pass over would otherwise fire a browser shortcut (Ctrl + D, S, F, R, 1–9), and so would keys that aren't bound yet in an early phase (F5, F6, F7, Tab, Backspace, Space, the arrows).
-- **Ignore key repeat.** Drop `keydown` events whose `KeyboardEvent.repeat` is set: they would fake the double-taps of W and Space and the short taps of Q and E. On `blur`, on losing pointer lock and whenever something takes the keys (A4), release every held key and button. A skill key released this way cancels its skill and never fires it.
-- **Entering the world is one click** (Play, Resume, or the `sys.play` line, "Click to play"). That click requests pointer lock when the mode needs it and then, while `set.ctl.fullscreen` is on, fullscreen: `requestFullscreen({ keyboardLock: 'browser' })`, followed by `navigator.keyboard.lock()` where it exists. Request pointer lock with `{ unadjustedMovement: true }` and retry without it on `NotSupportedError`.
+- **Ignore key repeat.** Drop `keydown` events whose `KeyboardEvent.repeat` is set: they would fake the double-taps of W and Space and the short taps of Q and E. On `blur` and whenever something takes the keys (A4), release every held key and button. A skill key released this way cancels its skill and never fires it.
+- **Entering the world is one click** (Play or Resume). While `set.ctl.fullscreen` is on, that click asks for fullscreen: `requestFullscreen({ keyboardLock: 'browser' })`, followed by `navigator.keyboard.lock()` where it exists. Nothing locks the pointer: the cursor aims in every mode.
 - **The keyboard counts as locked** only when `navigator.keyboard.lock()` has resolved, or the browser is a version known to honour `keyboardLock: 'browser'` (Safari 26.4 and later, Firefox 151 and later). Fullscreen without that is treated as a window.
 - **Ctrl + W and Ctrl + Q.** Minecraft players sprint with Left Ctrl while holding W, and drop a stack with Ctrl + Q. In a window on Windows and Linux those close the tab or the browser. So:
   - with the keyboard locked, Left Ctrl sprints and Ctrl + Q drops a stack
@@ -223,13 +223,12 @@ These are facts about browsers, checked in October 2026. They shape every bindin
   - on macOS, Left Ctrl always works (⌘ is the closing key there)
   - a `beforeunload` guard is on whenever the player is in the world
 - **Esc.**
-  - Without a keyboard lock, Esc never reaches the page: the browser itself releases the pointer and leaves fullscreen. So treat any loss of pointer lock or fullscreen that the game didn't ask for (Esc, Alt + Tab, a click outside) as one press of Esc (A4).
-  - With a keyboard lock, a short Esc reaches the game: handle it as A4 says, and call `exitPointerLock()` ourselves when that opens the menu.
-  - After the user's own Esc released the pointer, Chrome refuses a new lock for 1.25 s. `menu.resume` stays disabled for 1.3 s after a lock was lost that way (the one disabled state with no reason shown).
-  - **An Esc key press doesn't count as a user action,** so a pointer lock can't be requested from it. Esc on the menu still closes it; in Possess the `sys.play` line then waits for a click. Clicking Resume does both at once. If any request for a lock is refused, show `sys.play`.
+  - In fullscreen without a keyboard lock, Esc never reaches the page: the browser leaves fullscreen itself. So treat any loss of fullscreen that the game didn't ask for as one press of Esc (A4).
+  - With a keyboard lock, and in a window, a short Esc reaches the game: handle it as A4 says.
+  - **An Esc key press doesn't count as a user action,** so it can't ask for fullscreen. Esc on the menu still closes it, and play goes on in a window until the next click on Resume or a press of F11.
 - **Wheel.** Listen with `{ passive: false }` and always `preventDefault` over the game, so the page never zooms or scrolls. Convert every event to pixels by its `deltaMode`: a line is 100 ÷ 3 px, a page is 400 px. A mouse notch is then about 100 px in every browser, and a trackpad sends many small values.
   - Zooming is continuous (C1), so a wheel and a trackpad need no telling apart.
-  - Things that move in steps (the hotbar, the cut, the minimap's width) move one step for every 100 px added up, and one step at most per event.
+  - Things that move in steps (the cut, the minimap's width) move one step for every 100 px added up, and one step at most per event.
   - A pinch arrives as a wheel event with `ctrlKey` in Chrome and Firefox, and as `gesturechange` in Safari (use its `scale`, and cancel it). No single event may change the zoom by more than ×1.25, so a real Ctrl + wheel notch can't fling it.
 - **Mouse.** Cancel `mousedown` on the middle button (it stops autoscroll) and `contextmenu` over the game. Start every drag with `setPointerCapture`, so it survives leaving the window. Don't bind mouse buttons 4 and 5: Firefox on Windows uses them for "back" and can't be stopped.
 - **Edge panning works only in fullscreen.** In a window the cursor leaves the page and no events arrive.
@@ -276,7 +275,7 @@ Every row here appears on the key list (D8) under its group, with **Action** as 
 | `key.cam.zoom-in` | Zoom in | = | hold | 1.4 |
 | `key.cam.zoom-out` | Zoom out | - | hold | 1.4 |
 | `key.cam.reset` | Reset view | Backspace | north up, default tilt | 1.4 |
-| `key.cam.cut-down` | Cut lower | PageDown | 4 m; with Shift 32 m (C2) | 1.8 |
+| `key.cam.cut-down` | Cut lower | PageDown | 4 m; with Shift 32 m (C2). Also while playing (C4) | 1.8 |
 | `key.cam.cut-up` | Cut higher | PageUp | 4 m; with Shift 32 m | 1.8 |
 | `key.cam.cut-off` | Cut off | End | back to open sky | 1.8 |
 | `key.cam.king` | Jump to king | Home | | M2 |
@@ -323,15 +322,14 @@ Control groups are fixed: Ctrl + 1–9 assigns the selected companies, 1–9 sel
 | `key.pos.sprint` | Sprint | Left Ctrl | see B1 | 1.1 |
 | `key.pos.attack` | Attack or break | Left mouse | hold to keep breaking | 1.1 |
 | `key.pos.use` | Use or place | Right mouse | hold to repeat every 4 ticks; raises a shield; with Sneak held it places against a container or workstation instead of opening it | 1.1 |
-| `key.pos.pick` | Pick block | Middle mouse | selects the hotbar slot that holds the block you aim at, bringing it there from the pack if need be. In Overhead, a middle click that doesn't become a drag | 1.1 |
+| `key.pos.pick` | Pick block | Middle mouse | selects the hotbar slot that holds the block you aim at, bringing it there from the pack if need be. Only a middle click that doesn't become a drag: a middle drag orbits (C4) | 1.1 |
 | `key.pos.inventory` | Inventory | E | | 1.1 |
 | `key.pos.drop` | Drop item | Q | hold to repeat every 4 ticks; with Left Ctrl, the whole stack (B1) | M2 |
 | `key.pos.swap` | Swap hands | F | | M2 |
-| `key.pos.view` | Change view | F5 | Overhead ↔ Shoulder (C4) | 1.4 |
-| `key.pos.turn-left` | Turn left | ← | Overhead: hold to turn, tap to snap 45° | 1.4 |
-| `key.pos.turn-right` | Turn right | → | Overhead | 1.4 |
-| `key.pos.tilt-up` | Tilt up | ↑ | Overhead: toward the horizon | 1.4 |
-| `key.pos.tilt-down` | Tilt down | ↓ | Overhead: toward straight down | 1.4 |
+| `key.pos.turn-left` | Turn left | ← | turns the camera: hold to turn, tap to snap 45° (C4) | 1.1 |
+| `key.pos.turn-right` | Turn right | → | | 1.1 |
+| `key.pos.tilt-up` | Tilt up | ↑ | toward the horizon | 1.1 |
+| `key.pos.tilt-down` | Tilt down | ↓ | toward straight down | 1.1 |
 | `key.pos.active` | Active skill | Z | hold to aim, release to use; a tap uses it at once; Esc or the right mouse button cancels (`13-units-classes-power.md` §3.6) | M2 |
 | `key.pos.ultimate` | Ultimate | X | | M3 |
 | `key.pos.art` | Art | C | | M5 |
@@ -344,7 +342,7 @@ Control groups are fixed: Ctrl + 1–9 assigns the selected companies, 1–9 sel
 | `key.pos.office` | Office | K | the possessed official's panel | M3 |
 | `key.pos.king` | Return to king | Home | possess the king | M2 |
 
-The hotbar is fixed: 1–9 select a slot. In Shoulder the wheel moves one slot per step and wraps around at the ends (wheel up = the slot to the left, as in Minecraft); in Overhead the wheel zooms (C4).
+The hotbar is fixed: 1–9 select a slot. The wheel zooms the camera (C4), so, unlike Minecraft, it doesn't move along the hotbar.
 
 ### Everywhere
 
@@ -373,18 +371,18 @@ Flying is fixed, as in Minecraft's creative mode: double-tap Space within 7 tick
 
 ## B4. Possess plays like Minecraft
 
-The owner's rule: a played unit moves, digs, builds and fights like a Minecraft player in Java Edition with default settings, seen from outside (`13-units-classes-power.md` §3). Where this doc is silent, do what Minecraft does, except the camera, which is C4's. The details that carry the feel:
+The owner's rule: a played unit moves, digs, builds and fights like a Minecraft player in Java Edition with default settings, seen from above (`13-units-classes-power.md` §3). Where this doc is silent, do what Minecraft does, except the camera, which is C4's. The details that carry the feel:
 
-- **Looking** (Shoulder). One mouse count turns the view `1.2 × (0.6 s + 0.2)³` degrees, where `s` is the sensitivity setting from 0 to 1 (default 0.5, shown as 100%). That is 0.15° per count at the default. Pitch stops at 80° up and 80° down (C4). No smoothing, no acceleration.
+- **Looking** is the cursor: the unit's head turns toward the aim point under it, and its view cone with it (`16-sight.md` §3.1). Only ← → ↑ ↓ and the middle drag turn the camera (C4).
 - **Moving** uses the per-tick constants in `07-architecture.md` §6: walk 4.317 m/s, sprint 5.612, sneak 1.31, jump 1.25 m.
-- **Sprinting stops** when you let go of forward, hit a wall at more than 8°, land a sprint hit, or raise a shield.
-- **Breaking.** Hold to break. Ten crack stages show on the block. After a block breaks, the next one starts 6 ticks later. Progress resets if you look away or let go.
+- **Sprinting** works while the unit moves within 45° of where it looks, which is Minecraft's forward. It stops when the unit stops or turns farther from where it looks, hits a wall at more than 8°, lands a sprint hit, or raises a shield.
+- **Breaking.** Hold to break. Ten crack stages show on the block. After a block breaks, the next one starts 6 ticks later. Progress resets if the aim leaves the block or you let go.
 - **The free camera breaks and places as creative mode does:** a block breaks at once (one every 6 ticks while the button is held, no cracks), blocks never run out, picking a block gives it from nowhere, and reach is 5 m.
 - **Placing.** The new block goes against the face you aim at, and its ghost (`hud.ghost`) shows there first. It fails silently if it would overlap a person. Hold to place again every 4 ticks.
 - **Reach:** 4.5 m for blocks; for people and creatures, the weapon's reach (3 m for most, `13-units-classes-power.md` §3.5).
-- **Attacking.** A swing has a cooldown from the weapon's attack speed. Damage scales with how far the cooldown has recovered. The indicator under the crosshair, or under the cursor in Overhead, shows it (D6).
+- **Attacking.** A swing has a cooldown from the weapon's attack speed. Damage scales with how far the cooldown has recovered. The indicator under the cursor shows it (D6).
 - **The target outline** is a thin dark line around the block or creature the unit would touch (C4).
-- **F5** switches between Overhead and Shoulder (C4). There is no first-person view and no view from the front.
+- **The camera** is Overhead (C4): always from above, never through the unit's eyes, over its shoulder or from the front.
 - **F1** hides the interface and the target outline.
 
 - **Stamina stands where hunger did.** Sprinting, swimming and skills spend it and rest refills it (`13-units-classes-power.md` §4.2, §5.8). At zero the unit can't sprint. Skills spend it from Milestone 2 (`13-units-classes-power.md` §11.2), and fighting from Milestone 4.
@@ -444,24 +442,24 @@ The lens is a 40° vertical field of view, whatever the window's shape; resizing
 - The camera stays at least 6 m above whatever is under it. When terrain rises into it, steepen the tilt (over 200 ms) until it clears. If straight down still doesn't clear, lift the focus instead. Never change `d` for this.
 - At the world's edge the focus stops. Nothing shakes the Command camera, ever.
 
-**Following.** `insp.follow`, or a left double-click on anything but a company (B2), makes the focus track that thing (150 ms time constant). Zooming and orbiting keep the follow; any pan, grab or jump ends it. If the followed thing dies or leaves your coverage, the follow ends where it was last seen.
+**Following.** `insp.follow`, or a left double-click on anything but a company (B2), makes the focus track that thing (150 ms time constant). Zooming and orbiting keep the follow; any pan, grab or jump ends it. If the followed thing dies, leaves your coverage or, when it isn't yours, leaves your sight (`16-sight.md` §5), the follow ends where it was last seen.
 
-**What changes with distance.** People and carts are drawn as models below `d` = 400 m and as small markers above it (`--text` for civilians, `--steel` for soldiers). Above 1.5 km, settlements show a name label and one marker. World badges (D2) hide above 400 m.
+**What changes with distance.** People and carts are drawn as models below `d` = 400 m and as small markers above it (`--text` for civilians, `--steel` for soldiers, `--danger` for foes). What isn't yours shows only while it is in your sight (`16-sight.md` §5.2). Above 1.5 km, settlements show a name label and one marker. World badges (D2) hide above 400 m.
 
 ## C2. Looking underground: the cut
 
-The world goes 1.5 km down. Command view looks into it with one tool: a horizontal **cut**. It ships in phase 1.8, with the caves.
+The world goes 1.5 km down. The camera looks into it with one tool: a horizontal **cut**. The cut itself ships in phase 1.1, because Overhead needs it whenever the body goes under cover (C4); its keys and the depth gauge ship in phase 1.8, with the caves.
 
-- **What it does.** Everything above the cut height is hidden: terrain, buildings and people. Where the cut passes through solid rock, the rock is drawn as a flat, matte, dark face (`--ink-1` with 10% of the region's colour), so open space reads clearly against it.
+- **What it does.** Everything above the cut height is hidden: terrain, buildings, and creatures whose feet are above it. A creature standing below the cut is drawn whole, even where its head rises through it. Where the cut passes through solid rock, the rock is drawn as a flat, matte, dark face (`--ink-1` with 10% of the region's colour), so open space reads clearly against it. The face is one colour: it never shows what it cuts through, ore included.
 - **Moving it.** PageDown and PageUp move it 4 m (32 m with Shift; held keys repeat 8 times a second). Shift + wheel moves it 1 m per step. The first PageDown from open sky puts it 4 m below the surface at the focus. End switches it off. Moving it above all terrain in view also switches it off.
 - **The depth gauge** (D2) shows where the cut is, in metres and by layer. Clicking a layer on it puts the cut just under that layer's cavern roof below the screen centre (`C(x, z) − 2 m` from the WorldPlan), or at the middle of the layer where there's no cavern. For the Crust, that is halfway between the surface and the top of Layer 1 at that place.
 - **The focus under a cut** rides what is drawn at the screen centre: the cut face where the cut passes through rock, and the first floor below the cut where it passes through open space.
 - **Clicks hit only what is drawn.** Selection, placement and orders never reach through the cut face or pick something above the cut.
-- **The cut turns on by itself** when the camera is sent to something under cover (a jump to the king, an alert or a settlement, or leaving Possess). A thing is under cover when a solid block that isn't a plant lies within 32 m above its head. The cut is then set half a metre under the lowest such block, so the space the thing stands in is open: a house loses its roof, a tunnel its ceiling. It turns off by itself when a jump lands under open sky.
-- **Light.** Under a cut, add a flat "survey light" inside the player's coverage (everywhere in Milestone 1 and for the free camera) so tunnels are readable. It is a display aid only and changes no game light.
-- **What you may see.** The cut shows open space only inside the player's connected coverage (live) or where their people have been (remembered, drawn desaturated). Everywhere else it draws solid rock. Knowledge of the deep is earned (`01-vision.md`, "Information has a cost"). In Milestones 2–3, before the network exists, coverage means within 96 m of the player's people and buildings. In Milestone 1, and always for the free camera, everything is shown.
+- **The cut turns on by itself** when the camera is sent to something under cover (a jump to the king, an alert or a settlement, or leaving Possess). A thing is under cover when a solid block that isn't a plant lies within 32 m above its head. The cut is then set half a metre under the lowest such block, but never lower than just above a person's head, so the space the thing stands in is open: a house loses its roof, a tunnel its ceiling. It turns off by itself when a jump lands under open sky.
+- **Light.** Under a cut, add a flat "survey light" to the space your people know, so tunnels and caverns read clearly however dark they are. It is a display aid only: it changes no game light, so nobody sees farther by it (`16-sight.md` §3.2).
+- **What you may see** follows `16-sight.md` §5.4. Space your people have seen is drawn with the survey light, a fifth darker where none of them sees it now. Space they have never seen is total darkness: where the cut passes through it, the cut's face covers it as if it were rock, and below the cut every face that borders it takes the face's colour. Creatures show only while in sight. Knowledge of the deep is earned (`01-vision.md`, "Information has a cost"). In Milestone 1, always in the free camera, and with `tools.sight`, everything is known and in sight.
 
-Engineering note: a clip height in the terrain material plus a stencil-capped section plane does this without re-meshing. Leave room for the clip height in the material from phase 1.4.
+Engineering note: a clip height in the terrain material plus a stencil-capped section plane does this without re-meshing, from phase 1.1. From Milestone 2 the same material reads what your people know (`16-sight.md` §9.4).
 
 ## C3. Jumps
 
@@ -476,35 +474,27 @@ Engineering note: a clip height in the terrain material plus a stencil-capped se
 
 A jump of less than `3 × d` glides in 250 ms. A longer one cuts, with a 120 ms fade. Yaw and the tilt offset don't change in a jump (bookmarks excepted). The cut follows the rule in C2.
 
-## C4. The Possess cameras
+## C4. The Possess camera
 
-A played unit is always seen from outside, from one of two cameras (`13-units-classes-power.md` §3). F5 switches between them while playing. Play opens in the one used last; the first time on a device, in Overhead. The camera never goes inside a unit's head, in any mode.
+A played unit is always seen from above, by **Overhead**: the Command camera of C1 locked on the unit (`13-units-classes-power.md` §3.4). It is the only Possess camera. The camera never goes inside a unit's head or behind its shoulder, and the pointer is never locked.
 
-**Overhead** is the Command camera of C1, locked on the unit:
-- The focus is the unit's feet + 1 m, following with a 100 ms time constant. `d` runs from 10 to 80 m (24 m to start) *(tune)*, the lens is C1's 40°, and the cursor stays free.
+- The focus is the unit's feet + 1 m, following with a 100 ms time constant. `d` runs from 10 to 80 m (24 m to start) *(tune)*, the lens is C1's 40°, and the cursor stays free: it aims.
 - The tilt is the player's own, 30°–85° (55° to start) *(tune)*, not C1's curve. ← and → turn (100° a second while held, a 45° snap on a tap), ↑ and ↓ tilt (60° a second), and a middle drag orbits once the button has been down 120 ms *and* moved 6 px, as B2's right drag does. The wheel zooms toward the unit, continuously as in C1. A middle click that doesn't become a drag picks a block.
-- Under cover, the cut follows the unit (C2's rule, over a 3 × 3 patch of columns around it), easing over 150 ms. PageUp and PageDown move it by hand until the unit next walks under or out of cover.
-- The camera keeps 6 m above the surface under it (C1) and never shakes.
+- **Under cover, the cut follows the unit** (C2's rule, over a 3 × 3 patch of columns around it, and never lower than just above the unit's head). It moves once the cover has held for 0.25 s and eases over 150 ms, so running under an arch doesn't make it flicker. PageUp and PageDown move it by hand until the unit next walks under or out of cover. This is how the underground is played: the layers above the unit are cut away as it goes down and put back as it comes up, and what the cut opens is drawn by C2's rules.
+- The camera keeps 6 m above the surface under it (C1) and never shakes. A hit flashes the avatar red, as in Minecraft.
+- **Riding:** the focus is the rider's feet + 1 m; the mount turns where it walks.
+- **Under water:** the unit is seen through the water, which tints and fades it with depth; nothing else changes.
+- **The free camera** (D12) uses Overhead with wider limits, so the land can be looked across: `d` from 10 to 400 m and tilt from 20° *(tune)*.
 
-**Shoulder** is a third-person camera with the pointer locked:
-- It orbits a pivot 1.75 m above the unit's feet (1.40 m while sneaking), 3.6 m behind it and 0.55 m to its right *(tune)*, turned by the mouse with B4's sensitivity. Pitch stops at 80° up and 80° down.
-- **Field of view:** `set.video.fov`, 70° by default (30°–110°). Sprinting widens it by 8% and flying by 6% *(tune)*, eased over 150 ms and scaled by `set.ui.fov-effects`.
-- **Walls.** When something solid lies between the pivot and the camera, the camera slides in over 50 ms (and back out over 200 ms), never closer than 1.2 m, and the shoulder offset shrinks in proportion. When even 1.2 m isn't free, the blocks between the camera and the pivot are clipped away, with C2's clip, for as long as that lasts. Within 2 m the avatar is drawn at 35% opacity.
-- **Riding:** the pivot rises to the rider's head, and the mount turns with the camera's yaw.
-- **Under water:** the fluid's fog and tint; nothing else changes.
-- Nothing shakes, rolls or bobs the camera. A hit flashes the avatar red, as in Minecraft.
-
-**Aiming, in both** (`13-units-classes-power.md` §3.3–§3.5). The aim point is what the crosshair's ray (Shoulder) or the cursor's ray (Overhead, C1's rule) meets first beyond the unit, up to 64 m away. The unit acts along the ray from its eyes to that point, within its reach. The target outline, the placement ghost (`hud.ghost`) and `hud.target` show only what the unit would really touch.
+**Aiming** (`13-units-classes-power.md` §3.4–§3.5). The aim point is what the cursor's ray meets first (C1's rule for rays, the cut face included). The unit acts along the ray from its eyes to that point, within its reach. The target outline, the placement ghost (`hud.ghost`) and `hud.target` show only what the unit would really touch. The unit's head turns toward the aim point, so it looks where the cursor is (`16-sight.md` §3.1).
 
 ## C5. Switching between them
 
 **Tab** switches between Command view and Possess, and only while the world has the keys (A4). In Command view it possesses the first of these that can be possessed: the selected person, the last one possessed, the king. In Possess it returns to Command view. A second Tab during a transition is ignored. Tab cancels a drag or an active tool before it switches.
 
-- **Into Overhead.** Nothing locks. The focus glides to the unit and `d` eases to the last Overhead distance (24 m to start) over 400 ms *(tune)*, keeping the yaw, while the tilt eases to the Overhead tilt. Then the unit takes the keys.
-- **Into Shoulder.** The click or key press requests pointer lock at once (it must happen in the gesture). If the unit is on screen, within 400 m of the camera and not hidden by the cut, the camera flies to the shoulder position in 600 ms *(tune)*, easing in and out, while the lens widens from 40° to the field of view; the interface cross-fades in 200 ms. Otherwise it fades through black in 250 ms. If the lock is refused, the switch still happens and `sys.play` waits for a click (B1).
-- **F5 while playing** switches between Overhead and Shoulder over 400 ms in the same way. A key press counts as a user action, so going to Shoulder can lock the pointer.
-- **, and .** switch to the previous or next member of the Band (`13-units-classes-power.md` §3.8), skipping anyone who can't be possessed: in Overhead the focus moves to them as a jump does (C3); in Shoulder the camera moves as it does into Shoulder.
-- **Out of Possess.** From Overhead, the focus is let go where it is and `d` is kept (24 m at least). From Shoulder, the pointer is released and the camera pulls back and up from the unit over 500 ms, the lens narrowing to 40°, to a Command view centred on it: `d` = 60 m, yaw = the way the unit faced, a tilt offset of 0, and the cut set automatically (C2). Either way the unit's own AI takes over after half a second, so the body doesn't lurch away at once.
+- **Into Possess.** Nothing locks. The focus moves to the unit as a jump does (C3: a glide when it is near, a cut with a fade when it is far), while `d` eases to the last Overhead distance (24 m to start) and the tilt to the Overhead tilt over 400 ms *(tune)*, keeping the yaw. Then the unit takes the keys.
+- **, and .** switch to the previous or next member of the Band (`13-units-classes-power.md` §3.8), skipping anyone who can't be possessed: the focus moves to them in the same way.
+- **Out of Possess.** The focus is let go where it is, `d` is kept (24 m at least), and the tilt eases back to C1's curve, with no offset, over 400 ms. The cut stays where it was and from then on follows C2. The unit's own AI takes over after half a second, so the body doesn't lurch away at once.
 - **If the possessed unit goes Downed or dies,** the view holds for one second and then leaves Possess in the same way, centred on where it fell. If it was the king and the king dies, the death screen follows (D9).
 - **Who can be possessed** is decided by `05-systems.md` §3–§4. A refusal shows a note at the cursor (`note.possess.*`) and nothing moves.
 - **With reduced motion,** every one of these is a 150 ms fade.
@@ -512,7 +502,7 @@ A played unit is always seen from outside, from one of two cameras (`13-units-cl
 ## C6. Other cameras
 
 - **The map** (D7) is flat and always north-up. Left drag pans. The wheel zooms toward the cursor, continuously as in C1, from the whole world on screen down to 1 m per pixel. W A S D pan.
-- **The free camera** (owner tool, D12) is an avatar in creative mode (B4): it walks, flies, breaks and places with endless blocks, seen in Shoulder, and from phase 1.4 in Overhead too. It is the only body in Milestone 1.
+- **The free camera** (owner tool, D12) is an avatar in creative mode (B4): it walks, flies, breaks and places with endless blocks, seen in Overhead with its wider limits (C4). It is the only body in Milestone 1.
 - **King's view in Milestone 1** is the Command camera of C1 with nothing to select: Tab switches between it and the free camera. Going in, the Command camera centres on the free camera (with the cut set as C2 says when it was under cover). Coming back, the free camera stands on what is drawn at the focus.
 - **Postcard mode** is specified in `04-terrain.md` §14.3.
 
@@ -535,10 +525,10 @@ Unit tests on the camera maths (no rendering):
 - A jump shorter than `3 × d` glides and a longer one cuts; neither changes yaw or the tilt offset.
 - The cut: a point above it is never hit by a ray; the automatic cut leaves the target's own space open.
 - The same inputs at 30 and 144 frames a second end at the same view (within 1%).
-- Shoulder: the camera is never closer than 1.2 m to its pivot, never inside a drawn block, and never at the unit's eyes; the aim point is never nearer the camera than the unit.
 - Overhead: after 300 ms of steady movement the focus is within 0.5 m of the unit's feet + 1 m, and the outlined block is always within reach and in line of sight from the unit's eyes.
+- Overhead under cover: in a tunnel two blocks high the cut opens the tunnel and never cuts the unit; walking under a one-block arch for less than 0.25 s doesn't move it; the free camera's limits are 10–400 m and 20°–85°.
 
-One Playwright test drives the real page through `window.__cf.camera` (a read-only debug hook): pan, zoom, orbit, reset, Tab in and out, and F5 both ways.
+One Playwright test drives the real page through `window.__cf.camera` (a read-only debug hook): pan, zoom, orbit, reset, and Tab in and out.
 
 ---
 
@@ -669,7 +659,7 @@ Up to three rows under the date, newest on top (A4: they don't move under the cu
 
 | ID | Type | Label | Tooltip | Key | Does | Since |
 |---|---|---|---|---|---|---|
-| `mini.map` | canvas | Minimap | — | — | 208 px square, north always up, the camera's view drawn as an outline. Click jumps there (C3); drag moves the view; right click orders selected companies there; the wheel steps its width between 1, 4 and 16 km and the whole world. Under a cut it shows that depth From Milestone 7, Calamities near your coverage show here too. | M2 |
+| `mini.map` | canvas | Minimap | — | — | 208 px square, north always up, the camera's view drawn as an outline. Click jumps there (C3); drag moves the view; right click orders selected companies there; the wheel steps its width between 1, 4 and 16 km and the whole world. Under a cut it shows that depth. It shows what the world view shows: the land, creatures only while in sight, last-seen marks, and underground only what your people know (`16-sight.md` §5.7). From Milestone 7, Calamities near your coverage show here too | M2 |
 | `mini.north` | icon | North | Turn the view north | Backspace | a needle that shows the camera's yaw | M2 |
 | `mini.hide` | icon | Hide minimap | — | — | shrinks it to this button; click again to bring it back | M2 |
 | `overlay.resources` | icon | Resources | Known deposits and what they yield | — | overlays are toggles in a row beside the minimap. One at a time; click again to turn it off. The world loses a third of its colour while one is on | M2 |
@@ -679,6 +669,7 @@ Up to three rows under the date, newest on top (A4: they don't move under the cu
 | `overlay.hazards` | icon | Hazards | How strong the region's hazard is, place by place | — | | M4 |
 | `overlay.territory` | icon | Territory | Borders, enemy land and the Seats you know of | — | | M4 |
 | `overlay.mana` | icon | Mana | The mana grid · load, losses and storage | — | | M6 |
+| `overlay.sight` | icon | Sight | Who watches where · the dead ground no one sees | — | your people's sight drawn flat on the land: a filled area for each person on watch, an outline for everyone else's cone. It also turns on by itself while a watch building is being placed, to show what its watcher would see from there (`16-sight.md` §6) | M4 |
 
 Overlays have no legend. Every mark an overlay draws shows, on hover, the name of the thing and its number: content and numbers only.
 
@@ -719,6 +710,9 @@ Drawn on the world, not in panels. All of them hide with F1.
 | `mark.ghost` | canvas | Blueprint | — | — | an unbuilt blueprint, drawn translucent | M2 |
 | `mark.dig` | canvas | Dig mark | — | — | ground marked for digging: a hatched `--warn` tint | M2 |
 | `mark.reveal` | canvas | Revealed | — | — | what an information skill revealed, outlined through blocks for its time, and Marked foes; then a last-seen mark (`13-units-classes-power.md` §11.8) | M2 |
+| `mark.sight` | canvas | View cone | — | — | the sight of the selected person (of each member, for a company), and from Milestone 4 of a foe under the cursor: a faint fan on the ground, cut short where something blocks it, in `--steel` for yours and `--danger` for a foe's (`16-sight.md` §3) | M2 |
+| `mark.aware` | canvas | Awareness | — | — | a small ring over a foe in sight that has noticed something, in `--warn`: open while it is suspicious or searching, filled while it is alert (`16-sight.md` §7.1) | M4 |
+| `mark.lastseen` | canvas | Last seen | — | — | where a foe or a company of foes was last seen: its outline, faded, for 5 minutes. Hovering names it and gives its age; a click selects it (`foe.seen`, `16-sight.md` §5.5) | M4 |
 | `badge.materials` | icon | Missing materials | Something it needs isn't in reach of this settlement | — | badges float over buildings: one per building, the most serious, hidden when `d` is over 400 m | M2 |
 | `badge.workers` | icon | No workers | Nobody is assigned here | — | | M2 |
 | `badge.path` | icon | No way in | Workers can't reach this | — | | M2 |
@@ -1255,14 +1249,14 @@ A full-screen page: a column of tabs at the left (200 px), a list of entries (28
 
 ## D6. Possess
 
-The screen is the world. The interface is Minecraft's, element for element, seen from outside, with stamina where hunger was and the unit's skills beside the hotbar.
+The screen is the world, seen from above. The interface is Minecraft's, element for element, with stamina where hunger was and the unit's skills beside the hotbar. The cursor aims, so there is no crosshair.
 
 ```
                     ┌ Warden card (only in a Warden fight, D9) ┐         ▲ alerts (D2)
 
   Hale Brandt ▬▬ band
-  Aiko Mori   ▬▬                         +            crosshair (Shoulder)
-                                        ▂▂            attack indicator
+  Aiko Mori   ▬▬                         ↖            the cursor aims
+                                        ▂▂            attack indicator, under the cursor
 
   [chat lines]              ▬▬▬▬▬▬▬ health   stamina ▬▬▬▬▬▬▬
   Hale Brandt · Smith       [1][2][3][4][5][6][7][8][9]   [Z][X][C][V][R][G]
@@ -1271,7 +1265,6 @@ The screen is the world. The interface is Minecraft's, element for element, seen
 
 | ID | Type | Label | Tooltip | Key | Does | Since |
 |---|---|---|---|---|---|---|
-| `hud.cross` | canvas | Crosshair | — | — | a plus sign, 2 px thick, that inverts the colours behind it. Shoulder only: in Overhead the cursor aims | 1.1 |
 | `hud.outline` | canvas | Target outline | — | — | a thin dark line around the block or creature the unit would touch, within reach (C4) | 1.1 |
 | `hud.ghost` | canvas | Placement ghost | — | — | a faint copy of the held block on the face it would go on | 1.1 |
 | `hud.aim` | canvas | Skill shape | — | — | while a skill key is held, or a skill is being ordered from the inspector: its circle, cone or line on the ground, in `--steel` | M2 |
@@ -1283,12 +1276,12 @@ The screen is the world. The interface is Minecraft's, element for element, seen
 | `hud.stamina` | bar | Stamina | — | — | above the hotbar's right half, `--ok` fill. Sprinting and swimming spend it; at zero the unit can't sprint (B4) | M2 |
 | `hud.air` | bar | Air | — | — | above Mana, or stamina, only under water | M2 |
 | `hud.armour` | bar | Armour | — | — | above health, only while wearing any. The bars on the left stack upward: health, armour, Flame, hazard | M4 |
-| `hud.cooldown` | bar | Attack indicator | — | — | 16 px wide under the crosshair, or under the cursor in Overhead, only while a swing is recovering | M4 |
+| `hud.cooldown` | bar | Attack indicator | — | — | 16 px wide under the cursor, only while a swing is recovering | M4 |
 | `hud.hazard` | icon | Hazard | — | — | the hazard's icon and a Bar of exposure, above the highest bar on the left, only while exposed | M4 |
 | `hud.unit` | title | {name} · {class} | — | — | bottom left, `--fs-13` | M2 |
 | `hud.condition` | chip | {condition} | — | — | beside `hud.unit`: the unit's conditions, as in its inspector (`person.condition`) | M2 |
 | `hud.back` | keycap | Command view | — | Tab | a Keycap and these words beside `hud.unit`, shown for 4 s on entering Possess, the first three times on a device (A2) | M2 |
-| `hud.target` | title | {name} | — | — | under the crosshair after aiming for 150 ms at a person, workstation or container within reach. Switched by `set.ui.targets` (under the cursor in Overhead) | M2 |
+| `hud.target` | title | {name} | — | — | under the cursor after it has rested 150 ms on a person, workstation or container within reach. Switched by `set.ui.targets` | M2 |
 | `hud.reach` | chip | {n} in reach | — | — | beside `hud.unit` while playing the king, a Captain, a Commander or a Marshal: soldiers inside the command radius (96, 64, 96 or 160 m). The radius is a faint ring on the ground | M4 |
 | `hud.skills` | slot | Skills | — | — | up to six Slots right of the hotbar, each with its Keycap: a sweep while it recovers, and the Ultimate's Slot filling as Resolve grows | M2 |
 | `hud.xp` | bar | Experience | — | — | under the hotbar, its full width | M2 |
@@ -1300,7 +1293,7 @@ The screen is the world. The interface is Minecraft's, element for element, seen
 | `band.fresh` | chip | Fresh | Their first light today is unspent · they learn five times as fast for a while | — | beside a band member who hasn't been played this in-game day | M2 |
 | `hud.sworn` | chip | Sworn to {kingdom} | — | — | beside `hud.unit` for an eliminated player's one unit | M7 |
 
-Chat lines (D10) sit above `hud.unit`. Alerts (D2) show at the top right as they do in Command view. In Overhead they can be clicked; in Shoulder the pointer is locked, so Tab, then Space, goes to the newest. Toasts and the Steward's line keep their place (A3). Nothing else is ever on this screen: no date, no minimap, no quest text, no prompts. The free camera's screen has only `hud.cross` (in Shoulder), `hud.outline`, `hud.ghost`, `hud.hotbar` and `hud.item`: every other row here belongs to possessing a person.
+Chat lines (D10) sit above `hud.unit`. Alerts (D2) show at the top right as they do in Command view, and can be clicked. Toasts and the Steward's line keep their place (A3). Nothing else is ever on this screen: no date, no minimap, no quest text, no prompts. The free camera's screen has only `hud.outline`, `hud.ghost`, `hud.hotbar` and `hud.item`: every other row here belongs to possessing a person.
 
 ### Inventory (E)
 A centred Panel nine Slots wide (392 px with its padding). The world stays visible and dimmed 40% behind it; the unit stops moving while it's open. E or Esc closes it.
@@ -1334,17 +1327,17 @@ Using a chest, cart, crate or stockpile block opens its Slots above the pack in 
 | `work.progress` | bar | Progress | — | — | under the list while something is being made. Leaving the screen stops the work | M2 |
 
 ### The order wheel (hold B)
-Only while playing the king, a Captain, a Commander or a Marshal. Hold B: after 100 ms four wedges appear around the crosshair (around the cursor in Overhead) and the view stops turning. Move the mouse 24 px toward a wedge to light it; release B to give that order; release in the middle to give none. The order reaches every soldier of that officer inside the command radius at once (`05-systems.md` §3).
+Only while playing the king, a Captain, a Commander or a Marshal. Hold B: after 100 ms four wedges appear around the cursor, and the unit keeps looking where it looked when B went down. Move the mouse 24 px toward a wedge to light it; release B to give that order; release in the middle to give none. The order reaches every soldier of that officer inside the command radius at once (`05-systems.md` §3).
 
 | ID | Type | Label | Tooltip | Key | Does | Since |
 |---|---|---|---|---|---|---|
 | `wheel.follow` | wedge | Follow me | — | — | top | M4 |
-| `wheel.charge` | wedge | Charge | — | — | right: attack what is at the aim point, or straight ahead | M4 |
+| `wheel.charge` | wedge | Charge | — | — | right: attack what was at the aim point when B went down, or straight ahead | M4 |
 | `wheel.hold` | wedge | Hold here | — | — | bottom | M4 |
 | `wheel.pursue` | wedge | Pursue | — | — | left: run down whoever is fleeing | M4 |
 
 ### The office (K)
-Possessing an official and pressing K frees the cursor and opens the Realm panel (D5) limited to that official's own jurisdiction, with the office's skill as a Slot at its top, used as in `person.skills`. Esc or K closes it and, in Shoulder, locks the pointer again.
+Possessing an official and pressing K opens the Realm panel (D5) limited to that official's own jurisdiction, with the office's skill as a Slot at its top, used as in `person.skills`. Esc or K closes it.
 
 ---
 
@@ -1379,7 +1372,7 @@ The centred column (320 px, as on the title screen) of Buttons over the dimmed w
 
 | ID | Type | Label | Tooltip | Key | Does | Since |
 |---|---|---|---|---|---|---|
-| `menu.resume` | button | Resume | — | Esc | primary. Esc closes the menu too, but only a click can lock the pointer again; and after a lock was lost it waits 1.3 s (B1) | 1.1 |
+| `menu.resume` | button | Resume | — | Esc | primary. Esc closes the menu too, but only the click can bring back fullscreen (B1) | 1.1 |
 | `menu.settings` | button | Settings | — | — | | 1.4 |
 | `menu.guide` | button | Guide | — | — | opens the player guide in a new tab | M8 |
 | `menu.title` | button | Quit to title | — | — | replaced by `menu.leave` from Milestone 5 | 1.1 |
@@ -1406,7 +1399,6 @@ A centred Panel 560 px wide: tabs across the top, one column of rows. Each row i
 | `quality.custom` | row | Custom | — | — | option | 1.10 |
 | `set.video.distance` | slider | Render distance | Full-detail terrain around you · costs frame rate | — | 128–384 m in steps of 32, default 192 (`04-terrain.md` §13.5) | 1.4 |
 | `set.video.reach` | slider | Far terrain | How far distant land is drawn · costs memory | — | 2–16 km, default 16 | 1.4 |
-| `set.video.fov` | slider | Field of view | The Shoulder view's angle | — | 30–110°, default 70 | 1.4 |
 | `set.video.shadows` | select | Shadows | — | — | | 1.4 |
 | `shadows.off` | row | Off | — | — | option | 1.4 |
 | `shadows.near` | row | Near | — | — | option | 1.4 |
@@ -1418,8 +1410,6 @@ A centred Panel 560 px wide: tabs across the top, one column of rows. Each row i
 | `limit.30` | row | 30 | — | — | option | 1.10 |
 | `limit.60` | row | 60 | — | — | option | 1.10 |
 | `limit.screen` | row | Screen rate | — | — | option, the default | 1.10 |
-| `set.ctl.sensitivity` | slider | Mouse sensitivity | How far the Shoulder view turns as the mouse moves | — | 0–200%, default 100 (B4) | 1.4 |
-| `set.ctl.invert` | toggle | Invert look | Moving the mouse up looks down | — | default off | 1.4 |
 | `set.ctl.fullscreen` | toggle | Fullscreen on play | Lets Left Ctrl sprint without closing the tab | — | default on (B1) | 1.4 |
 | `set.ctl.sprint` | segmented | Sprint | — | — | | 1.10 |
 | `set.ctl.sneak` | segmented | Sneak | — | — | | 1.10 |
@@ -1436,7 +1426,6 @@ A centred Panel 560 px wide: tabs across the top, one column of rows. Each row i
 | `set.ctl.tilt` | toggle | Invert tilt | — | — | default off | 1.10 |
 | `set.ctl.keys` | button | Key list | — | — | opens the key list | M2 |
 | `set.ui.scale` | slider | Interface size | — | — | 80–150% in steps of 10, default 100 | 1.4 |
-| `set.ui.fov-effects` | slider | Speed effect | How much sprinting and flying widen the view | — | 0–100%, default 100 | 1.10 |
 | `set.ui.motion` | select | Motion | Reduced turns slides and camera moves into quick fades | — | | 1.10 |
 | `motion.system` | row | As the system | — | — | option, the default | 1.10 |
 | `motion.full` | row | Full | — | — | option | 1.10 |
@@ -1459,7 +1448,7 @@ Rows are grouped only on the Controls tab, under two group titles:
 
 | ID | Type | Label | Tooltip | Key | Does | Since |
 |---|---|---|---|---|---|---|
-| `set.group.possess` | title | Possess | — | — | sensitivity, invert look, fullscreen, sprint, sneak, double-tap, auto-jump | 1.10 |
+| `set.group.possess` | title | Possess | — | — | fullscreen, sprint, sneak, double-tap, auto-jump | 1.10 |
 | `set.group.camera` | title | Camera | — | — | pan speed through invert tilt, then `set.ctl.keys` | 1.10 |
 
 ### The key list
@@ -1547,7 +1536,6 @@ Full-screen states are a centred column on `--ink-0`: one line from the table, t
 
 | ID | Text | When | Since |
 |---|---|---|---|
-| `sys.play` | Click to play | one line at the centre of the dimmed play screen, whenever a click is needed to lock the pointer: the page opened straight into the world, Esc left the menu, or a lock was refused (B1) | 1.1 |
 | `sys.nogl` | This browser can't start WebGL2 · turn on hardware acceleration, then reload | full screen; no WebGL2 context | 1.1 |
 | `sys.small` | Make the window larger to play | full screen; the window is under 1024 × 600 | 1.1 |
 | `sys.storage` | This browser is blocking saved data · your edits won't be kept | banner; no IndexedDB | 1.1 |
@@ -1592,7 +1580,7 @@ Top left: one line per row, `--fs-12`, tabular numbers, each line on its own str
 | `f3.build` | stat | Build | — | — | version and commit | 1.1 |
 
 ### Tools panel (F4)
-A side panel. It frees the pointer without taking the keys (A4), so you can still walk and fly while you drag a slider. F4, Esc or a click on the world closes it.
+A side panel. It doesn't take the keys (A4), so you can still walk and fly while you drag a slider. F4, Esc or a click on the world closes it.
 
 | ID | Type | Label | Tooltip | Key | Does | Since |
 |---|---|---|---|---|---|---|
@@ -1613,6 +1601,7 @@ A side panel. It frees the pointer without taking the keys (A4), so you can stil
 | `tools.fly` | toggle | Fly | — | — | the same as a double-tap of Space | 1.1 |
 | `tools.speed` | stat | Fly speed | — | — | value: `fmt.multiple` | 1.1 |
 | `tools.free` | button | Free camera | Walk and fly anywhere with endless blocks | — | leaves the kingdom running and enters the free camera; Tab returns | M2 |
+| `tools.sight` | toggle | See everything | Every creature, and all of the underground, as if your people saw it | — | default off; `16-sight.md` §5.6 | M2 |
 | `tools.still` | button | Postcard mode | Hides the interface and waits until the view has fully loaded | — | Esc leaves it | 1.1 |
 | `tools.gallery` | button | Interface gallery | — | — | opens `/?gallery` in a new tab | 1.1 |
 | `tools.clear` | button | Clear my edits | Forgets every block placed or broken in this seed | — | danger button; *confirm* (`confirm.clear`) | 1.1 |
@@ -1651,6 +1640,8 @@ News lines fill alert rows (D2) and the News tab. A row is: a priority icon, the
 | `news.dark` | {place} has gone dark | important: a link broke and the place is cut off | M4 |
 | `news.silence` | No word from {place} | important: an expected report is overdue | M4 |
 | `news.scout` | An enemy scout was seen near {place} | important | M4 |
+| `news.sighted` | Enemies seen near {place} | important: your people saw foes where none had been seen for 5 minutes (`16-sight.md` §7.5) | M4 |
+| `news.digging` | Digging heard under {place} | important: your people heard digging that isn't yours under a settlement or its walls (`16-sight.md` §7.3) | M4 |
 | `news.warparty` | A war party is marching on {place} | important | M4 |
 | `news.fallen` | {name} has fallen | important: an official, a member of your band, or anyone of Champion grade or higher died | M4 |
 | `news.slain` | {warden} has fallen | critical | M4 |
@@ -2080,15 +2071,15 @@ Each row's **Since** decides when it ships. This table only sums them up; `node 
 
 | Phase | The interface that exists at its end |
 |---|---|
-| 1.1 | title screen (seed, Play); loading; the free camera's screen in Shoulder, with the avatar (crosshair, target outline, placement ghost, hotbar, the held item's name); block palette; menu (Resume, Licences, Quit to title); F1, F2, F3 and the Tools panel (F4) with the rows marked 1.1; the system states that need no server (click to play, no WebGL2, small window, blocked storage, lost graphics, new version); the toasts; the "Clear my edits" confirmation; the string pipeline, `ui:lint`, the gallery and `ui:shots` (A6, A7) |
+| 1.1 | title screen (seed, Play); loading; the free camera's screen in Overhead, with the avatar and the cut that follows it under cover (target outline, placement ghost, hotbar, the held item's name); block palette; menu (Resume, Licences, Quit to title); F1, F2, F3 and the Tools panel (F4) with the rows marked 1.1; the system states that need no server (no WebGL2, small window, blocked storage, lost graphics, new version); the toasts; the "Clear my edits" confirmation; the string pipeline, `ui:lint`, the gallery and `ui:shots` (A6, A7) |
 | 1.2 | the map with Teleport; discovery cards; "Go to region"; the World select |
 | 1.3 | "Go to postcard"; the View switch (Clay, Features) |
-| 1.4 | the Command camera as king's view (C1, C6) with Tab; Overhead for the free camera (F5); the map's "Go here"; Settings with the rows marked 1.4; the LOD rows in F3 and Tools |
-| 1.8 | the cut (C2) with its keys and the depth gauge; the map's layer tabs |
+| 1.4 | the Command camera as king's view (C1, C6) with Tab; the map's "Go here"; Settings with the rows marked 1.4; the LOD rows in F3 and Tools |
+| 1.8 | the cut's keys (C2) and the depth gauge; the map's layer tabs |
 | 1.10 | every Settings row marked 1.10, including the Audio tab's Volume; nothing else new |
-| M2 | the Command view: top bar, alerts, minimap, the Resources overlay, command bar, Build (with Dig) and Zones, the inspector, Realm (Overview, People, News), the Ledger, Find, the key list, bookmarks; the map's markers; Possess in Overhead and Shoulder with real inventories, Handwork, containers and workstations; classes, levels, grades, experience, attribute points and proficiencies in the inspector; skills on keys, in the inspector and beside the hotbar, with autocast; the Band; the Steward's lines; "Choosing ground"; the death screen; the free camera as an owner tool beside the kingdom |
+| M2 | the Command view: top bar, alerts, minimap, the Resources overlay, command bar, Build (with Dig) and Zones, the inspector, Realm (Overview, People, News), the Ledger, Find, the key list, bookmarks; the map's markers; Possess with real inventories, Handwork, containers and workstations; sight: the darkened land, creatures shown only while seen, the underground only where your people have seen it, the view cone of a selected person, and the owner's "See everything"; classes, levels, grades, experience, attribute points and proficiencies in the inspector; skills on keys, in the inspector and beside the hotbar, with autocast; the Band; the Steward's lines; "Choosing ground"; the death screen; the free camera as an owner tool beside the kingdom |
 | M3 | Routes; Trade (Prices); Realm (Officials, Policies, Treasury, Grades); Promote, Resolve, deeds, Speciality and Background; Ultimates; loyalty, tiers and their causes; the Logistics and Loyalty overlays; neutral villages and gifts; reputation; the office (K) |
-| M4 | Army (companies) and the order buttons; roles, military ranks, wards and day trades; company classes and skills; Trials and relic slots; control groups; the order wheel; the network: its buildings, link notes, the Network, Hazards and Territory overlays, news that travels and pending orders; enemy and Warden rows and the Warden card; integrity and repair; conditions; inscriptions; two more Ledger tabs |
+| M4 | Army (companies) and the order buttons; roles, military ranks, wards and day trades; company classes and skills; Trials and relic slots; control groups; the order wheel; the network: its buildings, link notes, the Network, Hazards and Territory overlays, news that travels and pending orders; foes' sight: the Sight overlay, awareness and last-seen marks, and the news of sightings and digging; enemy and Warden rows and the Warden card; integrity and repair; conditions; inscriptions; two more Ledger tabs |
 | M5 | signing in, the lobby, founding; advanced classes; chat; Realm (Kings), offers and deals; Trade (Board, Contracts); captives and bribes; morale; armies under a Marshal and siege; capture; the system states for connections. Owner tools leave |
 | M6 | the Mana overlay; mana, machine and lift rows; the Mana bar; ascent sickness and world events in the news |
 | M7 | lives; Calamities: the Great Hearth, the oath, Flame, their news and Chronicle lines; the season's week and the Frost warnings; the Chronicle, Standings, Feats and Ledger of Kings; sworn units; the eliminated and Frost screens |

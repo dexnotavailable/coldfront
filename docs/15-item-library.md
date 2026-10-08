@@ -492,7 +492,7 @@ Blocks (`07-architecture.md` §5) and buildings (`05-systems.md` §13) are not i
 | `item.riverboat` | Riverboat | Hauling 3 t at 2–3 m/s on water | 30 × `item.planks`, 2 × `item.pitch`, 2 × `item.cloth` | needs docks | M3 |
 | `item.barge` | Barge | Hauling 10 t at 2 m/s on water | 50 × `item.planks`, 10 × `item.ironwood`, 4 × `item.pitch` | needs docks | M3 |
 | `item.sled` | Sled | Hauling 400 kg over snow and ice | 6 × `item.planks`, 1 × `item.iron-ingot` | drawn by a team of four sled dogs | M4 |
-| `item.spyglass` | Spyglass | Seeing far: sight ×2 in a 20° cone while raised | 2 × `item.lens`, 1 × `item.iron-ingot` | — | M4 |
+| `item.spyglass` | Spyglass | Seeing far: sight ×2 in a 20° cone while raised | 2 × `item.lens`, 1 × `item.iron-ingot` | carried by someone on watch: sight ×1.5 all round (`16-sight.md` §6.3) | M4 |
 | `item.signal-horn` | Signal horn | Raising alarms heard 200 m off | 1 × `item.horn` | — | M4 |
 | `item.signal-mirror` | Signal mirror | Flashing signals by day | 1 × `item.glass`, 1 × `item.silver-ingot` | — | M4 |
 | `item.banner` | Banner | A company's colours | 2 × `item.cloth`, 1 × `item.long-haft` | planted, it is a **ward** for the Guard role (13 §12) | M4 |
@@ -567,7 +567,7 @@ Blocks (`07-architecture.md` §5) and buildings (`05-systems.md` §13) are not i
 
 | ID | Name | Warden | Tier | Power | Hunger | Tooltip | Since |
 |---|---|---|---|---|---|---|---|
-| `item.unlit-lantern` | The Unlit Lantern | Akari | II | Passive: sight 48 m at night and underground. Bends 13 §4.2 (sight). Active, 180 s: snuffs every light within 8 m for 15 s; foes inside are **Blinded**, and its bearer's hits on them are ×1.25 more. | — | Puts out the lights around it and strikes harder in the dark · 8 m | M6 |
+| `item.unlit-lantern` | The Unlit Lantern | Akari | II | Passive: its bearer sees in the dark as by day, the light counting as 15 for their sight. Bends `16-sight.md` §3.2 (range). Active, 180 s: snuffs every light within 8 m for 15 s; foes inside are **Blinded**, and its bearer's hits on them are ×1.25 more. | — | Puts out the lights around it and strikes harder in the dark · 8 m | M6 |
 | `item.thorn-crown` | Thorn Crown | Gōka | II | Passive: Fire resistance 50%; foes who strike its bearer in melee take 15% of their hit back as Fire. Active, 180 s: thorns burst under one target within 16 m: 460% of a hit, **Rooted** and **Bleeding**. | — | Bursts thorns under one foe and pricks all who strike its bearer · 16 m | M6 |
 | `item.resonant-core` | Resonant Core | Hibiki | II | Passive: Mana +25%; Mana refills at 3 a second anywhere, as beside a source. Bends 13 §4.2 (Mana). Active, 180 s: a ringing note: 600% of a hit as Mana on one target within 24 m, which is **Silenced**. | — | Rings one foe silent and keeps its bearer's Mana full · 24 m | M6 |
 | `item.stormwrights-compass` | Stormwright's Compass | Admiral Kest | II | Passive: Storm resistance 50%; a **Survey** of everything within 64 m as its bearer travels. Active, 180 s: a gale 24 m long and 3 m wide: 300% of a hit as Storm to every foe in it, each pushed back 8 m and **Staggered**. | — | Maps the land as it goes and drives foes back with a gale · 24 m by 3 m | M6 |
@@ -638,7 +638,7 @@ Blocks (`07-architecture.md` §5) and buildings (`05-systems.md` §13) are not i
 | `item.salt-flatbread` | Salt flatbread | **Well fed**: **Sweltering** exposure −25% | 8 in-game hours | 1 × `item.flour`, 1 × `item.salt` | bakery | Holds off the heat from within · keeps a week | M4 |
 | `item.fungus-stew` | Fungus stew | **Well fed**: Health regained +10%, Stamina +5% | 8 in-game hours | 2 × `item.fungi`, 1 × `item.salt` | kitchen | Wounds close faster and Stamina lasts · grown without sun | M6 |
 | `item.fungus-bread` | Fungus bread | **Well fed**: work speed +5% | 8 in-game hours | 2 × `item.fungi`, 1 × `item.flour` | bakery | Work goes a little faster · keeps a season | M6 |
-| `item.glowcap-broth` | Glowcap broth | **Well fed**: sight 24 m at night and underground, not 16 m | 6 in-game hours | 2 × `item.glowcap`, 1 × `item.bone` | kitchen | Sees farther in the dark · sight only | M6 |
+| `item.glowcap-broth` | Glowcap broth | **Well fed**: sees in the dark as if the light were 4 higher (`16-sight.md` §3.2) | 6 in-game hours | 2 × `item.glowcap`, 1 × `item.bone` | kitchen | Sees farther in the dark · sight only | M6 |
 | `item.marrow-soup` | Marrow soup | **Well fed**: Health +15% | 12 in-game hours | 1 × `item.titan-marrow`, 2 × `item.bone`, 1 × `item.vegetables` | kitchen | Much more Health · costs a share of titan marrow | M6 |
 
 ---
@@ -656,7 +656,7 @@ Blocks (`07-architecture.md` §5) and buildings (`05-systems.md` §13) are not i
 | `item.sour-milk` | Sour milk | **Merry**: morale +5, Stamina +5% | 4 in-game hours | 2 × `item.milk` | kitchen | A little cheer and Stamina · no cost to the aim | M3 |
 | `item.festival-ale` | Festival ale | **Merry**: morale +20; ranged spread +20% | 8 in-game hours | 2 × `item.ale`, 1 × `item.fruit` | brewhouse | The greatest cheer · ruins the aim | M3 |
 | `item.fen-bitters` | Fen bitters | **Merry**: **Poisoned** lasts half as long; ranged spread +10% | 6 in-game hours | 1 × `item.fen-reagents`, 1 × `item.grain-spirit` | alchemy table | Poison wears off twice as fast · loosens the aim | M4 |
-| `item.glowcap-liquor` | Glowcap liquor | **Merry**: morale +10, sight 24 m at night and underground; ranged spread +10% | 6 in-game hours | 2 × `item.glowcap`, 1 × `item.grain-spirit` | brewhouse | Cheer, and sight in the dark · loosens the aim | M6 |
+| `item.glowcap-liquor` | Glowcap liquor | **Merry**: morale +10; sees in the dark as if the light were 4 higher; ranged spread +10% | 6 in-game hours | 2 × `item.glowcap`, 1 × `item.grain-spirit` | brewhouse | Cheer, and sight in the dark · loosens the aim | M6 |
 | `item.pearl-cordial` | Pearl cordial | **Merry**: morale +15, control effects on the drinker last 10% less; ranged spread +10% | 8 in-game hours | 1 × `item.deep-pearl`, 1 × `item.fruit-wine` | alchemy table | Great cheer and a clearer head · loosens the aim | M6 |
 
 ---

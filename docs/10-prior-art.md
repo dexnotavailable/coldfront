@@ -46,7 +46,7 @@ COLDFRONT will charge money (paid lives), so it is a commercial product.
 | **ClassiCube** `FancyLighting.c` | BSD-3, verified | port with attribution | Add and remove light queues; sunlight from a heightmap. | [repo](https://github.com/ClassiCube/ClassiCube) |
 | **Divine Voxel Engine** | MIT, verified | study | Splitting work into world, mesher and generator threads; RGB light propagation. | [repo](https://github.com/Divine-Star-Software/DivineVoxelEngine) |
 | **noa-engine** | MIT, verified; unmaintained | study | A mature JS greedy mesher that puts AO in the merge key. | [repo](https://github.com/fenomas/noa) |
-| **prismarine-viewer, minecraft-web-client** | MIT, verified | study | Worker meshing; input tricks: `requestPointerLock({ unadjustedMovement: true })` and `navigator.keyboard.lock()`. **Never** their textures (Mojang's). | [viewer](https://github.com/PrismarineJS/prismarine-viewer) |
+| **prismarine-viewer, minecraft-web-client** | MIT, verified | study | Worker meshing; input tricks: `navigator.keyboard.lock()` (we never lock the pointer). **Never** their textures (Mojang's). | [viewer](https://github.com/PrismarineJS/prismarine-viewer) |
 | **Distant Horizons** public API docs | LGPL-3.0 (code) | study the docs only | Each far cell is a column of vertical runs (bottom, top, block, light); far geometry has its own near/far depth range. | [API docs](https://distant-horizons-team.gitlab.io/distant-horizons/allclasses-index.html) |
 | **pmndrs postprocessing** | Zlib, verified | use | `EffectPass` merges effects into fewer full-screen passes; `BloomEffect`, tone mapping. Also required by takram's effects. | [repo](https://github.com/pmndrs/postprocessing) |
 | **@takram/three-atmosphere** | MIT, plus BSD-3/MIT/Apache file notices, verified | use from phase 1.4 | Physically based sky and **aerial perspective** (the distance haze that sells 5–16 km views). Its light-source mode works with Lambert materials and shadows. Test it together with our depth setup. Generate its lookup textures at runtime (`PrecomputedTexturesGenerator`), never from its default remote URL, and set `worldToECEFMatrix` for our flat world (`04-terrain.md` §13.7). | [repo](https://github.com/takram-design-engineering/three-geospatial) |
@@ -72,7 +72,7 @@ COLDFRONT will charge money (paid lives), so it is a commercial product.
 
 ## 3. Units, agents and simulation (Milestone 2 onward)
 
-The owner's rule: every unit is a Minecraft-player equivalent, driven by the game's AI or possessed by the player, and a played unit moves exactly like a Minecraft player (seen in third person: `13-units-classes-power.md` §3).
+The owner's rule: every unit is a Minecraft-player equivalent, driven by the game's AI or possessed by the player, and a played unit moves exactly like a Minecraft player (seen from above: `13-units-classes-power.md` §3).
 
 | Name | Licence | Take | What exactly | Link |
 |---|---|---|---|---|
@@ -93,6 +93,9 @@ The owner's rule: every unit is a Minecraft-player equivalent, driven by the gam
 | Netcode articles | — | study | [Gaffer On Games](https://gafferongames.com/post/state_synchronization/) (priority accumulator, quantisation, deltas against the last acknowledged snapshot); [Gambetta](https://www.gabrielgambetta.com/client-side-prediction-server-reconciliation.html) (prediction and reconciliation); [Valve](https://developer.valvesoftware.com/wiki/Source_Multiplayer_Networking); Minecraft's sequence numbers for predicted block edits. | — |
 | Minestom | Apache-2.0, verified | study | Its "Acquirable" pattern: the same code runs with one thread per region or one thread for all. | [docs](https://minestom.net/docs/thread-architecture/acquirable-api) |
 | Colyseus | MIT, verified | skip | Its 64-field schema limit doesn't fit; copy only the idea of per-client state views. | — |
+| Voxel traversal (Amanatides and Woo, 1987) | a paper | write it yourself | The step-by-step walk of a ray through a voxel grid: lines of sight (`16-sight.md` §9.2), and the same walk as block picking. | — |
+| Viewsheds on a heightmap | map-software papers | study | The radial sweep that keeps the highest angle seen so far along each ray (`16-sight.md` §9.2). | — |
+| Stealth and fog of war in games | games | study | League's fog of war, brush and wards; view cones you can see and dodge (Commandos, Shadow Tactics); awareness that rises and decays (Thief, Splinter Cell, Mark of the Ninja). Ideas only: `16-sight.md` holds our rules. | — |
 
 **Unit architecture from this audit** (applied in `05-systems.md` §3 and §22, and `07-architecture.md` §9):
 - **One unit model.** A controller emits an `InputFrame` every 50 ms: `{ seq, forward, back, left, right, jump, sprint, sneak, yaw, pitch, action? }`, where the optional action is dig, place, use, attack, equip, craft or a skill (its slot and aim point) with a target and face. AI controllers and a possessing player's controller emit identical frames; one shared `physics.step()` and one shared `actions.validate/apply()` consume them. Possession swaps the controller.

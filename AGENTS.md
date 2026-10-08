@@ -2,7 +2,7 @@
 
 COLDFRONT is a seasonal, ~100-player voxel civilization builder for the browser. You rule a kingdom from a top-down command view and possess its people on the ground. You push supply lines down a funnel-shaped world of hostile regions to break the strongholds of 29 Wardens and, finally, the King Below. **Current focus: Milestone 1, the world (terrain generation at "Big Globe" quality).**
 
-**The owner's technical TL;DR:** Minecraft, but it extends downwards, with Big Globe installed and a bird's-eye view. Every unit is a Minecraft-player equivalent (breaks blocks, has an inventory, HP and so on) controlled by the game's AI in an optimised way, and playing one moves exactly like a Minecraft player, seen from above or over its shoulder (never in first person). People have classes, levels and skills, up to the Calamity (`docs/13-units-classes-power.md`).
+**The owner's technical TL;DR:** Minecraft, but it extends downwards, with Big Globe installed and a bird's-eye view. Every unit is a Minecraft-player equivalent (breaks blocks, has an inventory, HP and so on) controlled by the game's AI in an optimised way, and playing one moves exactly like a Minecraft player, seen from above (never in first person or over its shoulder). Every unit sees with a human field of view, and the player sees only what their units see (`docs/16-sight.md`). People have classes, levels and skills, up to the Calamity (`docs/13-units-classes-power.md`).
 
 Every coding agent works from this file: Codex reads it directly, and Claude Code reads it through `CLAUDE.md`. It stays short on purpose (Codex stops reading instructions past 32 KiB): put new detail in `docs/`, not here.
 
@@ -15,7 +15,7 @@ Every coding agent works from this file: Codex reads it directly, and Claude Cod
 1. `docs/12-sessions.md` §1, now: it tells you which branch to work on. Read the rest of it before your first render, push or report.
 2. `docs/progress.md`: where we are, what's next, known issues.
 3. `docs/08-roadmap.md`: the current phase's scope and "Done when".
-4. Only the docs that phase needs. For terrain phases: `docs/04-terrain.md`, `docs/02-world.md`, `docs/07-architecture.md`. For anything on screen or under the player's hands: Part A of `docs/11-interface-catalogue.md` and the section for the thing you're building. For people, classes, skills, items or combat: `docs/13-units-classes-power.md` and the rows you need in 14 and 15.
+4. Only the docs that phase needs. For terrain phases: `docs/04-terrain.md`, `docs/02-world.md`, `docs/07-architecture.md`. For anything on screen or under the player's hands: Part A of `docs/11-interface-catalogue.md` and the section for the thing you're building. For people, classes, skills, items or combat: `docs/13-units-classes-power.md` and the rows you need in 14 and 15. For what anyone can see, hiding, or how the AI notices things: `docs/16-sight.md`.
 
 | Doc | Contents |
 |---|---|
@@ -31,9 +31,10 @@ Every coding agent works from this file: Codex reads it directly, and Claude Cod
 | `docs/10-prior-art.md` | open-source code and techniques to reuse, **licence rules**, and sources that are off-limits |
 | `docs/11-interface-catalogue.md` | **the interface bible:** rules for every screen, input, cameras, and every control, key and word on screen |
 | `docs/12-sessions.md` | how a session runs: branches, browsers for screenshots, pushes, previews, CI, notes per tool |
-| `docs/13-units-classes-power.md` | **people's rules:** playing a unit (no first person), the sheet, fighting, conditions, levels, proficiency, grades up to the Calamity, roles, ranks and offices |
+| `docs/13-units-classes-power.md` | **people's rules:** playing a unit (from above only), the sheet, fighting, conditions, levels, proficiency, grades up to the Calamity, roles, ranks and offices |
 | `docs/14-class-library.md` | every class and every skill, as data tables |
 | `docs/15-item-library.md` | every item, as data tables, and the rules items follow |
+| `docs/16-sight.md` | **sight:** view cones and ranges, what the player sees (unseen land, the underground under the cut), hiding, watchtowers, and how the AI notices, remembers and searches |
 | `docs/diagrams/*.svg` | world layout (top view), funnel (side view); regenerate with `python3 docs/diagrams/make_diagrams.py` after renames |
 
 ## Golden rules

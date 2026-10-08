@@ -59,13 +59,14 @@ Nothing loads from a CDN at runtime. Every dependency comes from npm and is bund
 │  │  ├─ src/sdf/       primitives, ops, Bézier spines (arc length, RMF frames), polygon sections
 │  │  ├─ src/third_party/ ported MPL files, kept separate with their licence headers (e.g. the erosion filter)
 │  │  ├─ src/physics/   (M2) the prismarine-physics port and the shared action API
+│  │  ├─ src/sight/     (M2) view cones, ranges, lines of sight and awareness (`16-sight.md`)
 │  │  ├─ src/worldgen/  plan/ columns/ density/ features/ carvers/ fluids/ materials/ decoration/
 │  │  │                 regions/<regionId>.ts (one recipe per region), pipeline.ts, version.ts
 │  │  ├─ src/blocks/    registry.ts, textures/recipes.ts
 │  │  └─ test/          unit tests, golden/worldgen.json, forbidden-tokens.test.ts
 │  ├─ client/           the game (Vite)
 │  │  ├─ src/engine/    renderer, chunk store, streaming, lod (3D chunk grid + column-tile quadtree), workers (gen, light, mesh), sky, water, post
-│  │  ├─ src/game/      player controller, physics, input (bindings, pointer lock, fullscreen), cameras (command, possess, free), edits persistence
+│  │  ├─ src/game/      player controller, physics, input (bindings, fullscreen, keyboard lock), cameras (command, Overhead, free) and the cut, the darkening of unseen land (M2), edits persistence
 │  │  ├─ src/ui/        tokens.css, components/ (one file per catalogue component), screens/, hud/, gallery/,
 │  │  │                 strings.gen.json (generated from the catalogue; never edited by hand), t.ts, phase.ts (UI_PHASE)
 │  │  ├─ src/dev/       the logic behind the owner tools: teleports, view modes, postcard mode, lil-gui (?dev). Their screens live in src/ui like any other
@@ -167,10 +168,11 @@ As specified in `04-terrain.md` §13:
 pmndrs `postprocessing`: `RenderPass → EffectPass(Bloom with threshold, ACES tone mapping, optional FXAA)`. From phase 1.4, takram's aerial perspective joins the chain.
 
 **Game layer (M1)**
-- **Input follows `11-interface-catalogue.md` Part B.** Pointer lock (`unadjustedMovement: true`, retried without it where that isn't supported). Entering the world goes fullscreen with the keyboard locked where the browser allows, so Ctrl-sprint doesn't trigger Ctrl+W (close tab). In a window on Windows and Linux, Left Ctrl is switched off and sprint is double-tap W. A `beforeunload` guard is on whenever the player is in the world. Keys are read by position (`KeyboardEvent.code`) through one binding table that the key list edits.
-- **Cameras follow Part C.** Shoulder (third person, with the avatar) from phase 1.1; Overhead (F5) from phase 1.4; the Command camera, as king's view, from phase 1.4; the cut from phase 1.8, with the caves (leave room for a clip height in the terrain material from phase 1.4). The camera maths is pure and unit-tested (Part C7).
+- **Input follows `11-interface-catalogue.md` Part B.** No pointer lock: the cursor aims in every mode. Entering the world goes fullscreen with the keyboard locked where the browser allows, so Ctrl-sprint doesn't trigger Ctrl+W (close tab). In a window on Windows and Linux, Left Ctrl is switched off and sprint is double-tap W. A `beforeunload` guard is on whenever the player is in the world. Keys are read by position (`KeyboardEvent.code`) through one binding table that the key list edits.
+- **Cameras follow Part C.** Overhead (the Command camera's maths locked on the avatar) from phase 1.1, with the cut's clip and cap following it under cover; the Command camera, as king's view, from phase 1.4; the cut's keys and depth gauge from phase 1.8, with the caves. The camera maths is pure and unit-tested (Part C7).
+- **Sight** (Milestone 2): the darkening of unseen land and the knowledge test under the cut are read by the terrain material (`16-sight.md` §9.4). Leave room for both in it.
 - An AABB player controller; DDA raycast for block picking.
-- **The player controller is the Minecraft controller** (the owner's rule): seen in third person, never first person, with Minecraft's controls (`11-interface-catalogue.md` B3–B4) and movement feel. From Milestone 2 the M1 controller is replaced by the shared unit physics (the prismarine-physics port), so the player and every NPC move identically.
+- **The player controller is the Minecraft controller** (the owner's rule): seen from above, never in first person or over the shoulder, with Minecraft's controls (`11-interface-catalogue.md` B3–B4) and movement feel. From Milestone 2 the M1 controller is replaced by the shared unit physics (the prismarine-physics port), so the player and every NPC move identically.
 - Player constants: **Minecraft's per-tick values at a fixed 20 Hz** (1 block = 1 m; a tick is 50 ms):
   - box 0.6 × 1.8 × 0.6 m; eye at 1.62 m (1.27 m sneaking)
   - walk ≈ 4.317 m/s, sprint ≈ 5.612 m/s, sneak ≈ 1.31 m/s
@@ -239,7 +241,7 @@ Atlas, slice and the report may use `worker_threads` for speed. Postcards must w
 - **Physics at a fixed 20 Hz** (two steps per simulation tick): every Minecraft movement constant is per 50 ms step, so slower physics would make units move at half speed and jump wrong.
 - **AI, jobs and snapshots at 10 Hz.**
 - **Simulation tiers T0–T3** (`05-systems.md` §22): possessed, near a camera, loaded but unwatched, ledger.
-- **Systems** (ECS): movement and pathing, jobs and tasks, needs, production, logistics, combat, morale, loyalty, network connectivity and news, enemy AI, Wardens, hazards, decay.
+- **Systems** (ECS): movement and pathing, jobs and tasks, needs, production, logistics, combat, morale, loyalty, network connectivity and news, sight and awareness (`16-sight.md`), enemy AI, Wardens, hazards, decay.
 
 **Space and attention**
 - The world is divided into 256 m **sectors**, with vertical bands (the world goes 1.5 km deep) and hysteresis at sector edges.
@@ -267,8 +269,8 @@ Atlas, slice and the report may use `worker_threads` for speed. Postcards must w
 
 **Networking**
 - Binary WebSocket (WebTransport later). A versioned codec schema in `shared/protocol` (DataView). No JSON on hot paths.
-- **Terrain:** clients regenerate base terrain from `(seed, WORLDGEN_VERSION)`. The server sends only sparse chunk edit diffs. A version mismatch blocks joining until the client updates.
-- **Entities:** interest-managed by the client's connected coverage and camera area. Snapshots plus deltas at 10 Hz against the last snapshot the client acknowledged, with quantised positions and a per-client priority accumulator; distant units are sent as aggregates or as a path plus start tick. Client interpolation. Prediction and reconciliation only for the possessed unit, including its digging and placing, using sequence numbers the server acknowledges.
+- **Terrain:** clients regenerate base terrain from `(seed, WORLDGEN_VERSION)`. The server sends only sparse chunk edit diffs, and another kingdom's edits only once the client's kingdom has seen that section (`16-sight.md` §9.5). A version mismatch blocks joining until the client updates.
+- **Entities:** interest-managed by sight: a client gets only what its kingdom (and its allies) see, within its camera area (`16-sight.md` §9.5). Snapshots plus deltas at 10 Hz against the last snapshot the client acknowledged, with quantised positions and a per-client priority accumulator; distant units are sent as aggregates or as a path plus start tick. Client interpolation. Prediction and reconciliation only for the possessed unit, including its digging and placing, using sequence numbers the server acknowledges.
 - **Commands** are intents. The server validates everything (reach, range, permissions, rate limits). Never trust the client.
 
 **Persistence**
