@@ -29,7 +29,7 @@ The goal: Big Globe-class terrain for the whole of Kaldmark, walkable in the bro
   5. Press F3 to see the debug info, and F4 for the tools (time of day, fog, fly speed).
   6. Reload: your edits are still there.
   7. Open `<link>/?gallery` to see every interface screen built so far.
-- **Done when:** tests, check and build pass; the tools produce images; **TEST-1 ≥ 12/20** (self-scored); the 1.1 screens pass the checklist in `11-interface-catalogue.md` A7 from their screenshots, and `npm run ui:lint -- --complete` passes. Step 5 items and the CI's cross-browser job may slip into 1.2 if the session runs out: `--complete` then fails on those rows only, and the report lists them.
+- **Done when:** tests, check and build pass; the tools produce images; **TEST-1 ≥ 12/20** (self-scored); the 1.1 screens pass the checklist in `11-interface-catalogue.md` A7 from their screenshots, and `npm run ui:lint -- --complete` passes. Step 5 items, the cut that follows the free camera under cover, and the CI's cross-browser job may slip into 1.2 if the session runs out: `--complete` then fails on those rows only, and the report lists them.
 
 ### 1.2 World plan
 - **Build:**
@@ -78,9 +78,9 @@ The goal: Big Globe-class terrain for the whole of Kaldmark, walkable in the bro
   - the Command camera as king's view, on Tab (`11-interface-catalogue.md` C1, C6), with its tests (C7)
   - settings: the rows marked 1.4 (render distance, far terrain, shadows, bloom, haze, fullscreen on play, interface size)
 - **Owner tries:**
-  1. Climb a high point in Ibara and look at the colossal thorns far away.
+  1. Open the Tools (F4) and go to the HELL-3 postcard: the colossal thorns far away, in haze. Esc brings you back.
   2. Press Tab and zoom out to ~3 km. Pan with W A S D, turn with a right-drag, grab the ground with a middle-drag.
-  3. Look across the Blackwater at the Nadir.
+  3. Go to the KING-1 postcard, then press Tab and look across the Blackwater at the Nadir from above.
   4. Note the FPS from F3 on your laptop.
 
 - **Done when:** HELL-3, HELL-4, VISTA-1, MTN-2 and KING-1 show ≥ 5 km of real terrain with no LOD artifacts (rings, terraces, cracks, flattened peaks). Kurogane can still be first-pass here.
@@ -92,7 +92,7 @@ The goal: Big Globe-class terrain for the whole of Kaldmark, walkable in the bro
   - karst towers, giant trees, cutout vegetation
   - the cenote carver (with its water); gorges and waterfalls
 - **Owner tries:**
-  1. Stand under a 700 m cliff.
+  1. Go to the MTN-1 postcard, a 700 m wall seen from the valley floor, then fly up its face.
   2. Follow a river down a valley.
   3. Walk among karst towers.
   4. Look down a cenote.

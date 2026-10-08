@@ -156,7 +156,7 @@ All input is specified in `11-interface-catalogue.md`: Part B (what a browser al
 Part F of `11-interface-catalogue.md` lists what the interface contains at the end of each phase. For Milestone 1 that is:
 
 - the title screen (seed, Play) and the loading bar
-- the free camera's screen, seen from above with the avatar (Overhead, with the cut following it under cover): target outline, placement ghost, hotbar with the held item's name, and a block palette (all terrain blocks plus a few building blocks)
+- the free camera's screen, seen from above with the avatar (Overhead, with the cut following it under cover): target outline, silhouette, placement ghost, hotbar with the held item's name, and a block palette (all terrain blocks plus a few building blocks)
 - the map (M) with teleport, and discovery cards on entering regions
 - Tab: the Command camera as a king's view (camera only, no command features yet), and from phase 1.8 the cut's keys and its depth gauge, for looking into the caves from above
 - the menu (with Licences), and the settings rows marked 1.4 and 1.10

@@ -638,7 +638,7 @@ Blocks (`07-architecture.md` §5) and buildings (`05-systems.md` §13) are not i
 | `item.salt-flatbread` | Salt flatbread | **Well fed**: **Sweltering** exposure −25% | 8 in-game hours | 1 × `item.flour`, 1 × `item.salt` | bakery | Holds off the heat from within · keeps a week | M4 |
 | `item.fungus-stew` | Fungus stew | **Well fed**: Health regained +10%, Stamina +5% | 8 in-game hours | 2 × `item.fungi`, 1 × `item.salt` | kitchen | Wounds close faster and Stamina lasts · grown without sun | M6 |
 | `item.fungus-bread` | Fungus bread | **Well fed**: work speed +5% | 8 in-game hours | 2 × `item.fungi`, 1 × `item.flour` | bakery | Work goes a little faster · keeps a season | M6 |
-| `item.glowcap-broth` | Glowcap broth | **Well fed**: sees in the dark as if the light were 4 higher (`16-sight.md` §3.2) | 6 in-game hours | 2 × `item.glowcap`, 1 × `item.bone` | kitchen | Sees farther in the dark · sight only | M6 |
+| `item.glowcap-broth` | Glowcap broth | **Well fed**: sees in the dark as the Night-eyed do, × 1.5 (`16-sight.md` §3.2) | 6 in-game hours | 2 × `item.glowcap`, 1 × `item.bone` | kitchen | Sees farther in the dark · sight only | M6 |
 | `item.marrow-soup` | Marrow soup | **Well fed**: Health +15% | 12 in-game hours | 1 × `item.titan-marrow`, 2 × `item.bone`, 1 × `item.vegetables` | kitchen | Much more Health · costs a share of titan marrow | M6 |
 
 ---
@@ -656,7 +656,7 @@ Blocks (`07-architecture.md` §5) and buildings (`05-systems.md` §13) are not i
 | `item.sour-milk` | Sour milk | **Merry**: morale +5, Stamina +5% | 4 in-game hours | 2 × `item.milk` | kitchen | A little cheer and Stamina · no cost to the aim | M3 |
 | `item.festival-ale` | Festival ale | **Merry**: morale +20; ranged spread +20% | 8 in-game hours | 2 × `item.ale`, 1 × `item.fruit` | brewhouse | The greatest cheer · ruins the aim | M3 |
 | `item.fen-bitters` | Fen bitters | **Merry**: **Poisoned** lasts half as long; ranged spread +10% | 6 in-game hours | 1 × `item.fen-reagents`, 1 × `item.grain-spirit` | alchemy table | Poison wears off twice as fast · loosens the aim | M4 |
-| `item.glowcap-liquor` | Glowcap liquor | **Merry**: morale +10; sees in the dark as if the light were 4 higher; ranged spread +10% | 6 in-game hours | 2 × `item.glowcap`, 1 × `item.grain-spirit` | brewhouse | Cheer, and sight in the dark · loosens the aim | M6 |
+| `item.glowcap-liquor` | Glowcap liquor | **Merry**: morale +10; sees in the dark as the Night-eyed do; ranged spread +10% | 6 in-game hours | 2 × `item.glowcap`, 1 × `item.grain-spirit` | brewhouse | Cheer, and sight in the dark · loosens the aim | M6 |
 | `item.pearl-cordial` | Pearl cordial | **Merry**: morale +15, control effects on the drinker last 10% less; ranged spread +10% | 8 in-game hours | 1 × `item.deep-pearl`, 1 × `item.fruit-wine` | alchemy table | Great cheer and a clearer head · loosens the aim | M6 |
 
 ---

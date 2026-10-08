@@ -86,14 +86,14 @@ The network is your eyes, voice and reach. **It defines your territory.**
 |---|---|---|---|
 | The king himself | 96 m | — (always counts) | — |
 | Keep or hall (the capital's keep is the root) | 160 m | overlapping coverage | staffed |
-| Watchtower | 128 m | overlapping coverage | 1 watcher, who sees all round from its top (`16-sight.md` §6) |
+| Watchtower | 128 m | overlapping coverage | 1 watcher on a platform 12 m up or more, who sees all round from it (`16-sight.md` §6) |
 | Signal tower | 160 m | signal towers within 1.5 km, line of sight | 2 operators, fuel for fires |
 | Mana relay | 256 m | relays within 4 km | moonsilver, a mage's attunement, mana |
 | Rider post (stable) | 96 m | no live link; dispatches riders | horses, fodder |
 
 *(tune)*
 
-- **Connected coverage.** A node counts only while a chain of links connects it to your capital: overlapping coverage between neighbouring nodes, signal-tower links, or relay links. The king's own 96 m bubble always counts. Inside connected coverage, what your people see reaches you live, and you command and possess.
+- **Connected coverage.** A node counts only while a chain of links connects it to your capital: overlapping coverage between neighbouring nodes, signal-tower links, or relay links. The king's own 96 m bubble always counts. Inside connected coverage, what your people see reaches you live, and you command and possess. **Before the network arrives** (Milestones 2–3), your coverage is everywhere within 96 m of your people and buildings, and all of it counts as connected.
 - **Cut-off areas.** When a link breaks (a tower destroyed, captured or unstaffed, or a relay out of mana), everything beyond it **goes dark**. You're left with last-seen markers and rider reports, and you can't possess anyone there until it's reconnected.
 - **Territory.** Where two kingdoms' connected coverage overlaps, the nearer node controls the building rights. **Capturing a node** means holding it with your units, unopposed, for 60 s. It then joins the captor's network (if it's connected to it), and its land flips.
 - **News.** Every event that needs a reaction creates a news item at its origin: an enemy sighted, a settlement attacked, a caravan lost, a king's order.

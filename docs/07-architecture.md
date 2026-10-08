@@ -269,8 +269,8 @@ Atlas, slice and the report may use `worker_threads` for speed. Postcards must w
 
 **Networking**
 - Binary WebSocket (WebTransport later). A versioned codec schema in `shared/protocol` (DataView). No JSON on hot paths.
-- **Terrain:** clients regenerate base terrain from `(seed, WORLDGEN_VERSION)`. The server sends only sparse chunk edit diffs, and another kingdom's edits only once the client's kingdom has seen that section (`16-sight.md` §9.5). A version mismatch blocks joining until the client updates.
-- **Entities:** interest-managed by sight: a client gets only what its kingdom (and its allies) see, within its camera area (`16-sight.md` §9.5). Snapshots plus deltas at 10 Hz against the last snapshot the client acknowledged, with quantised positions and a per-client priority accumulator; distant units are sent as aggregates or as a path plus start tick. Client interpolation. Prediction and reconciliation only for the possessed unit, including its digging and placing, using sequence numbers the server acknowledges.
+- **Terrain:** clients regenerate base terrain from `(seed, WORLDGEN_VERSION)`. The server sends only sparse chunk edit diffs, and another kingdom's edits block by block, once the client's kingdom has seen them (`16-sight.md` §9.5). A version mismatch blocks joining until the client updates.
+- **Entities:** interest-managed by sight: a client gets only what its kingdom (and its allies) see, at full rate within its camera area and as a slow feed of positions elsewhere, for the minimap and the marks (`16-sight.md` §9.5). Snapshots plus deltas at 10 Hz against the last snapshot the client acknowledged, with quantised positions and a per-client priority accumulator; distant units are sent as aggregates or as a path plus start tick. Client interpolation. Prediction and reconciliation only for the possessed unit, including its digging and placing, using sequence numbers the server acknowledges.
 - **Commands** are intents. The server validates everything (reach, range, permissions, rate limits). Never trust the client.
 
 **Persistence**

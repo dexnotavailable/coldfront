@@ -71,12 +71,12 @@ What a person sees, and so what the player sees, is `16-sight.md`: a human view 
 
 ### 3.4 Overhead
 
-- **The camera** is the Command camera of C1 with its focus locked on the unit's feet + 1 m (following with a 100 ms time constant), `d` from 10 to 80 m (24 m to start), the same 40° lens, and the cursor free.
+- **The camera** is the Command camera of C1 with its focus locked on the unit's feet + 1 m (following with a 100 ms time constant), `d` from 10 to 120 m (24 m to start), the same 40° lens, and the cursor free. While a bow or crossbow is drawn, a spyglass raised or a skill aimed, it looks ahead toward the aim point, so a long shot stays on screen. When something stands between the camera and the unit, the unit shows through it as a silhouette (C4).
 - **Tilt** is the player's own, 30°–85° (55° to start): no curve with distance here. Turn with ← and → (hold to turn at 100° a second, tap to snap 45°), tilt with ↑ and ↓, or middle-drag to orbit (it starts after 120 ms *and* 6 px, as a right drag does in Command view). The wheel zooms, toward the unit.
 - **Moving.** W A S D move the unit relative to the screen: W is up the screen. Sneak and jump as in Minecraft. Sprinting works while the unit moves within 45° of where it looks, as Minecraft's sprint works only forward.
-- **Facing.** The head turns toward the aim point, so the unit looks where the cursor is, and its view cone turns with it (`16-sight.md` §3.1). The body faces where it is going, as far as the neck allows, and turns toward the head when it stops, as Minecraft's avatar does. While a mouse button is held, a shield is up, a bow is drawn or a skill is being aimed, and for one second after, the body faces the aim point too and W A S D strafe.
+- **Facing.** The head turns toward the aim point, at up to 360° a second, so the unit looks where the cursor is, and its view cone turns with it (`16-sight.md` §3.1). The body faces where it is going, as far as the neck allows, and turns toward the head when it stops, as Minecraft's avatar does. While a mouse button is held, a shield is up, a bow is drawn or a skill is being aimed, and for one second after, the body faces the aim point too and W A S D strafe.
 - **Aim.** The **aim point** is what the cursor's ray meets first (C1's rule for rays, the cut face included). The unit acts along its **action ray**, from its eyes (1.62 m up) to the aim point. What it can touch is the first block or creature on the action ray within reach (§3.5), so a wall between the unit and the aim point is what gets hit. The outline shows the block or creature the unit would touch, and nothing when there is none in reach.
-- **Under cover.** The cut (C2) follows the unit: whenever there is a solid, non-plant block within 32 m above the unit's head (the lowest of a 3 × 3 patch of columns around it), the cut sits half a metre below it, but never lower than just above the unit's head. It moves once the cover has held for 0.25 s and eases over 150 ms, so running under an arch doesn't make it flicker. PageUp and PageDown still move it by hand until the unit next walks under or out of cover. What you may see under a cut follows C2 and `16-sight.md` §5.4. This is how the underground is played: the layers above are cut away as the unit goes down, and put back as it comes up.
+- **Under cover.** The cut (C2) follows the unit: when a roof (a solid block that isn't a plant) lies above the unit's head and below the camera, everything above a level half a metre under it is cut away, and the camera looks down at 70° or more, so tunnels read. It comes back when the unit walks out. C4 of the catalogue has the details, and what the cut shows follows C2 and `16-sight.md` §5.4. This is how the underground is played: the layers above are cut away as the unit goes down, and put back as it comes up.
 - **Picking a block** is a middle click that doesn't turn into a drag.
 
 ### 3.5 In the hands
@@ -173,7 +173,7 @@ Elemental resistances come only from items, runes, conditions and skills; everyo
 
 - Seen from the target, **front** is within 60° of where it faces, **flank** from 60° to 135°, **rear** beyond 135°.
 - A melee hit, or a ranged hit from closer than 6 m, is ×1.15 more from the flank and ×1.5 more from the rear.
-- A hit on a creature that isn't yet alert to its attacker (`16-sight.md` §7.1) counts as from the rear, wherever it comes from.
+- A melee hit, or a ranged hit from closer than 6 m, on a creature that is unaware of its attacker (calm or suspicious, `16-sight.md` §7.1) counts as from the rear, wherever it comes from. A played unit is never unaware; its facing decides.
 - A **falling strike**, a melee hit while falling (not on the ground, not climbing, swimming or riding), is ×1.5 more, as Minecraft's critical hit.
 - Ranged weapons reach 10% farther for every 4 m their shooter stands above the aim point, 50% farther at most.
 
