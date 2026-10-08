@@ -1,0 +1,2863 @@
+{
+  "schema": 1,
+  "sampleSetVersion": 1,
+  "worldgenVersion": 1,
+  "encoding": "sha256; uint16-le; ieee754-binary64-le; signed-zero-preserved; NaN-rejected",
+  "provenance": {
+    "sourceHash": "b7a26a0a158fa5698ab5d98a82b6c65cce57e1d16edd973e4cabae226849c861",
+    "sourceCommit": "f8f9d955bff74510cd801ebfb06232aa02d4f48f",
+    "nodeVersion": "v24.18.0"
+  },
+  "records": [
+    {
+      "sample": {
+        "id": "s1-lod0-surface-00",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": 0,
+        "cy": 0,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "07694cc39b90ce3aa23853f379cb904c8acda6639c6583b5cece9da5de10a6b9",
+        "haloBlocks": "97112f2d939ecfa2466d700a0f9096302eb13a3a7301d6b606e0aa852e306685",
+        "density": "cee8bd13ba44f61b4c8354282154c1186a06937478689a5c0ad49b4e69c5c8dd",
+        "columns": "bf2cb5c1468aa7b325f86720e01bab2bbacdaaa98a4c9454839a0be6e40c6b5a"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-01",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": 1,
+        "cy": -1,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "118e8f7c14832d09ddc735884a0c44f28dc3c786988978c0070ef34f8700904f",
+        "haloBlocks": "7c2b3daa3368d5c9a88f869a34d4349e5aba8c288c441e2dd03508b2aec3f58a",
+        "density": "7a7eb13d48297da04cdfb71510782f9db70be843223130b6c96f16b543ec60fa",
+        "columns": "c0e54d7b7bfe191fd1541257902f0290a3363648bc6f2f7dd397a17c121ae35e"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-02",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": 1,
+        "cy": 0,
+        "cz": 1,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "90d6e1979659b869f347ed71693487d2328de858019c11a4edec429656d71dbf",
+        "haloBlocks": "58f7a3a87453b3f6626bc90c22d8d264b7c0614ed45dc5a5f824cbc4496c3703",
+        "density": "50407d6ca0f56cb4d0833cb4cea4e91fde7375e5acbb6fd4b67b5a3b4b6ff12e",
+        "columns": "9765db4cc0ae8a3e3c2474fdd7c2c4ac12b0d67ea86f3824ba916f77178a222e"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-03",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": 0,
+        "cy": 0,
+        "cz": -1,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "f89a6fb0af688f2f0a090ef01d2a4bb2ab141dff50dea1b12a68a12392625786",
+        "haloBlocks": "e8197cffde8ab0e63ac7cd88696e84d23b52b8d91ce0ba77243dcaa70aef5753",
+        "density": "bf108055275d41e26f1c7f13b201a2e401f4ce24a80f9777d5a0c7a9c22f18d9",
+        "columns": "23c232115102ff2007a204c96eeccb698ca9cd1a8bff3d6813a8e227823fbc89"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-04",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": -1,
+        "cy": 0,
+        "cz": -1,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "afa91bd5756af3b09af79be0276fd1866830cc3a7d50d841d737d0ee36fc8fba",
+        "haloBlocks": "71b8b8c0baf2b5687ee5de7968b749887227d647f29d7fc298f040183acd9742",
+        "density": "4a32ca49afb5d2eb666862713024d8df87330010bf8c880066427e4484a46cae",
+        "columns": "4d012d87a9413b0290aba9f0eabe4fa154d700a19b7d42d979fe1b3100a6a063"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-05",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": -2,
+        "cy": 0,
+        "cz": 1,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "ce62da4519223e347b38637fc829e4f07e57a0d085e699c01c362b4a774e35fa",
+        "haloBlocks": "46263cc925475807e41f12de066bc66b1dbfc91349a91ac0dc3cd9d0dc923fad",
+        "density": "e351d95c57d3cc779bd6a8aa471389b93b6c1ed24762ecbeb3998fe6ef9e911b",
+        "columns": "a9e3e848012f772022c0471388d6848ad40cf390481ed520a14871d80710eb2b"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-06",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": 3,
+        "cy": 0,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "5feaa8033ea18bfaf9b2a1072f7ea37465ed7801daf3c06fbf135b69339b6e48",
+        "haloBlocks": "6d8d8d598be816d654f1bf8230e59bd4cc89d63d9adcad865033f2e0a506c3a6",
+        "density": "c5ab389c2034cc747265c22df4ccf91d8113afd63c0a2614db2f2ddaecd3d98f",
+        "columns": "7a3f632a2fcebb12f6b7031cb57f946eaeb542d9ce7011c54ad3b3562f49e7ff"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-07",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": -3,
+        "cy": 0,
+        "cz": -2,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "73c3673d452b33dfb6438302ef13b0f7104755ee8a50deca1132288aa9f1ece8",
+        "haloBlocks": "e142712fe73bebca783d616f554ec76349495c8db7e623c4618c5e0b32df24dc",
+        "density": "1fdb45a83f2bda607180fdbf6010afb4009464b2ea7a94d1ba8844b6947835e9",
+        "columns": "a57ea5221a920bccc6bd9ad2ba1027be89bed5a836c1d36a280d812a5c9c0a37"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-08",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": 5,
+        "cy": 0,
+        "cz": -4,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "f3de18c38f8722f080c348c1add32f4aea7cbb7601fac8f25e5ac8168603d56a",
+        "haloBlocks": "4431a29c305a98abc493c45580e3b45fa8a8e4f5354c5ae5c995701dc48d5500",
+        "density": "c317de229f2c9207c877d98fd1f88e64647c87074659dc42717113560279d336",
+        "columns": "b7a103a7ace7d83ecdd0493df1d4a9e3922e154cd38681a8cc141aaf6cb47b96"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-09",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": -6,
+        "cy": 0,
+        "cz": 3,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "ba52d729969938c0f1544f6ac425f998dbfce8a176a0eb80b4a6ba4c640f7f16",
+        "haloBlocks": "af8f0c15d78e0b13f8a7bb3006f6ea788c201f410d657d1c91971344b1cc47fb",
+        "density": "e7e9493f7f4f7b9f687ff889a37a5ed9e823a9683a0f4ae43135bbdcd8ebcf8f",
+        "columns": "daa12e69e015a7a66394ac642a45da82f7f2769a8d3e2936fa1a247a1cf2ef76"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-10",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": 8,
+        "cy": -1,
+        "cz": 8,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "8161bb5231865e53ab778e5ecbccbba1c7c86ded665a11ffb8e980c07af27e44",
+        "haloBlocks": "64c71925ce2aa928be4e36a48088624597bbd1407f114c18c9927238bbb0dcea",
+        "density": "50a0ed274b770e61acb32f02639b4343eea170de25a32aeb57cc6c23afab4c1d",
+        "columns": "745c2deec34506ab84eb8578f19a9790b6991ea4bc982d545e63ea8d5cc89968"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-11",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": -8,
+        "cy": 0,
+        "cz": -8,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "2b0adc6b4e737ae5fae581129a9ac3986ed14a5078853db4eb8764136ca5f4e4",
+        "haloBlocks": "b129918614323906c9a19a69e24fc5f9bf5a93f1773e328b0a1a5bf358037405",
+        "density": "67f932762c738a49b371ea109c31772e4e77c06b6de04e6ddf0fb8ce4220e86f",
+        "columns": "57c9184e6a15610bd2521022d9ea7b221239641f6e0ddd64088e75817fd2fde0"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-12",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": 16,
+        "cy": 0,
+        "cz": -16,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "7b7368231cc24bee3ece00d20a2a0590a907d17b18e9a6d30f8770ce2e29e0a7",
+        "haloBlocks": "46b8a6791a7dcb6e11a8e2aede0c96c8ca5c046e28260004391af4a23ad72ff0",
+        "density": "ead1324fdec338fe645703a139fbf85768414c4a98a111176b2d252f14866627",
+        "columns": "1432e6a7f49af4859c33549570b1793f30428f94e047f4f15d97ddf8fcdbc008"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-13",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": -16,
+        "cy": 0,
+        "cz": 16,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "32e5e7ef82acc12efb5ab7e66f1a62673c5a19fc85d723a8436e4600d92653f1",
+        "haloBlocks": "caa5dd89785e9597af9756f9fd483f48cfc49333af11ca4826f8d803eec20847",
+        "density": "82f5b773f6aaa798f7506391c82cb64e4a7371e57cb513d88c7feba78390605c",
+        "columns": "c89838d5c57c9a806efbfbf2ef31796af32505624b714e53960b8abea3a6e619"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-14",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": 32,
+        "cy": 0,
+        "cz": 24,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "6d6e2f8cd51064502c7b2783c4ff5027f2289ed077208bc0a7b6ea45c8cc3fbe",
+        "haloBlocks": "c39c26ba2ffd1f3c96155ded9568d2994fca1000d99d6aa1b3ca61af4a38a9fd",
+        "density": "7e1b3e8eae3109a4dd8e0a2893daf3480192f462c0c42228fd30d007d9f26eb6",
+        "columns": "8e047501ae3a7c72a9b4c509a8d7b37afcdcf7117ffe35fda53bb9a2b8a7d65d"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-15",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": -32,
+        "cy": 0,
+        "cz": -24,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "9d6d4ec356097111fc4fd5132a86f7a7d563d853cecca49018c599849d1ec4bd",
+        "haloBlocks": "e56b38703f5e28ba3545add6578fc3e4a219d1726b54312405767ab53e3ee19e",
+        "density": "be1ec8ba462240f39305c90ded880ee4efcd7c8a7d2a27303325ec9125e901cf",
+        "columns": "2758d920da784fc9d3a47b17ab47fb2d3b2e98bd8f9865332cac6d0642acf821"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-16",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": 100,
+        "cy": 0,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "d3a7f744030d8090d746e307068bab266c80b2d968e2d515e6af6f22a26f0abf",
+        "haloBlocks": "32a8bc04abdcb99da1996387c65b897a2b147d3a33497e4e1ebf2b88ab314b51",
+        "density": "711366e250bdde13cf81e8fbfd2e9f41eb3b44b5be0839eb43a9891a74a0efef",
+        "columns": "4c174b55ae84753d2e02c1730dd468b6e39b4cf94a267bf64468e84a87977d09"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-17",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": -100,
+        "cy": 0,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "2174282cf09bab51380a783dcfa1c1bffd26b1a69815a1b3a33899e116f56e8f",
+        "haloBlocks": "19f53e1a4681d04ace49ff8153220c21366341f4f4f43cb040e85ea785bea02a",
+        "density": "b2f5e102c35622f396b523e9c3bf7f93f0b64679fa169659a8b448825d9beb37",
+        "columns": "572ad2391c7c895f88e896232d721a1620597d1a34347ebf6fae9efc5c7e79d1"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-18",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": 0,
+        "cy": 0,
+        "cz": 100,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "207281bedf5ca26203e8b7dfed3165c46ccb27ca0a8b5621304183bd676cd6d7",
+        "haloBlocks": "7b4b844ff2d148f7ce26386b8760215164d57a26ead1e97d5571372caf5cc49e",
+        "density": "a4d6bbd6b7e8f1542b86562afd643697e81900ef498b4944c894d2e2e1439a7c",
+        "columns": "74c0e8de475c76c55cb961a0bfeadda09781492ff9c65d583c6c8da9f7b8cfa3"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-19",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": 0,
+        "cy": 0,
+        "cz": -100,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "1c9e19d12cde36ff656e6c4b6c7a2b64a310cd2788779a253753f638ae39190e",
+        "haloBlocks": "a0ee9a5e1bd33fa380cfb417270b2ea86f0a8f1b9d255e03caf5ddd06b5971d4",
+        "density": "5844930b1901dce839d70988bb313054337afec851d52aaa5b341576594ebc3b",
+        "columns": "3337d27db0666003e25980d02149d6783fe947674d2f5fd3b8c1966b6e598f16"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-20",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": 240,
+        "cy": 0,
+        "cz": 120,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "a58a05aff1821831f7c6cd95a841b2d2fadee552a8e3cf2ee5e4774e336020e1",
+        "haloBlocks": "a1f6b50308c7b3f73585583a24730b7186cbf987912d45820c07528982f5324a",
+        "density": "2988287e2281d6b739582e2f9c3aea993e190827d287e83fca68100942579f65",
+        "columns": "3daf29f2be3280503e082e958e6f979026c9ceb0c7b7a90c2486988a4fad7db5"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-21",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": -240,
+        "cy": 0,
+        "cz": -120,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "88b50e623ca9114fe001cba9d827bd88af45f3cc90f0dfe9ecb418c164b36cd0",
+        "haloBlocks": "f0fd718b7cda5ba9c990a93c7d4bb792f65a1aef3bacb610bb51d4923fcc1329",
+        "density": "482e390d46d17d4b5f8d5d428f8716fb772eda8013cc4a73d8a3c23fc456fb6f",
+        "columns": "74325086019131190728646b6ad9a15d1ccc2142836bda0656ac534268c460ed"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-22",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": 300,
+        "cy": 0,
+        "cz": -250,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "17ebeba45d3fbb408899985bf7c42d048bb0850af1bb613389a7388cdf61c4f3",
+        "haloBlocks": "52a440cc3c9b3ba4c5d729497b3f66a171837bc65c3dda9b468d71315254d8d4",
+        "density": "47eb0440e0100b26a9a6c5b6a5a9411cf4591d33d9426f0a482c0142625d7836",
+        "columns": "d3f62b002ba5a3008e077051bd4333bcc5e2a85e33f35d35ea342abce5234d60"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-23",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": -300,
+        "cy": -1,
+        "cz": 250,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "1afe6eb7bae89e19aafc030cb396611ad5ce7727fa7d3e5e98f7499a036a5aa6",
+        "haloBlocks": "8ba467729db89e9782e322641dddaded972c9398a400e29ee42812499f706342",
+        "density": "6c5a3c0a7ed8cf648f3d13cecb2c70df077d57a7f3285ea65d0f2f3ca5fa6cbc",
+        "columns": "06e48d4fa2f55ffc24865213a172ab6b535fc3b982e394e24eff35728c097759"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-24",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": 703,
+        "cy": 0,
+        "cz": 703,
+        "spacing": 1,
+        "coverage": "xz-frame-boundary"
+      },
+      "hashes": {
+        "blocks": "ae67ffea16957d33941caafb0c339ccfb7097b3d19ee16a9eeeec3ea6f4bd3ac",
+        "haloBlocks": "4c3a26ed28170bd6f836e5cc0c5bd6438ea250fad293b5e596552d15170c8876",
+        "density": "937c807d9c75e87fe53022f46b679fbb8abbc0a23dae0b5fa5500a7b674062ad",
+        "columns": "fa59b69586cb994a33ee29a5aae4390bcd4aa6184062fe1639340d8593ccfd93"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-surface-25",
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "cx": -704,
+        "cy": 0,
+        "cz": -704,
+        "spacing": 1,
+        "coverage": "xz-frame-boundary"
+      },
+      "hashes": {
+        "blocks": "1150d0f10becf54b7405388e8fc3741b248d0a217fe32209afc0a7234194e797",
+        "haloBlocks": "da843079d5da411be76881335df2c3bbb07e90221d39042ab620f3ff2ea70c05",
+        "density": "698b3b873a57c9ffbd201f1e5447285dd536f084d8ad3e0809a49d4a13debcd2",
+        "columns": "e9ec0e5637a8125b8b0c246558d4a7519b665182b50bf6b15dadade5e42331ab"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-floor",
+        "cx": -1,
+        "cy": -48,
+        "cz": 0,
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "floor"
+      },
+      "hashes": {
+        "blocks": "0b1bc4208dd7f3a8249804514cb01d457207656dd6acb695c816cfb3e2898e17",
+        "haloBlocks": "67f15edbfe2bb0df5c7ce3ae8f7089d716eccccb5fd221e74e624f2ae9914827",
+        "density": "2db88a915fa6be205136e14134034dbc4b124c94aa5c453aaef4b838512020b0",
+        "columns": "0e2b97eaa38e5d5922aa13e58f3bdfefe02d4d3fbd4d2fe9b899d77565ff3ae2"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-worldstone-transition",
+        "cx": 0,
+        "cy": -47,
+        "cz": -1,
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "worldstone-transition"
+      },
+      "hashes": {
+        "blocks": "4f76e9188b6063650654fde6caa90189ee08262522be6f9e08cc0d75a7b4dc72",
+        "haloBlocks": "21a236e48ac56faa68f52af1a0665d679dd12fbf32b4b15427fe2405a67b28cd",
+        "density": "5465b83ab453ce77f90015be5559f8d165177f0c2e163ba30625f062e0568ee3",
+        "columns": "23c232115102ff2007a204c96eeccb698ca9cd1a8bff3d6813a8e227823fbc89"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-deep-stone",
+        "cx": 0,
+        "cy": -8,
+        "cz": 1,
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "deep-stone"
+      },
+      "hashes": {
+        "blocks": "4f76e9188b6063650654fde6caa90189ee08262522be6f9e08cc0d75a7b4dc72",
+        "haloBlocks": "8d98320d427ca0dafd223ec85ee9f82027a2daa9fe04b499c81acb8b392a0753",
+        "density": "5e725137638a76fc627460f706edf48e637187d3189cc7267fa51df14bafcff7",
+        "columns": "99ff795bdf809335b913f4f92ac5444a7f7c6ea96f542d3c7263012dc8e60e00"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod0-sky-ceiling",
+        "cx": 0,
+        "cy": 31,
+        "cz": 0,
+        "world": "test",
+        "seed": 1,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "sky-ceiling"
+      },
+      "hashes": {
+        "blocks": "de2f256064a0af797747c2b97505dc0b9f3df0de4f489eac731c23ae9ca9cc31",
+        "haloBlocks": "9736d8dd61f2488c3dfc458e674c95b61b1194c527dcf63ec29a0f0e95c6aaf6",
+        "density": "494baa5a4b1cc41441bc52cda84b98aac236071fc82a2f1f54f1f023914b4ff2",
+        "columns": "bf2cb5c1468aa7b325f86720e01bab2bbacdaaa98a4c9454839a0be6e40c6b5a"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod1-surface-00",
+        "world": "test",
+        "seed": 1,
+        "lod": 1,
+        "cx": 0,
+        "cy": -1,
+        "cz": 0,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "fe587a283377df372f1fea754e3e3494dd769f938e7b3484128f390d5cb3ec4a",
+        "haloBlocks": "85caa8e52528130c4288bbf2b0451752e16a722ae14c6ea52665defb32cf0cb2",
+        "density": "85e7d8d33c15d1cce49679dbfff17f89c8f82ad58a03e5be81a5df2cea262085",
+        "columns": "d9ee5e676bd267b50e27224da3efadc11e6d114d5212ed77c8c499e41a7a8850"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod1-surface-01",
+        "world": "test",
+        "seed": 1,
+        "lod": 1,
+        "cx": 1,
+        "cy": 0,
+        "cz": 0,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "04bc2359b431c9099ff50bd562f1cfe26fc08e66b019af6595d6b688524cbb7b",
+        "haloBlocks": "148cd9a92df041f0c43b008f20fcc8c62b84dce5a35c32d831345311e377d322",
+        "density": "9cb6233fb9b6afe232911fbbe435bd451f093970bda09b13adeb524199218b5b",
+        "columns": "06421d3866663f3a02e645ec1beb9a39cd43c591ff3ab40f6f9df9e527ce362f"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod1-surface-02",
+        "world": "test",
+        "seed": 1,
+        "lod": 1,
+        "cx": 1,
+        "cy": 0,
+        "cz": 1,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "35c0da8e02363387282f95667818455d8136959fbe8956985623fa2d8edec713",
+        "haloBlocks": "849b51ae61a3a8d3d4473fbaed85ad72f0abea0d754df22ceeab8a96fc500e6b",
+        "density": "74114b057268a190f239e97328240450c6c4b75b4f5bd1357221a8cff69837bd",
+        "columns": "736af43d68e337a419ed269ea4c1d72921c2213721234b679af275e437403e73"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod1-surface-03",
+        "world": "test",
+        "seed": 1,
+        "lod": 1,
+        "cx": 0,
+        "cy": 0,
+        "cz": -1,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "11ad6524557453539c46bc73c8e4b2d2f8096122dc05bc738c7ff022075c8e7f",
+        "haloBlocks": "3a5fb274bd395cbba2b6b105a0712cc595553cc26d0dd1bd9ae776744979526b",
+        "density": "35c39ed3baf5af9a54eccd9c76f3d22b2ab866f4b187b59208c06a8b027f19f5",
+        "columns": "d0fbb347c9fe0e3d74e4964a5ed28d438541360a8ae126de711e6d60b18ff27a"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod1-surface-04",
+        "world": "test",
+        "seed": 1,
+        "lod": 1,
+        "cx": -1,
+        "cy": 0,
+        "cz": -1,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "f718a8cbcb27629f5a4eab95b9c62a9bc98a3fe92b509a8b3d6bdf5c1602b9cf",
+        "haloBlocks": "47a2e87f819e25238a7b8fd0d0a46474ec1f3ce48be7f0adf9cce690c0b17f79",
+        "density": "dc5bca2f954bce402252c6e93a128e74f35b86b4b4145a9af6506e63234ee903",
+        "columns": "53f33457b2fe1ae0fc079597f49680644ac5eeda69e51cb747198b4babfd3fc0"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod1-surface-05",
+        "world": "test",
+        "seed": 1,
+        "lod": 1,
+        "cx": -2,
+        "cy": 0,
+        "cz": 1,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "5aa74a885be4018d46ce847b9f8aa5d38af9acf6676ebba957b4c5994927aede",
+        "haloBlocks": "35cb6a0b72431eb8f5e61ee165a7025e98dd6b870ce53d71101c86eaad45651f",
+        "density": "98af845a6762753bbe24174748ceb8fdc0b98d4d5b0d3f00926bc926c586d925",
+        "columns": "664b5c034ccc9fb85b19dbbcb5e34d6782b9df6d07238537a33a7e15656021ef"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod1-surface-06",
+        "world": "test",
+        "seed": 1,
+        "lod": 1,
+        "cx": 3,
+        "cy": 0,
+        "cz": 0,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "7d01fe09a88d359bc95ddc7491cc198205db945822107c493be447b57d24a536",
+        "haloBlocks": "09ea216e4e4fa0ed7e5b75ede91785593bb779e1eb0d4d97da601c78bd110ff9",
+        "density": "d7ab53341541d5dfe8601d0f0fc2b93832e365f5feb0b8ba42c2d82fee5873bb",
+        "columns": "ff009ad0a989fb08529f60997fd3d25a9f0509ae70ccbf94c67c164431b3946f"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod1-surface-07",
+        "world": "test",
+        "seed": 1,
+        "lod": 1,
+        "cx": -3,
+        "cy": 0,
+        "cz": -2,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "1bc441a5d4dd80a9a1449878a1627126a91451dc5d7dfaa605546078d39f70a1",
+        "haloBlocks": "256037d24854abe0b54db95a1ab2e7fb8b2f3aa34761594acda3b54532045903",
+        "density": "d7e10c3fcd8903dd1c8f78ef1db560000258713f787175cef628935afde64788",
+        "columns": "8194f338092980dd89fb76aee0007a3704a374d234664790e60a8ac2251fefe1"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod1-surface-08",
+        "world": "test",
+        "seed": 1,
+        "lod": 1,
+        "cx": 5,
+        "cy": 0,
+        "cz": -4,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "3752003efa0cdfb13f5bd767b11f5424ab00523e5a321fdaac8cb9312c20fe29",
+        "haloBlocks": "a8ff45b6254466adc14ed888b4362a90d61c5d816f3c9a081a0bfe9aa7d74580",
+        "density": "c40d79284a612a78f0dde9099ce9b3cb250e23b1e3369dba2b17bd3b598564f0",
+        "columns": "3723dabce060061d5ef5398c2ee38200865214c052078a64017b668854153c7c"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod1-surface-09",
+        "world": "test",
+        "seed": 1,
+        "lod": 1,
+        "cx": -6,
+        "cy": 0,
+        "cz": 3,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "50a9c619a3444ae243113ff9fde6eb1deb0c9c829ae08690886534d134c46c0e",
+        "haloBlocks": "1efb0bb021aa8fed8b7edc78079748a59f8f944f755329a79f829b49c3a599a4",
+        "density": "a6793a9ee7bab3f809cf23400a273704876ddc6feed197cf01bbd04c12ca40e0",
+        "columns": "b583dafa277616a321dd2ca6b7a034704b88ab043877f0ceae25b8c9fa925ba4"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod1-surface-10",
+        "world": "test",
+        "seed": 1,
+        "lod": 1,
+        "cx": 8,
+        "cy": -1,
+        "cz": 8,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "abc4186e796280b6efbaa5c17a5b272a3b67437e50ca09741f52214faf5fe09b",
+        "haloBlocks": "4df46f633d507e51c1c431cfadf507fa0acd9a7f1e2a73128817d9f111bd09ad",
+        "density": "cccf2e9ea3c7c27e5462fca12a8ba74c7e23d288745fe8f56de58fea3bbecb2a",
+        "columns": "951ad00083a324599e6e31ac83155a0b4a0bd76c5617489a90d80507b627a4d9"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod1-surface-11",
+        "world": "test",
+        "seed": 1,
+        "lod": 1,
+        "cx": -8,
+        "cy": 0,
+        "cz": -8,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "ce84b00559ae8255bb4680ee0b55eec2861b83608754de9694eeea40581246ee",
+        "haloBlocks": "4e5db03b7267c80142b183887028ce4f5a8aa55f5f350f7e778be137ecbc8f1d",
+        "density": "46ae493b1048fdad5a5491a2848a5aec5aa9fbb1d18e2ef254e0d10701d93a27",
+        "columns": "a57317d5ac2b42e971302d2e890731cd1a382fc518ce4d59035dbf693a06d9eb"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod1-surface-12",
+        "world": "test",
+        "seed": 1,
+        "lod": 1,
+        "cx": 16,
+        "cy": 0,
+        "cz": -16,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "48fc7575004081255c2969abd21aeb2a61ed535f32b0889dfad9853e3fbe14b8",
+        "haloBlocks": "b66b8d998a3e4805175aa8e2912549b885e2d791e9e99bad3c99e846a146c209",
+        "density": "c04c7f67a21b574a137cbafe8dc0ecd7da324b40b782bf1ce6675ee680266e7d",
+        "columns": "5a9d65bcc3dce98b32760657a20181c54ecc76558feb20ed8245e172cd70e428"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod1-surface-13",
+        "world": "test",
+        "seed": 1,
+        "lod": 1,
+        "cx": -16,
+        "cy": 0,
+        "cz": 16,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "3ff266856045593d09cc43b406241c49f823155afc23c0d888d05696ea315ece",
+        "haloBlocks": "97c93c464dba38a50ad7aeac080b73387debc6866bdf734a566d3578af788b48",
+        "density": "6658af024fe5ab98564dbeec2ba6fae48ada00cf9f0108db04ba7090cac3b72c",
+        "columns": "99755ffe74bb59ae1d1d8bc821f2fdf8b3064e9124c6d357e5fdcedec6d39f82"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod1-surface-14",
+        "world": "test",
+        "seed": 1,
+        "lod": 1,
+        "cx": 32,
+        "cy": 0,
+        "cz": 24,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "ce0a96fd9f4905706116b8670222b07d282fc8735833c2c0a969efe9ff8f52de",
+        "haloBlocks": "a422a1ccb61a3d892f80680b11a5b6e72ede1c67180dd14899888a2cd5659da5",
+        "density": "ca2648aea599e0de0985cecc80ad58c6ace052d2cbf142184cd341a148d6d5b3",
+        "columns": "ca83f4fc6b3e69c8b8c7db016c434d10bcb1252663b14ebf97358d539f4dea83"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod1-surface-15",
+        "world": "test",
+        "seed": 1,
+        "lod": 1,
+        "cx": -32,
+        "cy": 0,
+        "cz": -24,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "c448a0597ce3af75a7905ab7f47a7d2249424d4c7e67d5639aeb59ab2432b1c6",
+        "haloBlocks": "5a0904bfa1dfacaf3d60ac1e16e4d95c00aa51912a1620101cec5e9b43221e53",
+        "density": "8ad89d3aebd2cc003d8b4c77e033f122512bcd4ed0547350260c1b53841b8ce5",
+        "columns": "93f7eaf4eb4c880bfb5376682b4a84dd88fa0a3a7ebc7e7c3947394717495fe0"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod1-surface-16",
+        "world": "test",
+        "seed": 1,
+        "lod": 1,
+        "cx": 100,
+        "cy": 0,
+        "cz": 0,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "eeadd5807d1422f72193dd9bfc1ff8b8f4039e963900e331daeeefe67f70d7e4",
+        "haloBlocks": "1324768a8d71b64d46ce5caf706f9ecd02ff3e8741fe9850940aecdb20bf744c",
+        "density": "e7ae7c25ac6f5781a60bb9b4c6285237a69612411187cd0ab12270ee2fb553b6",
+        "columns": "ea690e89e17d858ce8fb7742273487800efd74ed38030b98b4fd147d4332584f"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod1-surface-17",
+        "world": "test",
+        "seed": 1,
+        "lod": 1,
+        "cx": -100,
+        "cy": -1,
+        "cz": 0,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "7a7fa9613edf38ee3910a106679a912ef8c8e011f02404b47b4db74bbf1ef313",
+        "haloBlocks": "755df1267349fd39ca4cd067f40af81ead9aa6cc67accba7cafd6765b9a260c7",
+        "density": "eee04eac4f1df13eacbc7f54becb917d7f3fb0af3ae4f96b6ba2f4771666ef1a",
+        "columns": "95d77bcdd351fd00e7e13b5590b507bff680ea4822a08f5d82f3f52ab015b653"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod1-surface-18",
+        "world": "test",
+        "seed": 1,
+        "lod": 1,
+        "cx": 351,
+        "cy": 0,
+        "cz": 351,
+        "spacing": 2,
+        "coverage": "xz-frame-boundary"
+      },
+      "hashes": {
+        "blocks": "3cc0f037c47da08bfecd38c67b2a347b69d4c4d08bcc8c9f630ac4ac50369ca3",
+        "haloBlocks": "a95f96951826e6a498a76efe96a4619f21be4f9cf9e054ee0d77514fe3a47eed",
+        "density": "d934ab4db857d916bf1b724b9a82baa71a72bb65a319929a9c83558166a45392",
+        "columns": "ab897480ed63627517b8fcbbf314debc9e624cb4ebcb1bf6728ce9672716f5f3"
+      }
+    },
+    {
+      "sample": {
+        "id": "s1-lod1-surface-19",
+        "world": "test",
+        "seed": 1,
+        "lod": 1,
+        "cx": -352,
+        "cy": 0,
+        "cz": -352,
+        "spacing": 2,
+        "coverage": "xz-frame-boundary"
+      },
+      "hashes": {
+        "blocks": "6bc1fc34ccefece3ddcc52c97442013c296841856c9fec0ee99ce5b272e2dc30",
+        "haloBlocks": "1d207ba493ec523c9d2e2ed170669017588efa4bc7526bdf19c07d8f27d7927d",
+        "density": "a2ef2ac0d3fd5139c13e1189a6d2eb6d4c5d70e60fc5da50b646cbac7a76cc69",
+        "columns": "f7d2626de0e60f0a609e31f173400a3625971c0b70b7d69480f486706bf2181e"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-00",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": 0,
+        "cy": 0,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "1c552974cb2c3733899ae11ea96dfc1c96cde428b641ecc2b72e8be3a4aa947e",
+        "haloBlocks": "44c719ced3585f4efc1bbf2af8705e62e2bd0c2c45ada0bdd0f4397969957a0d",
+        "density": "db81d00e64609ef22aa15c2a2da8acdbe42fb41c64ff572e794f3b5b755cd1e0",
+        "columns": "e67fe4e5609b5c8dc697ebcd2bbdb1e92b584b9e7352719a1a012e653b14931b"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-01",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": 1,
+        "cy": -1,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "e6cfb568aac445edf6abd826c97f2b00d7434ee1f7a89fc7e2e20bfe007374ab",
+        "haloBlocks": "073145b03a6a8d6e2afd37e403bb07570774e4c020489572bb8582d0c5d768b6",
+        "density": "37ebb9c0fbc4890346ebbdd58c69777d0be69388bd3ca18c0d08926b92b8ba9d",
+        "columns": "d16bca4416887d56f8c19bafb09a596ce91acedac8fbd76fd052a2c802b5e748"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-02",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": 1,
+        "cy": 0,
+        "cz": 1,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "b17f14d1ef3bd0d2798d7388fd928af3532d9c41ce2527a9fe1bf25817713fbd",
+        "haloBlocks": "707a65304692d31885748743890d85f60da0126cd2cfd2153716143416f3da8a",
+        "density": "54af77856393c3fe5b7d371129d57d88880878848dfa5117b250625367b454f4",
+        "columns": "13fc530e97504f0a36657bb28fe22671d9c2dd2c6bbc8b5fd4cfe2087ce678e7"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-03",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": 0,
+        "cy": -1,
+        "cz": -1,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "08994827d076168ca550a7d8ec4e7fd077cf70cdfc05ec0ad8edb1e7878080e9",
+        "haloBlocks": "1d830e24ac132daeca210dca6f8e9418f70059e0a6d8cee4c33f33c10be5298d",
+        "density": "cf7ade7d4680aab46ea715c595903bbcbc9a2fd48873e7fa2f5d46c3b3d9ae9e",
+        "columns": "9e9efae811d633136510268f876fc72928a6d02c3a39b7ead628c79dec5163a1"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-04",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": -1,
+        "cy": -1,
+        "cz": -1,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "70bd2b5c176f4862071ab7c020805137370b0a3195be9b921a3f4a698b34c83f",
+        "haloBlocks": "514c235c090d192d993b795c0b4a3c92761ae146753b1e21f675942ebd2bcea6",
+        "density": "0da04907d4c882d366e75ecb590f538d49ad15261bda3d4862639b6982e2c739",
+        "columns": "84407dd53b340e18b2f7edcc959aa88ef06d244002ad5c9a2bacee452b20873c"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-05",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": -2,
+        "cy": -1,
+        "cz": 1,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "47b1ac08a6a2d4e9b971c9e4d214eb37ecc0f97c7ebadac5116d9024b6638e9a",
+        "haloBlocks": "c11ae86ae11285f29961eb064f396577dbfe6d274adf8c0999d1f61cac766330",
+        "density": "83d3b128f4259ca413efe21a7acfd3abe2f079443671cbf042975706e500f7ee",
+        "columns": "e20598cd90d416b23fc7f5bd56ec8d475d4f93115d2867f198756f827c7d9c6e"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-06",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": 3,
+        "cy": -1,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "63132c7c7303b4c008713e0ffb31491a0f100f6102d8fb2d77dff5f8dccd51a9",
+        "haloBlocks": "1fa140225f693aa8fbab587c0d1767d18618709b1cdc6b6ac7acf807e54a958b",
+        "density": "ded062ad77aad7bc8c5eae67177a467d812b823cd75027a2700e921243999b88",
+        "columns": "2012f7236b422d3ea10ef9ece0e6e1d584299a8f8c9d010bafaad2f934a2fc85"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-07",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": -3,
+        "cy": 0,
+        "cz": -2,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "463c0dbc04094db71325120a9f00128d7272e6b6c0a0acbacd95e611b18195cf",
+        "haloBlocks": "45927df7ddce8a95741f69d1264f9ed65264e3cb1e47e1dd5159250757278d95",
+        "density": "c6e6c6598510075d3066f88c2225ed0fb30b16d2308551093152faab42ec388e",
+        "columns": "32f7af885846c80403d279e163041d85ced3049da695a289e327aa1b90f2bd0a"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-08",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": 5,
+        "cy": -1,
+        "cz": -4,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "600c94184ee00ef0ebb908b885a9e5e3265de2f4e6176ffc46de81268cf47a7f",
+        "haloBlocks": "c0114f298b84b5b63ab738de785f173d214a8a3a4a38b08421a149ec3594543d",
+        "density": "02a83a8f63becfd2c0b40a7943cd0385dda36ba3de4b30e12197c5875e842c35",
+        "columns": "c28eebba088939adb0ca8b9c5f69301e3287a14ab3c75dca77f1edd0c2f5e327"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-09",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": -6,
+        "cy": 0,
+        "cz": 3,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "414a84b4cdd358129943f69272a02c67a0c7e753c65cb78d305a2fa3eb31615b",
+        "haloBlocks": "4ff3e1c03eef6e27ae1fd938ea4c759f6c87e31cae1c031f551e6bb681939208",
+        "density": "c2d2531b8b3d32bd0b30b2e0323c635a0399c73d7cf48e81b54a23a4420741bf",
+        "columns": "21011a95a771763b2ec6b914ee886124499c6dfd6213419a7fa47da9df620066"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-10",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": 8,
+        "cy": 0,
+        "cz": 8,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "53fc65d9e0d7f6fe37ada786a10ec57b7cb0a672010e6ae3aa579d2da5381e88",
+        "haloBlocks": "02d80b46dec3d734e58dd113a642746abc08c9c894cab890c19a852c95c91d25",
+        "density": "d2b6326cb2b2269b3886f16f1cb3ea85a603f4c0bac32071df48f0af973cfaed",
+        "columns": "64edbc6e3d72f19f0fa3b78dfa559872f723f96c4000e0a8fb38624eb03585c8"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-11",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": -8,
+        "cy": 0,
+        "cz": -8,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "0633b4ce677d673b7957da941845c5c8d5350af1b63675b1a13b8eab99972232",
+        "haloBlocks": "aa716284b20eefbc8fdee18a07397804f65d3dfaf0567bbcbfd8a78d2c99a442",
+        "density": "01274ff933604cf465740c06657f1001dd5dfaa5701125d1d3ae228e55cbe5ed",
+        "columns": "423c49ce5845ddd48053dbefbbc0d57fb360f0dadb092e2574737f177a28ead4"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-12",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": 16,
+        "cy": 0,
+        "cz": -16,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "3d5dd2fa91bdd0b6c976f8048c3d00d837b347d3bc66e94ef0d03760546139b4",
+        "haloBlocks": "fb52cf267d49c530f145e82551460a50d88f55fd2f4942f23dd4b2797159ec99",
+        "density": "463047d832e83a93169d615876e837b8e3a7a0b76f8c423548e7259a4443b111",
+        "columns": "facdf51d2a7fd8944700fe379731b66b0d79f94fd15706517d0d12e99ee2fceb"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-13",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": -16,
+        "cy": 0,
+        "cz": 16,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "d0cc5613765d2e207a1eb4951f1d3a510475f63a55b2eb499cd40a0dbc4c8b5e",
+        "haloBlocks": "9681570fdb43c083b0039d099c2982268be218dede0a0dfcfe7fe34f0ece8ab2",
+        "density": "70dedbd79cdcfa89c24447ddf01ab162386f2207dba385c38ee71f4a3fcc4308",
+        "columns": "ce675a0462f4512bb0327ab1fc9fda34362624fdcb30bbc70824fe9b68478bd4"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-14",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": 32,
+        "cy": 0,
+        "cz": 24,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "1708f112e0a5a269b1d8bc0a21ef7a9e37938ef44dd10df68701f47dec2f8206",
+        "haloBlocks": "262cb41992a122bf67bcc326272eefeff66cf8e2c59acaa2074f721111e1759e",
+        "density": "3e7ddf55e70817d05c47b7b7466df391ff6cdf399d38e48f1c4704d0161d63fc",
+        "columns": "0e42da3756689cde9d16527a2d8564514c89e71395b6afcd8c752f28d629cacc"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-15",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": -32,
+        "cy": 0,
+        "cz": -24,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "ac21d9b75030d70c0dc0fc6f51bfe4a84e65af9cd0937f955655a3f861c64950",
+        "haloBlocks": "e1994888f751d63795b791a0181c9f0a6f2d47f00f9ee6fc42423092faf157d0",
+        "density": "b339ed20d31302e97c5761d361cccf099ce4180905d846937e5c495c36551b8d",
+        "columns": "83f567f478738f9dbfe83590830933e627d8d26d6f34f5b61c684c58b5df740e"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-16",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": 100,
+        "cy": 0,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "79f9f2e8255fa662539a6fa6f17292d13fa139cdb80da65c0bd004fa0169f704",
+        "haloBlocks": "b9bb1bbb307c55e8e95a0137628aa62aa290f9d5a692b9f6b7fea567253679fa",
+        "density": "09b53cf0b83a1c1291cbcd3dfced4c92f7a172d1422221059274db54ca43baba",
+        "columns": "2713d840b9ee11482a7cbf62d4e61c178ae1016747ac7c7d9e4fbab01ac58877"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-17",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": -100,
+        "cy": 0,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "f9f6858a041fc8b432954494f826e63ad2a9e787f5dc128443e19e6cedcde849",
+        "haloBlocks": "180d72291a1c5707c4d1e088eb0cd81fba868211af392e35ec83ca921acb239a",
+        "density": "03f311f18dbd4538e1ad315b4960a88d442d78b954e83d7ed863b55003ce5cf5",
+        "columns": "e22bc0070613958ec23410a99b5aa4f7abdb1635a056c1e9b298de4a26171880"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-18",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": 0,
+        "cy": 0,
+        "cz": 100,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "b429878ba812c3659e7b098cec065916a92af5e5dd45cbea4b74a208efb7b4a1",
+        "haloBlocks": "a850f497a3644937b43d2deb7d3ccf56c8b257b4970539e80e12f6b935449092",
+        "density": "2833cbbe9dcc667c92b9f0b0e27f6742471358fe0aa8fcbef519b3fad64623e8",
+        "columns": "4cb191593aea531d2de44bcde0751437eb08ef74ac84baedee34f93e367980e5"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-19",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": 0,
+        "cy": 0,
+        "cz": -100,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "852a956249549b8757e3c49ca4e1c7672bebf24a95e785601d413b25f5cbf633",
+        "haloBlocks": "7c0ee76483a031f045632067d8c148d048f417ebb7b0604b7699f835528170aa",
+        "density": "2048ceadb5612c8b0e3ae30257c797df786fe05459cdbb290509ed7c35ff2c43",
+        "columns": "55d6b3090dc6df63b4818123ebf773f9ee894379663e1f4f81a14cb8c9ce8246"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-20",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": 240,
+        "cy": -1,
+        "cz": 120,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "d556c50a98c1a38fcaaef4d9453325a5b7e3d69f0a924eec4f99452a220c35cb",
+        "haloBlocks": "7cd0e0c4ed5c6556c9ce23cf1917d704710c9163b5d75e22a0e0a95ac733220b",
+        "density": "9416d757bf2b3b22146eed8db11d5172925cd683276860e60af8c99fda03567e",
+        "columns": "82dbb72bf2d935cfae68421450a55144de1c4fbd5b3a54823a616f2a178a76dc"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-21",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": -240,
+        "cy": 0,
+        "cz": -120,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "fbef9e7013d77b2f8845aa1275028c2a1c5b662c03402f9aa1137f2e0a6d4f08",
+        "haloBlocks": "2fbbb7573b38a5cd71a87e11dcdfc1d12099687e38247e195418b2b06081de16",
+        "density": "4240add0d313af9fba2c23ad4cda89ad404b48addb59ca3dc4bb9e0820340190",
+        "columns": "1147ec3b8ba4081d150c3f5a09bf63f163e30dec4a82eff9db7c0a8409590e68"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-22",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": 300,
+        "cy": 0,
+        "cz": -250,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "b52ebaa1dce802e55960b1d679e6f9d7fde3a438d20fe64a874603a4b24b8216",
+        "haloBlocks": "53669151b0ad41690397cd4ec677bbd9ba9d85f9dff444c477ca0d8ea44c8706",
+        "density": "854b53ba99e9ef1b67168224eeb2d106aae2576460e67b51e5f6ca7b407b49e6",
+        "columns": "1300edd855a13b1c1efa21ca5a4571fc817f025228a94434dbd9e87a0a2dfebe"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-23",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": -300,
+        "cy": 0,
+        "cz": 250,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "43e31557a26cb45e5012bbdf93a66014177ef2a221ea07fecc80d41c830310b9",
+        "haloBlocks": "4db3ba96397c4fc0386b5597a5f0c4affdb6081ae49e304154a31df29fe9cf8a",
+        "density": "c060be9dc3458ae3b3f6aaf501b6f1fdfbef8d1c8cec4a37fc2f5da26b20ccea",
+        "columns": "f5441085727552b2cc2e4dfc346f37ef54a218af3fe64c7c9d24e99e3673076f"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-24",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": 703,
+        "cy": 0,
+        "cz": 703,
+        "spacing": 1,
+        "coverage": "xz-frame-boundary"
+      },
+      "hashes": {
+        "blocks": "f386abcaf7fa9ed1b8f001ca1327577c6bd1e7f1703fddf13aaae9998b6bea97",
+        "haloBlocks": "038e3c5082457302578bb74c9b0c3010a10bfbf82bdd76b4810afcd4ff677540",
+        "density": "011f3eb118ead66b47df06990ce7b050995d0970a1574ac45afae1d7f5f0d6c4",
+        "columns": "0cd05abfbef7d21b7652571731f61c5b5645d89cbab6a1ac5e004f437b992f49"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-surface-25",
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "cx": -704,
+        "cy": 0,
+        "cz": -704,
+        "spacing": 1,
+        "coverage": "xz-frame-boundary"
+      },
+      "hashes": {
+        "blocks": "9cb95e671ac0275749a32b68bea17eec54075c4e814550866dbf70b6e3f610d7",
+        "haloBlocks": "7096f6a281fc3bb41b2bbd3c2232f7b145eeef45d6730417fe804491db3acdad",
+        "density": "4b44051e80c388fbe72b18bd1efd7d8111bd4358642c85a6529c30b6a43e1060",
+        "columns": "d5caaef02f7a5ca161b8fd14c695b37c52e0d962bbe0ba8454a6587634c89e13"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-floor",
+        "cx": -1,
+        "cy": -48,
+        "cz": 0,
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "floor"
+      },
+      "hashes": {
+        "blocks": "0b1bc4208dd7f3a8249804514cb01d457207656dd6acb695c816cfb3e2898e17",
+        "haloBlocks": "67f15edbfe2bb0df5c7ce3ae8f7089d716eccccb5fd221e74e624f2ae9914827",
+        "density": "e73609aab6175da4fbe4d4b3141a229b889eeef9d56a338093c3030a07ee4bae",
+        "columns": "c733e1c9a20bb8ef0105467184841d858b3480dd02ac6eb90d5fd865182841c7"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-worldstone-transition",
+        "cx": 0,
+        "cy": -47,
+        "cz": -1,
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "worldstone-transition"
+      },
+      "hashes": {
+        "blocks": "4f76e9188b6063650654fde6caa90189ee08262522be6f9e08cc0d75a7b4dc72",
+        "haloBlocks": "21a236e48ac56faa68f52af1a0665d679dd12fbf32b4b15427fe2405a67b28cd",
+        "density": "735b425969a9639c26ab283eab8cf64a10548ffc69654d243d8f9d9671e6cf86",
+        "columns": "9e9efae811d633136510268f876fc72928a6d02c3a39b7ead628c79dec5163a1"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-deep-stone",
+        "cx": 0,
+        "cy": -8,
+        "cz": 1,
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "deep-stone"
+      },
+      "hashes": {
+        "blocks": "4f76e9188b6063650654fde6caa90189ee08262522be6f9e08cc0d75a7b4dc72",
+        "haloBlocks": "8d98320d427ca0dafd223ec85ee9f82027a2daa9fe04b499c81acb8b392a0753",
+        "density": "ca1feddf4f1aac60ec1afbc69da9452c6aaae655feeeb5064b5bf0fea16b2f4a",
+        "columns": "a372106228cbaf0a54a923e870c67b6870859f4a7fbd1da703343da62fec92dd"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod0-sky-ceiling",
+        "cx": 0,
+        "cy": 31,
+        "cz": 0,
+        "world": "test",
+        "seed": 2,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "sky-ceiling"
+      },
+      "hashes": {
+        "blocks": "de2f256064a0af797747c2b97505dc0b9f3df0de4f489eac731c23ae9ca9cc31",
+        "haloBlocks": "9736d8dd61f2488c3dfc458e674c95b61b1194c527dcf63ec29a0f0e95c6aaf6",
+        "density": "82d3a91c18f8abd425377ab974156922cbb1f4d2bda3c3475105feb085a8c791",
+        "columns": "e67fe4e5609b5c8dc697ebcd2bbdb1e92b584b9e7352719a1a012e653b14931b"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod1-surface-00",
+        "world": "test",
+        "seed": 2,
+        "lod": 1,
+        "cx": 0,
+        "cy": -1,
+        "cz": 0,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "a18dffa4a4647f0eb9e4f2666f31816a74491ac44a933725ed4e58f57711732a",
+        "haloBlocks": "2fbeee085a3a7cb307887f61bd8271885e2271bf5698ab8ae4f80e78ec9c0093",
+        "density": "213c228b406ace841829fc0f30ca2564ac3e6d872c8c5e1be2512724301aaf21",
+        "columns": "db5a1cca5bf23aab550016fcccb942d2bc43b5d66d2be0c20e4ec8e869f6ce24"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod1-surface-01",
+        "world": "test",
+        "seed": 2,
+        "lod": 1,
+        "cx": 1,
+        "cy": -1,
+        "cz": 0,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "8f27bfa5aa5dfabbf1d78d27a2bf826b8b948306c37523cd825ae7c4301f0aea",
+        "haloBlocks": "88a315072a1174168fff08be3237981c78706720999620696f5c67cd648b7b33",
+        "density": "50d7b18f6462955706218612e809d6c3abef6119483412df680c8be28e3cbe23",
+        "columns": "78373d626a3c9ae52ad48e6b7aa32146998f729a4ee4e8bdbfa66443799e7b58"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod1-surface-02",
+        "world": "test",
+        "seed": 2,
+        "lod": 1,
+        "cx": 1,
+        "cy": -1,
+        "cz": 1,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "8d784fc1eae495af9def2ca7fe459a6f4ff394ecddc07f6d03d11947c4b487a4",
+        "haloBlocks": "5af59555d60a96c42caf7deba737dc618b183b49f3f2d827462410e6fc967954",
+        "density": "8c1d2657873dc1e81b326d7fd7410709dc1b7550652c77e79725e51e464bb1ff",
+        "columns": "531a78234dc7397630c418ccc8ca0faa92017a507d3abbbf4f773cf7fe4e57a1"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod1-surface-03",
+        "world": "test",
+        "seed": 2,
+        "lod": 1,
+        "cx": 0,
+        "cy": -1,
+        "cz": -1,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "f3bbac2312a0efe4ac0b00ad40ee392fd5bea21c9daeb216e91939eba5f6a602",
+        "haloBlocks": "3b71f2347b3a44a4ce6a3892c4dd35a06e3ab6db92cc840ab917be79d030c8a0",
+        "density": "b3d31b3e9a17e5421f83459f2546feabe90bb7b6986c559a27d0d6bdaa57d9d3",
+        "columns": "2ac7ac895722862e401154a1150cbee62c7919feeb6786fbe7602b915fa2a662"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod1-surface-04",
+        "world": "test",
+        "seed": 2,
+        "lod": 1,
+        "cx": -1,
+        "cy": -1,
+        "cz": -1,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "66c33d3d338f621e27b97cbd31a8d69905078f8ba566ca7e02eee16fb28b842e",
+        "haloBlocks": "6699995536898cee6be45ec8b6628ac38b3a0aecabf28c3d0e7c1907a7ffd036",
+        "density": "49443907662956f3300d2f3f6e3e141d12c6dffdb3462f9dd397463ad66cfcff",
+        "columns": "dd7283f6d9c7d05e1c52d731465683552472caaa0b81aada5403114de6f961fd"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod1-surface-05",
+        "world": "test",
+        "seed": 2,
+        "lod": 1,
+        "cx": -2,
+        "cy": -1,
+        "cz": 1,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "8c4ff0bda1322600469fe339598fe9bd393919ec8b321d6b87630c00ff162956",
+        "haloBlocks": "c46496a7f9b6b658659ab5b3bae699f6efcdafe9bd887340f1e90f4f41a7b29f",
+        "density": "be1a1110abfb7fe19cce3677940c2104e0e68e3b77249d883e4978c954834a32",
+        "columns": "2c834e05bd1c200ca5f221f77350c1fed1fffe45010f9d8122104652dd22d926"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod1-surface-06",
+        "world": "test",
+        "seed": 2,
+        "lod": 1,
+        "cx": 3,
+        "cy": -1,
+        "cz": 0,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "c4ffc210137c02b42ffa6be7e55a5c6c049fce4b5adaeba0fb65b3383cac5fdc",
+        "haloBlocks": "c06f8ba2c5a7356dd32e5c3ad12f8c4a9a50236a0f0f8991a4a3eb35ef4be007",
+        "density": "40447d4380e112fbe4cb9d7b002884573f6595b9ac379d96b6eeed5b70471e32",
+        "columns": "a61353170c2bdd56a5072998ea665dc0b09bdf995acb29ca65fa51367852375d"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod1-surface-07",
+        "world": "test",
+        "seed": 2,
+        "lod": 1,
+        "cx": -3,
+        "cy": -1,
+        "cz": -2,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "fe9ff2fa642729750b541b1200d050e32b749e6034d63df233b666cf47597817",
+        "haloBlocks": "0f727545f1e98b54d6a33b878e432c089f44a108254f649e680086e1d827dc92",
+        "density": "5a680e6a2a64509cea4117ac079813e822b10c96cca7257b12df075e4549a8ce",
+        "columns": "789a295d1e32961bb5b7bd1a802bb77117c66007e0c08996576f0cbdba936d17"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod1-surface-08",
+        "world": "test",
+        "seed": 2,
+        "lod": 1,
+        "cx": 5,
+        "cy": 0,
+        "cz": -4,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "343e43f910ceeb06a03bf701cd204e73f28afb7699898bd69bcff01a06b111d3",
+        "haloBlocks": "dbd5bdb3ed7238cc46d4616e57fcec736a0edb1aa244521fa3a5f766bbdad1cc",
+        "density": "c3ae508b4d9e6b397c62e9f0a3ba6b1e4180498a1785fcaa05755b749bbab010",
+        "columns": "8961dcaf369d60eb9a8efcb70895994f00c629f784a8504e1ddeb615e3f15c76"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod1-surface-09",
+        "world": "test",
+        "seed": 2,
+        "lod": 1,
+        "cx": -6,
+        "cy": 0,
+        "cz": 3,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "370c43e9ff3bafdd96698a5d81eae5cc1680dbbb0e79233ba62e7b05eb5c81bf",
+        "haloBlocks": "bbce14696ab108b4f26f8893bccd4d2a04ec723caf392b21b40db167e074d8ee",
+        "density": "725f351e0784ac8910e6747a71e5368325859958637c2a702b5a0c01f781bd46",
+        "columns": "ecbe715ddff28683ef27f7ee0c1ca71dab0e651aff4b55bead58d67bd71d1ca2"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod1-surface-10",
+        "world": "test",
+        "seed": 2,
+        "lod": 1,
+        "cx": 8,
+        "cy": -1,
+        "cz": 8,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "1d0082fe2428891eec9aca8070044daf75ad05813ea993b7659563aa6e3d445a",
+        "haloBlocks": "51506958e05e5db912a0932b6db3c8bb733efee1826ca99439b674f516197035",
+        "density": "144a1682896623892a5a19b541c4af5661b321a1f3d93c22d60d0a1063ba6c2c",
+        "columns": "def153fb71d2b3ec7b5f27627558a283b478ef6697f2876436b2e080a79a6016"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod1-surface-11",
+        "world": "test",
+        "seed": 2,
+        "lod": 1,
+        "cx": -8,
+        "cy": 0,
+        "cz": -8,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "90ac1123dc3b6973b68cc5a6a2fb922af99c9ed5785cf56962f4856402378704",
+        "haloBlocks": "34e12fe584b28e5d26d3f8cb39d97f2277a86e734a3671961445b668eff8e8fc",
+        "density": "3446699c446268ce2e2fc00c2ae59e0cffc007f18d31c02c857bdf90c62b3fcd",
+        "columns": "2d1319f8cc7d869047c2a08e835fe22016d9677f4308a4b8f52637fae96cd05d"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod1-surface-12",
+        "world": "test",
+        "seed": 2,
+        "lod": 1,
+        "cx": 16,
+        "cy": 0,
+        "cz": -16,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "b7be6194ca7faea7d530302bf786c990fc8b4b44a7e82f750549b5a3a00c8d7d",
+        "haloBlocks": "ea1a74f94cef6943f44a56cf9b46332a4974438e23470c7d8ebc8b9ab4e79fe0",
+        "density": "b79b0899d623ca6a8e31a87b108f35043692ff76ea2f64827b6b340292e5bc1f",
+        "columns": "dbe59d1f898b9c36cee0172a896fb33a9753929b5929f1c126dd8199aa2c0087"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod1-surface-13",
+        "world": "test",
+        "seed": 2,
+        "lod": 1,
+        "cx": -16,
+        "cy": 0,
+        "cz": 16,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "8d8fd23fa7ca120b7cda4a24613193046a913ad63e6078f18c23cf0da4656958",
+        "haloBlocks": "be0f3314d122e3ae1b74e4727bc96d7b1ec0e5ca1f72e0827c1ae803fba93d3a",
+        "density": "16fb59d813910d7a197fab0905750749e15b0fecc69ec74c3f0407b7fcc4bb1a",
+        "columns": "7c26ae9016357d260b3ab3e0aebf88aae8926a1b742474404146fb9ec28bf3a8"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod1-surface-14",
+        "world": "test",
+        "seed": 2,
+        "lod": 1,
+        "cx": 32,
+        "cy": -1,
+        "cz": 24,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "3fb81413058a0c9e0b645b456bbb069906a52f928eb0cd0c07d338cd9ac5f5d1",
+        "haloBlocks": "57bf58d8d7d875f29067601f1bb883a428b421b756af3cb0cfcc216c350cf06f",
+        "density": "d24e9046231ae770b741e493814ca008121c3347c2e2e9d58e93b7bc8dcb1595",
+        "columns": "cc57590252d67b89e1c356b8f364f4c3db5f8c79fb425be5085251fcde8f5ec5"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod1-surface-15",
+        "world": "test",
+        "seed": 2,
+        "lod": 1,
+        "cx": -32,
+        "cy": 0,
+        "cz": -24,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "d823772fe04351bf1bade0a1a92659db178607e3a1123b1baab40c22ebbf72ec",
+        "haloBlocks": "57fc3cea4ba677f192764b9d086f3af8f20b6924ef512bb8261b2f880d46678c",
+        "density": "00e9d4700f5e03c6d4aed8f314e6b2efefd738158cd2158adab87f5a9f8254aa",
+        "columns": "08b58fc9249d97f27942b024ff285ba2d4b9b85be5b3f028399041ba83b7ddd1"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod1-surface-16",
+        "world": "test",
+        "seed": 2,
+        "lod": 1,
+        "cx": 100,
+        "cy": 0,
+        "cz": 0,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "3418e9b924ae288bdaf2a1dfba3a3ac3934817b450a983b58c656e058bd5bc14",
+        "haloBlocks": "cd71814ef9a2cd1eef3a7ae2d79ec4447238a16fdb47cefba04a0298cba01f1b",
+        "density": "ae14b5178cfe5da0d3536e41d52d935691f649cb7d82d613ba1f47c3b92c1057",
+        "columns": "cea4a52ba62fda291037e143f76a120f7ef2903648ce7ff7105b0ab6f371e2ec"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod1-surface-17",
+        "world": "test",
+        "seed": 2,
+        "lod": 1,
+        "cx": -100,
+        "cy": 0,
+        "cz": 0,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "83ac741c7061b6c7e9625c0c2c0ac5c154f3ca610d36f83e2531bcba7eaaf52a",
+        "haloBlocks": "1bbc418ed466d9ce007eec67570fec3430ed2081be066ba6bfcf8763bc8a6fad",
+        "density": "45d6fd7b411d1c24dfbc4164ed6ca455f5f1632d62399acd4d96c219658abeec",
+        "columns": "82031eb1d03e44d0d7292c0675f9bf0d68cd8be6d999814ab74148e817ff3623"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod1-surface-18",
+        "world": "test",
+        "seed": 2,
+        "lod": 1,
+        "cx": 351,
+        "cy": 0,
+        "cz": 351,
+        "spacing": 2,
+        "coverage": "xz-frame-boundary"
+      },
+      "hashes": {
+        "blocks": "2caec11c7e298a98d07bc92c29c07dda8a9d06a97b2ed92474d9e094ca4a27e8",
+        "haloBlocks": "b1b46638382233ce1b9ddd64ba5d96ae94e8f63e5629c6238b2494cbfe98aa96",
+        "density": "c0c51366f1fac492a76ef563847d1db7ed35007d2ccfee74d74b48a4d22fb6c0",
+        "columns": "c541222806651dfc48e65bd7846bc3ac0d5421276dc4bc88c3faf336f9498011"
+      }
+    },
+    {
+      "sample": {
+        "id": "s2-lod1-surface-19",
+        "world": "test",
+        "seed": 2,
+        "lod": 1,
+        "cx": -352,
+        "cy": 0,
+        "cz": -352,
+        "spacing": 2,
+        "coverage": "xz-frame-boundary"
+      },
+      "hashes": {
+        "blocks": "3a6552b74a9c95fc836b3b34dee5996663541fe2eba79f1915f648b612feba08",
+        "haloBlocks": "b06a569c1ea255e43a78b5addc39f64f6e5330db83570ce2e401f5130ab8cc16",
+        "density": "24868a99ecbcadc45d183fa5bb84389fc0674f1d7a18f55d948f15114b8c6538",
+        "columns": "24ca594098deb96fdac37805d998d24dab969188d664aca35ae88fa68b10d480"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-00",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": 0,
+        "cy": 0,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "be6f01781aea5815783bbaf8068c2bba594f1528c1e0df4ffc1868505ea791de",
+        "haloBlocks": "8b5a44456cdc731a1af84ed5ee73f11df3ae15070c34d1586e1351df168644b6",
+        "density": "cbe74e81cb25d8b2e9b86325a3f213db314a8f82bae21891de4dce0fac04805d",
+        "columns": "8cd63f86f62a689d6f40fb45c7795e4001f8781d8be0164a0b64aaf15ff34ff0"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-01",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": 1,
+        "cy": -1,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "8042b0e558ba4438513fab6be7f8db5597eaeba40f41f24f08e8d5e516653c8f",
+        "haloBlocks": "f62ad0fefa2d8caa4cd93f88dcd19e39bfd8c2fbd0f42b14dd92f27df4951232",
+        "density": "f017830f7cd894346c0ca9cd16a12fbeb93dc638681c43d56a6a0b70e4c334ec",
+        "columns": "9f7d1908ef0e926fc4bacf0dbf1a9fa7e547feecb148f714953acf3733ef993f"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-02",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": 1,
+        "cy": 0,
+        "cz": 1,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "19aa057505ee39f65757ee6cc1361852294dc2a65ee40079f691ed85c5adc45a",
+        "haloBlocks": "f550cd9ad4814e2c683ddaa557fbc16a3331d95ae8140a6455700895c4f68323",
+        "density": "50bd7177e2de93eefa5a355fb1cf53897ad4460cb9adcddf148d04a07224781d",
+        "columns": "2d0383a3549d57076f5cb93533a820ea9a53fb46f0a1e7fc71acbe5bf9c22fd9"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-03",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": 0,
+        "cy": 0,
+        "cz": -1,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "a31166ce8245a6b09396a197a4783d9c2b5befe15e72880fa5404b46f8087d31",
+        "haloBlocks": "ccd8d0acdd51a00634970e02e336b0116eeb395409ae9d8ae61723971e14eba1",
+        "density": "e59067957d9f637d17aa3fb1a23726e6f823fd356c7690c03182d627c579181f",
+        "columns": "d94932b85438fc07817e49f98cb98955e4ced34c6a9a5ef911c1b7eb07ccb1d3"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-04",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": -1,
+        "cy": 0,
+        "cz": -1,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "92991df243b8784e4912a68f6443a29b498ee1205d5767ba3e07f9ae0fb45676",
+        "haloBlocks": "1f47f3cf18407e52034c518deaaf477e025b5ae068cad432ece165001400a524",
+        "density": "0f1ad2b81b0e5c93afe09b8068399322fbf2f612043091ae76b581ec9fc8763b",
+        "columns": "f53f320cd37e1540848f8f78774f170086061e2bf571dec4579afd2448519c15"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-05",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": -2,
+        "cy": 0,
+        "cz": 1,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "07674536346732b98f84a19cc374733c4d081fac0b6908686919346f18c9bff0",
+        "haloBlocks": "6a63e6150d915ec0b2724f78f8c07550bb2dcb6ad523b329951440221e6576ce",
+        "density": "8e7cdd4fd99ea6f203e327cff11fd0957c929eb12c2349bd32e40f655aac1f50",
+        "columns": "df6b2cff59e7867af71ceb432460e300392ac60111644b97fc2fe182017cb71f"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-06",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": 3,
+        "cy": 0,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "18687d1973299870aebe774326b8a7ce676746c3d274084dc913f20f7d7b727b",
+        "haloBlocks": "b56a3c56cffae41e29d4b0a5a7c677221f884b84a88836aba9fb32c44326eea0",
+        "density": "97e09de8bcdde047b5b108bfdd6f2a1a1a828fd42808fad6f00e3f985ca3023f",
+        "columns": "08276ce469991b06c2d2d74d66f165178ae4a620eac5871a95828ea50176b612"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-07",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": -3,
+        "cy": 0,
+        "cz": -2,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "ab2bc2c3eb7e2fb42b3cbde2d849a94f51986d055ba29b494bdc83a595ef3353",
+        "haloBlocks": "bb5b6ab26eb01e21fe7d16f9656e79c98b7793bb751e581cb5158d08a9c92c07",
+        "density": "f11f76f96f4a050738b0a7b1112a3ed2f3fc7c4966cd593ed8fb87f812ff8e4d",
+        "columns": "348b32d3743464fcf03efc77d2d8becbceb4cdd13d0081ab48263132da43520b"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-08",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": 5,
+        "cy": -1,
+        "cz": -4,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "01f45b44462e1d9b5ce3cff72c5a25f6436a1165b2455d949c1613e03851559e",
+        "haloBlocks": "edfda4e2ed92ec930894f096bad50f259e9e4738a6b3c7fbe22e628bbd02add9",
+        "density": "9457480680479697d50b698e0eabc46fac9343dd3046e7f4e4acd767267668e1",
+        "columns": "ae215696fd1a5954ad62f3eb64ec393abe8887853a0228a1bc2c90e362496608"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-09",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": -6,
+        "cy": 0,
+        "cz": 3,
+        "spacing": 1,
+        "coverage": "spawn-pond-trees-signed-near"
+      },
+      "hashes": {
+        "blocks": "ff460d4750fc089bad905c035f0fd32796d064e092c0ab43fccadf83ea74b288",
+        "haloBlocks": "e907b49e224eb541009ca0fe0192f6c93fdcd3a5b40a2726fe233221f80f7112",
+        "density": "c6a75df8e710162d6b6a08ba9401cee7b0b5a6846d61531e8d851fc6b66dedc4",
+        "columns": "1a4a50f3656ceea951ab12c0aa2b2566b20f485c462b1f3296d35ed2aeeb9dca"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-10",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": 8,
+        "cy": 0,
+        "cz": 8,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "d5d6e9af21702cce601d61369896bdf04f36bc067487eddbae750fad4820f1ee",
+        "haloBlocks": "86d435295f774384b35998d6cc8c682d0a04ad14ece17b13fe61d48a23874664",
+        "density": "45e585980f86ee93a33d21650ce9a5612efebc742d4c236d59978a6e52e13729",
+        "columns": "c81f4a0413e2b16ba43c567deac7e3ade6f0f96a74a8e046a085f8280b665985"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-11",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": -8,
+        "cy": 0,
+        "cz": -8,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "d7eb7444c4076197b54a7546afb2356a7fba14e70953cb7a86c03fcc9ce35d4c",
+        "haloBlocks": "f6d5a9386039351317f0ccd4e3b7f45a7339f361d9b83d17842ee837691ab7b8",
+        "density": "7470ca2a2e202e803f50658d4d3dcc3e3c36e9f97ac7072552f3a260fc71e89f",
+        "columns": "83efd76dafe7013db6f782158450974ff0e6821ec57220180a641bef58e28427"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-12",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": 16,
+        "cy": -1,
+        "cz": -16,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "f085516b5f4b2bd606dcbcd3ad4e5617d327340d043d31851f25d0b1c50cd247",
+        "haloBlocks": "3446282cc8e8d4f6f895780253e30c5bde39b55b5f1d83f1707f5d925baa1287",
+        "density": "acfb85e5778fdb0fb346d84afca0ebad2588afa368472d6759272cb3d08ff95d",
+        "columns": "6f169ae31cf3a7fbedb9b02399f2fdbc91c9939a088ebd0f0914d5942d26ea1e"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-13",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": -16,
+        "cy": 0,
+        "cz": 16,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "6a04937c0a21b8c816f1fadd5285738eafd1ff4e5cdfadc19eebeecd5328f5f4",
+        "haloBlocks": "07b35b87c1325d78ebdb7ec1c40fa929000af9a269fb4236f749b61938cefc16",
+        "density": "465ce43e66af4fb318475a67a5b2ea0524fc4476004591dfa194f5f5340528fb",
+        "columns": "5ab7b0cb0638055966c2dddcb09b310d77ac80a3bba3e11053399877e8804ab7"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-14",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": 32,
+        "cy": 0,
+        "cz": 24,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "7250477477929e7231c80b41d71e116342113df98a3ac0387c96f8b13c402121",
+        "haloBlocks": "e52051c283f038a33de4be170d18b0a11b05f61e08e19c46db183cef256265cd",
+        "density": "a4150f89c514bab6cdac5dbe47015e317759f748629ce59503be73222735c00e",
+        "columns": "a5ff288fe67baa0b4e85ea0b71faf5278991c8f67bad99017ce9258e08bdee32"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-15",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": -32,
+        "cy": 0,
+        "cz": -24,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "f11450f8a6a26d1f345846bfc37fdc3bab9e4c270280737c5703e5aaa81f07d7",
+        "haloBlocks": "8b09fa37d26b406d05f664582dd7bea39be4b04b32cff42e87d405038589ae3e",
+        "density": "11b5c4d5f1ff252e353f24e0d54eb4ad4c7e569c59994d4b7875b801403c3cb1",
+        "columns": "a62f7a71a54923f92b6b515e156e46db9f1154307e6c66245f5bea0ccd7cfd60"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-16",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": 100,
+        "cy": 0,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "5317789e9023e6520516333ecc56b46e6166b86c33c5cd13a5fa326ab3c61537",
+        "haloBlocks": "8332d72785d44502923ec88af197f0f84b697668a598b668639eca4dc7466e16",
+        "density": "1f69c9ee06f10cd3a62af1a2f278a51a9d0bc013e7e02661a61cd15ade388faf",
+        "columns": "8ef87e3a6543476fed05fed7d3e46a8aa48c067f7df7f2879d6561869163f728"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-17",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": -100,
+        "cy": -1,
+        "cz": 0,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "6d6b3f7f013a21407ef48044366868c0cb3c120e6132d139abf373523d8ef54f",
+        "haloBlocks": "1fd94af87275f1c863df9c47b10203b1baff3901d5030ead1dfba4893e9d750d",
+        "density": "4de94ddd0bb04a9f93712831cdfbc83b0ee8a049cf11d5ccc846bcbf3bb862fe",
+        "columns": "e4d5b3eda6334e6bbef0cdb47cb774392c7d4fffc8c2b4ce232c1b458e4b410f"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-18",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": 0,
+        "cy": 0,
+        "cz": 100,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "520506240626aee5bf040cdcc97799609c1fe7ce92134f3120c6816e0676525b",
+        "haloBlocks": "2ceb7c5d40214607ff6d24bf51da1a4797ae987da453555ae9c7d039b7dc5c13",
+        "density": "f2b93a4f76647fbdfd82f14573bd14f110bb8497c5e28d266fc6b2d7ed9de27b",
+        "columns": "3a9dc1da025e3d2ea100c9592e8f6e03949c13370980272f2bb66311a5381439"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-19",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": 0,
+        "cy": 0,
+        "cz": -100,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "c8486123af606da2a47ddc750ef4572f671cba58f961bd2dca3b28714030de27",
+        "haloBlocks": "a3fc74a330116c03f5e08c68609717606f925d89702fd2055a66b28859ddb869",
+        "density": "fce14e5bdbf842aacab3b11dbf1aa1fb22d22275602829d27a46d5f95bda7ea1",
+        "columns": "624208920edd3f93d836da492cb72ce20279ea85f71d2089c4de500b2bc22a94"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-20",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": 240,
+        "cy": 0,
+        "cz": 120,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "47e5701f227af6995bee9818ff423a38eae9323e597776844105cc40cad90ccc",
+        "haloBlocks": "5cca1c80694c18e7f19fb15bc7d6bd11e0dcc61597857522fffeb1244e074654",
+        "density": "73465890c75d61596781e9ce0b80376901fefdc0b3ede38b06bd39729d91fff9",
+        "columns": "0f14d73fcdf245a2e5bc46059ab508582f19d004b6d71adcae26bf3777d39817"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-21",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": -240,
+        "cy": 0,
+        "cz": -120,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "5f65583942f4042add2d3c2db8b771157262cbcfe8804227a649a85bd54bde7e",
+        "haloBlocks": "8cc0607b3e87d11cf8c6f5ddfdeaf552d20466a5e69e0c0f143d4e408e3213e4",
+        "density": "2c30f5408363943166544fee6876c9b688a1cfa502966e2bcb3581d1100c1112",
+        "columns": "9ad6d792400889b17552b47ea717a5367e06b3cff420ed0319907d6b863772f1"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-22",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": 300,
+        "cy": 0,
+        "cz": -250,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "759ba85d87b8d4b47d67e1603e1f87ec262427f582a0f15d8d8639ac280f4dd6",
+        "haloBlocks": "af4c38fd0b3e2d5817d748d343a01829e6e740b543b709583ef76a81b24d825c",
+        "density": "adb7692ca9e7d605f65e751fda34e09bd3921e13ac8a003564aec6fc8147eef4",
+        "columns": "e9eb506d62572226b91f399cdd2f3f83ba84ca5bf4e2c0f62f7b4a879d572b56"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-23",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": -300,
+        "cy": 0,
+        "cz": 250,
+        "spacing": 1,
+        "coverage": "signed-distant-relief"
+      },
+      "hashes": {
+        "blocks": "97834dc922bbe310340ff844b06cdda0686b7b52104881829035b438834a403a",
+        "haloBlocks": "ff73602c6bf1b357e8d496e162b96f7ef6c796242827b43da27660abd31ac960",
+        "density": "219c345874e179b9a9946ceb78a5585b4369f2d13dcdb3694e205a4f35c2d411",
+        "columns": "7b5536a5cc7497f04178de63d86048ca3454a38ab2da554f6b3b84951d5d6b17"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-24",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": 703,
+        "cy": 0,
+        "cz": 703,
+        "spacing": 1,
+        "coverage": "xz-frame-boundary"
+      },
+      "hashes": {
+        "blocks": "28e748d1c2494efd1c52a35ec03bb2122e27455ea686e0569925a47cf57b3f67",
+        "haloBlocks": "8c27b818227b60d2ada24ce8af12902e2ae981f405669939bf12898c8d454693",
+        "density": "dbe850e875c18208ddb86f01028216aef0318cbee9ab8ede419a3e21f1a136df",
+        "columns": "e2a3f09bef33b78cb1fcbe1f98ba8df3f790b5f1f9a9cacd2829598ae1119bf8"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-surface-25",
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "cx": -704,
+        "cy": 0,
+        "cz": -704,
+        "spacing": 1,
+        "coverage": "xz-frame-boundary"
+      },
+      "hashes": {
+        "blocks": "c6fd0e0d714197e5a54acbbe71dad11c8562c3f7964ae15c9693cd07917a95dc",
+        "haloBlocks": "c5aa2b1f305cec23fdd066cf30d2c82db1c7474992ffa4fef9beda8599900ef1",
+        "density": "88033a78b49dbcf5019b3a69480fa95d471bd615df70c7e3ec3018a29bb9056d",
+        "columns": "084e804486d2074f596f75e24a1b5c84e7327eced43ab66f3eee2c648ed7e0be"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-floor",
+        "cx": -1,
+        "cy": -48,
+        "cz": 0,
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "floor"
+      },
+      "hashes": {
+        "blocks": "0b1bc4208dd7f3a8249804514cb01d457207656dd6acb695c816cfb3e2898e17",
+        "haloBlocks": "67f15edbfe2bb0df5c7ce3ae8f7089d716eccccb5fd221e74e624f2ae9914827",
+        "density": "bab3781e38f476d2b8e2f00ce873ca1b42de884ff2113c2517129c310f63fda3",
+        "columns": "65a70e019f4b85e6fab3635e3af946341e36b29b93b42fb0827e25679d94c2fc"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-worldstone-transition",
+        "cx": 0,
+        "cy": -47,
+        "cz": -1,
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "worldstone-transition"
+      },
+      "hashes": {
+        "blocks": "4f76e9188b6063650654fde6caa90189ee08262522be6f9e08cc0d75a7b4dc72",
+        "haloBlocks": "21a236e48ac56faa68f52af1a0665d679dd12fbf32b4b15427fe2405a67b28cd",
+        "density": "1bc3ef6c311556879148d68236fd7f3a55d7a80c3d782c3fb235e718b703666f",
+        "columns": "d94932b85438fc07817e49f98cb98955e4ced34c6a9a5ef911c1b7eb07ccb1d3"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-deep-stone",
+        "cx": 0,
+        "cy": -8,
+        "cz": 1,
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "deep-stone"
+      },
+      "hashes": {
+        "blocks": "4f76e9188b6063650654fde6caa90189ee08262522be6f9e08cc0d75a7b4dc72",
+        "haloBlocks": "8d98320d427ca0dafd223ec85ee9f82027a2daa9fe04b499c81acb8b392a0753",
+        "density": "49340f80f26dc6d37e69ff18d5f2383ee2dc9924ce174789a428a726f2368dda",
+        "columns": "6dd1f0277c3de36c577729ca463a01b395ce7bd2650f85ab87267dfc5a8caeb3"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod0-sky-ceiling",
+        "cx": 0,
+        "cy": 31,
+        "cz": 0,
+        "world": "test",
+        "seed": 3,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "sky-ceiling"
+      },
+      "hashes": {
+        "blocks": "de2f256064a0af797747c2b97505dc0b9f3df0de4f489eac731c23ae9ca9cc31",
+        "haloBlocks": "9736d8dd61f2488c3dfc458e674c95b61b1194c527dcf63ec29a0f0e95c6aaf6",
+        "density": "0dcf2e20971dfa7fdd517114f38f12cb954256d6a9589117e9cb2c2a76b0f472",
+        "columns": "8cd63f86f62a689d6f40fb45c7795e4001f8781d8be0164a0b64aaf15ff34ff0"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod1-surface-00",
+        "world": "test",
+        "seed": 3,
+        "lod": 1,
+        "cx": 0,
+        "cy": -1,
+        "cz": 0,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "fe587a283377df372f1fea754e3e3494dd769f938e7b3484128f390d5cb3ec4a",
+        "haloBlocks": "2eb21c38a9ada4cd413769a02f21be88bba2acfce21c269fdfbe6dfbbe108e55",
+        "density": "c776f32f69826f39e803194a3b2abe81c9c247e446e93baa17f8b6763eae3166",
+        "columns": "83fc0a8ca84c8322b336086995d50e14f1e33f5443bc136785aad9d9b418d995"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod1-surface-01",
+        "world": "test",
+        "seed": 3,
+        "lod": 1,
+        "cx": 1,
+        "cy": 0,
+        "cz": 0,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "e3ca86bc2ede7d0c3b16bd76c78fd64ad8283677ccfab57753516f00caa9e5bb",
+        "haloBlocks": "257a8120369aacafefe3435f028ac5bafb7c3b40842164de383e5ae2fc35b578",
+        "density": "ab436985e781f11db29e9431fcdfc0b055ebced109627cb4573e1c1b23f65a56",
+        "columns": "d6f3606237869835cf5960cde312717ca3a3e686bb5009566242f3cb8423a061"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod1-surface-02",
+        "world": "test",
+        "seed": 3,
+        "lod": 1,
+        "cx": 1,
+        "cy": 0,
+        "cz": 1,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "9d32c3b158718b67b115d60356e3e5708a6f0601c6da10eda100cc42ce2f71ec",
+        "haloBlocks": "dedeb85375230b846fb89479ab8193764f0bd15dfddd157079a0b9a7b68fae76",
+        "density": "c9a09a602e2dc38b457595c3b4ff6a4d3871abd593eb3451319e6f1236498609",
+        "columns": "4c32ea2c750af0e3f35ee8622cb67edfc427cb740029391669c2ac476795353d"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod1-surface-03",
+        "world": "test",
+        "seed": 3,
+        "lod": 1,
+        "cx": 0,
+        "cy": 0,
+        "cz": -1,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "6e208c9617fda61ac4c288b13fce2da289619519baeb724a73345d86d7627e6f",
+        "haloBlocks": "425bd0b3265d3fcc0d69dd7bdb6387f1632b3cbbb7a5064b1e8d4a87f14ec7be",
+        "density": "ca31309230d41e6c7eb986f7b186dd40dd4264f570ba7468270df3edc34d09b4",
+        "columns": "623a49f080c52f59bd9ae77873324b90e68029f80d6df80563bc00abdbe5b0df"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod1-surface-04",
+        "world": "test",
+        "seed": 3,
+        "lod": 1,
+        "cx": -1,
+        "cy": 0,
+        "cz": -1,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "c473b8414255a7c56e9b582a3a34b96a7df3776892b9181fa553906c9410087f",
+        "haloBlocks": "7dea96304e3fbef3bd5f8e4d6613176f19517460abd7fd5d8d6b5bf984d59085",
+        "density": "8938db6ebe2b222116929ecee6ba16a298131eae073c28708038a75aba2cb95a",
+        "columns": "d0c35ef04070b06d362dc3097709723fbda509200b36ae28f4f5d0ebe3070767"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod1-surface-05",
+        "world": "test",
+        "seed": 3,
+        "lod": 1,
+        "cx": -2,
+        "cy": 0,
+        "cz": 1,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "9eba62888232d7f6741749e3319aeebd28c541084565b9350e99cedd4e5b8f76",
+        "haloBlocks": "17fcfbc00c95633ed766b96cfd029be04b534240296b92649eff2e552b6dd514",
+        "density": "34e2c286fa024fcb6dec7178ff4a8bf306fcca0b27bc566b009e22f58ac3be1c",
+        "columns": "f67b9af4bf049f69d8f3ae739802d95d7d688f71aa72fa8eeaf78ba5c594b5a2"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod1-surface-06",
+        "world": "test",
+        "seed": 3,
+        "lod": 1,
+        "cx": 3,
+        "cy": 0,
+        "cz": 0,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "534334b32eb7989da99ecc5f0dcbd1efeb26aa13ee2565b389ae957fa4b89e87",
+        "haloBlocks": "5db0063dc7c232a96c0c6aae610979cea71e811acc197e69144b655bfdadccf1",
+        "density": "12700038d280c17693174bd38af335ebc42a28d053ceb467f653e45a0e2e7a52",
+        "columns": "464108fd49c7a53ee08979b9f180d71723e0d06658aacdc9ba3367e827b4e17e"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod1-surface-07",
+        "world": "test",
+        "seed": 3,
+        "lod": 1,
+        "cx": -3,
+        "cy": 0,
+        "cz": -2,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "609f69dcd092f5e756c82606112f04805753b2f94430d773d4a9df8b29e5d2c1",
+        "haloBlocks": "8ea72ae2930e88c5d99c4bf5c0ab5158336029207957a6babf8ae8363694e140",
+        "density": "78474ba1809ed2a4b80abe41bebe5ab39217678012d12660ab9ca2ca71fe0216",
+        "columns": "f6172689cee8810ca748af4b7fad5134b854c04ea178a418ee2979fd0d78cc89"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod1-surface-08",
+        "world": "test",
+        "seed": 3,
+        "lod": 1,
+        "cx": 5,
+        "cy": 0,
+        "cz": -4,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "dbac6b200fe4291dde831984e60c5631f6c848708c7a29c98abfa3e1fdf90a64",
+        "haloBlocks": "cf2768b49036aba81bedf90887f6bc1eb7acb44217d0192720db35010737dc33",
+        "density": "aa9e32ae24c896ddc356a70e236b5603ff2584992019f4833d651a8412628cca",
+        "columns": "ec8ec720b8fe1cca38353cb6908cb93b7f637787a81ba0dbe2a07a2752eb05f9"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod1-surface-09",
+        "world": "test",
+        "seed": 3,
+        "lod": 1,
+        "cx": -6,
+        "cy": 0,
+        "cz": 3,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "2143f90c46df20d05b48210fc2f2b56d06f75cdd7b89cefd4cff119cf7c4a725",
+        "haloBlocks": "08a130c75172f0df16f8bde4fd648edf93d705be383c47ddb0cab8586cd06ad0",
+        "density": "15bc6fd9c75d873463759abd6bd0c330ffb21e2dab3b47762011b5f2eff8eb55",
+        "columns": "c927a8b6ab7a29be45354a9d4b2b37c806f0d01f5e34bcf0c465f85d34a4b3e4"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod1-surface-10",
+        "world": "test",
+        "seed": 3,
+        "lod": 1,
+        "cx": 8,
+        "cy": 0,
+        "cz": 8,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "d528691fe77ff987e413210823a01d11fbea10709c8df5dda850ea5834605e0a",
+        "haloBlocks": "51bb664c6ecee1718892ff1769922931d3de11df68afd9eaf8f438397194504d",
+        "density": "96eaaea96d7be0bf16bd99786955065134358b3ecab2101852dcf485a966ec67",
+        "columns": "f66bbc3dce9fc76b9af3d65bc0a46b0d4c97b9f72d63b4c8b17821108ba3ff9d"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod1-surface-11",
+        "world": "test",
+        "seed": 3,
+        "lod": 1,
+        "cx": -8,
+        "cy": 0,
+        "cz": -8,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "7e004efd74173d8f116f27088993f86b4aab9d4999fdf60798825c44911ca022",
+        "haloBlocks": "928893dfe1231a0e02ccd9e029ebca35fd3f77fe5bd952e16d40ec9b729459ed",
+        "density": "d81e1ac6a94926e592314fb5652612d25fcebd5b2c3e2d677097f4d8afbf2499",
+        "columns": "29bdc2720a8b2c9bda3ac19b1402d1cd2e7bb28b0886ecc1bdde4dc6477b6a9a"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod1-surface-12",
+        "world": "test",
+        "seed": 3,
+        "lod": 1,
+        "cx": 16,
+        "cy": 0,
+        "cz": -16,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "cdab473d7fb74d28a7abff89310e2062c2df5e5a616f21bb36d3341a0af84580",
+        "haloBlocks": "e789d2b93f13bcead3854608797c9928c99aa6da733ba57a87f30c261241c85d",
+        "density": "c38b3f8afa433fedd33e94bce5b9833dd89801dad50522f2585d0b54ec6694c8",
+        "columns": "ead1cdd7f539756e5dce4df240601366836a879b472e99332934070314884aad"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod1-surface-13",
+        "world": "test",
+        "seed": 3,
+        "lod": 1,
+        "cx": -16,
+        "cy": 0,
+        "cz": 16,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "a375e4db1da8e5b7248391f81f2006788d1d4f7b0ede80b8a8be6b987b15cbef",
+        "haloBlocks": "44d2fcee6c8756a53b229d15a2333ddf3eb4b7698ac428ccbb5a5b3131c96e59",
+        "density": "393367d2fd10e82acf54f6f775819cefc7871b99927a898e0b254580c74ed70c",
+        "columns": "e2646a6f95eeea2110416a6626dfea4848535c1a410e50d7ec645082fae6f4b0"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod1-surface-14",
+        "world": "test",
+        "seed": 3,
+        "lod": 1,
+        "cx": 32,
+        "cy": 0,
+        "cz": 24,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "a2a6ddb252def96daee106dc6a8d209d616aad20661827783ef36d1bb9effb24",
+        "haloBlocks": "d73e5317ddeb707fcfd72d0ede09128e97eab98267b0e63900e36da46b121db3",
+        "density": "bc8c5c6f70797af96bf367e44842d4e917e98ae618b3612b1da8f84456c09eb6",
+        "columns": "b78e3cadb04027575166f0844560ac9853c6c7fcc75ad939f0e7b2bb89e6930d"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod1-surface-15",
+        "world": "test",
+        "seed": 3,
+        "lod": 1,
+        "cx": -32,
+        "cy": 0,
+        "cz": -24,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "5e0fa829d81481cb36d20fb288f755b9c5a80dfd06a7eeeea6eb4b9e0f4b3c2a",
+        "haloBlocks": "2421feab12b20b8c766c754f5eb41effd260c51583b6288791a75d355f40e179",
+        "density": "d03a2a3dce3ead5655971731bbf1e927a04d12da5f7de4c41870aa22b6f099b1",
+        "columns": "29c2837d9158e839ecf4025a682aabbe773d2719c33ede5d0143ddda7a2233d0"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod1-surface-16",
+        "world": "test",
+        "seed": 3,
+        "lod": 1,
+        "cx": 100,
+        "cy": 0,
+        "cz": 0,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "9b83fea40abdd998dae2c6480f9871fde0fcbacb078bdf0b6fc4620ebb2e6fd3",
+        "haloBlocks": "f08d6f2b069b6cb1a7067703dfe6ea89e33eb3dc795b436294ac775ce3e378ae",
+        "density": "28aa7f7b4aa9b2e9f48a2364d9ada562b5be2ab961b413a8e4bb1eb1d39a7346",
+        "columns": "4be2b5590d5e63be64e24748d517e00ca8a81be5fd77fe48df66c663a5d6410a"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod1-surface-17",
+        "world": "test",
+        "seed": 3,
+        "lod": 1,
+        "cx": -100,
+        "cy": 0,
+        "cz": 0,
+        "spacing": 2,
+        "coverage": "two-metre-point-samples"
+      },
+      "hashes": {
+        "blocks": "ed40a5e7a8defaab6b5052b79db767235c6fa2d83a9a656241a76f499443e3ac",
+        "haloBlocks": "17936e07c523d71a9a1935873486ff2abe1b4bac0e1b14bc75b50002ed0379cd",
+        "density": "8c72fc3b3736c2b88ee161d1b8450c8c77e3ea765fb16a5a8213d2741c6c2a94",
+        "columns": "7f07d025e5b219bb6fe56f0494cf034846f7383e1c24d8ab5cca8d3562bcf6e1"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod1-surface-18",
+        "world": "test",
+        "seed": 3,
+        "lod": 1,
+        "cx": 351,
+        "cy": 0,
+        "cz": 351,
+        "spacing": 2,
+        "coverage": "xz-frame-boundary"
+      },
+      "hashes": {
+        "blocks": "67b85ec9442c04e07c7aedf76e6971f544c4dca3cd6288c747ba8c150f0de813",
+        "haloBlocks": "8716a0d0f37fb97c914a6d05b4d5d727530bae00dcda4e61fc361a8be861a83f",
+        "density": "a633513f21eb46a630c9f5ba79f7bd959a85d7f9b7c6a42586b31234ee0d0c4c",
+        "columns": "1e32311227699a8aebbad396eb85903a34e376144971d1844b9c132973099517"
+      }
+    },
+    {
+      "sample": {
+        "id": "s3-lod1-surface-19",
+        "world": "test",
+        "seed": 3,
+        "lod": 1,
+        "cx": -352,
+        "cy": 0,
+        "cz": -352,
+        "spacing": 2,
+        "coverage": "xz-frame-boundary"
+      },
+      "hashes": {
+        "blocks": "88af5428e75b9666f5dcbb8d5781244a0740b9bb39642092b7d4b838421d140f",
+        "haloBlocks": "2c47842cad48daa16cc9f8bbfb48176d2bf0ba1fcf1665ae45cecf6d81f45ea2",
+        "density": "7dcff25c05c8eafc0d7d8edf18a22505734a18511fe0e0656170bb98b0b113d5",
+        "columns": "3dbe2400b0119e4748016e6e9c8a417276dd1e3b45ab2acd823d635a940fe64d"
+      }
+    }
+  ]
+}

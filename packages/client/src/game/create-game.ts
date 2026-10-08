@@ -191,6 +191,8 @@ class GameRuntime implements GamePort {
   private lastView = "";
   private frames: { t: number; dt: number }[] = [];
   private promise: Promise<void> = Promise.resolve();
+  private transitions: Promise<void> = Promise.resolve();
+  private pendingTransitions = 0;
   constructor(
     private readonly canvas: HTMLCanvasElement,
     private readonly options: GameOptions,
@@ -241,6 +243,10 @@ class GameRuntime implements GamePort {
     return this.input.cancelDrag();
   }
   read(): GameSnapshot {
+    const lifecycle =
+      this.pendingTransitions && this.lifecycle === "ready"
+        ? "loading"
+        : this.lifecycle;
     const stats = this.renderer?.statistics ?? {
         draws: 0,
         triangles: 0,
@@ -257,7 +263,7 @@ class GameRuntime implements GamePort {
     ] as CompassId;
     return {
       revision: this.revision,
-      lifecycle: this.lifecycle,
+      lifecycle,
       loadProgress: this.loadProgress,
       seed: this.seed,
       mode: this.mode,
@@ -283,7 +289,7 @@ class GameRuntime implements GamePort {
       storage: this.persistence.blocked ? "blocked" : "available",
       graphics: this.graphics,
       debug:
-        this.lifecycle === "ready"
+        lifecycle === "ready"
           ? {
               feet: [this.body.x, this.body.y, this.body.z],
               facing,
@@ -332,13 +338,34 @@ class GameRuntime implements GamePort {
     this.revision++;
     this.emit({ type: "snapshot", snapshot: this.read() });
   }
+  /** A later session cannot overtake an earlier save/clear or its cleanup. */
+  private transition(operation: () => Promise<void>): Promise<void> {
+    this.pendingTransitions++;
+    this.input.release();
+    this.input.setScope("inactive");
+    const next = this.transitions
+      .then(operation)
+      .catch((error: unknown) => {
+        console.error(error);
+        this.lifecycle = "failed";
+      })
+      .finally(() => {
+        this.pendingTransitions--;
+        this.input.setScope(this.pendingTransitions ? "inactive" : this.scope);
+        this.publish();
+      });
+    this.transitions = next;
+    this.promise = next;
+    return next;
+  }
   apply(command: GameCommand): void {
+    if (this.stopped) return;
     switch (command.type) {
       case "start":
-        this.promise = this.start(command.seed);
+        this.transition(() => this.start(command.seed));
         break;
       case "quit":
-        this.promise = this.quit();
+        this.transition(() => this.quit());
         break;
       case "pause":
         this.clocks.paused = command.paused;
@@ -346,7 +373,9 @@ class GameRuntime implements GamePort {
         break;
       case "input-scope":
         this.scope = command.scope;
-        this.input.setScope(command.scope);
+        this.input.setScope(
+          this.pendingTransitions ? "inactive" : command.scope,
+        );
         break;
       case "set-time":
         this.clocks.setHours(command.hours);
@@ -378,10 +407,10 @@ class GameRuntime implements GamePort {
         this.renderer?.setHud(command.visible);
         break;
       case "postcard":
-        this.promise = this.setPostcard(command.active);
+        this.transition(() => this.setPostcard(command.active));
         break;
       case "clear-edits":
-        this.promise = this.clear(command.seed);
+        this.transition(() => this.clear(command.seed));
         break;
     }
     this.publish();
@@ -401,7 +430,7 @@ class GameRuntime implements GamePort {
     this.input.dispose();
     this.camera = new OverheadCamera();
     this.input = this.makeInput();
-    this.input.setScope(this.scope);
+    this.input.setScope(this.pendingTransitions ? "inactive" : this.scope);
     this.lifecycle = "loading";
     this.seed = seed >>> 0;
     this.loadProgress = 0;
@@ -572,7 +601,7 @@ class GameRuntime implements GamePort {
     if (!this.store) return;
     this.tick++;
     this.previous = { ...this.body };
-    const active = this.scope === "world";
+    const active = this.pendingTransitions === 0 && this.scope === "world";
     const lookYaw = Math.atan2(
       this.aim.x - this.body.x,
       -(this.aim.z - this.body.z),
@@ -711,7 +740,8 @@ class GameRuntime implements GamePort {
     );
   }
   private recordEdit(edit: VoxelEdit): void {
-    if (!this.store) return;
+    if (!this.store || this.pendingTransitions || this.lifecycle !== "ready")
+      return;
     this.store.edit(edit);
     void this.persistence
       .save(this.seed, [...this.store.edits.values()])
@@ -764,6 +794,7 @@ class GameRuntime implements GamePort {
     this.input.release();
     this.mode = active ? "postcard" : "overhead";
     this.renderer.setPostcard(active);
+    this.publish();
     if (active) {
       cancelAnimationFrame(this.frame);
       await this.store.requestView(
@@ -790,6 +821,10 @@ class GameRuntime implements GamePort {
       return;
     }
     const ok = await this.persistence.clear(seed);
+    if (!ok) {
+      this.emit({ type: "clear-edits-finished", seed, ok: false });
+      return;
+    }
     if (this.store) this.store.edits.clear();
     await this.start(seed);
     this.emit({
@@ -867,7 +902,7 @@ class GameRuntime implements GamePort {
       ghost: this.ghost ? { ...this.ghost } : null,
       loaded: this.store?.chunks.size ?? 0,
       queued: this.store?.queueSize ?? 0,
-      ready: this.lifecycle === "ready",
+      ready: this.pendingTransitions === 0 && this.lifecycle === "ready",
       displayTimeMs: this.clocks.displayMs,
       editCount: this.store?.edits.size ?? 0,
       lastAction: this.actionRecord,
@@ -884,7 +919,7 @@ class GameRuntime implements GamePort {
   }
   async dispose(): Promise<void> {
     this.stopped = true;
-    await this.quit();
+    await this.transition(() => this.quit());
     this.input.dispose();
     this.listeners.clear();
     await this.persistence.close();

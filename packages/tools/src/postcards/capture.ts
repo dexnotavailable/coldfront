@@ -94,13 +94,52 @@ try {
       .jpeg({ quality: 85 })
       .toFile(resolve(committed, `TEST-1-s${seed}.jpg`));
   }
+  const durationMs = performance.now() - started;
+  const sheetStarted = performance.now();
+  const sheetPath = resolve(output, "_sheet-test.jpg");
+  const sheet = await browser.newPage();
+  try {
+    sheet.on("pageerror", (error) => errors.push(error.message));
+    sheet.on("console", (message) => {
+      if (message.type() === "error") errors.push(message.text());
+      if (message.type() === "warning") warnings.push(message.text());
+    });
+    sheet.on("request", (request) => {
+      if (/^https?:/.test(request.url())) external.push(request.url());
+    });
+    await sheet.setViewportSize({ width: 1280, height: 720 });
+    await sheet.setContent(
+      '<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;width:1280px;height:720px}body{display:grid;grid-template-columns:1fr;grid-template-rows:1fr}img{display:block;width:100%;height:100%;object-fit:contain}</style></head><body><img alt=""></body></html>',
+    );
+    await sheet.locator("img").evaluate(async (element, source) => {
+      const image = element as HTMLImageElement;
+      image.src = source;
+      await image.decode();
+    }, receipt.png);
+    const jpeg = await sheet.screenshot({ type: "jpeg", quality: 85 });
+    if (errors.length || external.length)
+      throw new Error(JSON.stringify({ errors, external }));
+    await writeFile(sheetPath, jpeg);
+    if (args.includes("--commit"))
+      await writeFile(resolve(root, "docs/postcards/m1/_sheet-test.jpg"), jpeg);
+  } finally {
+    await sheet.close();
+  }
+  const contactSheet = {
+    image: sheetPath,
+    postcards: ["TEST-1"],
+    width: 1280,
+    height: 720,
+    quality: 85,
+    durationMs: performance.now() - sheetStarted,
+  };
   await writeFile(
     resolve(output, `TEST-1-s${seed}.receipt.json`),
     JSON.stringify(
       {
         seed,
         camera,
-        durationMs: performance.now() - started,
+        durationMs,
         isolated: receipt.isolated,
         contextLost: receipt.contextLost,
         telemetry: receipt.telemetry,
@@ -108,12 +147,13 @@ try {
         warnings,
         external,
         screenshot: path,
+        contactSheet,
       },
       null,
       2,
     ),
   );
-  console.log(JSON.stringify({ image: path, warnings, errors }));
+  console.log(JSON.stringify({ image: path, contactSheet, warnings, errors }));
 } finally {
   await browser.close();
 }

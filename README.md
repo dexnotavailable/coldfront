@@ -2,7 +2,9 @@
 
 A seasonal, ~100-player voxel civilization builder in the browser. You rule a kingdom from above and possess its people on the ground, pushing supply lines down a funnel-shaped world to break the strongholds of the Wardens and, finally, the King Below.
 
-This repository starts as **design docs only**. AI coding sessions build the game from them, one phase at a time. This README is **your guide as the owner**. The coding agent reads `AGENTS.md` instead.
+The **first creative test world is playable** at [dex.place/coldfront](https://dex.place/coldfront/). Press Play, walk with W A S D, double-tap Space to fly, and use the mouse to break/place blocks. The [interface gallery](https://dex.place/coldfront/?gallery) shows the screens built so far. This is phase 1.1; the kingdom simulation, multiplayer and finished regions are still ahead. See [progress and what to try](docs/progress.md).
+
+The game is built from these design docs one phase at a time. This README is **your guide as the owner**; the coding agent reads `AGENTS.md`. Local development uses Node 22.12 or newer: `npm ci`, then `npm run dev`. The remaining setup guide below records the original project setup.
 
 | File | What it is |
 |---|---|

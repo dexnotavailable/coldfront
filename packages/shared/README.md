@@ -1,6 +1,6 @@
 # COLDFRONT shared foundation
 
-Phase 1.1 **step 1** only. Pure ES2022 TypeScript with no runtime dependencies, DOM/Node APIs, clocks or random generator state. Node 22.12+ is the build/tool contract. Root `npm run build` currently emits `packages/shared/dist`; it does not emit a client or claim a playable build.
+Phase 1.1 shared kernels. Pure ES2022 TypeScript with no runtime dependencies, DOM/Node APIs, clocks or random generator state. Node 22.12+ is the build/tool contract. Root `npm run build` emits the shared package and playable client; `npm run build:site` targets the owner's `/coldfront/` mount. The coordinate, maths and noise contract below is preserved as meshing, lighting and review tools are added.
 
 Root commands: `npm ci`, `npm test`, `npm run check`, `npm run build`. The Windows development machine routes npm cache to `D:\Dex\Cache\npm` and temporary files to D. Scripts are cross-platform. Vite is installed for the next step; no placeholder dev, browser, atlas, benchmark or UI checks exist. Persisted golden chunk hashes and browser golden tests are roadmap step 4.
 
@@ -18,9 +18,9 @@ const density = chunk.density[haloIndex(x, y, z)];
 - Core: 32³ samples, `Uint16Array blocks`, x fastest, then z, then y: `x + 32*(z + 32*y)`.
 - Halo: 34 × 41 × 34 samples, local x/z −1…32 and y −1…39. One sample on sides/below and eight above. `haloIndex = (x+1) + 34*((z+1) + 34*(y+1))`.
 - `Uint16Array haloBlocks` includes core and halo. `Float64Array density` uses the same indices. Positive density means solid; zero is a surface treated as air. Water has negative solid density. Tree trunks and crowns contribute solid density.
-- Buffers belong to the caller and can be transferred to a worker. No light buffer is invented before lighting exists.
+- Buffers belong to the caller and can be transferred to a worker. The generator does not invent light values: the separate `src/lighting` solver supplies lighting for `src/meshing`.
 - `Float64Array columns` has eight interleaved lanes per halo column: macro+meso height, micro height, total height, dx, dz, slope-distance correction, water level, pond elliptical radius squared. Start: `Column.Stride*((x+1)+34*(z+1))`. The exported `Column` object names each offset. Dry water level is `-Infinity`.
-- World centre: `(chunkCoordinate*32 + local + 0.5)*spacing`, including halos. Spacing may be any finite positive value within the query domain, including non-powers of two. Geometry and materials depend on that position, never spacing or request order. LOD topology/meshing comes later.
+- World centre: `(chunkCoordinate*32 + local + 0.5)*spacing`, including halos. Spacing may be any finite positive value within the query domain, including non-powers of two. Geometry and materials depend on that position, never spacing or request order. Near voxel meshing is implemented; the LOD2+ column-tile topology comes in phase 1.4.
 - Seeds are 32-bit integer words, signed or unsigned. Negative cell indices use floor division. Exports include `worldToChunk`, `cellIndex`, `localCoordinate`, `sampleCenter`, and bounded LOD0/1 `packChunkKey`/`unpackChunkKey`.
 - Canonical continuous bounds are half-open: XZ [−22528,22528), Y [−1536,1024). Voxel queries outside return air. Worldstone lies below −1504 inside the frame. Column/feature query helpers accept finite XZ up to ±1,000,000m for halos; larger queries throw.
 
@@ -40,7 +40,7 @@ For hot loops, precompute `collectTestTrees(seed,minX,minZ,maxX,maxZ)` over the 
 
 Trees are candidates from 40m cells, identified by the cell-coordinate pair. Each has a varied trunk and ellipsoidal leaf blob; spawn, water and steep ground reject candidates. Both sides of a chunk boundary find the same features. `testTreeInCell`/`collectTestTrees` are exported; no neighbour-first generation exists.
 
-`Block` and `BLOCK_REGISTRY` currently define Air 0, Worldstone 1, Stone 2, Dirt 3, Grass 4, Sand 5, Water 6, Log 7, Leaves 8, DeepStone 9. Definitions provide semantic keys/names, render type, solidity, opacity, breakability, light filtering and texture recipe keys. Step 2 expands these and adds actual recipes. `WORLDGEN_VERSION = 1`.
+`Block` and `BLOCK_REGISTRY` preserve the original IDs: Air 0, Worldstone 1, Stone 2, Dirt 3, Grass 4, Sand 5, Water 6, Log 7, Leaves 8, DeepStone 9. IDs 10–31 extend this set without renumbering; `src/blocks/registry.ts` is the complete list and `src/blocks/textures/recipes.ts` supplies generated recipes. Definitions provide semantic keys/names, render type, solidity, opacity, breakability, light filtering and texture recipe keys. `WORLDGEN_VERSION = 1`.
 
 ## Noise and derivatives
 

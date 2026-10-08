@@ -102,3 +102,5 @@ The production build collects the complete notices from the installed runtime pa
 ## Screenshot and interface development tools
 
 Playwright 1.63.0 is Apache-2.0; PostCSS 8.5.29 and preact-render-to-string 6.8.0 are MIT. Sharp 0.35.5 is Apache-2.0 and retains its bundled libvips notices. These are development/capture tools, not runtime network dependencies or game assets. Their complete notices remain in their npm distributions.
+
+The terrain atlas and slice tools use pngjs 7.0.0 and @types/pngjs 6.0.5 (MIT). These run in Node and do not add a browser runtime dependency; the complete MIT notices remain in the installed npm packages.

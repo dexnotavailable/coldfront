@@ -1,5 +1,11 @@
 # Phase 1.1 interface acceptance
 
+## 9 October verification update
+
+The integrated checkout now passes 190 tests, check/build and complete catalogue lint. UI components, strings and layout are unchanged from the reviewed captures below. The additional save/transition fix has eleven regression tests and a local production browser journey: `01-placed-edit.jpg`, `02-quick-reentry.jpg` and `03-persisted-edit.jpg` were opened and show the same placed stone block before and after immediate Quit/Play and full reload/Play. Fresh `world-outline-ghost.jpg` and `world-silhouette.jpg` were captured and opened against the corrected runtime; the source-bound gallery proof was refreshed. The new readiness and postcard-mode tests check that queued Play cannot prematurely dismiss Loading and that Esc still exits postcard mode while its terrain is loading.
+
+The first private HUD retry failed its isolation assertion because a test-only HTML response omitted headers. That receipt and its images remain preserved; explicit COOP/COEP on that response made the unchanged guard pass. It was not a production-server defect. No UI assertions were weakened. The public-site browser launch was separately rejected by automatic approval review and was not retried; this update establishes local production behavior only.
+
 All original UI review findings are closed. The independent reviewer passed the final twelve focus-outline images. The integrated build reports **155 tests passing**, passing checks/build, and **ui:lint --complete: 53 gallery states, no missing current rows**. These integration results are reported by the coordinator; the image and browser evidence below was captured and inspected in the UI lane.
 
 [Open the gallery](https://dex.place/coldfront/?gallery) on the playable preview. The contact sheet is prepared for `docs/postcards/wip/ui.jpg`:
