@@ -22,7 +22,12 @@
     "ui:lint": "tsx --tsconfig packages/tools/tsconfig.json packages/tools/src/ui-lint/index.ts",
     "ui:shots": "tsx --tsconfig packages/tools/tsconfig.json packages/tools/src/ui-shots/index.ts",
     "test:browser": "node --import tsx packages/tools/src/browser-tests/run.ts browser",
-    "postcards": "node --import tsx packages/tools/src/browser-tests/run.ts postcards"
+    "postcards": "node --import tsx packages/tools/src/browser-tests/run.ts postcards",
+    "golden:update": "node --import tsx packages/tools/src/golden/update.ts",
+    "test:golden:browsers": "node --import tsx packages/tools/src/golden/browsers.ts",
+    "bench:gen": "node --import tsx packages/tools/src/bench/run.ts",
+    "atlas": "tsx packages/tools/src/atlas/index.ts",
+    "slice": "tsx packages/tools/src/slice/index.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",

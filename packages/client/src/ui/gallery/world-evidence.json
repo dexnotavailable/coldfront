@@ -5,11 +5,11 @@
       "id": "outline-ghost",
       "rows": ["hud.outline", "hud.ghost"],
       "image": "fixtures/ui/world-outline-ghost.jpg",
-      "imageSha256": "ffff24f6bba0cd6eae1b3544a55dd59f876d7951e32e15e98ca2971c3c295d9b",
+      "imageSha256": "c24c5e8ad1fe6d1cd3b50af92fe7109831588bc1b3063276e036829ba74a6d5a",
       "telemetry": "fixtures/ui/world-outline-ghost.json",
-      "telemetrySha256": "f130475b40bac72365963475b94f5384c1eefa8ffd69578f52d0aa4e645502fb",
+      "telemetrySha256": "03c5286a5e85a97d6053b8544efee6d2b6c7ea958062006da9a545987c24ee8b",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "9f2ef60ff6a26db4afeccf2f948f4bbb112d6e4468eed46b92bf26f006837f4b",
+      "runReceiptSha256": "50d7eb1c37d1c689a669b16ecf6ee344cd5308d33acaec6efeb6eddcfd7b1a3d",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -73,7 +73,7 @@
         },
         {
           "path": "packages/client/src/game/create-game.ts",
-          "sha256": "270d4768639cdc59da8da3740dc28d6c433089859d7ecb1a49b15bc4d4d17547"
+          "sha256": "238a5f66606dfe682e17469baff3d38947e88289e34a2e1a8faff6f49938d842"
         },
         {
           "path": "packages/client/src/game/input.ts",
@@ -81,7 +81,7 @@
         },
         {
           "path": "packages/client/src/game/persistence.ts",
-          "sha256": "11c66d5f49740fa4f12e7542b7d419fabee896a0bb8a7a8c06e769329a61c34f"
+          "sha256": "9d392ea5c636be610dc3c7d4d02a92cbf9f00ba4c31a258734caaf922e4bd3f5"
         },
         {
           "path": "packages/client/src/game/raycast.ts",
@@ -162,12 +162,16 @@
         {
           "path": "packages/shared/src/worldgen/version.ts",
           "sha256": "da4ed8692e2ae8466b45b40132ae6f533c8855016dd77bd964257e0d34e1fce5"
+        },
+        {
+          "path": "packages/tools/src/browser-tests/hud-proof.ts",
+          "sha256": "6eaeda24f3c771d68538e28ef2d0f43c77a134f92a760c348ac8d2ad95bb4438"
         }
       ],
       "encoding": {
         "sourceFormat": "png",
         "sourceImage": "out/engine/hud-repair/outline-ghost.png",
-        "sourceImageSha256": "3c1bf083820f9c62306c3f52430357659d373190b601871ed97f9c00f897c32c",
+        "sourceImageSha256": "fc3c2e0b388296c489018df7eeaf0e017ad3ce26b4054aa8ef01e916bf141c2b",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
         "format": "jpeg",
@@ -181,11 +185,11 @@
       "id": "silhouette",
       "rows": ["hud.silhouette"],
       "image": "fixtures/ui/world-silhouette.jpg",
-      "imageSha256": "8ddafcb9295e81908882fde1f73a85d532b85c7b0323e9328685aa93de5899aa",
+      "imageSha256": "4846510d9080ed9cfe58bf2fc979299097242b9a5b904bc40c435953b5ae1e49",
       "telemetry": "fixtures/ui/world-silhouette.json",
-      "telemetrySha256": "bee452c56232891dd6eb9675764a955948faecfc38bbd29ce197cc723400fc45",
+      "telemetrySha256": "6273ddceac49b590408b2bfa4472bf2a9884f9b3ececee4e50afb3bc86458188",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "9f2ef60ff6a26db4afeccf2f948f4bbb112d6e4468eed46b92bf26f006837f4b",
+      "runReceiptSha256": "50d7eb1c37d1c689a669b16ecf6ee344cd5308d33acaec6efeb6eddcfd7b1a3d",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -249,7 +253,7 @@
         },
         {
           "path": "packages/client/src/game/create-game.ts",
-          "sha256": "270d4768639cdc59da8da3740dc28d6c433089859d7ecb1a49b15bc4d4d17547"
+          "sha256": "238a5f66606dfe682e17469baff3d38947e88289e34a2e1a8faff6f49938d842"
         },
         {
           "path": "packages/client/src/game/input.ts",
@@ -257,7 +261,7 @@
         },
         {
           "path": "packages/client/src/game/persistence.ts",
-          "sha256": "11c66d5f49740fa4f12e7542b7d419fabee896a0bb8a7a8c06e769329a61c34f"
+          "sha256": "9d392ea5c636be610dc3c7d4d02a92cbf9f00ba4c31a258734caaf922e4bd3f5"
         },
         {
           "path": "packages/client/src/game/raycast.ts",
@@ -338,12 +342,16 @@
         {
           "path": "packages/shared/src/worldgen/version.ts",
           "sha256": "da4ed8692e2ae8466b45b40132ae6f533c8855016dd77bd964257e0d34e1fce5"
+        },
+        {
+          "path": "packages/tools/src/browser-tests/hud-proof.ts",
+          "sha256": "6eaeda24f3c771d68538e28ef2d0f43c77a134f92a760c348ac8d2ad95bb4438"
         }
       ],
       "encoding": {
         "sourceFormat": "png",
         "sourceImage": "out/engine/hud-repair/silhouette.png",
-        "sourceImageSha256": "1663606e8dc3f796b510775bf82130b45a4edab158f431c08ca598df03f8722b",
+        "sourceImageSha256": "24db50d7c00fa5b47f249ce82d52885943213582af7d0b1bd3eea581d4d56a57",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
         "format": "jpeg",

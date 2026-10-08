@@ -62,7 +62,9 @@ export function lintUi() {
     bindingRows: Object.entries(catalogue)
       .filter(([id, row]) => currentId(id) && row.kind === "binding")
       .map(([id]) => id),
-    pendingEngineRows: ["hud.outline", "hud.silhouette", "hud.ghost"],
+    pendingEngineRows: ["hud.outline", "hud.silhouette", "hud.ghost"].filter(
+      (id) => missing.includes(id),
+    ),
   };
 }
 if (
@@ -77,7 +79,7 @@ if (
   );
   for (const error of result.errors) console.error(error);
   console.log(
-    `${Object.keys(result.fixtures).length} gallery states; ${result.missing.length} current rows missing; ${result.bindingRows.length} bindings await engine registry validation`,
+    `${Object.keys(result.fixtures).length} gallery states; ${result.missing.length} current rows missing; ${result.bindingRows.length} binding rows; binding registry validation runs in npm test`,
   );
   if (
     result.errors.length ||
