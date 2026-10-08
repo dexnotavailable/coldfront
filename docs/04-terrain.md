@@ -709,7 +709,7 @@ Every region uses the cavern template (§9.2) inside its layer band and footprin
 
 ## 13. Rendering the terrain (M1)
 
-Engine details are in `07-architecture.md` §6. This is what the terrain needs to look right.
+Engine details are in `07-architecture.md` §6. This is what the terrain needs to look right. The life around it (wind in the plants, cloud shadows, weather, each region's air, night, flame and glow) is `18-look-and-feel.md` §5; postcards leave out its particles and cloud shadows and stop its motion at their fixed time (§11 there).
 
 ### 13.1 Material
 - Extend **`MeshLambertMaterial` through `onBeforeCompile`**, in one module: vertex unpacking plus texture-array sampling, variant and tint selection, gloss, emissive.
@@ -891,7 +891,7 @@ Score each postcard 0–2 on each criterion (20 max).
 - **References:** if the owner adds images to `docs/references/<region>/`, give them to the blind reviewer as the target look.
 
 ### 14.6 How to review (mandatory, and context-safe)
-1. Grade from **per-region contact sheets** (≤ 6 tiles). Open a full-size image (or a 2× crop) only for the shot you're fixing. **Open every image you grade with the Read tool.** Never grade from memory or from code.
+1. Grade from **per-region contact sheets** (≤ 6 tiles). Open a full-size image (or a 2× crop) only for the shot you're fixing. **Open every image you grade** (with your tool's image viewer; `12-sessions.md` §2). Never grade from memory or from code.
 2. **Delegate** seed-2 and seed-3 grading and the **blind review** to fresh subagents that have *not* seen the code. They get the rubric, the region recipe and the images, and return scores and critique as text. The **score of record = min(yours, blind)**.
 3. **A/B.** Compare each new render with `_best/`. Accept a change only if it's preferred.
 4. **Timebox.** After 4 fix-and-re-render cycles on a postcard without a +2 gain, log its best score and critique under Known issues and move on. Phase 1.10 revisits it. A timeboxed postcard within 2 of its bar doesn't block its phase (§14.4); HELL-1 and HELL-2 always must pass.
@@ -908,6 +908,8 @@ Score each postcard 0–2 on each criterion (20 max).
   - time-of-day slider
   - view modes (clay, features)
   - render toggles (fog, shadows, LOD colours, chunk borders, wireframe)
+
+  Their exact controls are in `11-interface-catalogue.md` D12 (F3, and the Tools panel on F4).
 
   Only the `lil-gui` tuning panel is hidden, behind `?dev`.
 

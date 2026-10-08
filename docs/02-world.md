@@ -330,7 +330,7 @@ Common everywhere, in amounts that vary by region: timber, stone, clay, sand, wa
 
 Mechanics are in `05-systems.md` §17. Here is who lives where.
 
-- **Tiers:** minion → soldier → elite → general (mini-boss) → Warden. Strength rises toward each Seat and with depth.
+- **Tiers:** minion → soldier → veteran → general (mini-boss) → Warden. Strength rises toward each Seat and with depth.
 - **Behaviour:** enemies breed at musters, roam, scout, report and march. An army that takes a settlement keeps it. Territory creeps outward slowly when unchallenged. Your activity (industry, deep mining, battles) draws attention, like pollution in Factorio.
 - **Families by region:** listed in the region sheets above. Underground:
   - Sporewood: fungal thralls, sporebats
@@ -369,13 +369,13 @@ No two Wardens share the same form + threat + regen combination, so no two fight
 | 4 | Satrap Ozrem, the Gilded | Kogane | I | W | Fortress | Resource: the gold in his vault-tomb → break in and haul the hoard away (keep it) | 3 | The Gilded Seal + his hoard |
 | 5 | The Gravewarden | Boneyard | I | W | AOE | Absorbs: raises your dead → small, well-armoured force; recover or burn your fallen | 3 | Grave-Iron Crown |
 | 6 | Vhessa, the Green Throat | Selva | I | C | AOE | Structures: heartroot taproots around the Seat → cut them | 3 | Green Heart (a seed) |
-| 7 | The Drowned Abbot | Sallows | I | W | AOE | Structures: rot-shrines → purge them | 3 | Censer of the Drowned |
+| 7 | The Drowned Abbot | Sallows | I | W | AOE | Structures: rot-shrines → purge them | 3 | The Drowned Censer |
 | 8 | The Leviathan of the Mere | Grey Mere | I | C | Fortress | Resource: deep water → causeways or dams; lure it into shallows | 3 | Leviathan Scale |
 | 9 | Akari, the Lampless Queen | Tasogare | II | W | Burst | Resource: darkness → light the arena with lamp towers | 4 | The Unlit Lantern |
 | 10 | Gōka, the Thorn-Crowned | Ibara | II | B | Burst | Resource: heat vents and lava → cap vents, divert lava | 4 | Thorn Crown |
 | 11 | Hibiki, the Resonant | Hoshikuzu | II | C | Burst | Structures: crystal pylons → shatter them | 4 | Resonant Core |
 | 12 | Admiral Kest, the Stormwright | Sundered Isles | II | W | Fortress | Slow: steady regen on a floating fortress → sustained siege via lifts and bridges | 4 | Stormwright's Compass |
-| 13 | Severin, Castellan of Nadir Keep | Nadir | III | B | Fortress | Structures: the Keep's ward-engines → break them | 6 | Keys of the Keep (opens the Stair's gates) |
+| 13 | Severin, Castellan of Nadir Keep | Nadir | III | B | Fortress | Structures: the Keep's ward-engines → break them | 6 | Severin's Keys (opens the Stair's gates) |
 | 14 | The Bloom | Sporewood | III | B | AOE | Structures: spore-nodes across the region → burn them | 3 | Bloom Heart |
 | 15 | The Rootbound King | Root Halls | III | B | AOE | Resource: living root underfoot → burn the arena floor dead | 3 | Heartroot Crown |
 | 16 | The Blind Choir | Drowned Caverns | III | W | AOE | None, but the brood breeds fast → keep the force small and disciplined | 3 | Choir Stone |
@@ -404,7 +404,7 @@ Each Warden sits in a **Seat** at the desolate heart of its region: the most hos
 |---|---|---|
 | Outer | 1.5–2.5 km | outposts, roaming bands, musters |
 | Middle | 0.8–1.5 km | forts, each held by a general, with walls and musters |
-| Inner | 0.3–0.8 km | elite garrison and strongpoints |
+| Inner | 0.3–0.8 km | veteran garrison and strongpoints |
 | Arena | 150–300 m | the Warden |
 
 Enemy strength rises toward the centre. Killing a general shuts down or weakens his musters. Killing the Warden stops all spawning in the region.

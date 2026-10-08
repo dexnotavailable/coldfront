@@ -22,7 +22,7 @@ The technical plan. The agent owns technical decisions. Where this doc is silent
 | Runtime and packages | Node 22 for builds and tools (the cloud VM's default; `engines: >=22.12`, and a `.node-version` file containing `22`); the server targets **Node 24 LTS** (Node 22 reaches end of life in April 2027). **npm workspaces** |
 | Client build | Vite |
 | Rendering | three.js **r186, pinned to an exact version**, `WebGLRenderer` (WebGL2). Terrain material = `MeshLambertMaterial` extended via `onBeforeCompile` in one module, with `customProgramCacheKey` overridden (keeps three's shadows and fog). Shadows: `SunLight` (two cascades; in r186 imported from `three/addons/lights/SunLight.js`). Post: **pmndrs `postprocessing`** (`EffectPass`, bloom, tone mapping). Sky: three's `Sky` and fog first; **`@takram/three-atmosphere`** aerial perspective from phase 1.4. |
-| UI | Preact + `@preact/signals` (pin the major version), plain CSS with tokens (`06-ui-art.md` §5), `@fontsource` fonts, icons from the framework-free `lucide` package (avoids peer-version clashes with Preact) |
+| UI | Preact + `@preact/signals` (pin the major version), plain CSS with tokens (`06-ui-art.md` §5), `@fontsource` fonts, icons from the framework-free `lucide` package (avoids peer-version clashes with Preact). Every screen, control and string comes from `11-interface-catalogue.md` through a generated string table (§6) |
 | Threads | Module Web Workers with a typed message protocol and transferables. `SharedArrayBuffer` is an optimisation used when `crossOriginIsolated`; everything must work without it. |
 | Tools | Node CLIs run with `tsx`; `pngjs` for images; Playwright (version pinned to match the installed browser) for postcards and smoke tests; contact sheets by screenshotting an HTML grid page; `stats-gl` and Spector.js for profiling |
 | Tests | Vitest; Playwright for end-to-end smoke tests |
@@ -40,7 +40,8 @@ Nothing loads from a CDN at runtime. Every dependency comes from npm and is bund
 
 ```
 /
-├─ CLAUDE.md            agent rules (read every session)
+├─ AGENTS.md            the agent guide (read every session; Codex reads it directly)
+├─ CLAUDE.md            imports AGENTS.md and adds the notes only Claude Code needs
 ├─ .claude/settings.json  shipped by the owner: ultracode, worktrees from HEAD, pre-approved routine commands, the SessionStart `npm ci` hook. The agent never edits it
 ├─ .github/workflows/ci.yml shipped by the owner: check, test, build, cross-browser golden hashes. The agent never edits it
 ├─ .gitignore
@@ -49,6 +50,7 @@ Nothing loads from a CDN at runtime. Every dependency comes from npm and is bund
 ├─ README.md            owner's guide
 ├─ PROMPTS.md           prompts the owner pastes into sessions
 ├─ docs/                design docs, diagrams, committed postcards, progress log, owner references
+│  └─ tools/           ui-catalogue.mjs (the interface catalogue's tables) and content-check.mjs (the content tables of docs 13–15), both dependency-free and both able to print JSON
 ├─ packages/
 │  ├─ shared/           pure TS: constants, math, noise, sdf, worldgen, blocks (later: sim, items, protocol)
 │  │  ├─ src/world/constants.ts
@@ -57,17 +59,22 @@ Nothing loads from a CDN at runtime. Every dependency comes from npm and is bund
 │  │  ├─ src/sdf/       primitives, ops, Bézier spines (arc length, RMF frames), polygon sections
 │  │  ├─ src/third_party/ ported MPL files, kept separate with their licence headers (e.g. the erosion filter)
 │  │  ├─ src/physics/   (M2) the prismarine-physics port and the shared action API
+│  │  ├─ src/sight/     (M2) view cones, ranges, lines of sight and awareness (`16-sight.md`)
+│  │  ├─ src/tally/     (M3) the simulation of everyone nobody watches: rates, an event queue, seeded dice (`17-simulation-and-bots.md` §2)
+│  │  ├─ src/bots/      (M4) bot kings: book, evaluation, look-ahead (`17-simulation-and-bots.md` §6)
 │  │  ├─ src/worldgen/  plan/ columns/ density/ features/ carvers/ fluids/ materials/ decoration/
 │  │  │                 regions/<regionId>.ts (one recipe per region), pipeline.ts, version.ts
 │  │  ├─ src/blocks/    registry.ts, textures/recipes.ts
 │  │  └─ test/          unit tests, golden/worldgen.json, forbidden-tokens.test.ts
 │  ├─ client/           the game (Vite)
-│  │  ├─ src/engine/    renderer, chunk store, streaming, lod (3D chunk grid + column-tile quadtree), workers (gen, light, mesh), sky, water, post
-│  │  ├─ src/game/      player controller, physics, camera modes, edits persistence
-│  │  ├─ src/ui/        tokens.css, components/, hud/, screens/
-│  │  ├─ src/dev/       F3 overlay, teleports, view modes, postcard mode, lil-gui (?dev)
+│  │  ├─ src/engine/    renderer, chunk store, streaming, lod (3D chunk grid + column-tile quadtree), workers (gen, light, mesh), sky, water, post,
+│  │  │                 wind, weather and particles, motion.ts (the curves and the one clock, `18-look-and-feel.md` §3)
+│  │  ├─ src/game/      player controller, physics, input (bindings, fullscreen, keyboard lock), cameras (command, Overhead, free) and the cut, the darkening of unseen land (M2), the avatar's rig and animation, edits persistence
+│  │  ├─ src/ui/        tokens.css, components/ (one file per catalogue component), screens/, hud/, gallery/,
+│  │  │                 strings.gen.json (generated from the catalogue; never edited by hand), t.ts, phase.ts (UI_PHASE)
+│  │  ├─ src/dev/       the logic behind the owner tools: teleports, view modes, postcard mode, lil-gui (?dev). Their screens live in src/ui like any other
 │  │  └─ public/_headers
-│  ├─ tools/            atlas, slice, postcards (+ cameras/), terrain-report, bench, golden
+│  ├─ tools/            atlas, slice, postcards (+ cameras/), terrain-report, bench, golden, ui-strings, ui-lint, ui-shots; later bench-sim (M3) and season (M5, `17-simulation-and-bots.md` §5)
 │  └─ server/           (M5+)
 └─ out/                 generated scratch output (gitignored)
 ```
@@ -121,12 +128,14 @@ These apply to anything whose output must match across machines: world generatio
 - Stored sparsely per chunk: voxel index → block ID (plus metadata later).
 - A chunk = base generation + edits.
 - An edit on a chunk border also refreshes the neighbour's halo and mesh.
+- **Shape edits (M7).** A Cataclysm that removes terrain (the Mountain-breaker's 32 m crater, Severance's 800 m cut; `14-class-library.md` §3.5) is stored as one shape and a sequence number, not as a diff for every block it removes. A chunk applies its edits in sequence, so a block placed after the cut survives. A cut is a few bytes on disk and on the wire.
 - M1 keeps edits per seed in IndexedDB; M5 moves them to the server database.
 
 ### Entities (M2+)
 - bitECS over typed arrays, for simulated units only.
 - Identities for all people are compact records outside the ECS (plain tables, then SQLite on the server). Only *hydrated* units are ECS entities (§9).
-- **One unit model.** Each simulated unit has a swappable controller that emits an `InputFrame` every 50 ms: `{ seq, forward, back, left, right, jump, sprint, sneak, yaw, pitch, action? }`, where `action` is dig, place, use, attack, equip or craft with a target and face. AI controllers and a possessing player's controller emit identical frames; one shared `physics.step()` and one shared `actions.validate/apply()` consume them. Possession swaps the controller. (`10-prior-art.md` §3.)
+- **The unit's sheet, classes, skills and items** are content: tables in `13-units-classes-power.md`, `14-class-library.md` and `15-item-library.md`, built into `packages/shared/src/content/content.gen.json` by `npm run content:build` (§7). Skills run as data on a small set of handlers (13 §19).
+- **One unit model.** Each simulated unit has a swappable controller that emits an `InputFrame` every 50 ms: `{ seq, forward, back, left, right, jump, sprint, sneak, yaw, pitch, action? }`, where `action` is dig, place, use, attack, equip, craft, or a skill (its slot and aim point) with a target and face. AI controllers and a possessing player's controller emit identical frames; one shared `physics.step()` and one shared `actions.validate/apply()` consume them. Possession swaps the controller. (`10-prior-art.md` §3.)
 
 ---
 
@@ -163,19 +172,27 @@ As specified in `04-terrain.md` §13:
 pmndrs `postprocessing`: `RenderPass → EffectPass(Bloom with threshold, ACES tone mapping, optional FXAA)`. From phase 1.4, takram's aerial perspective joins the chain.
 
 **Game layer (M1)**
-- Pointer lock (`unadjustedMovement: true`); click-to-play enters fullscreen and calls `navigator.keyboard.lock()` where supported, so Ctrl-sprint doesn't trigger Ctrl+W (close tab); where it isn't (Firefox, Safari), sprint is double-tap W and a `beforeunload` guard asks before the tab closes. An AABB player controller; DDA raycast for block picking; camera modes: first person, king's view (RTS), and third person (F5).
-- **The player controller is the Minecraft controller** (the owner's rule): first person, Minecraft's controls (`06-ui-art.md` §6) and movement feel. From Milestone 2 the M1 controller is replaced by the shared unit physics (the prismarine-physics port), so the player and every NPC move identically.
+- **Input follows `11-interface-catalogue.md` Part B.** No pointer lock: the cursor aims in every mode. Entering the world goes fullscreen with the keyboard locked where the browser allows, so Ctrl-sprint doesn't trigger Ctrl+W (close tab). In a window on Windows and Linux, Left Ctrl is switched off and sprint is double-tap W. A `beforeunload` guard is on whenever the player is in the world. Keys are read by position (`KeyboardEvent.code`) through one binding table that the key list edits.
+- **Cameras follow Part C.** Overhead (the Command camera's maths locked on the avatar) from phase 1.1, with the cut's clip and cap following it under cover; the Command camera, as king's view, from phase 1.4; the cut's keys and depth gauge from phase 1.8, with the caves. The camera maths is pure and unit-tested (Part C7).
+- **Sight** (Milestone 2): the darkening of unseen land and the knowledge test under the cut are read by the terrain material (`16-sight.md` §9.4). Leave room for both in it.
+- An AABB player controller; DDA raycast for block picking.
+- **The player controller is the Minecraft controller** (the owner's rule): seen from above, never in first person or over the shoulder, with Minecraft's controls (`11-interface-catalogue.md` B3–B4) and movement feel. From Milestone 2 the M1 controller is replaced by the shared unit physics (the prismarine-physics port), so the player and every NPC move identically.
 - Player constants: **Minecraft's per-tick values at a fixed 20 Hz** (1 block = 1 m; a tick is 50 ms):
   - box 0.6 × 1.8 × 0.6 m; eye at 1.62 m (1.27 m sneaking)
   - walk ≈ 4.317 m/s, sprint ≈ 5.612 m/s, sneak ≈ 1.31 m/s
   - jump: initial vertical velocity 0.42 blocks/tick; gravity 0.08 blocks/tick² with 0.98 vertical drag per tick (≈ 1.25 m jump apex)
   - step-up 0.6 m, always on; auto-jump is an optional setting, off by default
   - swim in water
-  - fly 20 m/s, with a ×10 boost key (dev tool through Milestone 4)
+  - fly as in Minecraft's creative mode: about 10.9 m/s, doubled while sprinting, times the owner's fly-speed step (×1 to ×16 on `[` and `]`; an owner tool through Milestone 4)
 
 **UI layer**
 - A Preact app over the canvas.
 - Game state reaches the UI through signals, updated at most 10 Hz for HUD values. The UI never touches Three.js objects directly.
+- **The catalogue is the source** (`11-interface-catalogue.md` A6–A7):
+  - `npm run ui:strings` turns its tables into `src/ui/strings.gen.json`. Interface code shows text only through `t(id, values)` and marks each operable element with `data-ui="<id>"`.
+  - `npm run ui:lint` (part of `npm run check`, Node only) fails on a catalogue problem, on a text literal that could reach the screen, on a colour outside `tokens.css`, and on a gallery that shows an unlisted or too-early control. A listed row that the gallery doesn't show yet is a warning, and a failure with `--complete`, which every phase's "Done when" runs. `UI_PHASE` in `src/ui/phase.ts` says which rows exist yet.
+  - **The gallery** (`/?gallery`) renders every screen and state built so far with fixed sample data. `npm run ui:shots` screenshots it into `out/ui/` and checks the real page: it fails on drawn text that is neither a catalogue string nor sample data, on clipped text or overlapping controls, and on a wrong Tab order. It ships in every build through Milestone 4.
+- Screens are built from the catalogue's components only. Each component has one stylesheet; screens use tokens and components and contain no raw colours or pixel values.
 
 ---
 
@@ -185,10 +202,15 @@ pmndrs `postprocessing`: `RenderPass → EffectPass(Bloom with threshold, ACES t
 |---|---|
 | `npm run atlas` | top-down PNG maps with coverage reports (`04-terrain.md` §14.1) |
 | `npm run slice` | cross-section overview and windows (`04-terrain.md` §14.2) |
-| `npm run postcards` | camera resolution and validation, headless screenshots (`04-terrain.md` §14.3). Browser flags are in `CLAUDE.md`. |
+| `npm run postcards` | camera resolution and validation, headless screenshots (`04-terrain.md` §14.3). Browser flags are in `12-sessions.md` §2. |
 | `npm run terrain-report` | numeric terrain diagnostics per region (`04-terrain.md` §14.5) |
 | `npm run bench:gen` | generation, lighting and meshing timings on the fixed bench set |
 | `npm run golden:update` | regenerate golden hashes whenever generated output changes (bump `WORLDGEN_VERSION` at most once per PR) |
+| `npm run ui:strings` | run `docs/tools/ui-catalogue.mjs --json` and write the interface's string table |
+| `npm run content:build` | (from Milestone 2) run `docs/tools/content-check.mjs --json` and write `packages/shared/src/content/content.gen.json`; `npm run check` fails when it is out of date |
+| `npm run ui:lint [-- --complete]` | the catalogue check, the text-literal and colour scans, and the gallery-versus-catalogue comparison (`11-interface-catalogue.md` A6). `--complete` also fails on rows the gallery doesn't show yet |
+| `npm run ui:shots [-- --sheet <screens>]` | screenshots of every gallery state at 1280 × 720, at 1920 × 1080 and at 150% interface scale, plus the on-page checks (`11-interface-catalogue.md` A6, A7). `--sheet` writes a contact sheet for the report |
+| `npm run test:browser` | the Playwright tests: the smoke test, the camera drive (`11-interface-catalogue.md` C7) and the keyboard walk. It needs a browser, so it is not part of `npm test` |
 
 Atlas, slice and the report may use `worker_threads` for speed. Postcards must work in the cloud session's headless environment: software WebGL through SwiftShader.
 
@@ -201,7 +223,7 @@ Atlas, slice and the report may use `worker_threads` for speed. Postcards must w
   - build command `npm run build`
   - output directory `packages/client/dist`
   - environment variable `NODE_VERSION=22`
-- Every pushed branch gets a preview. The branch alias is the branch name, lowercased, with non-alphanumerics turned into `-`, trimmed, and **truncated to 28 characters**. Read the real URL from Cloudflare's PR comment or commit status (see `CLAUDE.md`).
+- Every pushed branch gets a preview. The branch alias is the branch name, lowercased, with non-alphanumerics turned into `-`, trimmed, and **truncated to 28 characters**. Read the real URL from Cloudflare's PR comment or commit status (see `12-sessions.md` §5).
 - **Cross-origin isolation.** `packages/client/public/_headers`:
   ```
   /*
@@ -212,7 +234,7 @@ Atlas, slice and the report may use `worker_threads` for speed. Postcards must w
   - The postcard tool asserts `crossOriginIsolated`.
   - `COOP: same-origin` cuts popups off from the page, so sign-in (Discord) and, later, payments use **full-page redirects**, never popups.
   - Because of these headers, every asset (fonts included) must be self-hosted.
-  - **MPL files ship with their source.** The build copies `packages/shared/src/third_party/*` into `packages/client/dist/licenses/`, and `THIRD_PARTY_NOTICES.md` and the credits screen link to it. No public repo is needed. The owner must **not** enable Cloudflare Web Analytics: its injected script is cross-origin and gets blocked.
+  - **MPL files ship with their source.** The build copies `packages/shared/src/third_party/*` into `packages/client/dist/licenses/`, and `THIRD_PARTY_NOTICES.md` and the menu's Licences row (`11-interface-catalogue.md` D8) link to it. No public repo is needed. The owner must **not** enable Cloudflare Web Analytics: its injected script is cross-origin and gets blocked.
 - Keep the build under ~5 minutes and each asset under 25 MiB. Textures are generated at runtime, so assets stay small.
 
 ---
@@ -222,13 +244,13 @@ Atlas, slice and the report may use `worker_threads` for speed. Postcards must w
 **Authoritative simulation**
 - **Physics at a fixed 20 Hz** (two steps per simulation tick): every Minecraft movement constant is per 50 ms step, so slower physics would make units move at half speed and jump wrong.
 - **AI, jobs and snapshots at 10 Hz.**
-- **Simulation tiers T0–T3** (`05-systems.md` §22): possessed, near a camera, loaded but unwatched, ledger.
-- **Systems** (ECS): movement and pathing, jobs and tasks, needs, production, logistics, combat, morale, loyalty, network connectivity and news, enemy AI, Wardens, hazards, decay.
+- **Simulation tiers T0–T3** (`05-systems.md` §22): possessed, near a camera, loaded but unwatched, tally. The tally exists from Milestone 3, in the solo worker, and moves to the server here unchanged (`17-simulation-and-bots.md` §2).
+- **Systems** (ECS): movement and pathing, jobs and tasks, needs, production, logistics, combat, morale, loyalty, network connectivity and news, sight and awareness (`16-sight.md`), enemy AI, Wardens, hazards, decay.
 
 **Space and attention**
 - The world is divided into 256 m **sectors**, with vertical bands (the world goes 1.5 km deep) and hysteresis at sector edges.
-- A sector is **active** when a player's camera or possessed unit is near it. In an active sector, units within ~64–128 m of a camera run at T1 and the rest at T2 (`05-systems.md` §22). Every other sector runs at **T3, the ledger** (aggregates). Battles in ledger sectors resolve with the regiment-level combat model; a camera arriving mid-battle hydrates it.
-- Every system provides `hydrate` and `dehydrate` functions. Invariant tests check that ledger and agent simulations agree on average (production rates, consumption, loyalty drift) within tolerance, and **round-trip tests** prove that hydrating and dehydrating never duplicates or loses an item, a person or a hit point.
+- A sector is **active** when a player's camera or possessed unit is near it. In an active sector, units within ~64–128 m of a camera run at T1 and the rest at T2 (`05-systems.md` §22). Every other sector runs at **T3, the tally** (aggregates). Battles in tally sectors resolve with the regiment model (`17-simulation-and-bots.md` §2.2); a camera arriving mid-battle hydrates it.
+- Every system provides `hydrate` and `dehydrate` functions. Invariant tests check that tally and agent simulations agree on average (production rates, consumption, loyalty drift) within tolerance, and **round-trip tests** prove that hydrating and dehydrating never duplicates or loses an item, a person or a hit point.
 
 **Pathfinding** (`10-prior-art.md` §3)
 - **Reachability first.** Walkable connected components per chunk section, linked across section faces, with a global component ID per cell: "can A reach B?" is one lookup. Rebuild only changed sections, lazily and in batches per tick.
@@ -251,8 +273,8 @@ Atlas, slice and the report may use `worker_threads` for speed. Postcards must w
 
 **Networking**
 - Binary WebSocket (WebTransport later). A versioned codec schema in `shared/protocol` (DataView). No JSON on hot paths.
-- **Terrain:** clients regenerate base terrain from `(seed, WORLDGEN_VERSION)`. The server sends only sparse chunk edit diffs. A version mismatch blocks joining until the client updates.
-- **Entities:** interest-managed by the client's connected coverage and camera area. Snapshots plus deltas at 10 Hz against the last snapshot the client acknowledged, with quantised positions and a per-client priority accumulator; distant units are sent as aggregates or as a path plus start tick. Client interpolation. Prediction and reconciliation only for the possessed unit, including its digging and placing, using sequence numbers the server acknowledges.
+- **Terrain:** clients regenerate base terrain from `(seed, WORLDGEN_VERSION)`. The server sends only sparse chunk edit diffs, and another kingdom's edits block by block, once the client's kingdom has seen them (`16-sight.md` §9.5). A version mismatch blocks joining until the client updates.
+- **Entities:** interest-managed by sight: a client gets only what its kingdom (and its allies) see, at full rate within its camera area and as a slow feed of positions elsewhere, for the minimap and the marks (`16-sight.md` §9.5). Snapshots plus deltas at 10 Hz against the last snapshot the client acknowledged, with quantised positions and a per-client priority accumulator; distant units are sent as aggregates or as a path plus start tick. Client interpolation. Prediction and reconciliation only for the possessed unit, including its digging and placing, using sequence numbers the server acknowledges.
 - **Commands** are intents. The server validates everything (reach, range, permissions, rate limits). Never trust the client.
 
 **Persistence**
@@ -280,11 +302,13 @@ Atlas, slice and the report may use `worker_threads` for speed. Postcards must w
 | Determinism | golden chunk hashes across seeds, regions and LODs; the forbidden-token scan; the same hashes in Chromium, Firefox and WebKit in CI |
 | Physics (M2+) | golden movement tests from Minecraft's movement formulas (walk, sprint, jump, fall, swim, ladders) |
 | Visual | postcards, rubric, blind review, diagnostics (`04-terrain.md` §14) |
-| Smoke (Playwright, headless) | the client loads, generates, walks, breaks and places, teleports from the map, with no console errors and `crossOriginIsolated` true |
+| Interface | `ui:lint` (nothing on screen that the catalogue doesn't list); gallery screenshots opened and checked against the checklist in `11-interface-catalogue.md` A7 |
+| Cameras and input | unit tests on the camera maths and one Playwright drive of the real page (`11-interface-catalogue.md` C7); binding-table tests (reserved keys refused, clashes reported) |
+| Smoke (Playwright, headless; `npm run test:browser`) | the client loads, generates, walks, breaks and places, teleports from the map, with no console errors and `crossOriginIsolated` true |
 | Performance | `bench:gen` numbers against budgets (warn, don't fail, in M1) |
-| Later | simulation invariants (ledger vs agent), bot load tests, protocol fuzzing |
+| Later | simulation invariants (tally vs agent), bot load tests, protocol fuzzing |
 
-`npm test` runs unit, golden and forbidden-token tests. `npm run check` runs types and Biome. Both must pass before every push.
+`npm test` runs unit, golden and forbidden-token tests. `npm run check` runs types, Biome and `ui:lint`. Both must pass before every push.
 
 ---
 
@@ -295,6 +319,7 @@ Atlas, slice and the report may use `worker_threads` for speed. Postcards must w
 - **Use the design's words in code:** Warden, Seat, Muster, Reeve, Quartermaster, Descent, Shelf, Coverage, News.
 - Each region recipe file starts with a comment linking its section in `04-terrain.md`.
 - Comments explain *why*. Put tunables in named constants or recipe objects, never magic numbers inline.
+- **Interface code contains no text.** Words come from the catalogue through the string table; sizes and colours come from tokens (`11-interface-catalogue.md` A3, A6).
 - Fail loudly in dev; degrade gracefully in production (retry the chunk, log it, keep running).
 - **Dependencies:** few and well known. Adding a heavy dependency needs a one-line justification in `progress.md`.
 - **Third-party code** follows `10-prior-art.md` §1: check the licence, record it in `THIRD_PARTY_NOTICES.md`, keep MPL files separate, and never paste GPL, LGPL, non-commercial or "all rights reserved" source into your context.

@@ -2,7 +2,7 @@
 
 > **COLDFRONT** is a seasonal, ~100-player voxel civilization builder in the browser. You rule an empire from above and possess its people on the ground. You push supply lines down a funnel-shaped world of hostile regions to break boss strongholds that fight back.
 
-**The owner's technical TL;DR:** *Minecraft, but it extends downwards, with Big Globe installed, and you have a bird's-eye view. All the NPCs and units are controlled by the game computer in an optimised way; each one can break blocks and has an inventory, HP and so on, like a Minecraft player. Possessing one should be the same as controlling a Minecraft player.*
+**The owner's technical TL;DR:** *Minecraft, but it extends downwards, with Big Globe installed, and you have a bird's-eye view. All the NPCs and units are controlled by the game computer in an optimised way; each one can break blocks and has an inventory, HP and so on, like a Minecraft player. Possessing one should be the same as controlling a Minecraft player.* (8 October 2026: the camera part is superseded. There is no first-person view and no over-the-shoulder view: units are played from above, and you see only what your units see. See §6, `13-units-classes-power.md` §3 and `16-sight.md`.)
 
 This file is the "why". Everything else in `docs/` is the "what" and the "how". When a detail elsewhere seems to conflict with this file, this file wins. Flag the conflict in `09-open-questions.md`.
 
@@ -10,7 +10,7 @@ This file is the "why". Everything else in `docs/` is the "what" and the "how". 
 
 ## 1. The fantasy
 
-You are summoned to Kaldmark as a king, with twenty people and a mysterious Steward who shows you the ropes. From the top-down **Command view** you lay out towns, draw supply routes and send armies. At any moment you can drop into **Possess** mode and *become* one of your people: a miner swinging a pick in a braced tunnel, a captain leading riders to run down an enemy messenger, a hero you've trained since she was a farmhand with a strange affinity for mana.
+You are summoned to Kaldmark as a king, with twenty people and a mysterious Steward who shows you the ropes. From the top-down **Command view** you lay out towns, draw supply routes and send armies. At any moment you can drop into **Possess** mode and *become* one of your people: a miner swinging a pick in a braced tunnel, a captain leading riders to run down an enemy messenger, a Champion you've raised since she was a farmhand with a strange affinity for mana.
 
 The world pushes back. Every region has its own way of killing you: cold, heat, fumes, rot, mana storms, darkness, gales, the restless dead. Building out there means using materials that survive it, keeping people alive there and getting supplies to them. Then you have to defend all of it. In the desolate heart of every region sits a Warden with an army that breeds, scouts and marches. At the bottom of the world sits the King Below.
 
@@ -36,11 +36,11 @@ You win the long game by expanding your **front**: territory, logistics and indu
 ### Design rules that follow from the pillars
 
 - **Systems stack on real demand.** Deeper content needs better gear, which needs rarer materials, which come from harsher regions. Getting them needs better buildings and logistics, which need more people and money, and those need safety. Nothing is unlocked by a menu.
-- **Information has a cost.** You see, command and possess only where your connected network reaches. News travels by rider, signal tower or mana relay, and it can be intercepted.
+- **Information has a cost.** You see only what your people see. You see it live, and command and possess, only where your connected network reaches. News travels by rider, signal tower or mana relay, and it can be intercepted.
 - **Scarcity creates politics.** Key resources exist in one region only. Whoever holds the gold and silver mints the money; whoever holds skystone controls the fast way down.
 - **Depth costs.** Each layer down is harsher, and climbing back up hurts more.
 - **Loyalty is the glue.** People pledge to kings. War is won by breaking loyalty as much as by killing.
-- **The world is the interface.** The UI stays quiet, clean and organised (`06-ui-art.md`).
+- **The world is the interface.** The UI stays quiet, clean and organised (`06-ui-art.md`), and holds nothing that isn't listed in `11-interface-catalogue.md`.
 
 ---
 
@@ -54,7 +54,7 @@ No jokes in the world's voice. Wonder and dread come from scale: a thorn forest 
 
 | Reference | What we take |
 |---|---|
-| Minecraft + **Big Globe** mod | Voxel world, everything breakable, huge vertical and horizontal scale (Big Globe's overworld is 2,048 blocks tall), varied terrain, distant-terrain rendering. Possession feels exactly like playing Minecraft. Big Globe is a quality target to learn from by playing it; its code is off-limits (`10-prior-art.md` §1) |
+| Minecraft + **Big Globe** mod | Voxel world, everything breakable, huge vertical and horizontal scale (Big Globe's overworld is 2,048 blocks tall), varied terrain, distant-terrain rendering. A played unit moves, digs and builds exactly like a Minecraft player. Big Globe is a quality target to learn from by playing it; its code is off-limits (`10-prior-art.md` §1) |
 | *Made in Abyss* | Verticality, layers that get stranger, the cost of coming back up |
 | Deepwoken | Harsh world, earned mastery, danger that is always nearby |
 | Arknights: Endfield | Infrastructure and factory building, hand-laid production lines |
@@ -115,18 +115,22 @@ These are settled. Don't re-open them without the owner. Unmarked items are the 
   - he can't be controlled
   - he helps: the AI routes him to housekeeping and other useful work suited to his stats
   - he never fights and is never attacked
+- **The world does the early killing** (8 October 2026). A first-time king should mostly fall to the world (winter, hunger, beasts, the Deep, disasters), not to veterans. How: `05-systems.md` §2 and §16.
 
 ### Command and possession
 - Two modes, **Command** (top-down macro) and **Possess** (be any of your units) (default).
-- Possession is a whole separate player instance: WASD, attack, break and place blocks, interact, manage inventory. **Possessing a unit must feel the same as controlling a Minecraft player**: Minecraft's controls, movement and block breaking. Possessing officials and high-ranking units also lets you change roles, jobs and assignments.
+- Possession is a whole separate player instance: WASD, attack, break and place blocks, interact, manage inventory. A played unit moves, digs, builds and fights like a Minecraft player: Minecraft's controls, movement and block breaking. Possessing officials and high-ranking units also lets you change classes, jobs and assignments.
+- **Bird's-eye only** (8 October 2026, replacing "possessing must feel the same as Minecraft" for the camera). No first-person view and no over-the-shoulder view: units are ordered from the Command view or played from above (**Overhead**). Underground, the cut takes away the layers above as the camera goes down, and puts them back as it comes up (`13-units-classes-power.md` §3, `11-interface-catalogue.md` C2).
+- **Sight** (8 October 2026). Every unit has a human field of view: a cone in front of it, out to a range that grows with height. NPCs notice, target and remember by it, and losing sight of you doesn't make them forget you. You see enemies, beasts and every other creature only while one of your units sees them. The land is always drawn, slightly darker outside your units' sight, and anything buried stays in total darkness until your people see it. So watchtowers, vantage points and terrain that blocks sight matter (`16-sight.md`).
 - **Every unit is a Minecraft-player equivalent** (break blocks, inventory, HP), run by the game's AI in an optimised way. AI and possession drive the same controller, physics and actions (default design, `05-systems.md` §3).
 - An officer is a unit with a **command radius**. Possess a Captain and you lead his company directly (default).
-- The player invests in a group of individuals, or in a hero, learning new attack moves and magic, and plays them often.
-- The **network** (watchtowers, signal towers, mana relays) defines where you can see, command and possess. Coverage must be **connected** to your capital. Capturing relays flips land, and cutting a relay cuts off everyone beyond it (default).
+- **Classes, skills and a power ladder** (8 October 2026). Every unit has a class and skills: an Active early, an Ultimate once it has met a gameplay requirement. Most skills are weak and useful (information, highlighting, help with the job); the strongest are outright broken, and only at the endgame. Players play, level and min-max many units. Military units have a class, a role (Assault, Guard, Support, Secondary) and a rank; civilians climb trade ranks; the government has a ladder of offices. The ladder is linear in power and extremely hard to climb. Its top, the **Calamity**, can level mountains, break a small kingdom, solo an easier Warden or hold a kingdom alone, and is costly to keep: worshippers burning offerings, hearths built to uphold it, or a soldier sworn to die. Like kings, Calamities are not to be spent recklessly. For now every person looks like a Minecraft avatar. (`13-units-classes-power.md`, `14-class-library.md`, `15-item-library.md`.)
+- **Calamities are forces you try to hold** (8 October 2026). Some come only through enormous sums of money, some demand a following, some are uncontrollable, and some are fiercely loyal and protective. An ordinary person's loyalty is high enough that control is a given, but it plummets when they become a Calamity: keeping your grip on one is another dimension of ruling, and strong rivals will try to take yours. A kingdom can raise a soldier likely to go rogue and roam the lands causing havoc. The protective ones are the staples that keep big kingdoms alive: not aggressive, but they make strongholds that bounce back from a war, and their kits cover whole areas and strengthen allies near the king. They are like nuclear weapons: several kingdoms have one, yet economy, trade and alliances still rule, and that strength is only put to the test when a kingdom has no allies to protect it or to protect. Fewer than ten in the world, usually about five (`13-units-classes-power.md` §15).
+- The **network** (watchtowers, signal towers, mana relays) defines where your people's sight reaches you live, and where you command and possess. Coverage must be **connected** to your capital. Capturing relays flips land, and cutting a relay cuts off everyone beyond it (default).
 - **News travels physically:** riders early, signal towers later, mana relays late (default). Automated responses wait for the news, so human-led raids that run down messengers beat the AI's reactions.
 
 ### People
-- Every NPC is an individual with a name, a role and stats (strength, agility, magic affinity, and more). People seek out the work that fits them.
+- Every NPC is an individual with a name, a class and stats (strength, agility, magic affinity, and more). People seek out the work that fits them.
 - **Job choice comes from stats only.** Stats vary per person, with average differences by sex: men are stronger on average, women more loyal on average, which keeps production and supplies steady.
 - Most people are wanderers who settle. Some come from births, and some start with you.
 - Wanderers drift toward whichever kingdom offers the best housing, food, safety and pay. Neutral villages can be won over or conquered; conquered ones start out resentful (default).
@@ -138,7 +142,7 @@ These are settled. Don't re-open them without the owner. Unmarked items are the 
 - **Officials are the automation:** Reeves run towns, Quartermasters run supply, Captains run companies (default). They're called Reeves, not "stewards", to avoid a clash with the Steward.
 - Households and births (default).
 - Needs come in three tiers: peasant, craftsman, noble.
-- **Heroes:** you notice someone with unusually high stats and decide to invest. They grow through practice, trainers and boss artifacts. Hero death is permanent (default).
+- **Standouts:** you notice someone with unusually high stats and decide to invest: play them, promote them into the scarce Elite, Champion and Paragon places, arm them with Wardens' relics. Death is permanent (default; "heroes" became grades on 8 October 2026).
 - **Mages** are rare, highly skilled and long-trained; magic is a difficult resource. Only people with high magic affinity can train at an academy (default).
 - **Soldiers are citizens:** each one leaves the workforce and needs gear, pay and food (default).
 - **Time:** 1 day = 1 real hour; 1 year = 1 real week, ending in a winter where crops stop. People age a year per real week (default).
@@ -165,6 +169,7 @@ These are settled. Don't re-open them without the owner. Unmarked items are the 
 - **Regen varies:** none, slow and natural, absorbing fallen soldiers, fed by structures or resources. The demon king combines the most annoying, hardest-to-stop kinds. He also regenerates for every Warden still alive (default).
 - **Enemies spread by time and your activity.** A wandering scout sees your base and walks home to report, and then an army comes. An army that takes a settlement keeps it. Otherwise enemies expand slowly and roam.
 - **Dead bosses stay dead** until the reset. Their minions stop spawning, and they drop strong items and artifacts.
+- **Presence** (8 October 2026). Bosses and other great powers are felt before they are seen: the wind shifts, the weather and the light change, a hostile one brings a sudden hue and a deep bass, some bring a protective calm that feels almost too surreal, and some bring only silence, and then a mountain is gone (`16-sight.md` §11).
 
 ### Seasons
 - The content is finite: about 6 months for ~100 players. Then the server resets, and players earn tags and rewards for bosses, achievements and land.
@@ -178,13 +183,16 @@ These are settled. Don't re-open them without the owner. Unmarked items are the 
 - Setting: grounded high fantasy, arcane-industrial; the name evokes the coldness of steel.
 - Story and lore are fleshed out (`03-lore.md`).
 - UI is clean, minimal, uncluttered and organised (`06-ui-art.md`).
+- **No filler text in the interface.** No subtitles or helper lines: an explanation is reworded into the label or moved into a tooltip. **Every screen, button, menu, slider, key and sentence is listed in `11-interface-catalogue.md` before it is built, and nothing else gets invented.**
 - Blocky voxel art, produced by code.
 - Desktop browser, mouse and keyboard (default).
 - **The first milestone is the world:** terrain generation at Big Globe quality. The owner's previous attempt with another model failed on primitive-looking hellscape spikes.
 - The owner self-hosts the multiplayer server for now. Build previews are free static hosting (default).
 - **Stack** (TypeScript, Three.js, shared browser/server code, Rust/WASM only if needed) (default). A licence-checked audit of open-source prior art confirmed it and adjusted details (`10-prior-art.md`, `07-architecture.md`).
-- **The owner builds with Claude Opus 5.5 in Claude Code cloud sessions, with ultracode on** (xhigh reasoning effort plus automatic workflows).
+- **The owner builds with coding agents:** OpenAI's Codex from October 2026, after starting the docs with Claude Code. Both read the same guide, `AGENTS.md`, so either can pick the work up (`12-sessions.md`).
 - **Names are diverse:** Japanese/anime-styled names (regions, characters, bosses) alongside the European fantasy names, drawn from the world's three tongues (`03-lore.md` §8 and §12). Code uses stable IDs, so names can change freely.
+- **Light to simulate** (8 October 2026). Optimised on every front: whatever nobody is watching runs as code, probability and calculation, so hundreds of thousands of people and more stay cheap, and things happen while you're away. A rendering hiccup can be forgiven; a slow simulation can't (`17-simulation-and-bots.md`).
+- **Tools to build it alone** (8 October 2026). The owner can't playtest alone, so builds can speed the world up, skip ahead in a way that looks natural, and cheat for testing. **Bot kings** make the choices a player would, like a chess engine: an authored "expand your empire 101" book, and choices driven by the numbers (which resource matters most, which Warden to go for, where to expand). They serve development and playtests first, and may later fill a server short of players (`17-simulation-and-bots.md`).
 
 ---
 
@@ -195,11 +203,25 @@ These are settled. Don't re-open them without the owner. Unmarked items are the 
 | **Kaldmark** | The world: a vast basin ringed by ice, draining toward the Nadir |
 | **King** | A player's avatar and life. Dies → the kingdom collapses |
 | **The Steward** | The mysterious tutorial guide every king gets. Can't be controlled; never fights |
+| **The Steward's peace** | A new king's first three real days, when other kingdoms can't harm it (`05-systems.md` §2) |
 | **Command view / Possess** | The two play modes |
-| **Network** | Watchtowers, signal towers and mana relays. Its *connected* coverage is where you can see, command and possess |
+| **The cut** | Command view's way of seeing underground: a level slice that hides everything above it (`11-interface-catalogue.md` C2) |
+| **The catalogue** | `11-interface-catalogue.md`: the complete list of what the interface contains. If it isn't there, it isn't in the game |
+| **Network** | Watchtowers, signal towers and mana relays. Its *connected* coverage is where your people's sight reaches you live, and where you command and possess |
 | **News** | Any report or order; it travels physically through the network or by rider |
-| **Reeve · Quartermaster · Captain · Marshal · Magister · Treasurer · Envoy** | Officials: town · supply · company · army · mana and mages · coin · trade and diplomacy |
-| **Hero** | Someone you've chosen to invest in (usually a standout) |
+| **Ledger** | The in-game book of what your kingdom has learned about the world |
+| **Tally** | The simulation of everyone nobody is watching: settlements as numbers, rates and dice (`17-simulation-and-bots.md` §2) |
+| **Bot king** | A kingdom the game plays, by a player's rules, marked as a bot (`17-simulation-and-bots.md` §6) |
+| **Reeve · Quartermaster · Captain · Marshal · Magister · Treasurer · Envoy** | Officials: town · supply · company · army · mana and mages · coin · trade and diplomacy. The full ladder of offices and posts is in `13-units-classes-power.md` §13 |
+| **Class · Role · Rank · Grade** | A person's trade · a soldier's place in a fight · a step on a ladder of command, trade or office · a step on the power ladder, from Common to Calamity (`13-units-classes-power.md`) |
+| **Skill** | A power on a slot: Knack, Active, Ultimate, Art, Mastery, a relic's, or a Cataclysm (`14-class-library.md`) |
+| **Calamity** | The top grade: one person who can break a small kingdom, and a force its king tries to hold. Five natures: Sellsword, Idol, Wildfire, Bastion and Oathsworn. Usually about five in the world, never more than nine (`13-units-classes-power.md` §15) |
+| **Hold · Rogue** | How firmly a king holds a Calamity, 0–100 · a Calamity that broke loose at Hold 0 and roams as a threat to everyone |
+| **Overhead** | The camera for playing a unit: the Command camera locked on it, from above |
+| **Sight** | What a unit sees: a view cone with a range. You see only what your units see (`16-sight.md`) |
+| **Presence** | What a great power gives off: a change in wind, weather, light and sound, or a silence (`16-sight.md` §11) |
+| **Telegraph** | How a coming blow shows itself: the attacker's wind-up pose, and its shape filling on the ground (`18-look-and-feel.md` §8.2) |
+| **Band** | The player's short list of people to switch between while playing |
 | **Warden** | A region boss (29 of them) |
 | **Seat** | A Warden's arena and fortress at the desolate heart of its region |
 | **General** | A mini-boss holding a fort in a Seat's guard rings (~100 total) |

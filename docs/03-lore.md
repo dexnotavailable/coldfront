@@ -137,7 +137,7 @@ Kuon was a good king. He wanted to save his people from the Frost, and he gave t
 - First stores (tutorial): "Food left in the open feeds the crows. Build a store."
 - First night: "Keep the fires lit. The dark here is not empty."
 - First winter: "The cold is patient. Be more patient."
-- First rival sighted (tutorial): "Another crown walks these lands. Watch his riders."
+- First rival sighted (tutorial): "Another crown walks these lands. Watch its riders."
 - First descent: "Down is easy. Remember that."
 - Deep (Layer 2+): "It is warm down here. It should not be."
 - To the next king, after a king's death: "Another crown. Walk with me."
@@ -165,9 +165,9 @@ The oath is deliberately ambiguous. Which throne? A king who reaches the Throne 
 - **Wanderers.** Kaldfolk coming back from the Rimholds after the Frost. They keep trickling in all Turn, looking for a king who offers housing, food, safety and pay.
 - **Neutral villages and camps.** Kaldfolk who resettled on their own. They can be won over or conquered.
 - **Mages.** Called *the attuned*. Affinity is rare, perhaps one person in a few hundred, and training takes years. The official who runs mana and mages is the **Magister**.
-- **Faith: the Hearth.** Households keep a hearth-fire; villages keep a hearth-shrine. The dead are burned, never buried, because buried dead in Kaldmark don't stay down. (This ties into the Boneyard and to recovering your fallen after battle.)
+- **Faith: the Hearth.** Households keep a hearth-fire; villages keep a hearth-shrine. The dead are burned, never buried, because buried dead in Kaldmark don't stay down. (This ties into the Boneyard and to recovering your fallen after battle.) The Hearth also kindles its own terrors: a person bound to a fire that must be fed, which Court speech calls *saiyaku*, a calamity (`13-units-classes-power.md` §15). Priests say it is the Hearth's answer to the Deep; the old say it is how the King Below began.
 - **Money.** Gold **Crowns** and silver **Marks**, each struck with the minting king's stamp. Coins of fallen kings keep circulating.
-- **Rank.** Peasant, craftsman and noble: in play, the three needs tiers (`05-systems.md` §7). Rank is earned by living standard, not birth.
+- **Tier.** Peasant, craftsman and noble: in play, the three needs tiers (`05-systems.md` §7). A tier is earned by living standard, not birth.
 
 ---
 
@@ -177,7 +177,7 @@ The oath is deliberately ambiguous. Which throne? A king who reaches the Throne 
 2. **The Steward's lines** at milestones (§7). Never more than one line at a time.
 3. **Descriptions.** Rare items, resources and blocks get one or two lines of flavour in their tooltip.
 4. **Ruins and inscriptions.** Old Crown ruins in the Hearthlands hills, the Old Workings and the Buried City carry short inscriptions and murals.
-5. **Wardens.** A title card when a Warden is engaged ("SHIMOTSUKI · THE HOARFATHER", then "Warden of Shirogane"; layout in `06-ui-art.md` §3), and one line of last words when it dies.
+5. **Wardens.** A title card when a Warden is engaged ("SHIMOTSUKI · THE HOARFATHER", then "Warden of Shirogane"; layout in `11-interface-catalogue.md` D9), and one line of last words when it dies.
 6. **The Ledger.** An in-game codex that fills as you discover regions, Wardens, resources and inscriptions.
 7. **The Chronicle.** An auto-written history of the server's season. Examples: "Week 3: Queen Aoi of Kiritani is the first to reach the Upper Deep." "Week 9: King Ivar of Brennvik and Livia of Solvara break Iwakura, the Mountain That Walks."
 8. **The Frost.** The season-end event, and the Ledger of Kings.
