@@ -330,7 +330,7 @@ Common everywhere, in amounts that vary by region: timber, stone, clay, sand, wa
 
 Mechanics are in `05-systems.md` §17. Here is who lives where.
 
-- **Tiers:** minion → soldier → elite → general (mini-boss) → Warden. Strength rises toward each Seat and with depth.
+- **Tiers:** minion → soldier → veteran → general (mini-boss) → Warden. Strength rises toward each Seat and with depth.
 - **Behaviour:** enemies breed at musters, roam, scout, report and march. An army that takes a settlement keeps it. Territory creeps outward slowly when unchallenged. Your activity (industry, deep mining, battles) draws attention, like pollution in Factorio.
 - **Families by region:** listed in the region sheets above. Underground:
   - Sporewood: fungal thralls, sporebats
@@ -404,7 +404,7 @@ Each Warden sits in a **Seat** at the desolate heart of its region: the most hos
 |---|---|---|
 | Outer | 1.5–2.5 km | outposts, roaming bands, musters |
 | Middle | 0.8–1.5 km | forts, each held by a general, with walls and musters |
-| Inner | 0.3–0.8 km | elite garrison and strongpoints |
+| Inner | 0.3–0.8 km | veteran garrison and strongpoints |
 | Arena | 150–300 m | the Warden |
 
 Enemy strength rises toward the centre. Killing a general shuts down or weakens his musters. Killing the Warden stops all spawning in the region.

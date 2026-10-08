@@ -75,12 +75,15 @@ The goal: Big Globe-class terrain for the whole of Kaldmark, walkable in the bro
   - far shadows (horizon map); depth-precision setup; floating origin
   - per-region sky and atmosphere; takram aerial perspective for the far haze
   - the Command camera as king's view, on Tab (`11-interface-catalogue.md` C1, C6), with its tests (C7)
+  - Overhead for the free camera on F5 (`11-interface-catalogue.md` C4), with its C7 tests
   - settings: the rows marked 1.4 (render distance, far terrain, FOV, shadows, bloom, haze, sensitivity, invert look, fullscreen on play, interface size)
 - **Owner tries:**
   1. Climb a high point in Ibara and look at the colossal thorns far away.
   2. Press Tab and zoom out to ~3 km. Pan with W A S D, turn with a right-drag, grab the ground with a middle-drag.
   3. Look across the Blackwater at the Nadir.
   4. Note the FPS from F3 on your laptop.
+  5. Press F5 to switch the free camera between Overhead and Shoulder.
+
 - **Done when:** HELL-3, HELL-4, VISTA-1, MTN-2 and KING-1 show ≥ 5 km of real terrain with no LOD artifacts (rings, terraces, cracks, flattened peaks). Kurogane can still be first-pass here.
 
 ### 1.5 Kurogane + Selva

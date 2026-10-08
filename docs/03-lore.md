@@ -165,9 +165,9 @@ The oath is deliberately ambiguous. Which throne? A king who reaches the Throne 
 - **Wanderers.** Kaldfolk coming back from the Rimholds after the Frost. They keep trickling in all Turn, looking for a king who offers housing, food, safety and pay.
 - **Neutral villages and camps.** Kaldfolk who resettled on their own. They can be won over or conquered.
 - **Mages.** Called *the attuned*. Affinity is rare, perhaps one person in a few hundred, and training takes years. The official who runs mana and mages is the **Magister**.
-- **Faith: the Hearth.** Households keep a hearth-fire; villages keep a hearth-shrine. The dead are burned, never buried, because buried dead in Kaldmark don't stay down. (This ties into the Boneyard and to recovering your fallen after battle.)
+- **Faith: the Hearth.** Households keep a hearth-fire; villages keep a hearth-shrine. The dead are burned, never buried, because buried dead in Kaldmark don't stay down. (This ties into the Boneyard and to recovering your fallen after battle.) The Hearth also kindles its own terrors: a person bound to a fire that must be fed, which Court speech calls *saiyaku*, a calamity (`13-units-classes-power.md` §15). Priests say it is the Hearth's answer to the Deep; the old say it is how the King Below began.
 - **Money.** Gold **Crowns** and silver **Marks**, each struck with the minting king's stamp. Coins of fallen kings keep circulating.
-- **Rank.** Peasant, craftsman and noble: in play, the three needs tiers (`05-systems.md` §7). Rank is earned by living standard, not birth.
+- **Tier.** Peasant, craftsman and noble: in play, the three needs tiers (`05-systems.md` §7). A tier is earned by living standard, not birth.
 
 ---
 

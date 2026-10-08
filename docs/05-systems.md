@@ -68,9 +68,9 @@ The unit's own sheet applies on top (`13-units-classes-power.md` §4): a strong 
 
 **One unit model.** Every unit, AI-driven or possessed, runs the same code path. A controller produces the same input a human produces (movement keys, look direction, and an optional action such as dig, place, use, attack, equip or craft), and one shared physics step and one shared action system consume it. AI controllers and the possessing player's controller are interchangeable: possessing a unit just swaps its controller. See `07-architecture.md` §5 (entities) and §9 (the server), and `10-prior-art.md` §3.
 
-**Possessing an official** gives you that official's **office** (K): the Realm panel limited to their jurisdiction, so you can reassign jobs and roles there.
+**Possessing an official** gives you that official's **office** (K): the Realm panel limited to their jurisdiction, so you can reassign jobs and classes there.
 
-**Officers have a command radius.** While you possess a Captain (radius ~64 m) or a Marshal (~160 m) *(tune)*, you order that officer's company or army directly within the radius, with **no network delay**: follow me, charge that target, hold here, ride them down (the order wheel, hold B). This is the middle rung of the king → officer → soldier ladder, and it's how a human-led raid outpaces the AI. For example: take a mounted troop, chase down the messengers riding for help, then hit the settlement before its reinforcements hear.
+**Officers have a command radius.** While you play the king (radius 96 m), a Captain (~64 m), a Commander (~96 m) or a Marshal (~160 m) *(tune)*, you order that officer's company or army directly within the radius, with **no network delay**: follow me, charge that target, hold here, ride them down (the order wheel, hold B). This is the middle rung of the king → officer → soldier ladder, and it's how a human-led raid outpaces the AI. For example: take a mounted troop, chase down the messengers riding for help, then hit the settlement before its reinforcements hear.
 
 **Why possession matters.** A possessed unit acts with *player skill*: timing, aim, precise building, scouting, chasing a messenger. AI-controlled units use simpler tactics. Skills are designed for the player's hands; the AI uses them by simple rules (`13-units-classes-power.md` §11.6). Played people learn three times as fast, and five times in their first minutes each day, so the intended habit is to keep a band of people and rotate through them (`13-units-classes-power.md` §3.8).
 
@@ -154,10 +154,10 @@ The network is your eyes, voice and reach. **It defines your territory.**
 | **Treasurer** | the mint, payroll, taxes, moving the treasury |
 | **Envoy** | trade orders and diplomacy |
 
-- Each official has a jurisdiction and a **capacity** from Management skill and Intellect *(tune: a Reeve runs 30 + 3 × skill/10 workers at full efficiency; beyond that, efficiency drops)*.
+- Each official has a jurisdiction and a **capacity** from management proficiency and Intellect *(tune: a Reeve runs 30 + 3 × proficiency/10 workers at full efficiency; beyond that, efficiency drops)*.
 - **The loop:**
   1. Officials turn goals into tasks. Examples: stock targets ("keep 200 bread"), blueprints, upkeep, orders.
-  2. Workers take tasks by fit: skill and stat match, traits, distance.
+  2. Workers take tasks by fit: proficiency and attribute match, traits, distance.
   3. The player sets priorities and policies and never has to micromanage.
 - **Job choice** uses attributes and proficiencies only. No sex-based rules. The full ladder of offices and posts, each with its office skill, is in `13-units-classes-power.md` §13.
 - **Overrides:** pin a person to a job, set priorities, draw routes by hand, set stock targets, forbid areas. Possessing an official gives direct access to their panel.
@@ -173,12 +173,12 @@ The network is your eyes, voice and reach. **It defines your territory.**
 | **Craftsman** | + varied food (2+ kinds, including bread or meat), ale, tailored clothing, a proper house (enclosed, with a hearth), tools for their trade, a tavern and hearth-shrine within 150 m |
 | **Noble** | + fine food (3+ kinds, including preserved meat or fish and salt or spice), wine or spirits, fine clothing (fur or silk), 1+ luxury (deep pearls, gold or silver jewellery, books, mana lamps, art), a manor, a staffed household, gardens or a plaza |
 
-- **Promotion:** a household moves up a tier after 90% needs satisfaction for 5 days, if its roles fit: craftsmen are skilled trades; nobles are officials, masters, people of Champion grade or higher, and rich merchants. **Demotion:** a household drops a tier after 5 days below 60% needs satisfaction *(tune)*.
+- **Promotion:** a household moves up a tier after 90% needs satisfaction for 5 days, if its members' classes fit: craftsmen are skilled trades; nobles are officials, masters, people of Champion grade or higher, and rich merchants. **Demotion:** a household drops a tier after 5 days below 60% needs satisfaction *(tune)*.
 - **Effects** *(tune)*:
   - productivity: +0 / +20 / +40%
   - tax yield: ×1 / ×2.5 / ×6
   - higher loyalty baseline
-  - some roles need a minimum tier (Magisters and Marshals: craftsman+)
+  - some offices need a minimum tier (Magisters and Marshals: craftsman+; the Chancellor: noble, `13-units-classes-power.md` §13.3)
 - Tiers give the long production chains a buyer besides the army.
 
 ---
@@ -225,10 +225,10 @@ These raise a target's attraction toward you. Once their own loyalty falls low e
 
 ---
 
-## 9. Champions and mages
+## 9. Standouts, grades and mages
 
 - **Standouts** are people with unusually high stats (≈ 0.5%: two or more stats ≥ 17, or an exceptional total). The game **highlights** them when they join, but the player decides whom to invest in.
-- **Everyone has a class and skills,** and climbs seven grades from Common to Calamity: `13-units-classes-power.md` §9–§11, with every class and skill in `14-class-library.md`. There is no "Make hero": the player invests by playing people, promoting them into the scarce Elite, Champion and Paragon places, and arming them. The old hero's 4–6 ability slots became each class's Knack, Active, Ultimate, Art and Mastery, plus relic slots for the Wardens' drops.
+- **Everyone has a class and skills,** and climbs seven grades from Common to Calamity: `13-units-classes-power.md` §9–§11, with every class and skill in `14-class-library.md`. The player invests by playing people, promoting them into the scarce Elite, Champion and Paragon places, and arming them.
 - **Death is permanent** for everyone, at every grade, though people are first **Downed** and can be revived (`13-units-classes-power.md` §5.9). Their gear drops where they fall.
 - **Mages** need Affinity ≥ 15 (~1 in 300 people) and learn at an **Academy** with a teacher (a Master of magic, or scrolls). Magic proficiency grows at a twentieth of the usual rate: about a real week to Journeyman, three to Adept and seven to Master, faster when played (`13-units-classes-power.md` §8, §10.8) *(tune)*.
 - **Mage classes:**
@@ -258,7 +258,7 @@ These raise a target's attraction toward you. Once their own loyalty falls low e
 
 - **Coins.** Gold **Crowns** and silver **Marks**, minted at a **Mint** by a Treasurer's crew from ingots *(tune: 1 gold ingot → 10 Crowns; 1 silver ingot → 20 Marks; 1 Crown = 20 Marks)*. Each coin carries its king's stamp (cosmetic); every coin is valid everywhere.
 - **Treasury.** Coins sit in strongrooms. **Payroll** moves physically: pay chests travel to settlements and garrisons, and local paymasters hand out wages. Pay chests can be robbed.
-- **Wages** per role per day *(tune)*:
+- **Wages** per kind of worker per day *(tune)*:
   - peasant 1 Mark, craftsman 2–3, soldier 2, official 5, mage 10
   - wage level is a policy
 - **Spending.** People buy food and goods at markets you build and stock, so coin flows back into your treasury boxes. **Taxes** (policy sliders) take a share of wages and market sales.
@@ -290,8 +290,8 @@ These raise a target's attraction toward you. Once their own loyalty falls low e
 **Factories** (the mana age) are laid out by hand, like Endfield:
 - **Machines** are mana-powered workstations: auto-smelter, trip-hammer, power loom, crusher, press, mana furnace, pump, crane.
 - **Movement:** conveyor belts (items per minute), splitters, mergers, sorters, arm inserters, lifts.
-- Machines are multi-block structures built block by block from parts. They need mana from the grid and maintenance (parts wear). Some need an operator, whose skill affects speed and quality.
-- **Min-maxing:** throughput ratios, belt capacity, layout, operator skill, input quality.
+- Machines are multi-block structures built block by block from parts. They need mana from the grid and maintenance (parts wear). Some need an operator, whose proficiency affects speed and quality.
+- **Min-maxing:** throughput ratios, belt capacity, layout, operator proficiency, input quality.
 - **Noise.** Industry, deep mining, big battles and heavy mana use emit *noise* that draws enemy scouts (§17). This is Factorio's pollution idea.
 
 ---
@@ -324,6 +324,7 @@ These raise a target's attraction toward you. Once their own loyalty falls low e
 | The Gut | living tunnels digest structures; constant repair |
 
 - **Decay:** buildings lose integrity daily (base rate × region hazard × (1 − material resistance)). Reeves schedule repairs, which use materials.
+- **Gates that can't be broken.** Seat and Stair gates can't be broken, moved or changed by anything, and a Seat's ward-engines take only siege damage.
 - **Support** (simple rules):
   - A block is **grounded** if it rests on terrain or on a supported column.
   - Horizontal span limits per material *(tune)*: plank 4, wooden beam 8, stone brick 6, iron beam 14, natural rock 16.
@@ -342,7 +343,7 @@ These raise a target's attraction toward you. Once their own loyalty falls low e
 | Part | What it does |
 |---|---|
 | **Sources** | Mana crystals (mined, burned in generators); **ley wells** (fixed sites that produce steady mana with no fuel; rare, contested, strongest in the Nadir); **liquid mana** (Leyflow; dense fuel); **soulglass** (storage) |
-| **Generator** (crystal furnace) | burns crystals into mana; needs an attuned mage (re-attune every ~3 days); output scales with the mage's skill |
+| **Generator** (crystal furnace) | burns crystals into mana; needs an attuned mage (re-attune every ~3 days); output scales with the mage's magic proficiency |
 | **Conduits** | moonsilver wire; capacity per tier; losses over distance |
 | **Relays** | extend the grid and carry news (§4) |
 | **Storage** | charged crystal cells (portable; carried to off-grid sites), soulglass banks (large) |
@@ -390,7 +391,7 @@ These raise a target's attraction toward you. Once their own loyalty falls low e
 
 ## 17. Enemies (the Deep's forces)
 
-- Each region's enemies belong to its Warden's faction: minions, soldiers, elites, generals and the Warden.
+- Each region's enemies belong to its Warden's faction: minions, soldiers, veterans, generals and the Warden (their numbers: `13-units-classes-power.md` §16).
 - **Musters** (spawners) sit in Seat rings and outposts. They produce units over time up to a cap, faster when the faction is alarmed. Killing a general disables or halves his musters.
 - **Territory:** each faction holds its Seat rings plus outposts.
   - Unchallenged, it slowly expands by founding outposts at its frontier *(tune: every few in-game days)*.
@@ -427,7 +428,7 @@ These raise a target's attraction toward you. Once their own loyalty falls low e
   - regen sources destroyed during the engagement
 
   Credit needs ≥ 5% of total contribution. One kingdom with ≥ 95% and no other above 1% earns **Solitary**.
-- **Drops** appear physically in the arena at death (artifacts, and hoards like Ozrem's gold). Whoever carries them off keeps them, so the fight after the fight matters.
+- **Drops** appear physically in the arena at death (relics, `15-item-library.md` §9, and hoards like Ozrem's gold). Whoever carries them off keeps them, so the fight after the fight matters.
 - **Death is permanent until the reset.** Its musters stop. The region's enemy territory dissolves over about an in-game day; the remaining units become strays.
 - **The King Below:**
   - regen per living Warden (+X/s each)

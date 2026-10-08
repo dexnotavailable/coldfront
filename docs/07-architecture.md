@@ -130,7 +130,7 @@ These apply to anything whose output must match across machines: world generatio
 - bitECS over typed arrays, for simulated units only.
 - Identities for all people are compact records outside the ECS (plain tables, then SQLite on the server). Only *hydrated* units are ECS entities (§9).
 - **The unit's sheet, classes, skills and items** are content: tables in `13-units-classes-power.md`, `14-class-library.md` and `15-item-library.md`, built into `packages/shared/src/content/content.gen.json` by `npm run content:build` (§7). Skills run as data on a small set of handlers (13 §19).
-- **One unit model.** Each simulated unit has a swappable controller that emits an `InputFrame` every 50 ms: `{ seq, forward, back, left, right, jump, sprint, sneak, yaw, pitch, action? }`, where `action` is dig, place, use, attack, equip or craft with a target and face. AI controllers and a possessing player's controller emit identical frames; one shared `physics.step()` and one shared `actions.validate/apply()` consume them. Possession swaps the controller. (`10-prior-art.md` §3.)
+- **One unit model.** Each simulated unit has a swappable controller that emits an `InputFrame` every 50 ms: `{ seq, forward, back, left, right, jump, sprint, sneak, yaw, pitch, action? }`, where `action` is dig, place, use, attack, equip, craft, or a skill (its slot and aim point) with a target and face. AI controllers and a possessing player's controller emit identical frames; one shared `physics.step()` and one shared `actions.validate/apply()` consume them. Possession swaps the controller. (`10-prior-art.md` §3.)
 
 ---
 

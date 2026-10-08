@@ -39,6 +39,7 @@ const PROPER = new Set([
   // Game terms (13-units-classes-power.md) that keep their capital.
   'Overhead', 'Shoulder', 'Knack', 'Ultimate', 'Ultimates', 'Mastery', 'Resolve', 'Flame', 'Trial',
   'Elite', 'Champion', 'Paragon', 'Calamity', 'Guard', 'Hearth', 'Great', 'Hearthkeeper',
+  'Marrow', 'Rite', 'Corporal', 'Sergeant', 'Lieutenant', 'Assault', 'Support', 'Secondary',
 ]);
 const BANNED = [
   [/!/, 'exclamation mark'],

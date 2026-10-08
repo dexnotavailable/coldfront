@@ -2,7 +2,7 @@
 
 > **COLDFRONT** is a seasonal, ~100-player voxel civilization builder in the browser. You rule an empire from above and possess its people on the ground. You push supply lines down a funnel-shaped world of hostile regions to break boss strongholds that fight back.
 
-**The owner's technical TL;DR:** *Minecraft, but it extends downwards, with Big Globe installed, and you have a bird's-eye view. All the NPCs and units are controlled by the game computer in an optimised way; each one can break blocks and has an inventory, HP and so on, like a Minecraft player. Possessing one should be the same as controlling a Minecraft player.*
+**The owner's technical TL;DR:** *Minecraft, but it extends downwards, with Big Globe installed, and you have a bird's-eye view. All the NPCs and units are controlled by the game computer in an optimised way; each one can break blocks and has an inventory, HP and so on, like a Minecraft player. Possessing one should be the same as controlling a Minecraft player.* (8 October 2026: the camera part is superseded. There is no first-person view; units are played from above or over the shoulder, §6 and `13-units-classes-power.md` §3.)
 
 This file is the "why". Everything else in `docs/` is the "what" and the "how". When a detail elsewhere seems to conflict with this file, this file wins. Flag the conflict in `09-open-questions.md`.
 
@@ -202,7 +202,7 @@ These are settled. Don't re-open them without the owner. Unmarked items are the 
 | **The catalogue** | `11-interface-catalogue.md`: the complete list of what the interface contains. If it isn't there, it isn't in the game |
 | **Network** | Watchtowers, signal towers and mana relays. Its *connected* coverage is where you can see, command and possess |
 | **News** | Any report or order; it travels physically through the network or by rider |
-| **Reeve · Quartermaster · Captain · Marshal · Magister · Treasurer · Envoy** | Officials: town · supply · company · army · mana and mages · coin · trade and diplomacy |
+| **Reeve · Quartermaster · Captain · Marshal · Magister · Treasurer · Envoy** | Officials: town · supply · company · army · mana and mages · coin · trade and diplomacy. The full ladder of offices and posts is in `13-units-classes-power.md` §13 |
 | **Class · Role · Rank · Grade** | A person's trade · a soldier's place in a fight · a step on a ladder of command, trade or office · a step on the power ladder, from Common to Calamity (`13-units-classes-power.md`) |
 | **Skill** | A power on a slot: Knack, Active, Ultimate, Art, Mastery, a relic's, or a Cataclysm (`14-class-library.md`) |
 | **Calamity** | The top grade: one person who can break a small kingdom, kept alive by costly upkeep |

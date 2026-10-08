@@ -207,6 +207,9 @@ The session can run for a long time. **You can close the tab**; it keeps working
 | Catalogue | `docs/11-interface-catalogue.md`: the full list of what the interface contains |
 | Gallery | A page in every build (`/?gallery`) that shows each interface screen with sample data |
 | Seed | The number a world is generated from. Same seed, same world. |
+| Possess | Playing one of your people yourself (Tab) |
+| Overhead · Shoulder | The two ways to see the person you play: from above, or over their shoulder (F5 switches) |
+| Band | Your short list of people to switch between while playing (`,` and `.`) |
 | Reasoning effort | How long the model thinks before it acts. Higher is slower and uses more of your plan |
 | Ultracode | A Claude Code setting (on in this repo) that makes the agent plan "workflows": many helper agents working in parallel. Stronger, and it uses your usage limit faster. `/effort ultracode off` turns it off for one session |
 | Goal | A finish line you set with `/goal`; the session keeps working until it's met |

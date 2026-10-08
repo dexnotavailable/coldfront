@@ -29,7 +29,7 @@ Every number is a starting value for playtests *(tune)* unless it is marked **fi
 | **Grade** | a band of ten levels with its own name, from Common to Calamity (§9) |
 | **Might** | the grade's multiplier for Health: 1.0 for Common, rising by 0.5 per grade to 4.0 for Calamity |
 | **Power** | what a skill's ◆ numbers multiply by: `Might × (1 + (level − 1) ÷ 20)`, from 1.0 for a new Common to 17.8 for a level-70 Calamity (§11.7) |
-| **Skill** | a power on a slot: Knack, Active, Ultimate, Art, Mastery or Cataclysm (§11) |
+| **Skill** | a power on a slot: Knack, Active, Ultimate, Art, Mastery, a relic's, an office's, or a Cataclysm (§11) |
 | **Resolve** | what an Ultimate fills up on, 0–100, earned by doing the class's work (§11.3) |
 | **Role** | a military unit's place in a fight: Assault, Guard, Support or Secondary (§12) |
 | **Rank** | a place on a ladder: military ranks, trade ranks, and offices (§13) |
@@ -62,7 +62,7 @@ A played unit moves, digs, builds and carries exactly as a Minecraft player does
 
 **Fall damage:** 5% of max Health for every metre fallen beyond 3 m, so a 23 m fall kills, as in Minecraft.
 
-**The avatar** (everyone, the king and the free camera included). A blocky figure with a Minecraft avatar's proportions, 1.8 m tall: head 8 × 8 × 8 px, body 8 × 12 × 4, arms and legs 4 × 12 × 4, one px being 1.8 m ÷ 32. Its look is generated in code from the person's identity (golden rule 6): skin and hair from their stored traits, clothes by class and needs tier, a trim in the kingdom's colours, worn armour drawn as a layer by material. Nothing reproduces a skin from Minecraft. It animates as a Minecraft avatar does: limbs swing with speed, the body leans to sprint and crouches to sneak, the arm swings to hit, dig and place, a shield rises, a bow draws, the body flashes red when hurt. Skills add a pose and a wind-up (§11.5). A Downed person lies on the ground (§5.9). This is the owner's "for now": a later art pass may replace it.
+**The avatar** (everyone, the king and the free camera included). A blocky figure with a Minecraft avatar's proportions, 1.8 m tall: head 8 × 8 × 8 px, body 8 × 12 × 4, arms and legs 4 × 12 × 4, one px being 1.8 m ÷ 32. Its look is generated in code from the person's identity (golden rule 6): skin and hair from their stored traits, clothes by class and needs tier, a trim in the kingdom's colours (wider from Champion), worn armour drawn as a layer by material; a Calamity burns with a visible fire. Nothing reproduces a skin from Minecraft. It animates as a Minecraft avatar does: limbs swing with speed, the body leans to sprint and crouches to sneak, the arm swings to hit, dig and place, a shield rises, a bow draws, the body flashes red when hurt. Skills add a pose and a wind-up (§11.5). A Downed person lies on the ground (§5.9). This is the owner's "for now": a later art pass may replace it.
 
 ### 3.3 Shoulder
 
@@ -91,7 +91,7 @@ A played unit moves, digs, builds and carries exactly as a Minecraft player does
 
 ### 3.6 Skills on keys
 
-While playing: **Z** Active, **X** Ultimate, **C** Art, **V** first relic, **R** second relic, **G** Cataclysm (held for 1 s, so it can't fire by accident). A skill that needs a place or a direction shows its shape on the ground while its key is held and fires on release; a tap fires at once at the aim point. Esc, or the other mouse button, while the key is held cancels it. A skill pressed within the last 0.3 s of another action fires as soon as the unit is free. The rest of a skill's behaviour is in §11.
+While playing: **Z** Active, **X** Ultimate, **C** Art, **V** first relic, **R** second relic, **G** Cataclysm, which must be held for 1 s: a shorter press does nothing, and for the Oathsworn the hold is the confirmation that calls the fire. A skill that needs a place or a direction shows its shape on the ground while its key is held and fires on release; a tap fires at once at the aim point. Esc or the right mouse button, while the key is held, cancels it; so does losing the pointer lock. A skill pressed within the last 0.3 s of another action fires as soon as the unit is free. The rest of a skill's behaviour is in §11.
 
 ### 3.7 Ordering one unit from Command view
 
@@ -158,7 +158,7 @@ Everyone is born with six attributes from 1 to 20, as `05-systems.md` §5 descri
 8. **Block** (§5.5).
 9. What is left comes off **Shielded** first, then **Flame** (a Calamity, §15.2), then Health.
 
-**Siege** damage (engines, a Sapper's charges) ignores armour, Overmatch and a Fortress Warden's reduction, and its full value breaks blocks: a block's hit points are its hardness × its material (`05-systems.md` §13). Against creatures, an engine deals its row's damage against creatures instead (`15-item-library.md` §16), which takes armour and Overmatch as usual. **True** damage ignores armour and resistance but not Overmatch; only a few endgame rows deal it, and only the largest true damage on a hit counts.
+**Siege** damage (engines, a Sapper's charges) ignores armour, Overmatch and a Fortress Warden's reduction, and its full value breaks blocks: a block's hit points are its hardness × its material (`05-systems.md` §13). Against a Warden, an engine deals its full siege number, ignoring armour and a Fortress Warden's reduction. Against other creatures it deals its row's damage against creatures (`15-item-library.md` §16), which takes armour but ignores Overmatch. Other rows that deal siege damage to creatures (Cataclysms, a few Masteries) ignore armour, Overmatch and the Fortress reduction. **True** damage ignores armour and resistance but not Overmatch; only a few endgame rows deal it, and only the largest true damage on a hit counts.
 
 ### 5.2 Damage types and armour
 
@@ -183,7 +183,7 @@ Elemental resistances come only from items, runes, conditions and skills; everyo
 
 When the target's grade is **two or more above** the attacker's, the hit is cut by 25% for each grade of gap beyond one: a gap of 2 takes 25% off, 3 takes 50%, 4 takes 75%, and 5 or more 90%. Control effects (Stunned, Rooted, Frozen, Slowed, Staggered, Feared, Taunted) last 20% less for each grade of gap beyond one, 80% less at most.
 
-- Siege damage against blocks and structures, and Wardens' attacks, ignore Overmatch; Wardens get no Overmatch protection either.
+- Siege damage and Wardens' attacks ignore Overmatch, and Wardens get no Overmatch protection either.
 - The king counts as Paragon (grade 6) both ways. Enemies have a grade by tier and rank (§16).
 - Heals, shields and buffs are never cut.
 
@@ -199,7 +199,7 @@ This is what makes a grade gap count: a hundred levied farmers can't scratch a C
 ### 5.6 Mounts and beasts
 
 - **From the saddle,** a rider fights as on foot. A **charging hit** is a melee hit while the mount moves at 8 m/s or more: ×1.5 more with a mounted weapon (a lance), ×1.25 more with any other.
-- A rider whose mount dies, or who is **Staggered** by a weapon whose row says it can unhorse (halberds, pikes), falls: 3 m of fall damage (§3.2), **Staggered** for 1 s.
+- A rider whose mount dies, or who is **Staggered** by a weapon whose row says it can unhorse (halberds, pikes), falls, taking 15% of max Health, and stays **Staggered** 1 s longer.
 - Mounts and other animals have the Health and traits of their rows (`15-item-library.md` §15), armour 10 unless they wear barding, and count as Common for Overmatch both ways.
 
 ### 5.7 Ranged weapons
@@ -373,11 +373,11 @@ A season is 4,368 hours long, and people work about half of them. So work alone 
 | **Elite** | 31–40 | ×2.5 | promotion by the player, with proficiency 60 in the class's trade | 1 per 20 people | ×4 |
 | **Champion** | 41–50 | ×3.0 | the Trial, played (§9.3) | 1 per 100 people | ×10 |
 | **Paragon** | 51–60 | ×3.5 | a bound Warden relic, or the Marrow Rite (§9.4) | 1 per 1,000 people | ×25 |
-| **Calamity** | 61–70 | ×4.0 | one of four paths (§15) | 1 per kingdom, plus one Oathbound | upkeep instead (§15.4) |
+| **Calamity** | 61–70 | ×4.0 | one of four paths (§15); a Crownbearer or Relic-bound Calamity keeps its level and climbs on without stopping at 60 | 1 per kingdom, plus one Oathbound | upkeep instead (§15.4) |
 
 - **Places** are counted against the kingdom's whole population. Losing people never demotes anyone, but nobody new is promoted while the kingdom is over a limit.
 - **Wage** multiplies the class's wage (`05-systems.md` §11). Elites want the Craftsman tier's needs, Champions and above the Noble tier's (`05-systems.md` §7).
-- **A promotion** happens the moment its gate is met (Proven, Tempered) or when the player presses Promote (`person.promote`) with the gate met (Elite and above). It refills Health. Nobody is ever demoted, except a Calamity that falls (§15.4) and a Paragon who unbinds a relic (§9.4).
+- **A promotion** happens by itself when its gate is met: Proven and Tempered by level and deed, Champion on passing the Trial, Paragon on binding a relic or finishing the Rite, Calamity by its path. Elite alone waits for the player to press Promote (`person.promote`). A promotion refills Health. Nobody is ever demoted, except a Calamity that falls (§15.4) and a Paragon who unbinds a relic (§9.4).
 
 ### 9.2 Linear in power, hard to climb
 
@@ -395,7 +395,7 @@ Every grade adds the same thing: half a point of Might, ten more levels, and gea
 | Paragon 60 | 1,701 | 130 | 342 | 548 | 3,912 | 43.57 |
 | Calamity 70 | 2,200 | 150 | 446 | 713 | 5,500 | 79.73 |
 
-*Effective Health* is Health × `(1 + armour ÷ 100)`. *Worth* is effective Health × damage a second, measured against the Proven soldier: roughly how many Proven soldiers it beats one after another. The ladder ignores damage types, as if every hit were Point against mail. Overmatch multiplies a higher grade's effective Health against lower grades on top of this (×1.33 at a gap of 2, ×2 at 3, ×4 at 4, ×10 at 5 or more). A Calamity's Flame and traits come on top of the last line (§15). `node docs/tools/content-check.mjs --ladder` recomputes this table from §4 and §5; if a rule changes, the table changes with it.
+*Effective Health* is Health × `(1 + armour ÷ 100)`. *Worth* is effective Health × damage a second, measured against the Proven soldier: roughly how many Proven soldiers it beats one after another. The ladder ignores damage types: it treats every hit as neutral (×1.0) against its armour. Overmatch multiplies a higher grade's effective Health against lower grades on top of this (×1.33 at a gap of 2, ×2 at 3, ×4 at 4, ×10 at 5 or more). A Calamity's Flame and traits come on top of the last line (§15). `node docs/tools/content-check.mjs --ladder` recomputes this table from §4 and §5; if a rule changes, the table changes with it.
 
 ### 9.3 The Trial
 
@@ -466,7 +466,7 @@ The Mage (military), and the Enchanter and Attuner (civilian, Mind family) need 
 | **Mastery** | passive | Champion grade, with proficiency 90 | — |
 | **Relic** | the relic's | a relic in a relic slot: the first slot opens at Champion, the second at Paragon | V, R |
 | **Cataclysm** | 10-minute cooldown | Calamity | G, held 1 s |
-| **Office skill** | the office's | holding an office (§13.3) | none: used from the office (K) or the inspector |
+| **Office skill** | the office's | holding an office or post (§13) | none: used from the office (K) or the inspector |
 
 Civilians have Knack, Active, Ultimate and Mastery. Military base classes have Knack, Active and Ultimate, and their advanced classes add an Art and a Mastery. A Background adds a Knack (§10.5).
 
@@ -486,10 +486,10 @@ Resolve runs from 0 to 100 and is kept until used; a class change empties it. Ea
 | Rule | Earned by |
 |---|---|
 | **Work** | 1 for every 6 s of the class's own work, so 10 minutes of work fills it |
+| **Fight** | 1 for each hit landed on a foe or taken from one, at most 1 a second (blocked hits count); 5 for a kill of a foe of equal or higher grade, 1 for a lower one. Officers, Heralds and the king also earn a tenth of what the soldiers they lead within 16 m earn, 0.5 a second at most in all; a Houndmaster earns for their hounds' bites |
+| **Aid** | 1 for each 2% of an ally's max Health actually restored or absorbed; 5 for a revive, once per person a minute |
 
 An Ultimate's own hits, heals and shields earn no Resolve, and none comes for 10 s after one. With these rules an Ultimate takes about 90 s of steady fighting, or 10 minutes of work.
-| **Fight** | 1 for each hit landed on a foe or taken from one, at most 1 a second (blocked hits count); 5 for a kill of a foe of equal or higher grade, 1 for a lower one. Officers, Heralds and the king also earn a tenth of what the soldiers they lead within 16 m earn; a Houndmaster earns for their hounds' bites |
-| **Aid** | 1 for each 2% of an ally's max Health actually restored or absorbed; 5 for a revive, once per person a minute |
 
 ### 11.4 Aiming
 
@@ -558,7 +558,7 @@ Hits and skills never hurt your own people or your allies'. A Cataclysm's row sa
 
 ### 11.10 Budgets
 
-Rows in `14-class-library.md` are written to these budgets. A row may break one only by naming the rule it breaks, and only in a Mastery, a relic or a Cataclysm. Damage over time from conditions counts toward a damage budget, and so do a row's built-in "more" multipliers (a charging lance's ×1.5). An area is given by its radius; a cone or a line may reach farther as long as it covers no more ground than that circle (a 6 m circle is about 110 m², so a line 3 m wide may run 36 m).
+Rows in `14-class-library.md` are written to these budgets. A row may break one only by naming the rule it breaks, and only in a Mastery, a relic or a Cataclysm. Damage over time from conditions counts toward a damage budget, and so do a row's built-in "more" multipliers (a charging lance's ×1.5). Heals and shields: an Active gives at most 40 ◆ to one target or 20 ◆ to each within 8 m, an Art 60 or 30, an Ultimate 120 or 60. A work feat saves at most about 3 minutes of the user's own work ("×4 for 60 s"). A Teacher's students count within 24 m (§7.3), whatever the slot. An area is given by its radius; a cone or a line may reach farther as long as it covers no more ground than that circle (a 6 m circle is about 110 m², so a line 3 m wide may run 36 m).
 
 | Slot | What it is | Budget |
 |---|---|---|
@@ -581,7 +581,7 @@ Every military unit has one role, chosen in the inspector (`person.role`). A cha
 | **Assault** | damage +15% (increased); armour −10%; sprint +10% | closes in, picks the weakest foe in reach, chases | at Champion or higher, may swear the Oath (§15.3) |
 | **Guard** | armour +20%; Block +25%; enemy AI within 6 m prefers to attack it; speed −10% | holds near its ward, blocks, steps into the way | a **ward**: a person, a building or a banner it keeps within 8 m of. Once every 10 s it takes a hit meant for its ward within 3 m |
 | **Support** | heals and shields +25%, buffs last 25% longer; cooldowns −20%; damage −15% | keeps 12–24 m behind the front; heals, buffs, reveals | enemy AI attacks it only when nothing else is in reach |
-| **Secondary** | damage +20% against foes already fighting someone else or under half Health; speed +10% | follows 4–8 m behind the front, fills gaps, finishes | a **day trade**: stood down, it works one civilian class with that class's Knack at 75% speed and half wages; called up, it musters in an in-game hour |
+| **Secondary** | damage +20% against foes already fighting someone else or under half Health; speed +10% | follows 4–8 m behind the front, fills gaps, finishes | a **day trade**: stood down (its company's standing order "Stood down"), it works one civilian class with that class's Knack at 75% speed and half wages; called up, it musters in an in-game hour |
 
 ---
 
@@ -601,7 +601,7 @@ Every military unit has one role, chosen in the inspector (`person.role`). A cha
 | **Marshal** | an army | 160 m | Champion, management 70 | ×8 | morale +20; as a Captain, over the whole army |
 
 - Only the highest officer's morale bonus counts for a soldier. A soldier hears an officer's orders without delay only from its own chain of command.
-- Corporals, Sergeants and Lieutenants are promoted by their Captain when a place opens, or by the player. Captains are appointed when a company is raised (`army.new.captain`), Commanders by the player or a Marshal, the Marshal by the king. The class Warrior is a class, not a rank.
+- Corporals, Sergeants and Lieutenants are promoted by their Captain when a place opens, or by the player (`person.rankup`). Captains are appointed when a company is raised (`army.new.captain`), Commanders by the player or a Marshal, the Marshal by the king. The class Warrior is a class, not a rank.
 
 ### 13.2 Trade ranks and posts
 
@@ -676,7 +676,7 @@ Flame takes damage after Shielded and before Health (§5.1). A Calamity is never
 |---|---|---|
 | Kindled | 40 per member of the congregation, 40,000 at most | offerings burned at the Great Hearth: 1 Flame per offering point, 300 a second at most, only while the Calamity is inside connected coverage |
 | Oathbound | 30,000 | nothing |
-| Crownbearer | 15,000 | 5% of the damage it deals to creatures |
+| Crownbearer | 15,000 | 5% of the damage it deals to creatures, 30 a second at most |
 | Relic-bound | the relic's (`15-item-library.md` §9) | the relic's hunger, 30 a second at most |
 
 ### 15.3 The four paths
@@ -707,7 +707,7 @@ Flame takes damage after Shielded and before Health (§5.1). A Calamity is never
 ### 15.4 Guttering and falling
 
 - **Guttering:** max Flame is halved and nothing refills it, until a full day's upkeep (or the relic's hunger) is met.
-- **Three days of Guttering in a row,** or a Crownbearer taking the crown off: the Calamity **falls** to Paragon at level 60, Wounded, and loses all experience above level 60. A Kindled Calamity's fall leaves the Great Hearth cold for four in-game years (four real weeks): no Kindling there until it warms.
+- **Three days of Guttering in a row,** or a Crownbearer or Relic-bound Calamity taking its crown or relic off: the Calamity **falls** to Paragon at its own level, 60 at most, **Wounded**, and loses all experience above that. A Champion whom a crown or relic made a Paragon falls back the same way to Champion, at its own level, 50 at most (§9.4). A Kindled Calamity's fall leaves the Great Hearth cold for four in-game years (four real weeks): no Kindling there until it warms.
 - An Oathbound never falls. It burns.
 
 ### 15.5 Death, limits and news
@@ -721,7 +721,7 @@ Flame takes damage after Shielded and before Health (§5.1). A Calamity is never
 - **Level mountains.** A Cataclysm removes up to 32 m of terrain around its point every ten minutes, and Sunder breaks whatever the Calamity strikes.
 - **Break a small kingdom.** After Overmatch and armour, a Proven soldier's hit does about 2 damage to it. It kills nearly one such soldier a second with plain blows, and a Cataclysm flattens a settlement's heart (48 m) at once. Its Flame decides how long it can keep that up away from home.
 - **Solo an easier Warden.** Sunder doubles its damage to Wardens and ignores half their armour, about 950 damage a second, and each Cataclysm adds 400,000: about three quarters of an hour against a Tier I Warden (4 million Health), if the player dodges the telegraphed heavy hits. Every hit it takes burns Flame, and Flame is offerings.
-- **Hold a kingdom alone.** At home, a Kindled Calamity's Flame refills at up to 300 a second, a point of offerings for each point of Flame, for as long as the stores last: fifty Elites can't outpace it, but the stores can run dry.
+- **Hold a kingdom alone.** At home, a Kindled Calamity's Flame refills at up to 300 a second, a point of offerings for each point of Flame, for as long as the stores last: a Tempered company can't outpace it, but the stores can run dry, and fifty Elite archers can.
 
 ### 15.7 How to answer one
 
@@ -744,7 +744,7 @@ The Deep's soldiers use the same rules as people (§5), without Downed. Their gr
 | V | 900 | 130 | 175 | Elite |
 | VI | 1,100 | 150 | 215 | Elite |
 
-- **Minion:** ×0.4 Health, ×0.5 hit, half the armour, one grade lower. **Elite:** ×2 Health, ×1.4 hit, +30 armour, one grade higher. **General:** ×12 Health, ×2.5 hit, +60 armour, two grades higher, and skills of its own (written with its Warden in `02-world.md` §7).
+- **Minion:** ×0.4 Health, ×0.5 hit, half the armour, one grade lower. **Veteran:** ×2 Health, ×1.4 hit, +30 armour, one grade higher. **General:** ×12 Health, ×2.5 hit, +60 armour, two grades higher, and skills of its own (written with its Warden in `02-world.md` §7).
 - A Tier I soldier is worth about one Proven soldier, a Tier III one about four and a Tier V one about twelve (the measure of §9.2).
 
 | Warden tier | Health | Armour | Heavy hit | Wave |
@@ -757,7 +757,7 @@ The Deep's soldiers use the same rules as people (§5), without Downed. Their gr
 | The King Below | 390,000,000 | 200 | 4,840 | 1,340 |
 
 - A **heavy hit** strikes one target about every 6 s, telegraphed for at least 1 s, and is **crushing** (§5.5). A **wave** strikes an area about every 15 s, telegraphed for at least 1.5 s. Each Warden's kit (`02-world.md` §7, `05-systems.md` §18) shapes these into its own attacks.
-- Wardens ignore Overmatch and get none. They can't be Stunned, Rooted, Frozen, Feared or Taunted; Slowed and Chilled hold them for a quarter of their time; effects that take a share of max Health don't work on them. A Fortress Warden takes 90% less from everything but siege.
+- Wardens ignore Overmatch and get none. They can't be Stunned, Rooted, Frozen, Feared or Taunted; Slowed and Chilled hold them for a quarter of their time; effects that take a share of max Health don't work on them. A Fortress Warden takes 90% less from everything but siege. Wardens can't be **Staggered** except by a parry, and generals hold it a quarter as long (§6).
 - The Tier I figure is the design target of `05-systems.md` §18: 200 Proven soldiers, a third of them striking at any moment, through 100 armour, for 20 minutes.
 
 ---
@@ -787,7 +787,7 @@ The Deep's soldiers use the same rules as people (§5), without Downed. Their gr
 ### 17.3 Three builds
 
 - **The deep miner.** A Miner born with Strength 17 (cap 91): three attribute points take it to 20 and the cap to 100. Background: the Prospector's Knack. Speciality: iron. Played during First light near a Master miner, with a rimesteel pick; the Ultimate kept for the biggest veins.
-- **The glass cannon.** A Marksman with Agility 20 in the Assault role: +15% damage, rear shots from high ground at Marked targets, and Merry never, because it widens the spread.
+- **The glass cannon.** A Marksman with Agility 20 in the Assault role: +15% damage, flank shots from high ground at Marked targets, and Merry never, because it widens the spread.
 - **The wall.** A Bulwark in the Guard role with a tower shield, plate and the Fortified buffs, warding a Mender: Block +25%, armour +20%, and parries that only a player lands.
 
 ---
@@ -808,7 +808,7 @@ Most people, most of the time, are in the ledger (`05-systems.md` §22). Its ver
 - **Where content lives:** this doc's tables of conditions (§6) and proficiencies (§8); `14-class-library.md` (classes, skills, deeds, Trials, office skills); `15-item-library.md` (items). Every table whose first column is **ID** is data, as in the catalogue.
 - **Words.** Names: 3 words and 24 characters at most, sentence case. Tooltips: one line of 100 characters at most, no full stop, what it does first, then a cost, a limit or a second effect after `·`. No gendered pronouns: people are women and men, and so is the ruler. None of the words A2 of the catalogue bans. The interface adds the slot, cost, cooldown and reach lines itself (`tip.*`), so a tooltip never repeats them.
 - **Tone.** Names are plain trade words ("Sound the rock", not "Earthsense"). Outside the mage classes, the Hearth's rites, relics and Calamities, a skill is something a skilled person could do: what an Active reveals is what an expert notices, and an Ultimate is a feat of effort, nerve or craft, not a spell. Mages' skills are mana: costly and dangerous (`03-lore.md` §2).
-- **The rules column** names conditions in **bold** by their names in §6, uses the forms of §11.4 and §11.8, marks Might-scaled numbers with ◆, writes damage as a share of a hit where it can, and says **played only** where that applies.
+- **The rules column** names conditions in **bold** by their names in §6, uses the forms of §11.4 and §11.8, marks Power-scaled numbers with ◆, writes damage as a share of a hit where it can, and says **played only** where that applies.
 - **The checker.** `node docs/tools/content-check.mjs` checks every content table: unique IDs; names and tooltips against the rules above; every bold word in a rules column is a condition or a keyword; each class has exactly its slots; costs and cooldowns sit inside §11.10's budgets for the slot; every ID a row mentions exists. `--ladder` prints §9.2's table from §4 and §5. `--json` prints the data for the game, and `--upto <phase>` limits it to what ships by then.
 - **In the game.** From Milestone 2, `npm run content:build` writes `packages/shared/src/content/content.gen.json` from these docs, and `npm run check` fails when it is out of date, as `ui:strings` does for the catalogue. Skills are data run by a small set of handlers, one per aiming form, information form and condition, so most rows need no code of their own. The rows that do (Masteries, relics and Cataclysms) get one function each, named by the row's ID.
 - **Changing content** is editing rows. A balance change is a row edit, made in the same commit as any test or golden-hash update it causes.
@@ -821,12 +821,12 @@ Most people, most of the time, are in the ledger (`05-systems.md` §22). Its ver
 |---|---|
 | 1.1 | the avatar (§3.2); Shoulder for the free camera |
 | 1.4 | Overhead for the free camera |
-| M2 | attributes, Health and Stamina; levels and experience, with played time and First light; proficiencies and trade ranks; the classes marked M2; Knacks and Actives on keys, by order and by autocast; Common and Proven; the Band; the charm slot |
-| M3 | the other civilian classes; deeds, Resolve and Ultimates; Tempered and Elite, Speciality and Backgrounds; Foremen and Overseers; the Chancellor, Governors, Bailiffs, Storekeepers, Paymasters, the High Hearthkeeper and Hearthkeepers; office skills |
-| M4 | fighting (§5), conditions, Downed and Wounded; Overmatch; the military base classes, roles, and ranks up to Captain; Champions, Trials and the civilian Masteries; the first relic slot and the first relic. Until Milestone 6 a bound relic gives its powers but no promotion |
+| M2 | attributes, Health and Stamina; levels and experience, with played time and First light; proficiencies and trade ranks; the classes marked M2; Knacks and Actives on keys, by order and by autocast; Common and Proven; the Band; the charm slot; the conditions of food, drink, needs and work (Well fed, Merry, Hungry, Exhausted); the Reeve |
+| M3 | the classes marked M3; deeds, Resolve and Ultimates; Tempered and Elite, Speciality and Backgrounds; Foremen and Overseers; the Chancellor, Treasurer, Quartermaster, Governors, Bailiffs, Storekeepers, Paymasters, the High Hearthkeeper and Hearthkeepers; office skills |
+| M4 | fighting (§5), the other conditions, Downed and Wounded; Overmatch; the classes marked M4, roles, and ranks up to Captain; Champions, Trials and the civilian Masteries; the first relic slot and the relics of the Wardens that ship then. Until Milestone 6 a bound relic gives its powers but no promotion |
 | M5 | advanced classes, their Arts and Masteries; Commanders and Marshals; the Envoy and the Spymaster; balance for war between kings |
-| M6 | Mana and the mage classes; runes; Paragons, the second relic slot, the Marrow Rite and the Tier II and III relics; the Magister |
-| M7 | Calamities: the four paths, the Great Hearth, the Broken Crown, the Tier IV and V relics and Cataclysms |
+| M6 | Mana and the mage classes; runes; Paragons, the second relic slot, the Marrow Rite and the relics of the Wardens that ship then; the Magister |
+| M7 | Calamities: the four paths, the Great Hearth, the Broken Crown, the remaining relics and Cataclysms |
 
 Each class, skill and item row carries its own **Since**; the content checker's `--upto` counts what a phase must hold.
 

@@ -155,7 +155,7 @@ All input is specified in `11-interface-catalogue.md`: Part B (what a browser al
 Part F of `11-interface-catalogue.md` lists what the interface contains at the end of each phase. For Milestone 1 that is:
 
 - the title screen (seed, Play) and the loading bar
-- the free camera's screen: crosshair, target outline, hotbar, and a block palette (all terrain blocks plus a few building blocks)
+- the free camera's screen, seen in Shoulder with the avatar (and from phase 1.4 in Overhead, on F5): crosshair, target outline, placement ghost, hotbar with the held item's name, and a block palette (all terrain blocks plus a few building blocks)
 - the map (M) with teleport, and discovery cards on entering regions
 - Tab: the Command camera as a king's view (camera only, no command features yet), and from phase 1.8 the cut and its depth gauge, for looking into the caves from above
 - the menu (with Licences), and the settings rows marked 1.4 and 1.10
@@ -199,12 +199,12 @@ Keep contrast *low inside* a texture, so big surfaces don't look noisy, and put 
 
 **Light.** Soft AO, a warm or cool sun, strong fog and aerial perspective for scale. Emissives with bloom: lava, crystal, glowcaps, moonsilver, skystone, ember crust, ichor, the Wellspring.
 
-**People (Milestone 2+).**
+**People (the avatar from phase 1.1).**
 - Blocky figures with a Minecraft avatar's proportions, 1.8 m tall, generated in code with simple rigid-part animation (`13-units-classes-power.md` §3.2). This is the owner's look for now.
 - Classes read by clothing colour and the tool in hand; worn armour shows as a layer by material.
 - **The Steward:** tall, grey, hooded, with a small lantern.
 - **The king:** crown and cloak.
-- Champions and above wear a trim of the kingdom's colours; a Calamity carries a visible fire. Every enemy family is designed silhouette-first.
+- Everyone wears a trim of the kingdom's colours, wider from Champion; a Calamity burns with a visible fire (`13-units-classes-power.md` §3.2). Every enemy family is designed silhouette-first.
 
 **Architecture.**
 - **Old Crown:** heavy stone, round arches, iron fittings, geometric motifs.
