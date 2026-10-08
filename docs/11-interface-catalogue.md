@@ -48,7 +48,7 @@ Use the tokens in `06-ui-art.md` §5 and only these components. Each has one loo
 | Select | one of many | button showing the current value, list opens below, 8 rows before it scrolls |
 | Segmented | one of 2–4 | joined buttons, selected = `--panel-hi` fill and `--text` |
 | Stepper | a whole number | value between `−` and `+`; typing allowed |
-| Field | text entry | `--h-ctl` tall, `--line-strong` border, `--steel` border on focus, `--danger` border while its value is invalid (A2) |
+| Field | text entry | `--h-ctl` tall, `--line-strong` border, `--steel` border on focus, `--danger` border while its value is invalid (A2). Values wider than the field scroll horizontally while editing; never shorten the stored value or add an ellipsis |
 | Tabs | sections of one panel | text tabs, selected = `--text` with a 2 px `--steel` underline |
 | Row | list item | `--h-row` tall, hover = `--panel-hi`, selected = 2 px `--steel` bar at the left |
 | Table | dense lists | numbers right-aligned. A header row (`--text-3`, click to sort) only where the row names its columns (`col.*`, E7) |
@@ -209,7 +209,7 @@ It ships in every build through Milestone 4 so the owner can browse the interfac
 
 **The checklist (a screen is done when all hold):**
 1. Every row for this phase is there, with its exact label. Nothing else is there: no word, icon, line, tint or frame that isn't a row, a component or sample data.
-2. No text is clipped, wrapped by accident or overlapping, in any state, at both sizes and at 150%.
+2. No text is clipped, wrapped by accident or overlapping, in any state, at both sizes and at 150%. An editable Field may intentionally scroll a value wider than itself: Home/End captures must show the complete endpoint characters and the caret, and a value-retention check must prove that no characters were lost. This exception does not apply to labels, readouts or other displayed text.
 3. Edges line up: one left edge per panel, equal gaps, the same control heights.
 4. Each control looks like its component on the Components page, and each disabled control names its reason row.
 5. The layout matches this doc's description of the screen: what is where, and in which order.

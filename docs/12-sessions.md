@@ -71,10 +71,9 @@ Every visual claim rests on an image you opened (golden rule 3). Postcards and i
 
 - **CI:** `.github/workflows/ci.yml` runs check, test and build (and, once `test:golden:browsers` exists, the golden hashes in three browsers) on every pull-request push that isn't marked `[skip ci]`. Read the result with `gh pr checks <n>`, or the commit's check runs. A red CI means something is broken: fix it before you finish.
 - **Match Cloudflare's build before the final push.** Cloudflare installs with `npm ci` on Node 22 in a clean checkout, then runs `npm run build`. Reproduce that in a throwaway checkout of your last commit: `git worktree add --detach <temp-dir>/cf-check HEAD`, run `npm ci` and `npm run build` inside it (for example with `--prefix <temp-dir>/cf-check`), then `git worktree remove --force <temp-dir>/cf-check`.
-- **Preview links.** Cloudflare Pages builds every pushed branch and posts the preview URL on the pull request and on the commit. **Read the real link** (`gh pr view <n> --comments`, or the commit's `gh api repos/<owner>/<repo>/commits/<sha>/status` and `.../check-runs`) and put it in the report.
-  - If it isn't there yet, give the predicted alias: `https://<alias>.<PROJECT>.pages.dev`. The alias is the branch name, lowercased, with non-alphanumerics turned into `-`, trimmed of leading and trailing `-`, and **truncated to 28 characters**. Say that it may take a few minutes to appear.
-  - **Project name:** `coldfront`. *(If the owner says their Cloudflare project has a different address, change this line.)*
-  - If the owner hasn't connected Cloudflare yet, say the link will appear once they do (README Part C).
+- **Playable links.** The verified owner-controlled target is `https://dex.place/coldfront/`. `npm run build:site` produces the `/coldfront/` build; `npm run publish:site -- --dist packages/client/dist --expected-sha <full-commit-sha>` publishes it to the existing site's isolated game mount, with checksummed releases and rollback receipts. Check public `version.json`, isolation headers, asset requests and actual browser play after publication. The site origin and tunnel already exist; do not create another service.
+  - Ordinary `npm run build` still produces the root-path build expected by Cloudflare Pages and the clean-checkout check.
+  - A Pages preview can also be reported if GitHub exposes an actual verified deployment URL (`gh pr view <n> --comments`, or the commit status/check-runs). Do not predict an unverified alias: `coldfront.pages.dev` belongs to an unrelated website.
 - **The interface gallery** is part of every build through Milestone 4: `<preview link>/?gallery`. Link it in any report that touches the interface.
 
 ---

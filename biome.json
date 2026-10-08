@@ -6,7 +6,7 @@
       "tsconfig.json",
       "biome.json",
       "vitest.config.ts",
-      "packages/shared/**",
+      "packages/**",
       "!**/dist",
       "!**/node_modules"
     ]

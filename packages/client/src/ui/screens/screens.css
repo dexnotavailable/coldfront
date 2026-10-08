@@ -1,0 +1,186 @@
+.cf-ui {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.cf-ui > * {
+  pointer-events: auto;
+}
+.cf-blocking {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--ink-0);
+}
+.cf-blocking-dim {
+  background: transparent;
+}
+.cf-column {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  width: var(--w-column);
+  max-width: calc(100% - var(--s-6));
+}
+.cf-column h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-28);
+  margin: 0;
+  text-align: center;
+}
+.cf-column h2,
+h2 {
+  font-size: var(--fs-16);
+  font-weight: 500;
+  margin: 0;
+}
+.cf-seed-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+.cf-seed-row .cf-field-row {
+  min-width: 0;
+  flex: 1;
+}
+.cf-loading-column {
+  text-align: center;
+}
+.cf-system-line {
+  position: relative;
+  max-width: calc(100% - var(--s-6));
+  white-space: nowrap;
+}
+.cf-hotbar-area {
+  position: absolute;
+  bottom: var(--s-4);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.cf-hotbar {
+  display: flex;
+  gap: 0;
+}
+.cf-held-name {
+  text-align: center;
+  margin-bottom: var(--s-2);
+  white-space: nowrap;
+  animation: cf-item-name 2.5s linear forwards;
+}
+.cf-debug {
+  position: absolute;
+  top: var(--s-2);
+  left: var(--s-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+  font-size: var(--fs-12);
+}
+.cf-debug .cf-stat {
+  background: var(--panel);
+  min-height: 0;
+  padding: var(--s-1) var(--s-2);
+  gap: var(--s-4);
+}
+.cf-tools-frame {
+  position: absolute;
+  top: var(--s-4);
+  bottom: calc(var(--slot) + var(--s-4) * 3 + var(--fs-14));
+  right: var(--s-4);
+  display: flex;
+  align-items: flex-start;
+  width: var(--w-panel);
+  max-width: calc(100% - var(--s-6));
+  animation: cf-tools-enter var(--t-drawer) var(--ease-out);
+}
+.cf-tools-frame > .cf-panel {
+  width: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.cf-tools-content {
+  min-height: 0;
+  overflow-y: auto;
+  /* Extend the scroll viewport into existing panel padding so the external
+     focus ring fits, while content edges and the panel's dimensions stay put. */
+  margin: calc(-1 * var(--s-1));
+  padding: var(--s-1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+.cf-tools-content > h2 {
+  margin-bottom: var(--s-2);
+}
+.cf-tools-content .cf-button {
+  flex-shrink: 0;
+}
+.cf-palette-anchor {
+  position: relative;
+  width: calc(var(--slot) * 9 + var(--s-4) * 2);
+  max-width: calc(100% - var(--s-6));
+}
+.cf-palette {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+.cf-block-grid {
+  display: grid;
+  grid-template-columns: repeat(9, var(--slot));
+  gap: 0;
+  margin: calc(-1 * var(--s-1));
+  padding: var(--s-1);
+  max-height: calc(var(--slot) * 8 + var(--s-1) * 2);
+  overflow-y: auto;
+  max-width: calc(100% + var(--s-1) * 2);
+}
+.cf-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s-2);
+}
+.cf-ui .cf-banner {
+  max-width: calc(100% - var(--s-6));
+}
+@keyframes cf-item-name {
+  0%,
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes cf-tools-enter {
+  from {
+    opacity: 0;
+    transform: translateX(var(--s-4));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.cf-tools-frame[data-exiting="true"] {
+  pointer-events: none;
+  animation: cf-tools-leave 130ms var(--ease-in) forwards;
+}
+@keyframes cf-tools-leave {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(var(--s-4));
+  }
+}
