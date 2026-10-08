@@ -72,7 +72,7 @@ COLDFRONT will charge money (paid lives), so it is a commercial product.
 
 ## 3. Units, agents and simulation (Milestone 2 onward)
 
-The owner's rule: every unit is a Minecraft-player equivalent, driven by the game's AI or possessed by the player, and possession must feel exactly like playing Minecraft.
+The owner's rule: every unit is a Minecraft-player equivalent, driven by the game's AI or possessed by the player, and a played unit moves exactly like a Minecraft player (seen in third person: `13-units-classes-power.md` §3).
 
 | Name | Licence | Take | What exactly | Link |
 |---|---|---|---|---|

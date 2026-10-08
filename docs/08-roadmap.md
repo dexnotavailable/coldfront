@@ -17,7 +17,7 @@ The goal: Big Globe-class terrain for the whole of Kaldmark, walkable in the bro
 ### 1.1 Foundations
 - **Build, in this order** (push a playable build at the end of step 3, so the owner has a link early):
   1. Monorepo scaffold (npm workspaces, Vite, TS strict, Biome, Vitest, `.node-version`); constants; deterministic math (`det.ts`) and the forbidden-token test; hashes and OpenSimplex2 noise, with measured quantiles and tests; the test world (rolling plains with a pond at y = 0, placeholder trees).
-  2. **The interface foundation, before the first screen** (`11-interface-catalogue.md` A3, A6, A7): `tokens.css`, the components the 1.1 screens use, the string table (`ui:strings`), the gallery (`/?gallery`), `ui:lint` inside `npm run check`, and `ui:shots`. Then: block registry and the first ~30 texture recipes; chunk store; worker pool; the bitwise greedy mesher with AO (ported, `10-prior-art.md` §2); the renderer: `SunLight` shadows, three's `Sky`, fog, pmndrs postprocessing; sky light (seeded from column heightmaps, then the ported light queues; coloured block light waits for 1.3); time of day (the cycle, a slider, a fixed postcard time); the player controller: first person, Minecraft's controls, and Minecraft's movement constants at a fixed 20 Hz (walk, sprint, sneak, jump, step-up 0.6 m, fly); break and place with a hotbar; the title screen, the loading bar and the menu (the rows marked 1.1).
+  2. **The interface foundation, before the first screen** (`11-interface-catalogue.md` A3, A6, A7): `tokens.css`, the components the 1.1 screens use, the string table (`ui:strings`), the gallery (`/?gallery`), `ui:lint` inside `npm run check`, and `ui:shots`. Then: block registry and the first ~30 texture recipes; chunk store; worker pool; the bitwise greedy mesher with AO (ported, `10-prior-art.md` §2); the renderer: `SunLight` shadows, three's `Sky`, fog, pmndrs postprocessing; sky light (seeded from column heightmaps, then the ported light queues; coloured block light waits for 1.3); time of day (the cycle, a slider, a fixed postcard time); the player controller: the avatar (`13-units-classes-power.md` §3.2) seen in Shoulder (`11-interface-catalogue.md` C4), Minecraft's controls, and Minecraft's movement constants at a fixed 20 Hz (walk, sprint, sneak, jump, step-up 0.6 m, fly); break and place with a hotbar; the title screen, the loading bar and the menu (the rows marked 1.1).
   3. COOP/COEP headers (Pages `_headers`, and the Vite dev and preview servers); a build that works on Cloudflare Pages; the "WebGL2 unavailable" screen; the postcard screenshot pipeline and TEST-1. **Push a playable build and open the draft PR.**
   4. Golden test and `golden:update`; atlas and slice (on the test world, `height` mode); postcards; `bench:gen`; the shipped CI workflow passing, with `test:golden:browsers` defined.
   5. Edits saved in IndexedDB; the F3 overlay, the Tools panel (F4), the block palette and every other row marked 1.1 (the system states, the toasts, F1, F2, F11, Licences); the remaining textures; `THIRD_PARTY_NOTICES.md`.
@@ -163,14 +163,15 @@ The goal: Big Globe-class terrain for the whole of Kaldmark, walkable in the bro
 
 ## Milestone 2 · A Tiny Kingdom (solo, in the browser)
 The simulation runs in a worker using `shared` code, standing in for the future server.
-- **The unit model** (`07-architecture.md` §5): controllers emit InputFrames into shared Minecraft physics (the prismarine-physics port, 20 Hz) and a shared action API; bitECS. The player's M1 controller is replaced by the same physics, so possessing anyone feels like playing Minecraft.
-- The king, 20 people and the Steward (who also teaches the basics) on a spawn site; identities, stats and skills.
+- **The unit model** (`07-architecture.md` §5): controllers emit InputFrames into shared Minecraft physics (the prismarine-physics port, 20 Hz) and a shared action API; bitECS. The player's M1 controller is replaced by the same physics, so playing anyone moves like Minecraft, from Overhead or Shoulder.
+- The king, 20 people and the Steward (who also teaches the basics) on a spawn site; identities, attributes, classes, levels and proficiencies; Knacks and Actives; the Band (`13-units-classes-power.md` §20).
+- The content pipeline: `npm run content:build` from docs 13–15 (`07-architecture.md` §7).
 - Items as physical stacks; stockpiles; hauling.
 - Pathfinding v1: walkable components per chunk section for reachability, a cached component-graph search, and the local planner ported from mineflayer-pathfinder (walk, jump, drop, pillar, short digs). Budgets by node count.
 - The job system and the Reeve.
 - Farming, woodcutting, quarrying, simple crafting.
 - Templates (house, stockpile, farm, workshop) built block by block; freeform validation for 2–3 building types.
-- Command view (select, blueprints, zones) and possession (Minecraft controls; break and place using real items).
+- Command view (select, blueprints, zones) and possession (Overhead and Shoulder; Minecraft controls; break and place using real items; skills on keys).
 - Tier-1 needs, the calendar and a first winter.
 - The interface rows marked M2 in `11-interface-catalogue.md`: the top bar, alerts, minimap, the command bar, Build and Zones, the inspector, Realm, the Ledger, Find, the key list, inventories, the Dig tool, the death screen, and the cut's rule that you see underground only where your people have been (its C2).
 
@@ -178,7 +179,8 @@ The simulation runs in a worker using `shared` code, standing in for the future 
 - Medium chains (bread, tools, iron, weapons) and workstations; tool wear, quality, spoilage and preservation.
 - Carts, roads, routes (drawn and auto-generated) and the Quartermaster; several settlements.
 - Money: mint, wages, markets, taxes, treasury, pay chests.
-- Needs tiers 2–3 and loyalty; more officials.
+- Needs tiers 2–3 and loyalty; more officials, with the offices and posts of `13-units-classes-power.md` §13.
+- The other civilian classes; deeds, Resolve and Ultimates; Tempered and Elite.
 - Wanderers, neutral villages, reputation.
 
 ## Milestone 4 · A hostile world
@@ -186,25 +188,26 @@ The simulation runs in a worker using `shared` code, standing in for the future 
 - Support and collapse; decay and repair.
 - The network (watchtowers, riders, signal towers, connection to the capital) and news delivery.
 - Enemies: musters, roamers, scouts and reports, war parties, occupation.
-- Combat basics; companies and Captains; the officer command radius.
+- Fighting (`13-units-classes-power.md` §5–§6); the military classes, roles and ranks; Champions and Trials; companies and Captains; the officer command radius.
 - The first Seat and Warden: Marshal Varn.
 
 ## Milestone 5 · Multiplayer
 - The authoritative, self-hosted server (Node 24 LTS, `ws`, better-sqlite3): protocol, persistence, Discord login (redirect flow).
 - Many kings; interest management; simulation tiers T0–T3 (`05-systems.md` §22).
-- PvP, morale and surrender, capture, swaying people; Marshals and armies; siege engines.
+- PvP, morale and surrender, capture, swaying people; Commanders, Marshals and armies; siege engines; the advanced classes.
 - Market board and trading posts; diplomacy.
 - Self-hosting guide and Docker setup; a 10–20 player playtest.
 
 ## Milestone 6 · Depth and mana
 - The mana grid: crystals, ley wells, generators, conduits, relays, cells, wards.
-- Mages and the Academy; heroes and abilities.
+- Mages and the Academy; the mage classes and runes; Paragons and the Marrow Rite.
 - Lifts and warded lifts; ascent sickness.
 - Hand-built factories (machines, conveyors).
 - Layer 1 hazards, enemies and Wardens; Tier II Wardens; Ibara eruptions.
 
 ## Milestone 7 · The Season
 - All 29 Wardens, ~100 generals and the King Below; content for Layers 2–3.
+- Calamities: the Great Hearth, the oath, the Broken Crown and the Tier V relics (`13-units-classes-power.md` §15).
 - The season loop (Thaw → Front → Frost → reset), scoring, leaderboards, achievements, the Chronicle and the Ledger.
 - Lives, sworn units for eliminated players, late joining, inactive decay, anti-alt measures.
 - Bot load tests toward 100 kings; admin tools.

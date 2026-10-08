@@ -11,7 +11,7 @@ Prompts 1–7 run whole phases. Prompts 8–10 are for the interface and the cam
 In Claude Code, type `/effort ultracode` and press Enter before pasting it. In Codex, just paste it.
 
 ```
-You're starting COLDFRONT: a seasonal multiplayer voxel civilization builder that runs in the browser. In one line: Minecraft extended downwards, with Big Globe-class terrain and a bird's-eye view, where every unit is a Minecraft-player equivalent run by the game, and possessing one feels exactly like playing Minecraft. This repository contains only the design docs so far. You're writing the first code.
+You're starting COLDFRONT: a seasonal multiplayer voxel civilization builder that runs in the browser. In one line: Minecraft extended downwards, with Big Globe-class terrain and a bird's-eye view, where every unit is a Minecraft-player equivalent run by the game, and playing one moves exactly like Minecraft, seen from above or over its shoulder. This repository contains only the design docs so far. You're writing the first code.
 
 I'm the owner. I don't code. I make design calls; you make every technical call.
 
@@ -178,7 +178,7 @@ Done when npm run ui:lint and npm run ui:shots pass and your report shows the be
 ```
 <The Command camera / switching between the two views / a control in Command view> feels <too fast, floaty, jerky, stiff…> when I <what you were doing>.
 
-Only numbers marked (tune) in docs/11-interface-catalogue.md Part C may change. The first-person view is Minecraft's and is fixed (its B4): if that's what I'm describing, change nothing and tell me which setting adjusts it. Otherwise change at most two numbers, in the doc and the code together, keep the tests in C7 passing as they are, and report each number as old → new with the steps to try it, so I can ask for more or less.
+Only numbers marked (tune) in docs/11-interface-catalogue.md Part C may change. Possess movement is Minecraft's and is fixed (its B4): if that's what I'm describing, change nothing and tell me which setting adjusts it. Otherwise change at most two numbers, in the doc and the code together, keep the tests in C7 passing as they are, and report each number as old → new with the steps to try it, so I can ask for more or less.
 ```
 
 ---

@@ -14,7 +14,7 @@ The owner's brief: plan the cameras and menus in full, and list **every** screen
 ## A1. The law
 
 1. **Only what is listed exists.** A control, screen, panel or sentence that isn't in this doc doesn't ship. If a task seems to need one, first reuse a listed one. If nothing fits, Part G may gain **a control row**, **a key-binding row**, or **a message row** (a fact shown in an Alert, Note, Toast, Banner or Modal when something happens): add it in the same change, build exactly that row, and list it under "Decisions you may want to check" in the report. Part G never gains text that sits on a screen to explain it, and a listed row is never reworded unless the owner asked: report the gap instead.
-2. **Every word on screen is a row in these tables, or game content.** Game content is what is defined in data files beside its numbers: the names of people, places, kingdoms, regions, layers, Wardens and what feeds them, items, blocks, goods and their groups, buildings, roles, skills, traits, abilities, needs, conditions, hazards, world events, crops, kits, transport kinds, deeds, honours, banners, looks and crest parts, plus the lore lines of `03-lore.md` (region stories, last words, inscriptions, item flavour). Content follows A2 as well: a name is 3 words at most, and content never carries a subtitle, a hint or an instruction. Every other word is a row here: labels, tooltips, messages, units, column headers, key names and the game's fixed terms (E7). Interface code contains no text literals (A6).
+2. **Every word on screen is a row in these tables, or game content.** Game content is what is defined in data files beside its numbers: the names of people, places, kingdoms, regions, layers, Wardens and what feeds them, items, blocks, goods and their groups, buildings, classes, skills, proficiencies, traits, needs, conditions, hazards, world events, crops, kits, transport kinds, deeds, honours, banners, looks and crest parts, plus the lore lines of `03-lore.md` (region stories, last words, inscriptions, item flavour). Content follows A2 as well: a name is 3 words at most, and content never carries a subtitle, a hint or an instruction. Every other word is a row here: labels, tooltips, messages, units, column headers, key names and the game's fixed terms (E7). Interface code contains no text literals (A6).
 3. **Nothing ships early.** No disabled "later" buttons, no empty tabs, no sample data in a real build.
 4. **Nothing decorative.** No illustration, divider, badge, counter, icon or animation that this doc doesn't call for.
 
@@ -24,7 +24,7 @@ The owner's rule: no filler text. Explanations live in tooltips.
 
 - **A screen shows a title (optional, 3 words at most), its controls and its data. Nothing else.** No subtitle, tagline, intro sentence, helper line under a control, section note, caption, footer or tip. No small uppercase label above a title.
 - **Labels:** 3 words and 24 characters at most. Sentence case. No full stop. A noun for a thing ("Render distance"), a verb for an action ("Demolish").
-- **Tooltips carry the explanation.** One line, 100 characters at most. Say what the control does first; add a cost, limit or condition after a `·`. No full stop. Never repeat the label. The key binding is added by the tooltip component from the **Key** column, so don't type it into the text. If one line can't explain a control, the control is wrong: raise it in the report. An icon's tooltip shows its Label above that line. Two tooltips are assembled from several rows: the building tooltip (D3) and the item tooltip (D6).
+- **Tooltips carry the explanation.** One line, 100 characters at most. Say what the control does first; add a cost, limit or condition after a `·`. No full stop. Never repeat the label. The key binding is added by the tooltip component from the **Key** column, so don't type it into the text. If one line can't explain a control, the control is wrong: raise it in the report. An icon's tooltip shows its Label above that line. Three tooltips are assembled from several rows: the building tooltip (D3), the item tooltip (D6) and the skill tooltip (D4).
 - **A control that can't be used is hidden.** It is shown disabled only where its row says so. Its tooltip is then replaced by the reason, which is the `why.*` or `note.*` row that the row names (E2, E3), in the form "No Envoy appointed".
 - **A Field with an invalid value** shows its one-line reason directly under it in `--danger` for as long as it is invalid. This is the only text that ever sits under a control.
 - **Messages** (alerts, notes, errors): 14 words at most. The fact first, then what to do if that isn't obvious. No full stop.
@@ -65,7 +65,7 @@ Use the tokens in `06-ui-art.md` §5 and only these components. Each has one loo
 | Spinner | waiting inside a control or a panel | a 16 px ring in `--text-2`, shown only after 400 ms of waiting |
 | Modal | confirmations, fatal errors | centred panel 360 px wide, world dimmed 40% |
 | Card | discovery card, Warden card | text over the world with no panel (D9) |
-| Wheel | the order wheel | four wedges around the crosshair (D6) |
+| Wheel | the order wheel | four wedges around the crosshair, or around the cursor in Overhead (D6) |
 
 **Layout**
 - One column of controls per panel. Settings rows put the label left and the control right.
@@ -107,7 +107,7 @@ Use the tokens in `06-ui-art.md` §5 and only these components. Each has one loo
 5. **The world.** The bindings of B3 for the current mode.
 
 - **Panels on the play screen never take the keys.** Drawers, the inspector, the alert stack and the Tools panel are worked with the mouse. While they are open W A S D still move, and a click on one of their buttons doesn't leave focus on it, so Space and Enter can never press a button by accident. A text field inside one takes the keys only after a click (level 1).
-- **The pointer in Possess** is locked only while the world has the keys. Anything in levels 1–4 frees it, and closing it locks it again (B1 says when the browser makes that wait for a click). The Tools panel frees it too, without taking the keys.
+- **The pointer in Shoulder** (C4) is locked only while the world has the keys; Overhead never locks it. Anything in levels 1–4 frees it, and closing it locks it again (B1 says when the browser makes that wait for a click). The Tools panel frees it too, without taking the keys.
 
 **Esc closes one thing per press,** the first of these that applies: a tooltip → an open select → key capture → chat, Find or another focused text field → a modal → a blocking screen that can be left (the key list goes back to settings; settings goes back to where it was opened from; the menu resumes) → postcard mode → the Tools panel → a drag in progress → order targeting → the active tool → the open drawer → the selection (the inspector closes). With nothing left, it opens the menu.
 
@@ -206,7 +206,7 @@ It ships in every build through Milestone 4 so the owner can browse the interfac
 
 # Part B · Input
 
-Two modes share one keyboard. **Command view** is a strategy game: cursor visible, camera from above. **Possess** is Minecraft: pointer locked, first person. Tab switches between them. The **free camera** (owner tool through Milestone 4, and the only body in Milestone 1) uses the Possess keys.
+Two modes share one keyboard. **Command view** is a strategy game: cursor visible, camera from above. **Possess** plays one unit as Minecraft does, seen from above (Overhead) or over its shoulder (Shoulder), never through its eyes (C4). Tab switches between them. The **free camera** (owner tool through Milestone 4, and the only body in Milestone 1) uses the Possess keys.
 
 ## B1. What a browser allows
 
@@ -245,9 +245,9 @@ These gestures are fixed (one setting swaps the two drag buttons, D8).
 |---|---|
 | Left click | select. With a tool active: place |
 | Left drag | box-select companies. With a tool active: draw a line or an area |
-| Left double-click | on a company: select every company with the same kit on screen. On anything else: centre on it and follow it |
+| Left double-click | on a company: select every company of the same class on screen. On anything else: centre on it and follow it |
 | Shift + left click | add to the selection, or remove from it |
-| Right click | the first of these that applies: cancel the drag in progress; cancel order targeting or the active tool; with companies selected, order them (the target decides: ground = move, enemy = attack, your building = garrison, your caravan = escort); clear the selection. It never closes a drawer |
+| Right click | the first of these that applies: cancel the drag in progress; cancel order targeting or the active tool; with a person or companies selected, order them (the target decides: ground = move; enemy = attack; your building = garrison, or for a person, work there; a block, dig mark or blueprint = work it, for a person; your caravan = escort; one of your people = follow); clear the selection. It never closes a drawer |
 | Shift + right click | add the order to the queue |
 | Right drag | **orbit**: left–right turns the view, up–down tilts it. It starts only once the button has been down for 120 ms *and* has moved 6 px. A right press that moved more than 6 px is never a click, however short it was |
 | Middle drag | **grab the ground and pan** |
@@ -310,7 +310,7 @@ Every row here appears on the key list (D8) under its group, with **Action** as 
 
 Control groups are fixed: Ctrl + 1–9 assigns the selected companies, 1–9 selects that group, a second press within 300 ms jumps the camera to it, Shift + 1–9 adds the selection to the group.
 
-### Possess (Minecraft's defaults)
+### Possess
 
 | ID | Action | Default | Notes | Since |
 |---|---|---|---|---|
@@ -323,22 +323,28 @@ Control groups are fixed: Ctrl + 1–9 assigns the selected companies, 1–9 sel
 | `key.pos.sprint` | Sprint | Left Ctrl | see B1 | 1.1 |
 | `key.pos.attack` | Attack or break | Left mouse | hold to keep breaking | 1.1 |
 | `key.pos.use` | Use or place | Right mouse | hold to repeat every 4 ticks; raises a shield; with Sneak held it places against a container or workstation instead of opening it | 1.1 |
-| `key.pos.pick` | Pick block | Middle mouse | selects the hotbar slot that holds the block you look at, bringing it there from the pack if need be | 1.1 |
+| `key.pos.pick` | Pick block | Middle mouse | selects the hotbar slot that holds the block you aim at, bringing it there from the pack if need be. In Overhead, a middle click that doesn't become a drag | 1.1 |
 | `key.pos.inventory` | Inventory | E | | 1.1 |
 | `key.pos.drop` | Drop item | Q | hold to repeat every 4 ticks; with Left Ctrl, the whole stack (B1) | M2 |
 | `key.pos.swap` | Swap hands | F | | M2 |
-| `key.pos.view` | Change view | F5 | first person → behind → in front | 1.1 |
-| `key.pos.ability-1` | Ability 1 | Z | | M6 |
-| `key.pos.ability-2` | Ability 2 | X | | M6 |
-| `key.pos.ability-3` | Ability 3 | C | | M6 |
-| `key.pos.ability-4` | Ability 4 | V | | M6 |
-| `key.pos.ability-5` | Ability 5 | R | | M6 |
-| `key.pos.ability-6` | Ability 6 | G | | M6 |
+| `key.pos.view` | Change view | F5 | Overhead ↔ Shoulder (C4) | 1.4 |
+| `key.pos.turn-left` | Turn left | ← | Overhead: hold to turn, tap to snap 45° | 1.4 |
+| `key.pos.turn-right` | Turn right | → | Overhead | 1.4 |
+| `key.pos.tilt-up` | Tilt up | ↑ | Overhead: toward the horizon | 1.4 |
+| `key.pos.tilt-down` | Tilt down | ↓ | Overhead: toward straight down | 1.4 |
+| `key.pos.active` | Active skill | Z | hold to aim, release to use; a tap uses it at once (`13-units-classes-power.md` §3.6) | M2 |
+| `key.pos.ultimate` | Ultimate | X | | M3 |
+| `key.pos.art` | Art | C | | M5 |
+| `key.pos.relic-1` | First relic | V | | M4 |
+| `key.pos.relic-2` | Second relic | R | | M6 |
+| `key.pos.cataclysm` | Cataclysm | G | hold 1 s. For the Oathsworn, calls the fire | M7 |
+| `key.pos.band-prev` | Previous in band | , | the previous member of your band (C5) | M2 |
+| `key.pos.band-next` | Next in band | . | | M2 |
 | `key.pos.orders` | Order wheel | B | hold, move the mouse, release. Captains and Marshals only | M4 |
 | `key.pos.office` | Office | K | the possessed official's panel | M3 |
 | `key.pos.king` | Return to king | Home | possess the king | M2 |
 
-The hotbar is fixed: 1–9 select a slot, and the wheel moves one slot per step and wraps around at the ends (wheel up = the slot to the left, as in Minecraft).
+The hotbar is fixed: 1–9 select a slot. In Shoulder the wheel moves one slot per step and wraps around at the ends (wheel up = the slot to the left, as in Minecraft); in Overhead the wheel zooms (C4).
 
 ### Everywhere
 
@@ -365,25 +371,25 @@ Esc is fixed (A4).
 
 Flying is fixed, as in Minecraft's creative mode: double-tap Space within 7 ticks to start or stop, Space rises, Left Shift sinks, sprint doubles the speed.
 
-## B4. Possess is Minecraft
+## B4. Possess plays like Minecraft
 
-The owner's rule: possessing a unit feels exactly like playing Minecraft: Java Edition with default settings. Where this doc is silent, do what Minecraft does. The details that carry the feel:
+The owner's rule: a played unit moves, digs, builds and fights like a Minecraft player in Java Edition with default settings, seen from outside (`13-units-classes-power.md` §3). Where this doc is silent, do what Minecraft does, except the camera, which is C4's. The details that carry the feel:
 
-- **Looking.** One mouse count turns the view `1.2 × (0.6 s + 0.2)³` degrees, where `s` is the sensitivity setting from 0 to 1 (default 0.5, shown as 100%). That is 0.15° per count at the default. Pitch stops at straight up and straight down. No smoothing, no acceleration.
+- **Looking** (Shoulder). One mouse count turns the view `1.2 × (0.6 s + 0.2)³` degrees, where `s` is the sensitivity setting from 0 to 1 (default 0.5, shown as 100%). That is 0.15° per count at the default. Pitch stops at straight up and straight down. No smoothing, no acceleration.
 - **Moving** uses the per-tick constants in `07-architecture.md` §6: walk 4.317 m/s, sprint 5.612, sneak 1.31, jump 1.25 m.
 - **Sprinting stops** when you let go of forward, hit a wall at more than 8°, land a sprint hit, or raise a shield.
 - **Breaking.** Hold to break. Ten crack stages show on the block. After a block breaks, the next one starts 6 ticks later. Progress resets if you look away or let go.
 - **The free camera breaks and places as creative mode does:** a block breaks at once (one every 6 ticks while the button is held, no cracks), blocks never run out, picking a block gives it from nowhere, and reach is 5 m.
-- **Placing.** The new block goes against the face you clicked. It fails silently if it would overlap a person. Hold to place again every 4 ticks.
+- **Placing.** The new block goes against the face you aim at, and its ghost (`hud.ghost`) shows there first. It fails silently if it would overlap a person. Hold to place again every 4 ticks.
 - **Reach:** 4.5 m for blocks, 3 m for people and creatures.
-- **Attacking.** A swing has a cooldown from the weapon's attack speed. Damage scales with how far the cooldown has recovered. The indicator under the crosshair shows it (D6).
-- **The target outline** is a thin dark line around the block you look at.
-- **F5** cycles first person → 4 m behind → 4 m in front. The camera slides in when a block is in the way. No crosshair outside first person.
+- **Attacking.** A swing has a cooldown from the weapon's attack speed. Damage scales with how far the cooldown has recovered. The indicator under the crosshair, or under the cursor in Overhead, shows it (D6).
+- **The target outline** is a thin dark line around the block or creature the unit would touch (C4).
+- **F5** switches between Overhead and Shoulder (C4). There is no first-person view and no view from the front.
 - **F1** hides the interface and the target outline.
 
-- **Stamina stands where hunger did.** Sprinting and swimming spend it and rest refills it (about 6 s from empty *(tune)*). At zero the unit can't sprint. Nothing else depends on it until combat arrives in Milestone 4.
+- **Stamina stands where hunger did.** Sprinting and swimming spend it and rest refills it (about 6 s from empty *(tune)*). At zero the unit can't sprint. Skills spend it from Milestone 2 (`13-units-classes-power.md` §11.2), and fighting from Milestone 4.
 
-Minecraft features this game doesn't have are absent: experience, hunger, the recipe book, advancements, the creative item list (the block palette in D12 stands in for it through Milestone 4).
+Minecraft features this game doesn't have are absent: experience orbs and enchanting tables (people level by `13-units-classes-power.md` §7), hunger, the recipe book, advancements, the creative item list (the block palette in D12 stands in for it through Milestone 4).
 
 ## B5. Rebinding
 
@@ -440,7 +446,7 @@ The lens is a 40° vertical field of view, whatever the window's shape; resizing
 
 **Following.** `insp.follow`, or a left double-click on anything but a company (B2), makes the focus track that thing (150 ms time constant). Zooming and orbiting keep the follow; any pan, grab or jump ends it. If the followed thing dies or leaves your coverage, the follow ends where it was last seen.
 
-**What changes with distance.** People and carts are drawn as models below `d` = 400 m and as small role-coloured markers above it. Above 1.5 km, settlements show a name label and one marker. World badges (D2) hide above 400 m.
+**What changes with distance.** People and carts are drawn as models below `d` = 400 m and as small markers above it (`--text` for civilians, `--steel` for soldiers). Above 1.5 km, settlements show a name label and one marker. World badges (D2) hide above 400 m.
 
 ## C2. Looking underground: the cut
 
@@ -470,32 +476,43 @@ Engineering note: a clip height in the terrain material plus a stencil-capped se
 
 A jump of less than `3 × d` glides in 250 ms. A longer one cuts, with a 120 ms fade. Yaw and the tilt offset don't change in a jump (bookmarks excepted). The cut follows the rule in C2.
 
-## C4. The Possess camera
+## C4. The Possess cameras
 
-Minecraft's camera (B4), plus:
+A played unit is always seen from outside, from one of two cameras (`13-units-classes-power.md` §3). F5 switches between them while playing. Play opens in the one used last; the first time on a device, in Overhead. The camera never goes inside a unit's head, in any mode.
 
-- **Field of view:** 70° by default (30°–110°, `set.video.fov`). Sprinting widens it by 15% and flying by 10%, eased over 150 ms, scaled by `set.ui.fov-effects`.
-- **Eye height:** 1.62 m standing, 1.27 m sneaking, changing over 100 ms.
-- **View bobbing** as in Minecraft, switched by `set.ui.bobbing`.
-- **The hand.** The held item or block shows at the lower right in first person and swings on attack, break and place.
-- **Riding:** the eye sits at the rider's height, and the mount turns with the view.
-- **Damage:** Minecraft's hurt tilt (about 14° of roll, gone in 10 ticks), switched off by reduced motion.
-- **Under water:** the fog and tint of the fluid; nothing else changes.
+**Overhead** is the Command camera of C1, locked on the unit:
+- The focus is the unit's feet + 1 m, following with a 100 ms time constant. `d` runs from 10 to 80 m (24 m to start), the lens is C1's 40°, and the cursor stays free.
+- The tilt is the player's own, 30°–85° (55° to start), not C1's curve. ← and → turn (100° a second while held, a 45° snap on a tap), ↑ and ↓ tilt (60° a second), and a middle drag orbits once the button has been down 120 ms *and* moved 6 px, as B2's right drag does. The wheel zooms toward the unit, continuously as in C1. A middle click that doesn't become a drag picks a block.
+- Under cover, the cut follows the unit (C2's rule, over a 3 × 3 patch of columns around it), easing over 150 ms. PageUp and PageDown move it by hand until the unit next walks under or out of cover.
+- The camera keeps 6 m above the surface under it (C1) and never shakes.
+
+**Shoulder** is a third-person camera with the pointer locked:
+- It orbits a pivot 1.75 m above the unit's feet (1.40 m while sneaking), 3.6 m behind it and 0.55 m to its right, turned by the mouse with B4's sensitivity. Pitch stops at 80° up and 80° down.
+- **Field of view:** `set.video.fov`, 70° by default (30°–110°). Sprinting widens it by 8% and flying by 6%, eased over 150 ms and scaled by `set.ui.fov-effects`.
+- **Walls.** When something solid lies between the pivot and the camera, the camera slides in over 50 ms (and back out over 200 ms), never closer than 1.2 m, and the shoulder offset shrinks in proportion. When even 1.2 m isn't free, the blocks between the camera and the pivot are clipped away, with C2's clip, for as long as that lasts. Within 2 m the avatar is drawn at 35% opacity.
+- **Riding:** the pivot rises to the rider's head, and the mount turns with the camera's yaw.
+- **Under water:** the fluid's fog and tint; nothing else changes.
+- Nothing shakes, rolls or bobs the camera. A hit flashes the avatar red, as in Minecraft.
+
+**Aiming, in both** (`13-units-classes-power.md` §3.3–§3.5). The aim point is what the crosshair's ray (Shoulder) or the cursor's ray (Overhead, C1's rule) meets first beyond the unit, up to 64 m away. The unit acts along the ray from its eyes to that point, within its reach. The target outline, the placement ghost (`hud.ghost`) and `hud.target` show only what the unit would really touch.
 
 ## C5. Switching between them
 
-**Tab** switches, and only while the world has the keys (A4). In Command view it possesses the first of these that can be possessed: the selected person, the last one possessed, the king. In Possess it returns to Command view. A second Tab during a transition is ignored. Tab cancels a drag or an active tool before it switches.
+**Tab** switches between Command view and Possess, and only while the world has the keys (A4). In Command view it possesses the first of these that can be possessed: the selected person, the last one possessed, the king. In Possess it returns to Command view. A second Tab during a transition is ignored. Tab cancels a drag or an active tool before it switches.
 
-- **Into Possess.** The click or key press requests pointer lock at once (it must happen in the gesture). If the unit is on screen, within 400 m of the camera and not hidden by the cut, the camera flies to 4 m behind the unit's head in 600 ms, easing in and out, while the lens widens from 40° to the Possess field of view; then it moves into the head as the interface cross-fades in 200 ms. Otherwise it fades through black in 250 ms. If the lock is refused, the switch still happens and `sys.play` waits for a click (B1).
-- **Out of Possess.** Release the pointer. The camera pulls back and up from the unit over 500 ms, the lens narrowing to 40°, to a Command view centred on it: `d` = 60 m, yaw = the way the unit was facing, a tilt offset of 0, and the cut set automatically (C2). The unit's own AI takes over after half a second, so the body doesn't lurch away at once.
-- **If the possessed unit dies,** the view holds for one second and then leaves Possess in the same way, centred on where it fell. If it was the king, the death screen follows (D9).
+- **Into Overhead.** Nothing locks. The focus glides to the unit and `d` eases to the last Overhead distance (24 m to start) over 400 ms, keeping the yaw, while the tilt eases to the Overhead tilt. Then the unit takes the keys.
+- **Into Shoulder.** The click or key press requests pointer lock at once (it must happen in the gesture). If the unit is on screen, within 400 m of the camera and not hidden by the cut, the camera flies to the shoulder position in 600 ms, easing in and out, while the lens widens from 40° to the field of view; the interface cross-fades in 200 ms. Otherwise it fades through black in 250 ms. If the lock is refused, the switch still happens and `sys.play` waits for a click (B1).
+- **F5 while playing** switches between Overhead and Shoulder over 400 ms in the same way. A key press counts as a user action, so going to Shoulder can lock the pointer.
+- **, and .** switch to the previous or next member of the Band (`13-units-classes-power.md` §3.8), skipping anyone who can't be possessed: in Overhead the focus moves to them as a jump does (C3); in Shoulder the camera moves as it does into Shoulder.
+- **Out of Possess.** From Overhead, the focus is let go where it is and `d` is kept (24 m at least). From Shoulder, the pointer is released and the camera pulls back and up from the unit over 500 ms, the lens narrowing to 40°, to a Command view centred on it: `d` = 60 m, yaw = the way the unit faced, a tilt offset of 0, and the cut set automatically (C2). Either way the unit's own AI takes over after half a second, so the body doesn't lurch away at once.
+- **If the possessed unit goes Downed or dies,** the view holds for one second and then leaves Possess in the same way, centred on where it fell. If it was the king and the king dies, the death screen follows (D9).
 - **Who can be possessed** is decided by `05-systems.md` §3–§4. A refusal shows a note at the cursor (`note.possess.*`) and nothing moves.
-- **With reduced motion,** both directions are a 150 ms fade.
+- **With reduced motion,** every one of these is a 150 ms fade.
 
 ## C6. Other cameras
 
 - **The map** (D7) is flat and always north-up. Left drag pans. The wheel zooms toward the cursor, continuously as in C1, from the whole world on screen down to 1 m per pixel. W A S D pan.
-- **The free camera** (owner tool, D12) is a Minecraft player in creative mode (B4): it walks, flies, breaks and places with endless blocks. It is the only body in Milestone 1.
+- **The free camera** (owner tool, D12) is an avatar in creative mode (B4): it walks, flies, breaks and places with endless blocks, seen in Shoulder, and from phase 1.4 in Overhead too. It is the only body in Milestone 1.
 - **King's view in Milestone 1** is the Command camera of C1 with nothing to select: Tab switches between it and the free camera. Going in, the Command camera centres on the free camera (with the cut set as C2 says when it was under cover). Coming back, the free camera stands on what is drawn at the focus.
 - **Postcard mode** is specified in `04-terrain.md` §14.3.
 
@@ -518,8 +535,10 @@ Unit tests on the camera maths (no rendering):
 - A jump shorter than `3 × d` glides and a longer one cuts; neither changes yaw or the tilt offset.
 - The cut: a point above it is never hit by a ray; the automatic cut leaves the target's own space open.
 - The same inputs at 30 and 144 frames a second end at the same view (within 1%).
+- Shoulder: the camera is never closer than 1.2 m to its pivot, never inside a block, and never at the unit's eyes; the aim point is never nearer the camera than the unit.
+- Overhead: after 300 ms of steady movement the focus is within 0.5 m of the unit's feet + 1 m, and the outlined block is always within reach and in line of sight from the unit's eyes.
 
-One Playwright test drives the real page through `window.__cf.camera` (a read-only debug hook): pan, zoom, orbit, reset, and Tab in and out.
+One Playwright test drives the real page through `window.__cf.camera` (a read-only debug hook): pan, zoom, orbit, reset, Tab in and out, and F5 both ways.
 
 ---
 
@@ -795,7 +814,7 @@ A side panel: `route.new` at the top, then the list.
 
 One Panel, 360 px wide, at the right edge between the top bar and the command bar. It shows whatever is selected and is the only place a thing's actions live.
 
-- **Header:** the name (`--fs-16`), then one line of kind in `--text-2`, made only of content and numbers (for a person: role, age, home, as in "Smith · 34 · Stenholm"). `insp.follow`, `insp.rename` (where renaming is allowed) and `insp.close` sit at the right.
+- **Header:** the name (`--fs-16`), then one line of kind in `--text-2`, made only of content and numbers (for a person: class and level, age, home, as in "Smith 14 · 34 · Stenholm"). `insp.follow`, `insp.rename` (where renaming is allowed) and `insp.close` sit at the right.
 - **Tabs** appear only when they have something to show. Most things have Overview alone.
 - **Order inside a tab:** state chip, Bars, Stats, controls, then actions. The one primary action is first among the actions.
 - **Places and people named in a row are links:** a click selects them and moves the camera.
@@ -822,8 +841,9 @@ One Panel, 360 px wide, at the right edge between the top bar and the command ba
 | `person.needs` | bar | Needs met | The share of their tier's needs you are meeting | — | | M2 |
 | `needs.list` | table | Needs | — | — | under that Bar: each need of their tier (content), ticked or crossed | M2 |
 | `person.tier` | chip | {tier} | — | — | one of the `tier.*` words (E7) | M3 |
-| `person.condition` | chip | {condition} | — | — | one chip per condition (content): an illness, a wound, ascent sickness, a mage's burn. The tooltip is its effect | M4 |
-| `person.rank` | chip | {rank} | — | — | mages: one of the `rank.*` words (E7) | M6 |
+| `person.condition` | chip | {condition} | — | — | one chip per condition (content, `13-units-classes-power.md` §6). The tooltip is its effect | M4 |
+| `person.rank` | chip | {rank} | — | — | their trade rank in their class's trade, or a soldier's military rank: one of the `rank.*` words (E7), or their office (`office.*`) | M2 |
+| `person.grade` | chip | {grade} | — | — | one of the `grade.*` words (E7) | M2 |
 | `person.sworn` | chip | Sworn unit | Played by a fallen king | — | on a sworn unit in your kingdom | M7 |
 | `person.sex` | stat | Sex | — | — | value: one of the `sex.*` words (E7) | M2 |
 | `person.age` | stat | Age | — | — | | M2 |
@@ -839,14 +859,36 @@ One Panel, 360 px wide, at the right edge between the top bar and the command ba
 | `stat.will` | stat | Will | Steadier loyalty and morale | — | | M2 |
 | `stat.affinity` | stat | Affinity | Magic · 15 or more can train as a mage | — | | M2 |
 | `person.traits` | chip | {trait} | — | — | one chip per trait; the tooltip is the trait's effect (content) | M2 |
-| `person.role` | select | Role | The work they look for · listed best fit first | — | | M2 |
-| `person.pin` | toggle | Pinned | Keeps this role until you unpin them | — | | M2 |
+| `person.class` | select | Class | The trade they work · listed best fit first | — | every class they could take (content). A military class sends them to drill first | M2 |
+| `person.pin` | toggle | Pinned | Keeps this class until you unpin them | — | | M2 |
+| `person.level` | stat | Level | — | — | | M2 |
+| `person.xp` | bar | Experience | Played people learn three times as fast | — | toward the next level | M2 |
+| `person.promote` | button | Promote | Raise them to the next grade · it uses one of your places | — | shown at the top level of their grade. Disabled while its gate isn't met, with the reason (`why.grade` or `why.places`) | M3 |
+| `person.points` | stat | Points | Attribute points to place · one comes every five levels | — | shown while they have any | M2 |
+| `stat.raise` | icon | Raise | Puts one point here · it can't be undone | — | beside each of the six Stats while `person.points` shows | M2 |
+| `person.role` | select | Role | Their place in a fight | — | soldiers only | M4 |
+| `role.assault` | row | Assault | Hits harder and presses in · may swear the oath from Champion | — | option | M4 |
+| `role.guard` | row | Guard | Tougher, blocks more and keeps a ward safe | — | option | M4 |
+| `role.support` | row | Support | Stronger heals and longer buffs · stays behind the line | — | option | M4 |
+| `role.secondary` | row | Secondary | Finishes and fills gaps · works a day trade when stood down | — | option | M4 |
+| `person.ward` | select | Ward | Who or what this Guard keeps safe | — | Guards only: a person, a building or a banner, or click one in the world | M4 |
+| `person.daytrade` | select | Day trade | The civilian work they do when stood down | — | Secondary soldiers only | M4 |
+| `person.advanced` | select | Advanced class | Their path as an Elite soldier · it can't be changed | — | shown once, on promotion to Elite | M5 |
+| `person.speciality` | select | Speciality | Faster, finer work on one line · slower on the rest | — | Elite civilians | M3 |
+| `person.background` | select | Background | A Knack kept from an earlier trade | — | the classes they reached Adept in | M3 |
+| `person.deed` | bar | Deed | {deed} | — | progress toward their class's deed (content); hidden once it's done | M3 |
+| `person.resolve` | bar | Resolve | Fills as they work, fight or heal · an Ultimate spends it all | — | | M3 |
+| `person.trialinfo` | stat | Trial | — | — | the Trial their class must pass (content), shown at the top of Elite | M4 |
+| `person.trial` | button | Begin trial | Possess them and take the Trial · winning it makes them a Champion | — | disabled with no Champion place free (`why.places`) | M4 |
+| `person.flame` | bar | Flame | Their second life · their upkeep feeds it | — | Calamities only | M7 |
+| `person.oath` | button | Swear the oath | A Calamity for one day · then they burn | — | danger button; *confirm* (`confirm.oath`). Assault soldiers of Champion grade or higher, at a hearth-shrine, with the king or the High Hearthkeeper near | M7 |
+| `person.fire` | button | Call the fire | — | — | danger button; *confirm* (`confirm.fire`). The Oathsworn only | M7 |
+| `person.band` | toggle | In your band | Keeps them on the band list for quick switching | — | eight at most | M2 |
 | `person.appoint` | select | Appoint | Give them an office | — | lists the offices they could hold (`office.*`, E7); choosing one appoints them. Hidden when none is open to them | M3 |
-| `person.hero` | button | Make hero | Opens their ability slots · a hero's death is permanent | — | | M6 |
-| `person.train` | select | Train | Send them to learn an ability or the mage's craft | — | lists what your trainers and Academy can teach them. Disabled with neither (`why.trainer`) | M6 |
-| `person.training` | bar | Training | How far along they are | — | while they are learning something | M6 |
-| `person.abilities` | slot | Abilities | — | — | Work tab: the abilities they know; a hero's empty slots show too | M6 |
-| `person.skills` | table | Skills | — | — | Work tab: every skill above 0 as a Bar, highest first | M2 |
+| `person.training` | bar | Training | How far along they are | — | while they drill for a military class | M4 |
+| `person.skills` | slot | Skills | — | — | Work tab: one Slot per skill they hold (Knack, Active, Ultimate, Art, Mastery, relics, Cataclysm). The tooltip is the skill tooltip: its name, its slot word (`slot.*`), its line (content), then the `tip.skill.*` lines that apply. Clicking a ready active skill uses it, turning the cursor into a target where it needs one. A locked Slot shows what opens it (`why.skill`) | M2 |
+| `person.autocast` | toggle | On their own | They use this skill when it suits · Ultimates start off | — | under each active skill's Slot | M2 |
+| `person.proficiencies` | table | Proficiencies | — | — | Work tab: every proficiency above 0 as a Bar with its trade rank (`rank.*`), highest first | M2 |
 | `person.worn` | slot | Worn | — | — | Inventory tab: what they wear and hold. Read-only here; change it by possessing them | M2 |
 | `person.pack` | slot | Pack | — | — | Inventory tab: what they carry | M2 |
 | `captive.recruit` | button | Recruit | They join you with low loyalty | — | captives only | M5 |
@@ -926,7 +968,7 @@ Selected by clicking its hall or its name label.
 | `town.noise` | bar | Noise | Industry, deep mining and battle draw enemy scouts | — | | M4 |
 | `town.reeve` | stat | Reeve | — | — | the Reeve's name as a link, or `town.noreeve` | M2 |
 | `town.appoint` | select | Appoint | Choose a Reeve to run this settlement | — | shown when there is none: lists candidates, best manager first | M2 |
-| `town.jobs` | table | Jobs | — | — | Work tab. Columns: `col.role`, `col.filled`, `col.open` | M2 |
+| `town.jobs` | table | Jobs | — | — | Work tab. Columns: `col.class`, `col.filled`, `col.open` | M2 |
 | `town.stock` | table | Stock | — | — | Inventory tab: everything in all its stores | M2 |
 
 ### A route
@@ -953,7 +995,9 @@ Selected by clicking its hall or its name label.
 | ID | Type | Label | Tooltip | Key | Does | Since |
 |---|---|---|---|---|---|---|
 | `co.strength` | stat | Strength | — | — | value: `fmt.of` | M4 |
-| `co.kit` | stat | Kit | — | — | what it is armed with (content) | M4 |
+| `co.classes` | stat | Classes | — | — | what its soldiers are, by class (content) | M4 |
+| `co.role` | select | Role | Sets the role of every soldier in it | — | the four `role.*` options | M4 |
+| `co.skills` | slot | Skills | — | — | the skills its members share. A click orders every member who has it ready (`13-units-classes-power.md` §3.7) | M4 |
 | `co.morale` | bar | Morale | Falls with losses and fear · rises near officers and the king | — | | M5 |
 | `co.loyalty` | bar | Loyalty | Decides who stands, falls back or gives up when morale breaks | — | the average of its soldiers | M5 |
 | `co.refill` | toggle | Refill | Replaces losses from its home settlement | — | default on | M4 |
@@ -1023,6 +1067,11 @@ Orders travel (A4). After an order that will take more than 2 s to arrive, a Not
 | `mana.renew` | stat | Attunement | Runs out unless its mage comes back | — | value: the time left (A5) | M6 |
 | `ward.radius` | stat | Radius | — | — | | M6 |
 | `ward.upkeep` | stat | Upkeep | — | — | | M6 |
+| `hearth.congregation` | stat | Congregation | People living near its linked shrines · 300 are needed to kindle | — | the Great Hearth (`13-units-classes-power.md` §15.3) | M7 |
+| `hearth.upkeep` | stat | Upkeep | Offerings it burns each day | — | | M7 |
+| `hearth.stores` | stat | Offerings | Days of offerings in the capital's stores | — | value: `fmt.days` | M7 |
+| `hearth.kindle` | select | Kindle | Begin seven days of kindling for a Paragon of level 60 | — | candidates; choosing one asks first (`confirm.kindle`). Disabled while the Hearth is cold (`why.cold`) or the congregation is short (`why.congregation`) | M7 |
+| `hearth.kindling` | bar | Kindling | — | — | the days and offerings of a Kindling in progress | M7 |
 
 ---
 
@@ -1045,17 +1094,19 @@ A side panel with tabs across its top.
 | `realm.reputation` | stat | Reputation | How far word of your kingdom travels · it draws wanderers | — | | M3 |
 | `realm.score` | stat | Score | — | — | value: `fmt.score` | M7 |
 | `realm.towns` | table | Settlements | — | — | columns: `col.name`, `col.people`, `col.food`, and from Milestone 3 `col.loyalty`. A row's main action selects the settlement | M2 |
+| `realm.grades` | table | Grades | — | — | each grade from Tempered up: how many hold it and, from Elite, the places (`fmt.of`). Columns: `col.grade`, `col.held` | M3 |
 | `people.search` | field | Search | — | — | People tab | M2 |
 | `people.show` | select | Show | — | — | | M2 |
 | `people.all` | row | Everyone | — | — | option | M2 |
 | `people.idle` | row | Idle | — | — | option | M2 |
 | `people.standouts` | row | Standouts | — | — | option | M2 |
 | `people.officials` | row | Officials | — | — | option | M3 |
-| `people.heroes` | row | Heroes | — | — | option | M6 |
+| `people.band` | row | Your band | — | — | option | M2 |
+| `people.elite` | row | Elite and above | — | — | option | M3 |
 | `people.mages` | row | Mages | — | — | option | M6 |
 | `people.soldiers` | row | Soldiers | — | — | option | M4 |
 | `people.captives` | row | Captives | — | — | option | M5 |
-| `people.table` | table | People | — | — | columns: `col.name`, `col.role`, `col.age`, `col.home`, and from Milestone 3 `col.tier` and `col.loyalty`. A row's main action selects the person | M2 |
+| `people.table` | table | People | — | — | columns: `col.name`, `col.class`, `col.level`, `col.age`, `col.home`, and from Milestone 3 `col.tier` and `col.loyalty`. A row's main action selects the person | M2 |
 | `post.row` | row | — | — | — | Officials tab: one office: its name, its holder or `post.vacant`, and a load Bar | M3 |
 | `post.vacant` | chip | Vacant | — | — | | M3 |
 | `post.load` | bar | Load | Past full, they do the job less well | — | | M3 |
@@ -1075,6 +1126,7 @@ A side panel with tabs across its top.
 | `rations.normal` | row | Normal | — | — | option, the default | M3 |
 | `rations.full` | row | Full | — | — | option | M3 |
 | `policy.stock` | title | Stock targets | — | — | a list of `store.target.row` rows that every settlement tries to keep | M3 |
+| `policy.ultimates` | toggle | Ultimates freely | Lets your people use Ultimates on their own judgement | — | default off (`13-units-classes-power.md` §11.6) | M3 |
 | `treasury.rooms` | table | Strongrooms | — | — | Treasury tab. Columns: `col.place`, then the two coin glyphs | M3 |
 | `treasury.mint` | stat | Mint | — | — | coins struck a day | M3 |
 | `treasury.payday` | stat | Next payday | — | — | | M3 |
@@ -1130,7 +1182,7 @@ A side panel: `army.new` at the top, then a list of armies with their companies 
 | `army.new.captain` | select | Captain | — | — | candidates, best first | M4 |
 | `army.new.size` | stepper | Soldiers | — | — | 10–50, starts at 20 | M4 |
 | `army.new.home` | select | Home | The settlement its soldiers are drawn from | — | | M4 |
-| `army.new.kit` | select | Kit | What they are armed with · drawn from that settlement's stores | — | kits are content | M4 |
+| `army.new.class` | select | Class | What they train as · their gear comes from that settlement's stores | — | military classes (content) | M4 |
 | `army.new.raise` | button | Raise | — | — | primary. Disabled with nobody fit to be its Captain (`why.candidate`) or too few people (`why.people`) | M4 |
 | `army.join` | button | Form army | Joins the selected companies under a Marshal | — | opens `army.join.marshal` in its place. Disabled with fewer than two companies selected (`why.select`), or with nobody fit to be Marshal (`why.candidate`) | M5 |
 | `army.join.marshal` | select | Marshal | — | — | candidates, best first; choosing one forms the army | M5 |
@@ -1198,22 +1250,25 @@ A full-screen page: a column of tabs at the left (200 px), a list of entries (28
 
 ## D6. Possess
 
-The screen is the world. The interface is Minecraft's, element for element, with stamina where hunger was.
+The screen is the world. The interface is Minecraft's, element for element, seen from outside, with stamina where hunger was and the unit's skills beside the hotbar.
 
 ```
                     ┌ Warden card (only in a Warden fight, D9) ┐         ▲ alerts (D2)
 
-                                         +            crosshair
+  Hale Brandt ▬▬ band
+  Aiko Mori   ▬▬                         +            crosshair (Shoulder)
                                         ▂▂            attack indicator
 
   [chat lines]              ▬▬▬▬▬▬▬ health   stamina ▬▬▬▬▬▬▬
-  Hale Brandt · Smith       [1][2][3][4][5][6][7][8][9]   [Z][X][C]…  abilities
+  Hale Brandt · Smith       [1][2][3][4][5][6][7][8][9]   [Z][X][C][V][R][G]
+                            ▬▬▬▬▬▬▬▬▬▬▬▬▬ 14 ▬▬▬▬▬▬▬▬▬▬▬▬▬  level, experience
 ```
 
 | ID | Type | Label | Tooltip | Key | Does | Since |
 |---|---|---|---|---|---|---|
-| `hud.cross` | canvas | Crosshair | — | — | a plus sign, 2 px thick, that inverts the colours behind it. Hidden outside first person | 1.1 |
-| `hud.outline` | canvas | Target outline | — | — | a thin dark line around the block looked at, within reach | 1.1 |
+| `hud.cross` | canvas | Crosshair | — | — | a plus sign, 2 px thick, that inverts the colours behind it. Shoulder only: in Overhead the cursor aims | 1.1 |
+| `hud.outline` | canvas | Target outline | — | — | a thin dark line around the block or creature the unit would touch, within reach (C4) | 1.1 |
+| `hud.ghost` | canvas | Placement ghost | — | — | a faint copy of the held block on the face it would go on | 1.1 |
 | `hud.cracks` | canvas | Break progress | — | — | ten crack stages drawn on the block being broken. Not in the free camera, which breaks at once (B4) | M2 |
 | `hud.hotbar` | slot | Hotbar | — | — | nine Slots, bottom centre. The selected one has a 2 px `--text` frame. Counts and durability as in A3 | 1.1 |
 | `hud.item` | title | {item} | — | — | the held item's name, above the hotbar for 2 s after switching slot, then fading for 0.5 s | 1.1 |
@@ -1222,24 +1277,32 @@ The screen is the world. The interface is Minecraft's, element for element, with
 | `hud.stamina` | bar | Stamina | — | — | above the hotbar's right half, `--ok` fill. Sprinting and swimming spend it; at zero the unit can't sprint (B4) | M2 |
 | `hud.air` | bar | Air | — | — | above stamina, only under water | M2 |
 | `hud.armour` | bar | Armour | — | — | above health, only while wearing any | M4 |
-| `hud.cooldown` | bar | Attack indicator | — | — | 16 px wide under the crosshair, only while a swing is recovering | M4 |
+| `hud.cooldown` | bar | Attack indicator | — | — | 16 px wide under the crosshair, or under the cursor in Overhead, only while a swing is recovering | M4 |
 | `hud.hazard` | icon | Hazard | — | — | the hazard's icon and a Bar of exposure, above armour, only while exposed | M4 |
-| `hud.unit` | title | {name} · {role} | — | — | bottom left, `--fs-13` | M2 |
+| `hud.unit` | title | {name} · {class} | — | — | bottom left, `--fs-13` | M2 |
 | `hud.condition` | chip | {condition} | — | — | beside `hud.unit`: the unit's conditions, as in its inspector (`person.condition`) | M4 |
 | `hud.back` | keycap | Command view | — | Tab | a Keycap and these words beside `hud.unit`, shown for 4 s on entering Possess, the first three times on a device (A2) | M2 |
 | `hud.target` | title | {name} | — | — | under the crosshair after aiming for 150 ms at a person, workstation or container within reach. Switched by `set.ui.targets` | M2 |
 | `hud.reach` | chip | {n} in reach | — | — | beside `hud.unit` while possessing a Captain or Marshal: soldiers inside the command radius. The radius is a faint ring on the ground | M4 |
-| `hud.abilities` | slot | Abilities | — | — | up to six Slots right of the hotbar, each with its Keycap and a sweep while it recovers | M6 |
+| `hud.skills` | slot | Skills | — | — | up to six Slots right of the hotbar, each with its Keycap: a sweep while it recovers, and the Ultimate's Slot filling as Resolve grows | M2 |
+| `hud.xp` | bar | Experience | — | — | under the hotbar, its full width | M2 |
+| `hud.level` | stat | Level | — | — | the level, centred just above `hud.xp`, as Minecraft draws it | M2 |
+| `hud.mana` | bar | Mana | — | — | above stamina, `--mana` fill, for units that use Mana | M6 |
+| `hud.flame` | bar | Flame | — | — | above health, `--warn` fill, for a Calamity | M7 |
+| `hud.band` | row | Band | — | — | at the left edge, one Row per member of the band: name and a Health Bar; the one being played is selected | M2 |
+| `band.fresh` | chip | Fresh | Their first light today is unspent · they learn five times as fast for a while | — | beside a band member who hasn't been played this in-game day | M2 |
 | `hud.sworn` | chip | Sworn to {kingdom} | — | — | beside `hud.unit` for an eliminated player's one unit | M7 |
 
-Chat lines (D10) sit above `hud.unit`. Alerts (D2) show at the top right as they do in Command view; the pointer is locked, so they can't be clicked: Tab, then Space, goes to the newest. Toasts and the Steward's line keep their place (A3). Nothing else is ever on this screen: no date, no minimap, no quest text, no prompts. The free camera's screen has only `hud.cross`, `hud.outline`, `hud.hotbar` and `hud.item`: every other row here belongs to possessing a person.
+Chat lines (D10) sit above `hud.unit`. Alerts (D2) show at the top right as they do in Command view. In Overhead they can be clicked; in Shoulder the pointer is locked, so Tab, then Space, goes to the newest. Toasts and the Steward's line keep their place (A3). Nothing else is ever on this screen: no date, no minimap, no quest text, no prompts. The free camera's screen has only `hud.cross` (in Shoulder), `hud.outline`, `hud.ghost`, `hud.hotbar` and `hud.item`: every other row here belongs to possessing a person.
 
 ### Inventory (E)
 A centred Panel nine Slots wide (392 px with its padding). The world stays visible and dimmed 40% behind it; the unit stops moving while it's open. E or Esc closes it.
 
 | ID | Type | Label | Tooltip | Key | Does | Since |
 |---|---|---|---|---|---|---|
-| `inv.worn` | title | Worn | — | — | five Slots: head, body, legs, feet, off hand | M2 |
+| `inv.worn` | title | Worn | — | — | six Slots: head, body, legs, feet, off hand and back (`15-item-library.md` §1.9) | M2 |
+| `inv.charms` | slot | Charms | — | — | one Slot, two from Elite | M2 |
+| `inv.relics` | slot | Relics | — | — | one Slot from Champion, two from Paragon | M4 |
 | `inv.pack` | title | Pack | — | — | 27 Slots, then the nine hotbar Slots under an 8 px gap | M2 |
 | `inv.load` | stat | Load | Past the limit you walk slower | — | value: `fmt.of`, in kg | M2 |
 | `inv.handwork` | title | Handwork | — | — | a list of the simple recipes that need no workshop | M2 |
@@ -1264,7 +1327,7 @@ Using a chest, cart, crate or stockpile block opens its Slots above the pack in 
 | `work.progress` | bar | Progress | — | — | under the list while something is being made. Leaving the screen stops the work | M2 |
 
 ### The order wheel (hold B)
-Only while possessing a Captain or a Marshal. Hold B: after 100 ms four wedges appear around the crosshair and the view stops turning. Move the mouse 24 px toward a wedge to light it; release B to give that order; release in the middle to give none. The order reaches every soldier of that officer inside the command radius at once (`05-systems.md` §3).
+Only while possessing a Captain, a Commander or a Marshal. Hold B: after 100 ms four wedges appear around the crosshair (around the cursor in Overhead) and the view stops turning. Move the mouse 24 px toward a wedge to light it; release B to give that order; release in the middle to give none. The order reaches every soldier of that officer inside the command radius at once (`05-systems.md` §3).
 
 | ID | Type | Label | Tooltip | Key | Does | Since |
 |---|---|---|---|---|---|---|
@@ -1336,7 +1399,7 @@ A centred Panel 560 px wide: tabs across the top, one column of rows. Each row i
 | `quality.custom` | row | Custom | — | — | option | 1.10 |
 | `set.video.distance` | slider | Render distance | Full-detail terrain around you · costs frame rate | — | 128–384 m in steps of 32, default 192 (`04-terrain.md` §13.5) | 1.4 |
 | `set.video.reach` | slider | Far terrain | How far distant land is drawn · costs memory | — | 2–16 km, default 16 | 1.4 |
-| `set.video.fov` | slider | Field of view | The first-person view angle | — | 30–110°, default 70 | 1.4 |
+| `set.video.fov` | slider | Field of view | The Shoulder view's angle | — | 30–110°, default 70 | 1.4 |
 | `set.video.shadows` | select | Shadows | — | — | | 1.4 |
 | `shadows.off` | row | Off | — | — | option | 1.4 |
 | `shadows.near` | row | Near | — | — | option | 1.4 |
@@ -1348,7 +1411,7 @@ A centred Panel 560 px wide: tabs across the top, one column of rows. Each row i
 | `limit.30` | row | 30 | — | — | option | 1.10 |
 | `limit.60` | row | 60 | — | — | option | 1.10 |
 | `limit.screen` | row | Screen rate | — | — | option, the default | 1.10 |
-| `set.ctl.sensitivity` | slider | Mouse sensitivity | How far the first-person view turns as the mouse moves | — | 0–200%, default 100 (B4) | 1.4 |
+| `set.ctl.sensitivity` | slider | Mouse sensitivity | How far the Shoulder view turns as the mouse moves | — | 0–200%, default 100 (B4) | 1.4 |
 | `set.ctl.invert` | toggle | Invert look | Moving the mouse up looks down | — | default off | 1.4 |
 | `set.ctl.fullscreen` | toggle | Fullscreen on play | Lets Left Ctrl sprint without closing the tab | — | default on (B1) | 1.4 |
 | `set.ctl.sprint` | segmented | Sprint | — | — | | 1.10 |
@@ -1366,7 +1429,6 @@ A centred Panel 560 px wide: tabs across the top, one column of rows. Each row i
 | `set.ctl.tilt` | toggle | Invert tilt | — | — | default off | 1.10 |
 | `set.ctl.keys` | button | Key list | — | — | opens the key list | M2 |
 | `set.ui.scale` | slider | Interface size | — | — | 80–150% in steps of 10, default 100 | 1.4 |
-| `set.ui.bobbing` | toggle | View bobbing | The view sways as you walk | — | default on | 1.10 |
 | `set.ui.fov-effects` | slider | Speed effect | How much sprinting and flying widen the view | — | 0–100%, default 100 | 1.10 |
 | `set.ui.motion` | select | Motion | Reduced turns slides and camera moves into quick fades | — | | 1.10 |
 | `motion.system` | row | As the system | — | — | option, the default | 1.10 |
@@ -1390,7 +1452,7 @@ Rows are grouped only on the Controls tab, under two group titles:
 
 | ID | Type | Label | Tooltip | Key | Does | Since |
 |---|---|---|---|---|---|---|
-| `set.group.possess` | title | First person | — | — | sensitivity, invert look, fullscreen, sprint, sneak, double-tap, auto-jump | 1.10 |
+| `set.group.possess` | title | Possess | — | — | sensitivity, invert look, fullscreen, sprint, sneak, double-tap, auto-jump | 1.10 |
 | `set.group.camera` | title | Camera | — | — | pan speed through invert tilt, then `set.ctl.keys` | 1.10 |
 
 ### The key list
@@ -1582,8 +1644,14 @@ News lines fill alert rows (D2) and the News tab. A row is: a priority icon, the
 | `news.silence` | No word from {place} | important: an expected report is overdue | M4 |
 | `news.scout` | An enemy scout was seen near {place} | important | M4 |
 | `news.warparty` | A war party is marching on {place} | important | M4 |
-| `news.fallen` | {name} has fallen | important: a hero or an official died | M4 |
+| `news.fallen` | {name} has fallen | important: an official, a member of your band, or anyone of Champion grade or higher died | M4 |
 | `news.slain` | {warden} has fallen | critical | M4 |
+| `news.grade` | {name} is now {grade} | info: a promotion to Champion or higher | M4 |
+| `news.trial` | {name} has passed the Trial | info | M4 |
+| `news.calamity` | {kingdom} has raised a Calamity | important, to every king | M7 |
+| `news.calamity.gone` | The Calamity of {kingdom} is gone | important, to every king | M7 |
+| `news.guttering` | The Great Hearth is short of offerings | critical: a day's upkeep went unpaid | M7 |
+| `news.oath` | {name} has sworn to the fire | important | M7 |
 | `news.died` | {name} has died in {town} | info: one of your people. Rows about the same town merge with a count (D2) | M2 |
 | `news.unburned` | The dead lie unburned in {town} | important | M4 |
 | `news.left` | {name} has left {town} | important: their loyalty fell too low | M3 |
@@ -1639,6 +1707,12 @@ A Note says why something can't be done, or what a drag will do. One line, 16 px
 | `note.possess.dark` | Cut off from your capital | | M4 |
 | `note.possess.steward` | The Steward can't be possessed | | M2 |
 | `note.possess.other` | Not one of yours | | M5 |
+| `note.skill.ready` | Not ready | a skill on cooldown | M2 |
+| `note.skill.stamina` | Not enough stamina | | M2 |
+| `note.skill.resolve` | Resolve isn't full | an Ultimate | M3 |
+| `note.skill.reach` | Out of reach | | M2 |
+| `note.skill.target` | Needs a target | | M2 |
+| `note.band.none` | Nobody else in your band | `,` or `.` with no one to switch to | M2 |
 
 ## E3. Small texts
 
@@ -1674,6 +1748,11 @@ A Note says why something can't be done, or what a drag will do. One line, 16 px
 | `tip.insulation` | Insulation {n} | | M4 |
 | `tip.ward` | Ward {n} | | M4 |
 | `tip.rot` | Rot resistance {n} | | M4 |
+| `tip.skill.passive` | Always on | skill tooltip lines, in this order, after the skill's own line | M2 |
+| `tip.skill.cost` | Costs {cost} | | M2 |
+| `tip.skill.ready` | Ready every {t} | | M2 |
+| `tip.skill.resolve` | Spends a full Resolve | | M3 |
+| `tip.skill.reach` | Reach {reach} | | M2 |
 | `keys.listening` | Press a key | on `keys.bind` while it waits | M2 |
 | `keys.unset` | Not set | on `keys.bind` with no key | M2 |
 | `keys.clash` | Also used by {action} | tooltip on both clashing rows; their Keycaps turn `--warn` | M2 |
@@ -1698,7 +1777,11 @@ A Note says why something can't be done, or what a drag will do. One line, 16 px
 | `why.coin` | Not enough coin | | M5 |
 | `why.select` | Select two or more companies | | M5 |
 | `why.engines` | No siege engines | | M5 |
-| `why.trainer` | No trainer and no Academy | | M6 |
+| `why.grade` | Needs {need} | the gate of the next grade (`13-units-classes-power.md` §9) | M3 |
+| `why.places` | No {grade} place free | | M3 |
+| `why.skill` | Opens at {need} | a locked skill Slot | M2 |
+| `why.cold` | The Hearth is cold | | M7 |
+| `why.congregation` | Needs {n} more in the congregation | | M7 |
 | `why.empty` | Nothing in the offer yet | | M5 |
 | `confirm.cancel` | Cancel | the second Button of every confirmation; Esc | 1.1 |
 | `confirm.demolish.title` | Demolish {building}? | | M2 |
@@ -1711,6 +1794,15 @@ A Note says why something can't be done, or what a drag will do. One line, 16 px
 | `confirm.treaty.title` | Break your treaty with {king}? | | M5 |
 | `confirm.treaty.body` | It goes into the Chronicle | | M7 |
 | `confirm.treaty.do` | Break it | | M5 |
+| `confirm.oath.title` | Swear {name} to the fire? | | M7 |
+| `confirm.oath.body` | A Calamity for one day, then they burn | | M7 |
+| `confirm.oath.do` | Swear | | M7 |
+| `confirm.fire.title` | Call the fire for {name}? | | M7 |
+| `confirm.fire.body` | One day of fire, then ash | | M7 |
+| `confirm.fire.do` | Call it | | M7 |
+| `confirm.kindle.title` | Kindle {name}? | | M7 |
+| `confirm.kindle.body` | Seven days and 100,000 offerings | | M7 |
+| `confirm.kindle.do` | Kindle | | M7 |
 | `confirm.keys.title` | Reset every key? | | M2 |
 | `confirm.keys.do` | Reset | | M2 |
 | `confirm.reset.title` | Reset every setting? | | 1.10 |
@@ -1755,6 +1847,9 @@ One line per event, server-wide, in world voice. The King Below's name is never 
 | `chron.dead` | Week {w}: {king} of {capital} is dead. | | M7 |
 | `chron.taken` | Week {w}: {kingdom} falls to {victor}. | | M7 |
 | `chron.faith` | Week {w}: {king} of {capital} breaks faith with {other}. | a broken treaty | M7 |
+| `chron.calamity` | Week {w}: {king} of {capital} raises a Calamity. | | M7 |
+| `chron.calamity.gone` | Week {w}: the Calamity of {capital} is no more. | | M7 |
+| `chron.oath` | Week {w}: {name} of {capital} burns for {king}. | an Oathbound's day of fire | M7 |
 | `chron.below` | Week {w}: the King Below is broken. | | M7 |
 | `chron.frost` | Week 26: the Frost takes the basin. | | M7 |
 
@@ -1780,7 +1875,10 @@ One line per event, server-wide, in world voice. The King Below's name is never 
 | `task.yours` | In your hands | while possessed | M2 |
 | `hist.born` | Born in {town} | History tab rows, each after its date | M3 |
 | `hist.joined` | Joined {kingdom} | | M2 |
-| `hist.role` | Became {role} | | M2 |
+| `hist.class` | Became a {class} | | M2 |
+| `hist.grade` | Became {grade} | | M2 |
+| `hist.deed` | Completed the deed of the {class} | | M3 |
+| `hist.trial` | Passed the Trial | | M4 |
 | `hist.office` | Appointed {office} | | M3 |
 | `hist.rose` | Rose to {tier} | | M3 |
 | `hist.dropped` | Dropped to {tier} | | M3 |
@@ -1841,7 +1939,10 @@ Words the interface needs that aren't labels, tooltips or messages. Each is used
 | `col.name` | Name | | M2 |
 | `col.people` | People | | M2 |
 | `col.food` | Food | days of food | M2 |
-| `col.role` | Role | | M2 |
+| `col.class` | Class | | M2 |
+| `col.level` | Level | | M2 |
+| `col.grade` | Grade | | M3 |
+| `col.held` | Held | | M3 |
 | `col.age` | Age | | M2 |
 | `col.home` | Home | | M2 |
 | `col.filled` | Filled | | M2 |
@@ -1893,19 +1994,52 @@ Words the interface needs that aren't labels, tooltips or messages. Each is used
 
 | ID | Text | When | Since |
 |---|---|---|---|
-| `office.reeve` | Reeve | the seven offices | M2 |
+| `office.reeve` | Reeve | the offices and posts (`13-units-classes-power.md` §13) | M2 |
 | `office.quartermaster` | Quartermaster | | M3 |
 | `office.treasurer` | Treasurer | | M3 |
 | `office.captain` | Captain | | M4 |
 | `office.marshal` | Marshal | | M5 |
 | `office.envoy` | Envoy | | M5 |
 | `office.magister` | Magister | | M6 |
+| `office.chancellor` | Chancellor | | M3 |
+| `office.governor` | Governor | | M3 |
+| `office.bailiff` | Bailiff | | M3 |
+| `office.storekeeper` | Storekeeper | | M3 |
+| `office.paymaster` | Paymaster | | M3 |
+| `office.hearthkeeper` | Hearthkeeper | | M3 |
+| `office.high-hearthkeeper` | High Hearthkeeper | | M3 |
+| `office.foreman` | Foreman | | M3 |
+| `office.overseer` | Overseer | | M3 |
+| `office.commander` | Commander | | M5 |
+| `office.spymaster` | Spymaster | | M5 |
 | `tier.peasant` | Peasant | the three needs tiers | M3 |
 | `tier.craftsman` | Craftsman | | M3 |
 | `tier.noble` | Noble | | M3 |
-| `rank.novice` | Novice | a mage's rank | M6 |
-| `rank.adept` | Adept | | M6 |
-| `rank.master` | Master | | M6 |
+| `rank.apprentice` | Apprentice | the trade ranks (`13-units-classes-power.md` §8) | M2 |
+| `rank.journeyman` | Journeyman | | M2 |
+| `rank.adept` | Adept | | M2 |
+| `rank.master` | Master | | M2 |
+| `rank.grandmaster` | Grandmaster | | M2 |
+| `rank.recruit` | Recruit | military ranks below Captain (`13-units-classes-power.md` §13.1) | M4 |
+| `rank.private` | Private | | M4 |
+| `rank.corporal` | Corporal | | M4 |
+| `rank.sergeant` | Sergeant | | M4 |
+| `rank.lieutenant` | Lieutenant | | M4 |
+| `grade.common` | Common | the grades (`13-units-classes-power.md` §9) | M2 |
+| `grade.proven` | Proven | | M2 |
+| `grade.tempered` | Tempered | | M3 |
+| `grade.elite` | Elite | | M3 |
+| `grade.champion` | Champion | | M4 |
+| `grade.paragon` | Paragon | | M6 |
+| `grade.calamity` | Calamity | | M7 |
+| `slot.knack` | Knack | the skill slots, on the skill tooltip | M2 |
+| `slot.active` | Active | | M2 |
+| `slot.ultimate` | Ultimate | | M3 |
+| `slot.mastery` | Mastery | | M4 |
+| `slot.relic` | Relic | | M4 |
+| `slot.art` | Art | | M5 |
+| `slot.office` | Office | | M3 |
+| `slot.cataclysm` | Cataclysm | | M7 |
 | `sex.woman` | Woman | | M2 |
 | `sex.man` | Man | | M2 |
 | `ruler.king` | King | a ruler's title, before the name (A5) | M2 |
@@ -1927,18 +2061,18 @@ Each row's **Since** decides when it ships. This table only sums them up; `node 
 
 | Phase | The interface that exists at its end |
 |---|---|
-| 1.1 | title screen (seed, Play); loading; the free camera's screen (crosshair, target outline, hotbar, the held item's name); block palette; menu (Resume, Licences, Quit to title); F1, F2, F3 and the Tools panel (F4) with the rows marked 1.1; the system states that need no server (click to play, no WebGL2, small window, blocked storage, lost graphics, new version); the toasts; the "Clear my edits" confirmation; the string pipeline, `ui:lint`, the gallery and `ui:shots` (A6, A7) |
+| 1.1 | title screen (seed, Play); loading; the free camera's screen in Shoulder, with the avatar (crosshair, target outline, placement ghost, hotbar, the held item's name); block palette; menu (Resume, Licences, Quit to title); F1, F2, F3 and the Tools panel (F4) with the rows marked 1.1; the system states that need no server (click to play, no WebGL2, small window, blocked storage, lost graphics, new version); the toasts; the "Clear my edits" confirmation; the string pipeline, `ui:lint`, the gallery and `ui:shots` (A6, A7) |
 | 1.2 | the map with Teleport; discovery cards; "Go to region"; the World select |
 | 1.3 | "Go to postcard"; the View switch (Clay, Features) |
-| 1.4 | the Command camera as king's view (C1, C6) with Tab; the map's "Go here"; Settings with the rows marked 1.4; the LOD rows in F3 and Tools |
+| 1.4 | the Command camera as king's view (C1, C6) with Tab; Overhead for the free camera (F5); the map's "Go here"; Settings with the rows marked 1.4; the LOD rows in F3 and Tools |
 | 1.8 | the cut (C2) with its keys and the depth gauge; the map's layer tabs |
 | 1.10 | every Settings row marked 1.10, including the Audio tab's Volume; nothing else new |
-| M2 | the Command view: top bar, alerts, minimap, the Resources overlay, command bar, Build (with Dig) and Zones, the inspector, Realm (Overview, People, News), the Ledger, Find, the key list, bookmarks; the map's markers; Possess with real inventories, Handwork, containers and workstations; the Steward's lines; "Choosing ground"; the death screen; the free camera as an owner tool beside the kingdom |
-| M3 | Routes; Trade (Prices); Realm (Officials, Policies, Treasury); loyalty, tiers and their causes; the Logistics and Loyalty overlays; neutral villages and gifts; reputation; the office (K) |
-| M4 | Army (companies) and the order buttons; control groups; the order wheel; the network: its buildings, link notes, the Network, Hazards and Territory overlays, news that travels and pending orders; enemy and Warden rows and the Warden card; integrity and repair; conditions; inscriptions; two more Ledger tabs |
-| M5 | signing in, the lobby, founding; chat; Realm (Kings), offers and deals; Trade (Board, Contracts); captives and bribes; morale; armies under a Marshal and siege; capture; the system states for connections. Owner tools leave |
-| M6 | the Mana overlay; mana, machine and lift rows; abilities, mage ranks, Make hero and Train; ascent sickness and world events in the news |
-| M7 | lives; the season's week and the Frost warnings; the Chronicle, Standings, Deeds and Ledger of Kings; sworn units; the eliminated and Frost screens |
+| M2 | the Command view: top bar, alerts, minimap, the Resources overlay, command bar, Build (with Dig) and Zones, the inspector, Realm (Overview, People, News), the Ledger, Find, the key list, bookmarks; the map's markers; Possess in Overhead and Shoulder with real inventories, Handwork, containers and workstations; classes, levels, grades, experience, attribute points and proficiencies in the inspector; skills on keys, in the inspector and beside the hotbar, with autocast; the Band; the Steward's lines; "Choosing ground"; the death screen; the free camera as an owner tool beside the kingdom |
+| M3 | Routes; Trade (Prices); Realm (Officials, Policies, Treasury, Grades); Promote, Resolve, deeds, Speciality and Background; Ultimates; loyalty, tiers and their causes; the Logistics and Loyalty overlays; neutral villages and gifts; reputation; the office (K) |
+| M4 | Army (companies) and the order buttons; roles, military ranks, wards and day trades; company classes and skills; Trials and relic slots; control groups; the order wheel; the network: its buildings, link notes, the Network, Hazards and Territory overlays, news that travels and pending orders; enemy and Warden rows and the Warden card; integrity and repair; conditions; inscriptions; two more Ledger tabs |
+| M5 | signing in, the lobby, founding; advanced classes; chat; Realm (Kings), offers and deals; Trade (Board, Contracts); captives and bribes; morale; armies under a Marshal and siege; capture; the system states for connections. Owner tools leave |
+| M6 | the Mana overlay; mana, machine and lift rows; the Mana bar; ascent sickness and world events in the news |
+| M7 | lives; Calamities: the Great Hearth, the oath, Flame, their news and Chronicle lines; the season's week and the Frost warnings; the Chronicle, Standings, Deeds and Ledger of Kings; sworn units; the eliminated and Frost screens |
 | M8 | the crest editor; honours, banners and looks; buying a life; the Audio tab's remaining rows; the Guide |
 
 ---

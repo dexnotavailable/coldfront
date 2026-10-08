@@ -1,6 +1,6 @@
 # 14 · Class library
 
-Every class and every skill in the game. The rules these rows follow are in `13-units-classes-power.md`: the slots and budgets (§11), the conditions (§6), the proficiencies (§8) and the content rules (§19). Every table here whose first column is **ID** is data, checked by `node docs/tools/content-check.mjs`.
+Every class and every skill in the game. The rules these rows follow are in `13-units-classes-power.md`: the slots and budgets (13 §11), the conditions (13 §6), the proficiencies (13 §8) and the content rules (13 §19). Every table here whose first column is **ID** is data, checked by `node docs/tools/content-check.mjs`.
 
 ---
 

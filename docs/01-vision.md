@@ -10,7 +10,7 @@ This file is the "why". Everything else in `docs/` is the "what" and the "how". 
 
 ## 1. The fantasy
 
-You are summoned to Kaldmark as a king, with twenty people and a mysterious Steward who shows you the ropes. From the top-down **Command view** you lay out towns, draw supply routes and send armies. At any moment you can drop into **Possess** mode and *become* one of your people: a miner swinging a pick in a braced tunnel, a captain leading riders to run down an enemy messenger, a hero you've trained since she was a farmhand with a strange affinity for mana.
+You are summoned to Kaldmark as a king, with twenty people and a mysterious Steward who shows you the ropes. From the top-down **Command view** you lay out towns, draw supply routes and send armies. At any moment you can drop into **Possess** mode and *become* one of your people: a miner swinging a pick in a braced tunnel, a captain leading riders to run down an enemy messenger, a Champion you've raised since she was a farmhand with a strange affinity for mana.
 
 The world pushes back. Every region has its own way of killing you: cold, heat, fumes, rot, mana storms, darkness, gales, the restless dead. Building out there means using materials that survive it, keeping people alive there and getting supplies to them. Then you have to defend all of it. In the desolate heart of every region sits a Warden with an army that breeds, scouts and marches. At the bottom of the world sits the King Below.
 
@@ -54,7 +54,7 @@ No jokes in the world's voice. Wonder and dread come from scale: a thorn forest 
 
 | Reference | What we take |
 |---|---|
-| Minecraft + **Big Globe** mod | Voxel world, everything breakable, huge vertical and horizontal scale (Big Globe's overworld is 2,048 blocks tall), varied terrain, distant-terrain rendering. Possession feels exactly like playing Minecraft. Big Globe is a quality target to learn from by playing it; its code is off-limits (`10-prior-art.md` §1) |
+| Minecraft + **Big Globe** mod | Voxel world, everything breakable, huge vertical and horizontal scale (Big Globe's overworld is 2,048 blocks tall), varied terrain, distant-terrain rendering. A played unit moves, digs and builds exactly like a Minecraft player. Big Globe is a quality target to learn from by playing it; its code is off-limits (`10-prior-art.md` §1) |
 | *Made in Abyss* | Verticality, layers that get stranger, the cost of coming back up |
 | Deepwoken | Harsh world, earned mastery, danger that is always nearby |
 | Arknights: Endfield | Infrastructure and factory building, hand-laid production lines |
@@ -118,15 +118,16 @@ These are settled. Don't re-open them without the owner. Unmarked items are the 
 
 ### Command and possession
 - Two modes, **Command** (top-down macro) and **Possess** (be any of your units) (default).
-- Possession is a whole separate player instance: WASD, attack, break and place blocks, interact, manage inventory. **Possessing a unit must feel the same as controlling a Minecraft player**: Minecraft's controls, movement and block breaking. Possessing officials and high-ranking units also lets you change roles, jobs and assignments.
+- Possession is a whole separate player instance: WASD, attack, break and place blocks, interact, manage inventory. A played unit moves, digs, builds and fights like a Minecraft player: Minecraft's controls, movement and block breaking. Possessing officials and high-ranking units also lets you change classes, jobs and assignments.
+- **No first-person view** (8 October 2026, replacing "possessing must feel the same as Minecraft" for the camera). Units are ordered from the Command view or played from above (**Overhead**) or over the shoulder (**Shoulder**) (`13-units-classes-power.md` §3).
 - **Every unit is a Minecraft-player equivalent** (break blocks, inventory, HP), run by the game's AI in an optimised way. AI and possession drive the same controller, physics and actions (default design, `05-systems.md` §3).
 - An officer is a unit with a **command radius**. Possess a Captain and you lead his company directly (default).
-- The player invests in a group of individuals, or in a hero, learning new attack moves and magic, and plays them often.
+- **Classes, skills and a power ladder** (8 October 2026). Every unit has a class and skills: an Active early, an Ultimate once it has met a gameplay requirement. Most skills are weak and useful (information, highlighting, help with the job); the strongest are outright broken, and only at the endgame. Players play, level and min-max many units. Military units have a class, a role (Assault, Guard, Support, Secondary) and a rank; civilians climb trade ranks; the government has a ladder of offices. The ladder is linear in power and extremely hard to climb. Its top, the **Calamity**, can level mountains, break a small kingdom, solo an easier Warden or hold a kingdom alone, and is costly to keep: worshippers burning offerings, hearths built to uphold it, or a soldier sworn to die. Like kings, Calamities are not to be spent recklessly. For now every person looks like a Minecraft avatar. (`13-units-classes-power.md`, `14-class-library.md`, `15-item-library.md`.)
 - The **network** (watchtowers, signal towers, mana relays) defines where you can see, command and possess. Coverage must be **connected** to your capital. Capturing relays flips land, and cutting a relay cuts off everyone beyond it (default).
 - **News travels physically:** riders early, signal towers later, mana relays late (default). Automated responses wait for the news, so human-led raids that run down messengers beat the AI's reactions.
 
 ### People
-- Every NPC is an individual with a name, a role and stats (strength, agility, magic affinity, and more). People seek out the work that fits them.
+- Every NPC is an individual with a name, a class and stats (strength, agility, magic affinity, and more). People seek out the work that fits them.
 - **Job choice comes from stats only.** Stats vary per person, with average differences by sex: men are stronger on average, women more loyal on average, which keeps production and supplies steady.
 - Most people are wanderers who settle. Some come from births, and some start with you.
 - Wanderers drift toward whichever kingdom offers the best housing, food, safety and pay. Neutral villages can be won over or conquered; conquered ones start out resentful (default).
@@ -138,7 +139,7 @@ These are settled. Don't re-open them without the owner. Unmarked items are the 
 - **Officials are the automation:** Reeves run towns, Quartermasters run supply, Captains run companies (default). They're called Reeves, not "stewards", to avoid a clash with the Steward.
 - Households and births (default).
 - Needs come in three tiers: peasant, craftsman, noble.
-- **Heroes:** you notice someone with unusually high stats and decide to invest. They grow through practice, trainers and boss artifacts. Hero death is permanent (default).
+- **Standouts:** you notice someone with unusually high stats and decide to invest: play them, promote them into the scarce Elite, Champion and Paragon places, arm them with Wardens' relics. Death is permanent (default; "heroes" became grades on 8 October 2026).
 - **Mages** are rare, highly skilled and long-trained; magic is a difficult resource. Only people with high magic affinity can train at an academy (default).
 - **Soldiers are citizens:** each one leaves the workforce and needs gear, pay and food (default).
 - **Time:** 1 day = 1 real hour; 1 year = 1 real week, ending in a winter where crops stop. People age a year per real week (default).
@@ -202,7 +203,11 @@ These are settled. Don't re-open them without the owner. Unmarked items are the 
 | **Network** | Watchtowers, signal towers and mana relays. Its *connected* coverage is where you can see, command and possess |
 | **News** | Any report or order; it travels physically through the network or by rider |
 | **Reeve · Quartermaster · Captain · Marshal · Magister · Treasurer · Envoy** | Officials: town · supply · company · army · mana and mages · coin · trade and diplomacy |
-| **Hero** | Someone you've chosen to invest in (usually a standout) |
+| **Class · Role · Rank · Grade** | A person's trade · a soldier's place in a fight · a step on a ladder of command, trade or office · a step on the power ladder, from Common to Calamity (`13-units-classes-power.md`) |
+| **Skill** | A power on a slot: Knack, Active, Ultimate, Art, Mastery, a relic's, or a Cataclysm (`14-class-library.md`) |
+| **Calamity** | The top grade: one person who can break a small kingdom, kept alive by costly upkeep |
+| **Overhead · Shoulder** | The two cameras for playing a unit: from above, or over its shoulder |
+| **Band** | The player's short list of people to switch between while playing |
 | **Warden** | A region boss (29 of them) |
 | **Seat** | A Warden's arena and fortress at the desolate heart of its region |
 | **General** | A mini-boss holding a fort in a Seat's guard rings (~100 total) |

@@ -30,7 +30,7 @@ The owner's brief for UI: **clean, minimalistic, uncluttered, organised**, with 
 Every screen's layout is in `11-interface-catalogue.md` Part D. In short:
 
 - **Command view:** the kingdom's name, lives and the date as plain text along the top; up to three alerts under the date; the minimap, overlay switches and a depth gauge at the left; the command bar at the bottom centre; the inspector at the right while something is selected. Build and Zones open as a low palette above the command bar; Routes, Army, Realm and Trade open as a panel down the left edge.
-- **Possess:** Minecraft's screen. Crosshair, hotbar, health and stamina above it, the unit's name at the bottom left, alerts at the top right. Nothing else.
+- **Possess:** Minecraft's screen, seen from outside: the crosshair (Shoulder only), the hotbar with health and stamina above it and the level and experience under it, the unit's skills beside it, its name at the bottom left, the band at the left edge, alerts at the top right. Nothing else.
 - **Map and Ledger:** full screen.
 
 ---
@@ -132,7 +132,7 @@ Implement as CSS custom properties in one file (`packages/client/src/ui/tokens.c
 
 All input is specified in `11-interface-catalogue.md`: Part B (what a browser allows, mouse, every key binding, rebinding) and Part C (the cameras). In short:
 
-- **Possess mode uses Minecraft's default controls and feel.** That is the owner's rule: possessing a unit should be the same as controlling a Minecraft player. Muscle memory from Minecraft must just work.
+- **Possess mode uses Minecraft's default controls and feel, seen from outside.** The owner's rules: a played unit moves, digs, builds and fights like a Minecraft player, from above (Overhead) or over its shoulder (Shoulder), never in first person. Muscle memory from Minecraft must just work; F5 switches the camera, and Z X C V R G hold the unit's skills.
 - **Command view is a strategy-game camera:** W A S D or the screen edge pans, the wheel zooms toward the cursor, right-drag orbits, middle-drag grabs the ground, and Q and E turn. Left click selects or places; right click orders, cancels or deselects. There are no right-click menus: everything a thing can do is in its inspector.
 - **Tab switches between the two.**
 - **Ctrl + W closes a browser tab** on Windows and Linux, and Minecraft players sprint by holding Left Ctrl with W. So entering the world goes fullscreen, where the browser hands those keys to the game. In a window, Left Ctrl is switched off on Windows and Linux, sprint is double-tap W, and the browser asks before the tab closes.
@@ -200,11 +200,11 @@ Keep contrast *low inside* a texture, so big surfaces don't look noisy, and put 
 **Light.** Soft AO, a warm or cool sun, strong fog and aerial perspective for scale. Emissives with bloom: lava, crystal, glowcaps, moonsilver, skystone, ember crust, ichor, the Wellspring.
 
 **People (Milestone 2+).**
-- Blocky voxel figures about 1.8 m tall with simple rigid-part animation.
-- Roles read by clothing colour and the tool in hand.
+- Blocky figures with a Minecraft avatar's proportions, 1.8 m tall, generated in code with simple rigid-part animation (`13-units-classes-power.md` §3.2). This is the owner's look for now.
+- Classes read by clothing colour and the tool in hand; worn armour shows as a layer by material.
 - **The Steward:** tall, grey, hooded, with a small lantern.
 - **The king:** crown and cloak.
-- Heroes get distinct silhouettes. Every enemy family is designed silhouette-first.
+- Champions and above wear a trim of the kingdom's colours; a Calamity carries a visible fire. Every enemy family is designed silhouette-first.
 
 **Architecture.**
 - **Old Crown:** heavy stone, round arches, iron fittings, geometric motifs.

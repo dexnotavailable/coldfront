@@ -50,7 +50,7 @@ Nothing loads from a CDN at runtime. Every dependency comes from npm and is bund
 ├─ README.md            owner's guide
 ├─ PROMPTS.md           prompts the owner pastes into sessions
 ├─ docs/                design docs, diagrams, committed postcards, progress log, owner references
-│  └─ tools/ui-catalogue.mjs  checks the interface catalogue's tables and prints them as JSON (no dependencies)
+│  └─ tools/           ui-catalogue.mjs (the interface catalogue's tables) and content-check.mjs (the content tables of docs 13–15), both dependency-free and both able to print JSON
 ├─ packages/
 │  ├─ shared/           pure TS: constants, math, noise, sdf, worldgen, blocks (later: sim, items, protocol)
 │  │  ├─ src/world/constants.ts
@@ -129,6 +129,7 @@ These apply to anything whose output must match across machines: world generatio
 ### Entities (M2+)
 - bitECS over typed arrays, for simulated units only.
 - Identities for all people are compact records outside the ECS (plain tables, then SQLite on the server). Only *hydrated* units are ECS entities (§9).
+- **The unit's sheet, classes, skills and items** are content: tables in `13-units-classes-power.md`, `14-class-library.md` and `15-item-library.md`, built into `packages/shared/src/content/content.gen.json` by `npm run content:build` (§7). Skills run as data on a small set of handlers (13 §19).
 - **One unit model.** Each simulated unit has a swappable controller that emits an `InputFrame` every 50 ms: `{ seq, forward, back, left, right, jump, sprint, sneak, yaw, pitch, action? }`, where `action` is dig, place, use, attack, equip or craft with a target and face. AI controllers and a possessing player's controller emit identical frames; one shared `physics.step()` and one shared `actions.validate/apply()` consume them. Possession swaps the controller. (`10-prior-art.md` §3.)
 
 ---
@@ -167,9 +168,9 @@ pmndrs `postprocessing`: `RenderPass → EffectPass(Bloom with threshold, ACES t
 
 **Game layer (M1)**
 - **Input follows `11-interface-catalogue.md` Part B.** Pointer lock (`unadjustedMovement: true`, retried without it where that isn't supported). Entering the world goes fullscreen with the keyboard locked where the browser allows, so Ctrl-sprint doesn't trigger Ctrl+W (close tab). In a window on Windows and Linux, Left Ctrl is switched off and sprint is double-tap W. A `beforeunload` guard is on whenever the player is in the world. Keys are read by position (`KeyboardEvent.code`) through one binding table that the key list edits.
-- **Cameras follow Part C.** First person and third person (F5) from phase 1.1; the Command camera, as king's view, from phase 1.4; the cut from phase 1.8, with the caves (leave room for a clip height in the terrain material from phase 1.4). The camera maths is pure and unit-tested (Part C7).
+- **Cameras follow Part C.** Shoulder (third person, with the avatar) from phase 1.1; Overhead (F5) from phase 1.4; the Command camera, as king's view, from phase 1.4; the cut from phase 1.8, with the caves (leave room for a clip height in the terrain material from phase 1.4). The camera maths is pure and unit-tested (Part C7).
 - An AABB player controller; DDA raycast for block picking.
-- **The player controller is the Minecraft controller** (the owner's rule): first person, Minecraft's controls (`11-interface-catalogue.md` B3–B4) and movement feel. From Milestone 2 the M1 controller is replaced by the shared unit physics (the prismarine-physics port), so the player and every NPC move identically.
+- **The player controller is the Minecraft controller** (the owner's rule): seen in third person, never first person, with Minecraft's controls (`11-interface-catalogue.md` B3–B4) and movement feel. From Milestone 2 the M1 controller is replaced by the shared unit physics (the prismarine-physics port), so the player and every NPC move identically.
 - Player constants: **Minecraft's per-tick values at a fixed 20 Hz** (1 block = 1 m; a tick is 50 ms):
   - box 0.6 × 1.8 × 0.6 m; eye at 1.62 m (1.27 m sneaking)
   - walk ≈ 4.317 m/s, sprint ≈ 5.612 m/s, sneak ≈ 1.31 m/s
@@ -200,6 +201,7 @@ pmndrs `postprocessing`: `RenderPass → EffectPass(Bloom with threshold, ACES t
 | `npm run bench:gen` | generation, lighting and meshing timings on the fixed bench set |
 | `npm run golden:update` | regenerate golden hashes whenever generated output changes (bump `WORLDGEN_VERSION` at most once per PR) |
 | `npm run ui:strings` | run `docs/tools/ui-catalogue.mjs --json` and write the interface's string table |
+| `npm run content:build` | (from Milestone 2) run `docs/tools/content-check.mjs --json` and write `packages/shared/src/content/content.gen.json`; `npm run check` fails when it is out of date |
 | `npm run ui:lint [-- --complete]` | the catalogue check, the text-literal and colour scans, and the gallery-versus-catalogue comparison (`11-interface-catalogue.md` A6). `--complete` also fails on rows the gallery doesn't show yet |
 | `npm run ui:shots [-- --sheet <screens>]` | screenshots of every gallery state at 1280 × 720, at 1920 × 1080 and at 150% interface scale, plus the on-page checks (`11-interface-catalogue.md` A6, A7). `--sheet` writes a contact sheet for the report |
 | `npm run test:browser` | the Playwright tests: the smoke test, the camera drive (`11-interface-catalogue.md` C7) and the keyboard walk. It needs a browser, so it is not part of `npm test` |

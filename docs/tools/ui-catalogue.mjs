@@ -36,6 +36,9 @@ const PROPER = new Set([
   'Enter', 'Esc', 'Tab', 'Shift', 'Ctrl', 'Space',
   'WebGL2', 'Left', 'Delete', 'Home', 'End', 'Backspace', 'I', 'W', 'Y', 'N', 'X', 'Z',
   'Academy', 'Alt', 'PageUp', 'PageDown',
+  // Game terms (13-units-classes-power.md) that keep their capital.
+  'Overhead', 'Shoulder', 'Knack', 'Ultimate', 'Ultimates', 'Mastery', 'Resolve', 'Flame', 'Trial',
+  'Elite', 'Champion', 'Paragon', 'Calamity', 'Guard', 'Hearth', 'Great', 'Hearthkeeper',
 ]);
 const BANNED = [
   [/!/, 'exclamation mark'],

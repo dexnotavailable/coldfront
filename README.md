@@ -12,7 +12,9 @@ This repository starts as **design docs only**. AI coding sessions build the gam
 | `docs/01-vision.md` … `docs/10-prior-art.md` | The design: vision, world, lore, terrain spec, systems, UI and art, architecture, roadmap, open questions, and the audit of open-source code we can reuse |
 | `docs/11-interface-catalogue.md` | **The interface bible.** The cameras, the controls, and every screen, button, menu, slider, key and sentence in the game. If it isn't listed there, the agent doesn't build it |
 | `docs/12-sessions.md` | How a session runs: screenshots, branches, pushes, preview links, and what differs between Codex and Claude Code |
-| `docs/tools/ui-catalogue.mjs` | A small checker for the catalogue: it fails if a label is too long, a tooltip is missing, a banned word appears, and so on |
+| `docs/13-units-classes-power.md` | **People's rulebook.** How you play a unit (from above or over its shoulder, never first person), how people fight, learn and grow, and the power ladder up to the Calamity |
+| `docs/14-class-library.md` · `docs/15-item-library.md` | Every class and skill, and every item, as tables the game is built from |
+| `docs/tools/ui-catalogue.mjs` · `docs/tools/content-check.mjs` | Small checkers for the catalogue and for the class and item libraries: they fail if a name is too long, a skill breaks its budget, a recipe uses an item that doesn't exist, and so on |
 | `docs/progress.md` | The live progress log. Read this after each session. |
 | `docs/diagrams/` | The world map and funnel diagrams (and the script that draws them) |
 | `.claude/settings.json` | Claude Code's session settings: turns on ultracode at the highest reasoning effort, pre-approves routine commands (npm scripts, git), blocks force-pushes, pushes to `main` and merges as a safety net, and installs the project's packages when a cloud session starts. Codex doesn't read it |

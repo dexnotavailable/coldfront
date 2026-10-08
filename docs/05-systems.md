@@ -16,7 +16,7 @@ Milestones 2–8 build these systems. Milestone 1 builds none of them, but its a
 
 ## 2. Kings and lives
 
-- **The king** is a unit with very high stats: about the combat power of 50 basic soldiers *(tune: HP ×40, damage ×6, heavy armour, regen out of combat)*. He can hold off an ambush long enough to escape, but can't beat an army or a Warden alone.
+- **The king** is a unit with very high stats: about the combat power of 50 soldiers when well armed (`13-units-classes-power.md` §14). He can hold off an ambush long enough to escape, but can't beat an army or a Warden alone.
 - **Command features are always open.** The king can issue orders from anywhere. Orders travel through the network (§4), so they take effect only where the network reaches, after the delivery delay.
 - **Offline AI.** While the player is offline, the king:
   - stays in the best-defended place (the strongest keep)
@@ -59,13 +59,12 @@ Every screen, control and key of both modes is listed in `11-interface-catalogue
 
 You see live information only inside your connected network coverage. Outside it is fog, with stale last-seen markers.
 
-**Possess mode is Minecraft.** The owner's rule: possessing a unit should feel exactly like controlling a Minecraft player.
-- First person by default; F5 for third person.
-- Minecraft's controls (`11-interface-catalogue.md` B3–B4) and movement feel: walk, sprint, sneak, jump, swim, climb, fall damage, the same player box and eye height.
+**Possess mode plays a unit.** The owner's rules (8 October 2026): there is no first-person view; a played unit moves, digs, builds and fights like a Minecraft player, seen from above (**Overhead**) or over its shoulder (**Shoulder**), and F5 switches between them (`13-units-classes-power.md` §3, `11-interface-catalogue.md` C4).
+- Minecraft's controls (`11-interface-catalogue.md` B3–B4) and movement feel: walk, sprint, sneak, jump, swim, climb, fall damage, the same player box.
 - Breaking a block takes time set by the block's hardness and the tool in hand; placing uses real items from the unit's inventory.
-- Attack, use, interact and manage inventory as in Minecraft; shields block with the right mouse button. Learned abilities sit on Z, X, C, V, R and G: one or two for anyone who trained them, up to six for a hero (§9).
+- Attack, use, interact and manage inventory as in Minecraft; shields block with the right mouse button. The unit's skills sit on Z, X, C, V, R and G (`13-units-classes-power.md` §3.6, §11).
 
-The unit's own stats apply on top: a strong miner digs faster, and a clumsy clerk fights badly.
+The unit's own sheet applies on top (`13-units-classes-power.md` §4): a strong miner digs faster, and a clumsy clerk fights badly.
 
 **One unit model.** Every unit, AI-driven or possessed, runs the same code path. A controller produces the same input a human produces (movement keys, look direction, and an optional action such as dig, place, use, attack, equip or craft), and one shared physics step and one shared action system consume it. AI controllers and the possessing player's controller are interchangeable: possessing a unit just swaps its controller. See `07-architecture.md` §5 (entities) and §9 (the server), and `10-prior-art.md` §3.
 
@@ -73,9 +72,9 @@ The unit's own stats apply on top: a strong miner digs faster, and a clumsy cler
 
 **Officers have a command radius.** While you possess a Captain (radius ~64 m) or a Marshal (~160 m) *(tune)*, you order that officer's company or army directly within the radius, with **no network delay**: follow me, charge that target, hold here, ride them down (the order wheel, hold B). This is the middle rung of the king → officer → soldier ladder, and it's how a human-led raid outpaces the AI. For example: take a mounted troop, chase down the messengers riding for help, then hit the settlement before its reinforcements hear.
 
-**Why possession matters.** A possessed unit acts with *player skill*: timing, aim, precise building, scouting, chasing a messenger. AI-controlled units use simpler tactics. Abilities are designed for manual play (the AI uses a subset). The intended habit is to invest in a few people (a hero, a band) and play them often.
+**Why possession matters.** A possessed unit acts with *player skill*: timing, aim, precise building, scouting, chasing a messenger. AI-controlled units use simpler tactics. Skills are designed for the player's hands; the AI uses them by simple rules (`13-units-classes-power.md` §11.6). Played people learn three times as fast, and five times in their first minutes each day, so the intended habit is to keep a band of people and rotate through them (`13-units-classes-power.md` §3.8).
 
-**Switching.** Tab toggles modes: in Command view it possesses the selected person (or the last one possessed, or the king), and a person's inspector has a Possess button. Home returns you to the king. While you possess someone else, the king's body is AI-controlled. Only units inside your connected coverage (§4) can be possessed.
+**Switching.** Tab toggles modes: in Command view it possesses the selected person (or the last one possessed, or the king), and a person's inspector has a Possess button. Home returns you to the king, and `,` and `.` switch along your band. While you possess someone else, the king's body is AI-controlled. Only units inside your connected coverage (§4) can be possessed.
 
 ---
 
@@ -108,7 +107,7 @@ The network is your eyes, voice and reach. **It defines your territory.**
 
 ## 5. People
 
-**Identity** (always stored, for everyone): name, sex, age, birthday, household, home, workplace, role, stats, skills, traits, loyalty, needs tier, health, equipment, small inventory.
+**Identity** (always stored, for everyone): name, sex, age, birthday, household, home, workplace, class, level and grade, attributes, proficiencies, skills, traits, loyalty, needs tier, health, equipment, small inventory. Everything about classes, levels, grades and skills is in `13-units-classes-power.md`.
 
 **Stats** (1–20; mean 10, SD ~3, except Affinity, which is skewed low: mean 6, SD ~3.3, so Affinity ≥ 15 is about 1 person in 300):
 
@@ -122,7 +121,7 @@ The network is your eyes, voice and reach. **It defines your territory.**
 | Affinity | magic (≥ 15 can train as a mage) |
 
 - **Average differences by sex** (the distributions overlap heavily): men have Strength +2 on average; women have Will +2 on average, so their loyalty holds steadier.
-- **Skills** (0–100) grow with practice on a log curve. Stats set learning rate and cap. Skills: farming, mining, woodcutting, building, hauling, smithing, carpentry, masonry, cooking, tailoring, alchemy, medicine, trade, management, riding, melee, ranged, siege, magic (mages only).
+- **Proficiencies** (0–100, one per trade) grow with practice; attributes set their caps and Intellect the learning speed (`13-units-classes-power.md` §8 lists all 25). They were called skills in earlier drafts; "skills" now means the powers of §9.
 - **Traits** (0–3 per person, minor effects): Hardy, Night-eyed, Quick learner, Greedy (pay-sensitive), Homebody (family-bound), Brave, Craven, Pious, Wanderlust, and others.
 - **Age:** 1 year per real week.
   - children 0–15 (light apprentice work from 12)
@@ -137,7 +136,7 @@ The network is your eyes, voice and reach. **It defines your territory.**
 - **Neutral villages:** several dozen at season start (20–150 people each), in the outer and inner rings.
   - Win them over with trade, gifts or protection: loyalty toward you rises until they swear.
   - Or conquer them: they join resentful, with low starting loyalty.
-- **Captives** (from surrender): recruit them (low starting loyalty, shakier if their family lives elsewhere), ransom them, or release them. Captives keep their skills.
+- **Captives** (from surrender): recruit them (low starting loyalty, shakier if their family lives elsewhere), ransom them, or release them. Captives keep their levels and proficiencies.
 
 ---
 
@@ -160,7 +159,7 @@ The network is your eyes, voice and reach. **It defines your territory.**
   1. Officials turn goals into tasks. Examples: stock targets ("keep 200 bread"), blueprints, upkeep, orders.
   2. Workers take tasks by fit: skill and stat match, traits, distance.
   3. The player sets priorities and policies and never has to micromanage.
-- **Job choice** uses stats and skills only. No sex-based rules.
+- **Job choice** uses attributes and proficiencies only. No sex-based rules. The full ladder of offices and posts, each with its office skill, is in `13-units-classes-power.md` §13.
 - **Overrides:** pin a person to a job, set priorities, draw routes by hand, set stock targets, forbid areas. Possessing an official gives direct access to their panel.
 - Better officials = smoother automation. A rival's best quartermaster is a legitimate raid target.
 
@@ -174,7 +173,7 @@ The network is your eyes, voice and reach. **It defines your territory.**
 | **Craftsman** | + varied food (2+ kinds, including bread or meat), ale, tailored clothing, a proper house (enclosed, with a hearth), tools for their trade, a tavern and hearth-shrine within 150 m |
 | **Noble** | + fine food (3+ kinds, including preserved meat or fish and salt or spice), wine or spirits, fine clothing (fur or silk), 1+ luxury (deep pearls, gold or silver jewellery, books, mana lamps, art), a manor, a staffed household, gardens or a plaza |
 
-- **Promotion:** a household moves up a tier after 90% needs satisfaction for 5 days, if its roles fit: craftsmen are skilled trades; nobles are officials, masters, heroes and rich merchants. **Demotion:** a household drops a tier after 5 days below 60% needs satisfaction *(tune)*.
+- **Promotion:** a household moves up a tier after 90% needs satisfaction for 5 days, if its roles fit: craftsmen are skilled trades; nobles are officials, masters, people of Champion grade or higher, and rich merchants. **Demotion:** a household drops a tier after 5 days below 60% needs satisfaction *(tune)*.
 - **Effects** *(tune)*:
   - productivity: +0 / +20 / +40%
   - tax yield: ×1 / ×2.5 / ×6
@@ -203,7 +202,7 @@ Will slows negative swings.
 
 **In war.** **Morale** (0–100) is a battle-time value per unit:
 - It starts from loyalty.
-- It falls with casualties, fear (Wardens, heroes) and being flanked.
+- It falls with casualties, fear (Wardens, Calamities) and being flanked.
 - It rises with officers nearby, the king's presence and winning.
 
 When an army has lost ≥ 50% of its strength, or its morale breaks, each remaining unit's response depends on its **loyalty** (the owner's rule):
@@ -226,34 +225,25 @@ These raise a target's attraction toward you. Once their own loyalty falls low e
 
 ---
 
-## 9. Heroes and mages
+## 9. Champions and mages
 
 - **Standouts** are people with unusually high stats (≈ 0.5%: two or more stats ≥ 17, or an exceptional total). The game **highlights** them when they join, but the player decides whom to invest in.
-- **Anyone can learn 1–2 abilities** from trainers (training yard, archery range, academy). That lets you invest in a *group* of individuals, not just one hero.
-- **Heroes.** The player can promote anyone to **hero**, usually a standout. Heroes get 4–6 ability slots and grow from three sources:
-  - **practice** (experience per action type)
-  - **trainers and buildings**, which teach moves
-  - **artifacts and scrolls** from Wardens (unique abilities)
-
-  Examples: Charge, Cleave, Parry, War Cry (morale), Mark. Mage heroes: Ward, Bolt, Flare (light), Mend, Blink.
-- **Hero death is permanent.** Their gear drops physically.
-- **Mages** need Affinity ≥ 15 (~1 in 300 people) and train at an **Academy** with a teacher (a mage or scrolls) *(tune)*:
-  - 2 in-game years (2 real weeks) to Novice
-  - 4 years to Adept
-  - 8 years to Master
-- **Mage roles:**
+- **Everyone has a class and skills,** and climbs seven grades from Common to Calamity: `13-units-classes-power.md` §9–§11, with every class and skill in `14-class-library.md`. There is no "Make hero": the player invests by playing people, promoting them into the scarce Elite, Champion and Paragon places, and arming them. The old hero's 4–6 ability slots became each class's Knack, Active, Ultimate, Art and Mastery, plus relic slots for the Wardens' drops.
+- **Death is permanent** for everyone, at every grade, though people are first **Downed** and can be revived (`13-units-classes-power.md` §5.9). Their gear drops where they fall.
+- **Mages** need Affinity ≥ 15 (~1 in 300 people) and learn at an **Academy** with a teacher (a Master of magic, or scrolls). Magic proficiency grows at a twentieth of the usual rate: about a real week to Journeyman, three to Adept and seven to Master, faster when played (`13-units-classes-power.md` §8, §10.8) *(tune)*.
+- **Mage classes:**
   - **Attuner:** generators, relays and wards need a mage's attunement, renewed every few days
-  - **Enchanter:** items
-  - **Battle mage:** spells; usually a hero
-- Overuse causes **burn** (injury, time off). Mages are your scarcest people. Protect them.
-- Kings can't be mages. A hero with high Affinity can be both hero and mage.
+  - **Enchanter:** items and runes
+  - **Mage:** the battle mage, who becomes a Pyromancer, Rimecaller, Stormcaller or Stoneshaper at Elite
+- Overuse causes **Mana burn** (`13-units-classes-power.md` §6). Mages are your scarcest people. Protect them.
+- Kings can't be mages.
 
 ---
 
 ## 10. Items, inventories and storage
 
 - **Every item exists at a place:** on the ground, in a container or stockpile, in someone's inventory, or on a cart, boat, wagon or conveyor. There is no global inventory.
-- Item data: type, quantity, weight, volume class, **quality** (0–100, from maker skill, tools and inputs), **durability** (tools, weapons, armour), **spoilage timer** (food), owner.
+- Item data: type, quantity, weight, volume class, **quality** (0–100, from the maker's proficiency, tools and inputs: `15-item-library.md` §1), **durability** (tools, weapons, armour), **spoilage timer** (food), owner.
 - **The build rule:** a blueprint can only use materials physically reachable in *that settlement's* stockpiles. Missing materials must be hauled in.
 - Unguarded stockpiles can be looted by enemies and rival kings.
 - **Wear:**
@@ -282,7 +272,7 @@ These raise a target's attraction toward you. Once their own loyalty falls low e
 
 ## 12. Production and factories
 
-- **Workstations:** forge, anvil, smelter, kiln, mill, bakery, loom, carpenter's bench, tannery, alchemy table, enchanting altar, mint, and more. Each has recipes: inputs, outputs and a time scaled by worker skill, tool quality and building quality.
+- **Workstations:** forge, anvil, smelter, kiln, mill, bakery, loom, carpenter's bench, tannery, alchemy table, enchanting altar, mint, and more. Each has recipes: inputs, outputs and a time scaled by worker proficiency, tool quality and building quality. Every item and its recipe is in `15-item-library.md`.
 - **Chain length:** medium for most goods (3–5 steps). **Ultra-long** for top-tier gear and mana tech (10–20 steps, several regions, several monopolies, mages).
 
 **Example chains** (starting design):
@@ -454,7 +444,7 @@ These raise a target's attraction toward you. Once their own loyalty falls low e
 - **Companies** (a Captain + 10–50 soldiers) form **armies** (a Marshal + companies).
   - Orders: move, attack, hold, patrol, escort, siege, garrison, retreat.
   - Light formations: line, column, loose.
-- **Combat:** HP, armour, weapon damage and range, stats, skills and morale.
+- **Combat:** `13-units-classes-power.md` §5–§6 (Health, armour, damage types, Overmatch, block and parry, conditions, Downed), with morale.
 - **Siege engines:** ballista, catapult, trebuchet, ram, titan-bone engines, and later mana artillery. They break blocks and hurt fortress Wardens.
 - **Capture:** hold buildings and network nodes to take them. Surrendered people become captives.
 - **Taking a kingdom:** capture its capital and a large share of its people, or kill its king.
