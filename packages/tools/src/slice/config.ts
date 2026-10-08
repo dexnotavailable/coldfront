@@ -6,9 +6,9 @@ import {
   finiteNumber,
   parseFlags,
   seedValue,
-  testWorldOnly,
   tuple,
   value,
+  worldValue,
 } from "../terrain-review/arguments.js";
 import {
   type SectionRequest,
@@ -18,6 +18,7 @@ import {
 } from "./render.js";
 export interface SliceCommand {
   readonly help: boolean;
+  readonly world: "main" | "test";
   readonly seed: number;
   readonly outputDirectory: string;
   readonly overview: SectionRequest;
@@ -34,6 +35,7 @@ export function parseSlice(args: readonly string[]): SliceCommand {
       "seed",
       "world",
       "layer",
+      "overlays",
       "from",
       "to",
       "window",
@@ -45,7 +47,16 @@ export function parseSlice(args: readonly string[]): SliceCommand {
     ],
     ["window"],
   );
-  testWorldOnly(flags);
+  const world = worldValue(flags),
+    overlays = value(flags, "overlays", world === "main" ? "plan" : "none");
+  if (overlays !== "plan" && overlays !== "none")
+    throw new Error("Overlays must be plan or none");
+  if (world === "test" && overlays === "plan")
+    throw new Error("The test world has no WorldPlan bands");
+  if (flags.has("layer"))
+    throw new Error(
+      "Slices span all depth layers; use --overlays plan|none and --y-min/--y-max",
+    );
   const seed = seedValue(flags),
     from = point(value(flags, "from", "-15556,15556"), "From"),
     to = point(value(flags, "to", "15556,-15556"), "To");
@@ -56,6 +67,7 @@ export function parseSlice(args: readonly string[]): SliceCommand {
     yMin: WORLD_MIN_Y,
     yMax: WORLD_MAX_Y,
     metresPerPixel: 16,
+    overlays,
   };
   const pixels = finiteNumber(value(flags, "px", "1"), "Window pixel size");
   if (pixels !== 1 && pixels !== 2)
@@ -64,8 +76,14 @@ export function parseSlice(args: readonly string[]): SliceCommand {
     value(flags, "len", String(Math.min(2000, sectionLength(overview)))),
     "Window length",
   );
-  const yMin = finiteNumber(value(flags, "y-min", "-64"), "Window y-min"),
-    yMax = finiteNumber(value(flags, "y-max", "48"), "Window y-max");
+  const yMin = finiteNumber(
+      value(flags, "y-min", world === "main" ? String(WORLD_MIN_Y) : "-64"),
+      "Window y-min",
+    ),
+    yMax = finiteNumber(
+      value(flags, "y-max", world === "main" ? String(WORLD_MAX_Y) : "48"),
+      "Window y-max",
+    );
   const centres = flags
     .get("window")
     ?.map((v) => point(v, "Window centre")) ?? [
@@ -73,8 +91,9 @@ export function parseSlice(args: readonly string[]): SliceCommand {
   ];
   return {
     help: flags.has("help"),
+    world,
     seed,
-    outputDirectory: value(flags, "out", `out/slices/seed-${seed}`),
+    outputDirectory: value(flags, "out", `out/slices/${world}/seed-${seed}`),
     overview,
     windows: centres.map((centre) =>
       windowSection(overview, centre, length, pixels, yMin, yMax),

@@ -2,9 +2,12 @@
 /** @jsxImportSource preact */
 import { useEffect, useState } from "preact/hooks";
 import { Banner, Button } from "./components/core";
+import { DiscoveryCard } from "./components/DiscoveryCard";
 import { Presence } from "./components/Presence";
+import { dismissSelect } from "./components/Select";
 import { dismissTooltip, TooltipHost } from "./components/TooltipHost";
 import type { UiController } from "./controller";
+import { MapScreen } from "./screens/MapScreen";
 import {
   BlockPalette,
   ClearConfirmation,
@@ -20,6 +23,7 @@ import { DebugOverlay, Hotbar } from "./screens/WorldHud";
 import type { CatalogueId } from "./t";
 
 const bindings: Readonly<Record<string, CatalogueId>> = {
+  KeyM: "key.all.map",
   KeyE: "key.pos.inventory",
   F1: "key.all.hud",
   F2: "key.all.shot",
@@ -46,10 +50,12 @@ export function GameUi({
     const keys = (event: KeyboardEvent): void => {
       if (event.repeat || event.altKey || event.metaKey) return;
       const field =
-        event.target instanceof HTMLInputElement &&
-        !["range", "checkbox"].includes(event.target.type);
+        (event.target instanceof HTMLInputElement &&
+          !["range", "checkbox"].includes(event.target.type)) ||
+        (event.target instanceof Element &&
+          !!event.target.closest("[data-select-input]"));
       if (event.key === "Escape") {
-        if (dismissTooltip()) {
+        if (dismissTooltip() || dismissSelect()) {
           event.preventDefault();
           event.stopImmediatePropagation();
           return;
@@ -72,7 +78,8 @@ export function GameUi({
       if (field || ui.confirmSeed.value !== null) return;
       if (
         ui.blocking.value &&
-        !(event.code === "KeyE" && ui.blocking.value === "blocks")
+        !(event.code === "KeyE" && ui.blocking.value === "blocks") &&
+        !(event.code === "KeyM" && ui.blocking.value === "map")
       )
         return;
       const id = bindings[event.code];
@@ -106,6 +113,7 @@ export function GameUi({
           {blocking === "loading" && <LoadingScreen ui={ui} />}{" "}
           {blocking === "load-failed" && <LoadingScreen ui={ui} failed />}
           {game.lifecycle === "ready" &&
+            blocking !== "map" &&
             ui.hudVisible.value &&
             game.mode !== "postcard" && (
               <>
@@ -127,6 +135,16 @@ export function GameUi({
             )}
           {blocking === "menu" && <MenuScreen ui={ui} />}{" "}
           {blocking === "blocks" && <BlockPalette ui={ui} />}{" "}
+          {blocking === "map" && <MapScreen ui={ui} />}
+          {!blocking &&
+            ui.hudVisible.value &&
+            game.mode !== "postcard" &&
+            ui.discovery.value && (
+              <DiscoveryCard
+                key={ui.discovery.value.serial}
+                content={ui.discovery.value.content}
+              />
+            )}
           <Presence visible={ui.confirmSeed.value !== null} leaveMs={100}>
             {(leaving) => <ClearConfirmation ui={ui} exiting={leaving} />}
           </Presence>{" "}

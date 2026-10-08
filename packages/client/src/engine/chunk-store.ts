@@ -1,13 +1,16 @@
 import { BLOCK_REGISTRY, Block } from "../../../shared/src/blocks/registry.js";
 import { voxelIndex } from "../../../shared/src/world/coordinates.js";
-import {
-  Column,
-  collectTestTrees,
-  createColumnSample,
-  createVoxelSample,
-  sampleTestColumn,
-  sampleTestVoxel,
-} from "../../../shared/src/worldgen/test-world.js";
+import type {
+  VoxelSample,
+  WorldAreaSampler,
+  WorldBounds,
+  WorldContext,
+  WorldPlanData,
+} from "../../../shared/src/world/types.js";
+import type { WorldSession } from "../contracts/game-ui.js";
+import { sameSession } from "../game/session.js";
+import { insideFrame } from "../game/world-save.js";
+import { planBytes } from "./plan-transport.js";
 import { TerrainWorkers } from "./worker-pool.js";
 import {
   type Address,
@@ -36,34 +39,73 @@ export class ChunkStore {
   readonly chunks = new Map<string, StoredChunk>();
   readonly edits = new Map<number, VoxelEdit>();
   readonly uploads: ChunkResult[] = [];
-  readonly workers: TerrainWorkers;
+  workers: TerrainWorkers;
   onFailure: (error: Error) => void = () => {};
   private tick = 0;
   private readonly pending = new Map<string, Promise<void>>();
   private readonly pointColumns = new Map<
     string,
-    { c: Float64Array; trees: ReturnType<typeof collectTestTrees> }
+    { c: Float64Array; area: WorldAreaSampler }
   >();
-  private readonly voxel = createVoxelSample();
+  private readonly pointAreas = new Map<string, WorldAreaSampler>();
+  private readonly voxel: VoxelSample = { density: 0, block: 0, fluid: 0 };
   private stopped = false;
+  private suspended = false;
+  suspendWorkers(): void {
+    if (this.suspended || this.stopped) return;
+    this.suspended = true;
+    this.workers.dispose();
+  }
+  async resumeWorkers(): Promise<void> {
+    if (!this.suspended || this.stopped) return;
+    await Promise.allSettled(this.pending.values());
+    if (this.stopped) return;
+    this.workers = new TerrainWorkers(
+      this.world,
+      this.context.plan?.data ?? null,
+      [...this.edits.values()],
+    );
+    this.suspended = false;
+    await this.workers.ready;
+  }
   constructor(
-    readonly seed: number,
+    readonly world: WorldSession,
+    readonly context: WorldContext,
+    plan: WorldPlanData | null,
     saved: readonly VoxelEdit[],
   ) {
     for (const edit of saved)
       this.edits.set(editKey(edit.x, edit.y, edit.z), edit);
-    this.workers = new TerrainWorkers(seed, saved);
+    this.workers = new TerrainWorkers(world, plan, saved);
+  }
+  get seed(): number {
+    return this.world.identity.seed;
   }
   private queryColumn(
     x: number,
     z: number,
-  ): { c: Float64Array; trees: ReturnType<typeof collectTestTrees> } {
+  ): { c: Float64Array; area: WorldAreaSampler } {
     const key = `${x},${z}`;
     let value = this.pointColumns.get(key);
     if (!value) {
+      const cx = Math.floor(x / 32),
+        cz = Math.floor(z / 32),
+        tile = `${cx},${cz}`;
+      let area = this.pointAreas.get(tile);
+      if (!area) {
+        area = this.context.prepareArea({
+          minX: cx * 32 + 0.5,
+          minZ: cz * 32 + 0.5,
+          maxX: cx * 32 + 31.5,
+          maxZ: cz * 32 + 31.5,
+        });
+        this.pointAreas.set(tile, area);
+        if (this.pointAreas.size > 64)
+          this.pointAreas.delete(this.pointAreas.keys().next().value as string);
+      }
       value = {
-        c: sampleTestColumn(this.seed, x + 0.5, z + 0.5, createColumnSample()),
-        trees: collectTestTrees(this.seed, x + 0.5, z + 0.5, x + 0.5, z + 0.5),
+        c: area.sampleColumn(x + 0.5, z + 0.5, area.createColumn()),
+        area,
       };
       this.pointColumns.set(key, value);
       if (this.pointColumns.size > 8192)
@@ -74,26 +116,21 @@ export class ChunkStore {
     return value;
   }
   get = (x: number, y: number, z: number): number => {
+    // Solid frame prevents body/picking from escaping; generation's external
+    // lighting halo still comes from the canonical shared boundary policy.
+    if (!insideFrame(x, y, z)) return Block.Worldstone;
     const edit = this.edits.get(editKey(x, y, z));
     if (edit) return edit.block;
     const cx = Math.floor(x / 32),
       cy = Math.floor(y / 32),
-      cz = Math.floor(z / 32),
-      chunk = this.chunks.get(`${cx},${cy},${cz}`)?.result;
+      cz = Math.floor(z / 32);
+    const chunk = this.chunks.get(`${cx},${cy},${cz}`)?.result;
     if (chunk)
       return chunk.blocks[
         voxelIndex(x - cx * 32, y - cy * 32, z - cz * 32)
       ] as number;
-    const { c, trees } = this.queryColumn(x, z);
-    return sampleTestVoxel(
-      this.seed,
-      x + 0.5,
-      y + 0.5,
-      z + 0.5,
-      this.voxel,
-      c,
-      trees,
-    ).block;
+    const { c, area } = this.queryColumn(x, z);
+    return area.sampleVoxel(x + 0.5, y + 0.5, z + 0.5, this.voxel, c).block;
   };
   lightAt(x: number, y: number, z: number): number {
     const cx = Math.floor(x / 32),
@@ -106,25 +143,48 @@ export class ChunkStore {
     );
   }
   surface = (wx: number, wz: number, cut = Infinity): number => {
-    const x = Math.floor(wx),
-      z = Math.floor(wz),
-      { c, trees } = this.queryColumn(x, z);
-    let top = Math.ceil(c[Column.Height] as number);
-    for (const t of trees)
-      top = Math.max(top, Math.ceil(t.crownY + t.crownHeight));
+    const x = Math.max(-22528, Math.min(22527, Math.floor(wx))),
+      z = Math.max(-22528, Math.min(22527, Math.floor(wz)));
+    const { c, area } = this.queryColumn(x, z);
+    const sky = area.skyInput(
+      x + 0.5,
+      z + 0.5,
+      { solidBelowY: 0, highestFilterY: 0 },
+      c,
+    );
+    let top = Math.ceil(sky.highestFilterY);
     for (const edit of this.edits.values())
       if (edit.x === x && edit.z === z && edit.block !== Block.Air)
         top = Math.max(top, edit.y + 1);
-    top = Math.min(top, Math.floor(cut));
-    for (let y = top; y >= Math.max(-1536, top - 256); y--) {
-      const b = this.get(x, y, z);
-      if (b !== Block.Air) return Math.min(y + 1, cut);
-    }
-    return Math.min(c[Column.Height] as number, cut);
+    top = Math.min(1023, top, Math.floor(cut));
+    for (let y = top; y >= -1536; y--)
+      if (this.get(x, y, z) !== Block.Air) return Math.min(y + 1, cut);
+    return -1536;
   };
+  hasView(addresses: readonly Address[], uploaded = false): boolean {
+    return addresses.every((address) => {
+      const chunk = this.chunks.get(chunkKey(address));
+      return (
+        !!chunk?.result &&
+        sameSession(this.world, chunk.result.world) &&
+        chunk.result.revision === chunk.revision &&
+        (!uploaded || chunk.state === "visible")
+      );
+    });
+  }
   request(address: Address, priority = 0): Promise<void> {
-    if (this.stopped || address.cy < -48 || address.cy >= 32)
-      return Promise.resolve();
+    if (this.stopped || this.suspended)
+      return Promise.reject(new Error("Chunk store unavailable"));
+    if (
+      ![address.cx, address.cy, address.cz].every(Number.isInteger) ||
+      address.cy < -48 ||
+      address.cy >= 32 ||
+      address.cx < -704 ||
+      address.cx >= 704 ||
+      address.cz < -704 ||
+      address.cz >= 704
+    )
+      return Promise.reject(new RangeError("Chunk outside world frame"));
     const key = chunkKey(address),
       pending = this.pending.get(key);
     if (pending) return pending;
@@ -154,22 +214,32 @@ export class ChunkStore {
         if (this.stopped) return;
         const current = this.chunks.get(key);
         if (!current) return;
-        if (result.revision !== current.revision) return;
+        if (
+          !sameSession(this.world, result.world) ||
+          result.revision !== current.revision
+        )
+          return;
         current.result = result;
         current.state = "meshing";
         this.uploads.push(result);
       })
       .catch((error) => {
-        if (!this.stopped)
+        if (!this.stopped && !this.suspended)
           this.onFailure(
             error instanceof Error ? error : new Error(String(error)),
           );
+        throw error;
       })
       .finally(() => {
         this.pending.delete(key);
         const current = this.chunks.get(key);
-        if (!this.stopped && current && current.revision !== revision)
-          void this.request(address, priority);
+        if (
+          !this.stopped &&
+          !this.suspended &&
+          current &&
+          current.revision !== revision
+        )
+          void this.request(address, priority).catch(() => {});
       });
     this.pending.set(key, promise);
     return promise;
@@ -181,6 +251,14 @@ export class ChunkStore {
     z: number,
     radius: number,
   ): Promise<readonly Address[]> {
+    if (
+      !insideFrame(x, y, z) ||
+      !Number.isFinite(radius) ||
+      radius <= 0 ||
+      radius > 600
+    )
+      throw new RangeError("View outside world frame");
+    await this.workers.ready;
     const cx = Math.floor(x / 32),
       cz = Math.floor(z / 32),
       cy = Math.floor(y / 32),
@@ -191,17 +269,38 @@ export class ChunkStore {
         if (dx * dx + dz * dz > (r + 0.4) * (r + 0.4)) continue;
         const ax = cx + dx,
           az = cz + dz;
-        let low = Infinity,
-          high = -Infinity;
-        for (const oz of [0, 16, 31])
-          for (const ox of [0, 16, 31]) {
-            const h = this.surface(ax * 32 + ox, az * 32 + oz);
-            low = Math.min(low, h);
-            high = Math.max(high, h);
-          }
+        if (ax < -704 || ax >= 704 || az < -704 || az >= 704) continue;
+        const bounds: WorldBounds = {
+          minSurfaceY: 0,
+          maxSurfaceY: 0,
+          maxSolidY: 0,
+          maxFluidY: 0,
+        };
+        this.context.conservativeBounds(
+          {
+            minX: ax * 32,
+            minZ: az * 32,
+            maxX: ax * 32 + 32,
+            maxZ: az * 32 + 32,
+          },
+          bounds,
+        );
+        const low = bounds.minSurfaceY;
+        let high = Math.max(
+          bounds.maxSurfaceY,
+          bounds.maxSolidY,
+          bounds.maxFluidY,
+        );
+        for (const edit of this.edits.values())
+          if (
+            Math.floor(edit.x / 32) === ax &&
+            Math.floor(edit.z / 32) === az &&
+            edit.block !== Block.Air
+          )
+            high = Math.max(high, edit.y + 1);
         const levels = new Set<number>();
         const minY = Math.max(-48, Math.floor((low - 3) / 32));
-        const maxY = Math.min(31, Math.floor((high + 12) / 32));
+        const maxY = Math.min(31, Math.floor(high / 32));
         for (let ay = minY; ay <= maxY; ay++) levels.add(ay);
         if (Math.abs(dx) <= 1 && Math.abs(dz) <= 1)
           for (let ay = Math.max(-48, cy - 1); ay <= Math.min(31, cy + 1); ay++)
@@ -219,9 +318,20 @@ export class ChunkStore {
         a.d - b.d || a.a.cx - b.a.cx || a.a.cz - b.a.cz || a.a.cy - b.a.cy,
     );
     await Promise.all(jobs.map((j) => this.request(j.a, j.d)));
-    return jobs.map((j) => j.a);
+    const addresses = jobs.map((j) => j.a);
+    // A racing edit may have invalidated a first result. Await the queued refill
+    // and check real mesh revisions rather than treating resolved jobs as ready.
+    await this.settled();
+    if (!this.hasView(addresses))
+      throw new Error("Requested terrain is not complete");
+    return addresses;
   }
   edit(edit: VoxelEdit): void {
+    if (
+      !insideFrame(edit.x, edit.y, edit.z) ||
+      ![edit.x, edit.y, edit.z].every(Number.isInteger)
+    )
+      throw new RangeError("Edit outside world frame");
     if (!BLOCK_REGISTRY[edit.block]) throw new RangeError("Unknown block edit");
     this.edits.set(editKey(edit.x, edit.y, edit.z), edit);
     this.workers.edit(edit);
@@ -245,14 +355,16 @@ export class ChunkStore {
         stored.result.blocks[
           voxelIndex(edit.x - cx * 32, edit.y - cy * 32, edit.z - cz * 32)
         ] = edit.block;
-      void this.request(stored.address, -1);
+      void this.request(stored.address, -1).catch(() => {});
     }
   }
   get queueSize(): number {
     return this.workers.queued;
   }
   get memoryBytes(): number {
-    let size = this.workers.memoryBytes;
+    let size = this.workers.memoryBytes + planBytes(this.context.plan?.data);
+    for (const column of this.pointColumns.values())
+      size += column.c.byteLength;
     for (const c of this.chunks.values())
       if (c.result) {
         size += c.result.blocks.byteLength + c.result.light.byteLength;
@@ -292,5 +404,6 @@ export class ChunkStore {
     this.chunks.clear();
     this.uploads.length = 0;
     this.pointColumns.clear();
+    this.pointAreas.clear();
   }
 }

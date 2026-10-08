@@ -54,6 +54,24 @@ export function DebugOverlay({ ui }: { ui: UiController }) {
           <Value key={index} value={number} />
         ))}
       </Stat>
+      {!!value.regionWeights.length && (
+        <Stat id="f3.region">
+          <span class="cf-region-weights">
+            {value.regionWeights.map((region) => {
+              const name = ui.game.value.mapInfo?.regions.find(
+                (item) => item.id === region.regionId,
+              )?.name;
+              if (!name) return null;
+              return (
+                <span key={region.regionId}>
+                  <ContentText value={name} />{" "}
+                  <Value value={region.weight} style="weight" />
+                </span>
+              );
+            })}
+          </span>
+        </Stat>
+      )}
       <Stat id="f3.light">
         <Value value={value.skyLight} />
         {value.blockLight.map((number, index) => (

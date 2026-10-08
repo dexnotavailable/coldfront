@@ -47,12 +47,17 @@ export function sourceFingerprints(
 ): { cacheTag: string; releaseHash: string } {
   const sharedRoot = join(root, "packages/shared/src");
   // These cover current imports; new deterministic worldgen input modules belong here.
-  const worldInputs = ["worldgen", "math", "noise", "world", "sdf"].flatMap(
-    (directory) => {
-      const path = join(sharedRoot, directory);
-      return existsSync(path) ? sourceFiles(path) : [];
-    },
-  );
+  const worldInputs = [
+    "worldgen",
+    "worldplan",
+    "math",
+    "noise",
+    "world",
+    "sdf",
+  ].flatMap((directory) => {
+    const path = join(sharedRoot, directory);
+    return existsSync(path) ? sourceFiles(path) : [];
+  });
   worldInputs.push(join(sharedRoot, "blocks/registry.ts"));
   const cacheTag = contentHash(root, worldInputs);
   const shared = sourceFiles(join(root, "packages/shared/src"));

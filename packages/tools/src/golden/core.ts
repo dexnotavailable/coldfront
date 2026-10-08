@@ -3,27 +3,40 @@ import {
   CHUNK_VOLUME,
   HALO_VOLUME,
   HALO_WIDTH,
+  RING_RADII,
 } from "../../../shared/src/world/constants.js";
-import {
-  generateTestChunk,
-  type VoxelChunk,
-} from "../../../shared/src/worldgen/chunk.js";
+import { SURFACE_REGIONS } from "../../../shared/src/world/regions.js";
+import type {
+  SurfaceRegionId,
+  WorldColumnLayout,
+  WorldContext,
+  WorldKind,
+} from "../../../shared/src/world/types.js";
+import type { VoxelChunk } from "../../../shared/src/worldgen/chunk.js";
+import { generateWorldChunk } from "../../../shared/src/worldgen/main/chunk.js";
 import {
   Column,
   createColumnSample,
   sampleTestColumn,
 } from "../../../shared/src/worldgen/test-world.js";
 import { WORLDGEN_VERSION } from "../../../shared/src/worldgen/version.js";
+import { createRegionWeights } from "../../../shared/src/worldplan/index.js";
+import {
+  createWorldResolver,
+  regionSurfaceAddresses,
+  type WorldResolver,
+} from "./worlds.js";
 
 export const GOLDEN_SCHEMA = 1;
-export const SAMPLE_SET_VERSION = 1;
+export const SAMPLE_SET_VERSION = 2;
 export const GOLDEN_SEEDS = [1, 2, 3] as const;
 export const HASH_ENCODING =
   "sha256; uint16-le; ieee754-binary64-le; signed-zero-preserved; NaN-rejected";
 
 export interface GoldenCase {
   readonly id: string;
-  readonly world: "test";
+  readonly world: WorldKind;
+  readonly region?: SurfaceRegionId;
   readonly seed: number;
   readonly lod: 0 | 1;
   readonly cx: number;
@@ -89,7 +102,7 @@ const SURFACE_ANCHORS: readonly (readonly [number, number])[] = [
 ];
 
 /** Exactly 50 cases per seed: 26 surface + 4 vertical/frame LOD0, 20 surface LOD1. */
-export function goldenCases(): GoldenCase[] {
+export function testGoldenCases(): GoldenCase[] {
   const cases: GoldenCase[] = [];
   const column = createColumnSample();
   for (const seed of GOLDEN_SEEDS) {
@@ -152,6 +165,106 @@ export function goldenCases(): GoldenCase[] {
   return cases;
 }
 
+/** 50 additional cases/seed: 32 regional, ten warped transitions, four corners,
+ * four vertical bands. Test-world definitions above retain their exact ordering. */
+export function mainGoldenCases(context: WorldContext): GoldenCase[] {
+  if (context.kind !== "main")
+    throw new Error("Main goldens require a main context");
+  const seed = context.seed;
+  const cases: GoldenCase[] = [];
+  for (const lod of [0, 1] as const)
+    for (const region of SURFACE_REGIONS) {
+      const address = regionSurfaceAddresses(context, region.id, lod, 1)[0];
+      if (!address) throw new Error(`Missing golden region ${region.id}`);
+      cases.push({
+        id: `main-s${seed}-lod${lod}-${region.id}`,
+        world: "main",
+        seed,
+        lod,
+        ...address,
+        spacing: lod === 0 ? 1 : 2,
+        region: region.id,
+        coverage: "dominant-region-terrain-air-or-water-interface",
+      });
+    }
+  const column = context.createColumn();
+  const surface = (
+    id: string,
+    cx: number,
+    cz: number,
+    coverage: string,
+  ): void => {
+    context.sampleColumn(cx * 32 + 16.5, cz * 32 + 16.5, column);
+    cases.push({
+      id: `main-s${seed}-lod0-${id}`,
+      world: "main",
+      seed,
+      lod: 0,
+      cx,
+      cy: Math.floor(Number(column[context.columns.height]) / 32),
+      cz,
+      spacing: 1,
+      coverage,
+    });
+  };
+  const weights = createRegionWeights();
+  for (const [name, radius] of Object.entries(RING_RADII)) {
+    let bestX: number = radius;
+    let bestWeight = Infinity;
+    for (let x = radius - 500; x <= radius + 500; x += 4) {
+      context.surfaceWeights(x, 16.5, weights);
+      const top = Number(weights.weights[0]);
+      if (weights.count > 1 && top < bestWeight) {
+        bestX = x;
+        bestWeight = top;
+      }
+    }
+    if (!Number.isFinite(bestWeight))
+      throw new Error(`Missing ${name} ring transition`);
+    for (const offset of [-32, 32])
+      surface(
+        `${name}-${offset < 0 ? "inside" : "outside"}`,
+        Math.floor((bestX + offset) / 32),
+        0,
+        "warped-ring-transition",
+      );
+  }
+  for (const [cx, cz] of [
+    [-704, -704],
+    [-704, 703],
+    [703, -704],
+    [703, 703],
+  ] as const)
+    surface(`frame-${cx}-${cz}`, cx, cz, "xz-frame-boundary-signed-corner");
+  for (const [id, cy] of [
+    ["floor", -48],
+    ["worldstone-transition", -47],
+    ["deep-stone", -8],
+    ["sky-ceiling", 31],
+  ] as const)
+    cases.push({
+      id: `main-s${seed}-lod0-${id}`,
+      world: "main",
+      seed,
+      lod: 0,
+      cx: -1,
+      cy,
+      cz: -1,
+      spacing: 1,
+      coverage: id,
+    });
+  return cases;
+}
+
+export function goldenCases(
+  worlds: WorldResolver = createWorldResolver(),
+): GoldenCase[] {
+  return [
+    ...testGoldenCases(),
+    ...GOLDEN_SEEDS.flatMap((seed) => mainGoldenCases(worlds("main", seed))),
+  ];
+}
+
 /** Explicit LE encoding is independent of the host's typed-array byte order. */
 export function encodeUint16(values: Uint16Array): Uint8Array<ArrayBuffer> {
   const bytes = new Uint8Array(values.length * 2);
@@ -180,12 +293,17 @@ export async function sha256(bytes: Uint8Array<ArrayBuffer>): Promise<string> {
   return hex;
 }
 /** Hash all deterministic typed fields, so unchanged block IDs cannot hide density/halo drift. */
-export async function hashChunk(chunk: VoxelChunk): Promise<ChunkHashes> {
+export async function hashChunk(
+  chunk: VoxelChunk,
+  layout: WorldColumnLayout,
+): Promise<ChunkHashes> {
   if (
     chunk.blocks.length !== CHUNK_VOLUME ||
     chunk.haloBlocks.length !== HALO_VOLUME ||
     chunk.density.length !== HALO_VOLUME ||
-    chunk.columns.length !== HALO_WIDTH * HALO_WIDTH * Column.Stride
+    !Number.isInteger(layout.stride) ||
+    layout.stride < 1 ||
+    chunk.columns.length !== HALO_WIDTH * HALO_WIDTH * layout.stride
   )
     throw new Error("Unexpected golden chunk layout");
   return {
@@ -195,17 +313,41 @@ export async function hashChunk(chunk: VoxelChunk): Promise<ChunkHashes> {
     columns: await sha256(encodeFloat64(chunk.columns)),
   };
 }
-export async function computeGolden(sample: GoldenCase): Promise<GoldenRecord> {
-  return { sample, hashes: await hashChunk(generateTestChunk(sample)) };
+export async function computeGolden(
+  sample: GoldenCase,
+  context: WorldContext,
+): Promise<GoldenRecord> {
+  if (
+    sample.world !== context.kind ||
+    sample.seed !== context.seed ||
+    sample.spacing !== sample.lod + 1
+  )
+    throw new Error("Golden sample and world context differ");
+  return {
+    sample,
+    hashes: await hashChunk(
+      generateWorldChunk(
+        context,
+        sample.cx,
+        sample.cy,
+        sample.cz,
+        sample.spacing,
+      ),
+      context.columns,
+    ),
+  };
 }
 /** Sequential by design: one chunk's temporary buffers at a time in every runtime. */
 export async function computeGoldens(
   samples: readonly GoldenCase[],
   progress?: (completed: number, total: number) => void,
+  worlds: WorldResolver = createWorldResolver(),
 ): Promise<GoldenRecord[]> {
   const results: GoldenRecord[] = [];
   for (const sample of samples) {
-    results.push(await computeGolden(sample));
+    results.push(
+      await computeGolden(sample, worlds(sample.world, sample.seed)),
+    );
     progress?.(results.length, samples.length);
   }
   return results;

@@ -5,6 +5,7 @@ import "@fontsource/inter/400.css";
 import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
 import "@fontsource/cormorant-sc/600.css";
+import "@fontsource/noto-serif-jp/400.css";
 import "../../../client/src/ui/tokens.css";
 import "../../../client/src/ui/components/components.css";
 import "../../../client/src/ui/gallery/gallery.css";

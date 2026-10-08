@@ -4,6 +4,7 @@ import "@fontsource/inter/400.css";
 import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
 import "@fontsource/cormorant-sc/600.css";
+import "@fontsource/noto-serif-jp/400.css";
 import "./ui/tokens.css";
 import "./ui/components/components.css";
 import "./ui/screens/screens.css";
@@ -17,6 +18,7 @@ import { bindInput } from "./bootstrap/input.js";
 import {
   bindWorldLifecycle,
   rememberedSeed,
+  rememberedWorld,
   watchForUpdate,
 } from "./bootstrap/lifecycle.js";
 import { loadPostcard } from "./bootstrap/postcard.js";
@@ -87,10 +89,12 @@ async function boot(): Promise<void> {
     build: { version: __CF_BUILD__.version, commit: __CF_BUILD__.commit },
     cacheTag: __CF_BUILD__.cacheTag,
     externalKeyboard: true,
+    worldVisible: () => ui?.blocking.peek() !== "map",
     ...(postcard ? { postcard } : {}),
   });
   ui = createUiController(game.port, browserHost(fullscreen, base), {
     manageInputScope: false,
+    initialWorld: postcard ? "test" : rememberedWorld(query),
   });
   ui.seedDraft.value = draft;
   input = bindInput(ui, game, fullscreen);
@@ -137,7 +141,7 @@ async function boot(): Promise<void> {
     console.error(postcardError);
   } else if (postcard) {
     controller.blocking.value = "loading";
-    game.port.apply({ type: "start", seed });
+    game.port.apply({ type: "start", seed, worldKind: "test" });
     await game.ready();
   }
   if (import.meta.hot)

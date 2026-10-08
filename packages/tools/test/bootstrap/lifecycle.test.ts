@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   bindWorldLifecycle,
   rememberedSeed,
+  rememberedWorld,
 } from "../../../client/src/bootstrap/lifecycle.js";
 import type {
   GameEvent,
@@ -12,6 +13,20 @@ import type {
 
 afterEach(() => vi.unstubAllGlobals());
 describe("world-only unload guard and seed storage", () => {
+  it("remembers world kind independently and gives an explicit query precedence", () => {
+    const values = new Map([
+      ["coldfront.seed", "0004294967297"],
+      ["coldfront.world", "test"],
+    ]);
+    vi.stubGlobal("localStorage", {
+      getItem: (key: string) => values.get(key) ?? null,
+    });
+    expect(rememberedWorld(new URLSearchParams())).toBe("test");
+    expect(rememberedWorld(new URLSearchParams("world=main"))).toBe("main");
+    expect(rememberedSeed(new URLSearchParams())).toBe("0004294967297");
+    values.set("coldfront.world", "future");
+    expect(rememberedWorld(new URLSearchParams())).toBe("main");
+  });
   it("attaches only for ready play and drops immediately on title, before asynchronous quit finishes", () => {
     const target = new EventTarget();
     const added = vi.spyOn(target, "addEventListener");

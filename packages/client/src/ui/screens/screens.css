@@ -151,6 +151,116 @@ h2 {
 .cf-ui .cf-banner {
   max-width: calc(100% - var(--s-6));
 }
+.cf-region-weights {
+  display: flex;
+  gap: var(--s-4);
+  align-items: center;
+}
+.cf-region-weights > span {
+  display: flex;
+  gap: var(--s-2);
+  white-space: nowrap;
+}
+.cf-map {
+  position: absolute;
+  inset: 0;
+  background: var(--ink-1);
+}
+.cf-map-area {
+  position: absolute;
+  inset: 0 0 var(--h-bar);
+  overflow: hidden;
+}
+.cf-map-area canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: default;
+  touch-action: none;
+}
+.cf-map-area[data-grabbing="true"] canvas {
+  cursor: grabbing;
+}
+.cf-map-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: var(--fs-14);
+  white-space: nowrap;
+  color: var(--text);
+  -webkit-text-stroke: calc(var(--s-1) / 4) var(--ink-0);
+  paint-order: stroke fill;
+  pointer-events: none;
+}
+.cf-map-labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.cf-map-pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: var(--s-3);
+  height: var(--s-3);
+  border: solid var(--s-1) var(--steel);
+  border-radius: 50%;
+  background: var(--ink-0);
+  pointer-events: none;
+}
+.cf-map-pin[data-on-map="false"] {
+  visibility: hidden;
+}
+.cf-map-close {
+  position: absolute;
+  top: var(--s-4);
+  right: var(--s-4);
+}
+.cf-map-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+}
+.cf-map-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--h-bar);
+  padding: 0 var(--s-4);
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  background: var(--panel);
+}
+.cf-map-position {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  white-space: nowrap;
+  flex: 1;
+}
+.cf-map-position > [data-text-id="map.where"] {
+  color: var(--text-2);
+}
+.cf-map-scale {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-1);
+  margin-left: auto;
+  min-width: var(--s-7);
+}
+.cf-map-scale > span:last-child {
+  display: flex;
+  gap: var(--s-1);
+  font-size: var(--fs-12);
+}
+.cf-map-scale-line {
+  height: var(--s-1);
+  border: solid var(--text);
+  border-width: 0 var(--s-1) var(--s-1);
+}
 @keyframes cf-item-name {
   0%,
   80% {

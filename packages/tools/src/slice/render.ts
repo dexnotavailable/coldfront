@@ -1,5 +1,7 @@
 import { BLOCK_REGISTRY, Block } from "../../../shared/src/blocks/registry.js";
 import { TEXTURE_RECIPES } from "../../../shared/src/blocks/textures/recipes.js";
+import { DEPTH_BANDS } from "../../../shared/src/world/constants.js";
+import type { UndergroundLayer } from "../../../shared/src/world/types.js";
 import type { Raster } from "../terrain-review/output.js";
 import type {
   ReviewVoxel,
@@ -14,6 +16,7 @@ export interface SectionRequest {
   readonly yMax: number;
   readonly metresPerPixel: number;
   readonly kind: "overview" | "window";
+  readonly overlays?: "plan" | "none";
 }
 export interface SectionMetadata {
   readonly world: string;
@@ -36,6 +39,11 @@ export interface SectionMetadata {
     positivePixels: number;
   }>;
   readonly fluidPixels: number;
+  readonly overlays: Readonly<{
+    mode: "plan" | "none";
+    semantics: string;
+    bands: readonly { name: string; rgb: readonly number[]; pixels: number }[];
+  }>;
   readonly materials: readonly Readonly<{
     id: number;
     name: string;
@@ -53,6 +61,35 @@ const palette: readonly (readonly number[])[] = TEXTURE_RECIPES.map(
     return recipe.rgb;
   },
 );
+/** Tools-only plan annotation colours, not voxel materials or carved space. */
+export const PLAN_BANDS = [
+  { id: "upper_deep", name: "Upper Deep plan", rgb: [104, 188, 179] },
+  { id: "undercrown", name: "Undercrown plan", rgb: [163, 153, 209] },
+  { id: "maw", name: "Maw plan", rgb: [216, 132, 112] },
+  { id: "pit", name: "Pit plan", rgb: [219, 181, 98] },
+  { id: "shelf", name: "Solid shelf band", rgb: [225, 213, 192] },
+] as const;
+/** Depth membership uses canonical bands; shelves occupy the three 32m gaps. */
+export function planBandAt(
+  y: number,
+  masks: readonly number[],
+): { index: number; weight: number } | null {
+  for (let i = 0; i < 4; i++) {
+    const key = PLAN_BANDS[i]?.id as UndergroundLayer,
+      band = DEPTH_BANDS[key];
+    if (y >= band.bottom && y < band.top)
+      return { index: i, weight: Number(masks[i]) };
+    if (i < 3) {
+      const next = DEPTH_BANDS[PLAN_BANDS[i + 1]?.id as UndergroundLayer];
+      if (y >= next.top && y < band.bottom)
+        return {
+          index: 4,
+          weight: Math.max(Number(masks[i]), Number(masks[i + 1])),
+        };
+    }
+  }
+  return null;
+}
 export function sectionLength(
   request: Pick<SectionRequest, "from" | "to">,
 ): number {
@@ -65,6 +102,14 @@ export function validateSection(
   request: SectionRequest,
   source: TerrainReviewSource,
 ): void {
+  if (
+    request.overlays !== undefined &&
+    request.overlays !== "none" &&
+    request.overlays !== "plan"
+  )
+    throw new Error("Unknown slice overlay");
+  if (request.overlays === "plan" && !source.plan)
+    throw new Error("Plan overlays require a main WorldPlan");
   const values = [
     ...request.from,
     ...request.to,
@@ -116,6 +161,8 @@ export function renderSection(
     rgba = new Uint8Array(width * height * 4);
   const counts = new Map<number, { pixels: number; area: number }>(),
     voxel: ReviewVoxel = { block: 0, density: 0, fluid: 0 };
+  const overlayMode = request.overlays ?? (source.plan ? "plan" : "none"),
+    bandCounts = new Uint32Array(5);
   let densityMin = Infinity,
     densityMax = -Infinity,
     positivePixels = 0,
@@ -129,6 +176,17 @@ export function renderSection(
       request.from[0] + (request.to[0] - request.from[0]) * t,
       request.from[1] + (request.to[1] - request.from[1]) * t,
     );
+    const masks =
+      overlayMode === "plan"
+        ? PLAN_BANDS.slice(0, 4).map(
+            (b) =>
+              source.plan?.footprint(
+                b.id as UndergroundLayer,
+                column.x,
+                column.z,
+              ) ?? 0,
+          )
+        : [];
     for (let row = 0; row < height; row++) {
       const top = request.yMax - row * px,
         bottom = Math.max(request.yMin, top - px),
@@ -147,6 +205,21 @@ export function renderSection(
       rgba[index + 1] = Number(color[1]);
       rgba[index + 2] = Number(color[2]);
       rgba[index + 3] = 255;
+      // Tint actual solid samples only. Air/water and all material statistics stay exact.
+      const band =
+        overlayMode === "plan" && voxel.density > 0
+          ? planBandAt(y, masks)
+          : null;
+      if (band && band.weight > 0) {
+        const rgb = PLAN_BANDS[band.index]?.rgb;
+        if (!rgb) throw new Error("Unknown diagnostic band");
+        const alpha = 0.62 * band.weight;
+        for (let c = 0; c < 3; c++)
+          rgba[index + c] = Math.round(
+            Number(color[c]) * (1 - alpha) + Number(rgb[c]) * alpha,
+          );
+        bandCounts[band.index] = Number(bandCounts[band.index]) + 1;
+      }
       const count = counts.get(voxel.block) ?? { pixels: 0, area: 0 };
       count.pixels++;
       count.area += (end - start) * (top - bottom);
@@ -179,6 +252,19 @@ export function renderSection(
       orientation: "from at left; to at right; highest y at top",
       density: { minimum: densityMin, maximum: densityMax, positivePixels },
       fluidPixels,
+      overlays: {
+        mode: overlayMode,
+        semantics:
+          "solid samples tinted by planned footprint weights; shelf tint uses the union of adjacent footprints; no cavity, opening, or material change is implied",
+        bands:
+          overlayMode === "plan"
+            ? PLAN_BANDS.map((b, i) => ({
+                name: b.name,
+                rgb: b.rgb,
+                pixels: Number(bandCounts[i]),
+              }))
+            : [],
+      },
       materials: [...counts]
         .sort((a, b) => a[0] - b[0])
         .map(([id, count]) => ({
@@ -218,5 +304,6 @@ export function windowSection(
     yMin,
     yMax,
     metresPerPixel: px,
+    ...(overview.overlays === undefined ? {} : { overlays: overview.overlays }),
   };
 }

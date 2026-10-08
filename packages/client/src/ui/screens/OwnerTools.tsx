@@ -9,6 +9,7 @@ import {
   Field,
   Modal,
   Panel,
+  Select,
   Slider,
   Slot,
   Toast,
@@ -41,6 +42,23 @@ export function ToolsPanel({
           <h2 data-ui="tools.title">
             <Text id="tools.title" />
           </h2>
+          {!!ui.game.value.mapInfo?.regions.length && (
+            <Select
+              id="tools.region"
+              value={
+                ui.game.value.debug?.regionWeights[0]?.regionId ??
+                ui.game.value.mapInfo.regions[0]!.id
+              }
+              options={ui.game.value.mapInfo.regions.map((region) => ({
+                value: region.id,
+                label: { kind: "content" as const, name: region.name },
+              }))}
+              onChange={(regionId) => {
+                void ui.goToRegion(regionId);
+              }}
+              releaseFocus
+            />
+          )}
           <Slider
             id="tools.time"
             value={state.timeHours}

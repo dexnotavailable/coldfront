@@ -4,17 +4,9 @@ import {
   type LightVolume,
   lightIndex,
 } from "../../../shared/src/lighting/flood.js";
-import { createNoise2Sample } from "../../../shared/src/noise/opensimplex2.js";
 import { HALO_VOLUME } from "../../../shared/src/world/constants.js";
 import { haloIndex } from "../../../shared/src/world/coordinates.js";
-import {
-  Column,
-  collectTestTrees,
-  createColumnSample,
-  createVoxelSample,
-  sampleTestColumn,
-  sampleTestVoxel,
-} from "../../../shared/src/worldgen/test-world.js";
+import type { WorldContext } from "../../../shared/src/world/types.js";
 import type { BenchmarkCase } from "./samples.js";
 
 /**
@@ -23,73 +15,48 @@ import type { BenchmarkCase } from "./samples.js";
  * Sources follow the client's height/feature-band rule and 64m blocker limit.
  * No sky light is manufactured for underground air or substituted for BFS.
  */
-export function prepareChunkLighting(sample: BenchmarkCase): LightVolume {
+export function prepareChunkLighting(
+  sample: BenchmarkCase,
+  context: WorldContext,
+): LightVolume {
   if (sample.spacing !== 1)
     throw new Error("Neighbourhood BFS benchmark is LOD0 only");
+  if (context.kind !== sample.world || context.seed !== sample.seed)
+    throw new Error("Benchmark sample and world context differ");
   const volume = createLightVolume(96, 96, 96);
   const ox = sample.cx * 32 - 32;
   const oy = sample.cy * 32 - 32;
   const oz = sample.cz * 32 - 32;
-  const column = createColumnSample();
-  const noise = createNoise2Sample();
-  const voxel = createVoxelSample();
-  const trees = collectTestTrees(
-    sample.seed,
-    ox + 0.5,
-    oz + 0.5,
-    ox + 95.5,
-    oz + 95.5,
-  );
+  const area = context.prepareArea({
+    minX: ox + 0.5,
+    minZ: oz + 0.5,
+    maxX: ox + 95.5,
+    maxZ: oz + 95.5,
+  });
+  const column = area.createColumn();
+  const voxel = { density: 0, block: 0, fluid: 0 };
+  const sky = { solidBelowY: 0, highestFilterY: 0 };
   for (let z = 0; z < 96; z++)
     for (let x = 0; x < 96; x++) {
       const wx = ox + x + 0.5;
       const wz = oz + z + 0.5;
-      sampleTestColumn(sample.seed, wx, wz, column, noise);
+      area.sampleColumn(wx, wz, column);
       for (let y = 0; y < 96; y++) {
-        const id = sampleTestVoxel(
-          sample.seed,
-          wx,
-          oy + y + 0.5,
-          wz,
-          voxel,
-          column,
-          trees,
-        ).block;
+        const id = area.sampleVoxel(wx, oy + y + 0.5, wz, voxel, column).block;
         volume.opacity[lightIndex(volume, x, y, z)] =
           BLOCK_REGISTRY[id]?.lightFiltering ?? 15;
       }
-      let highest = column[Column.Height] as number;
-      for (const tree of trees) {
-        const dx = wx - tree.x;
-        const dz = wz - tree.z;
-        if (dx * dx + dz * dz <= tree.crownRadius * tree.crownRadius)
-          highest = Math.max(
-            highest,
-            tree.crownY + tree.crownHeight,
-            tree.trunkTop,
-          );
-      }
+      area.skyInput(wx, wz, sky, column);
+      const highest = sky.highestFilterY;
       const topY = oy + 95;
       let incoming =
-        highest > topY + 64
-          ? 15
-          : topY < (column[Column.Height] as number) - 1
-            ? 0
-            : 15;
+        highest > topY + 64 ? 15 : topY < sky.solidBelowY - 1 ? 0 : 15;
       for (
         let wy = Math.min(topY + 64, Math.ceil(highest));
         incoming > 0 && wy > topY;
         wy--
       ) {
-        const id = sampleTestVoxel(
-          sample.seed,
-          wx,
-          wy + 0.5,
-          wz,
-          voxel,
-          column,
-          trees,
-        ).block;
+        const id = area.sampleVoxel(wx, wy + 0.5, wz, voxel, column).block;
         incoming = Math.max(
           0,
           incoming - (BLOCK_REGISTRY[id]?.lightFiltering ?? 15),

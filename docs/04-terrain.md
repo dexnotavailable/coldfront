@@ -803,19 +803,20 @@ Engine details are in `07-architecture.md` §6. This is what the terrain needs t
 Terrain is judged by eye. These tools make looking fast, repeatable and affordable in context.
 
 ### 14.1 Atlas (Node, no browser)
-`npm run atlas -- --seed 1 --layer surface|upper_deep|undercrown|maw|pit --mode regions|height|features|sites --size 2048`
+`npm run atlas -- --world main --seed 1 --layer surface|upper_deep|undercrown|maw|pit --mode regions|height|features|sites --size 2048`
 - Renders a top-down PNG with `pngjs`.
   - **regions:** surface colours from `docs/diagrams/world-layout.svg`; underground colours from a palette in the region data
   - **height:** hypsometric tint + hillshade + water overlay
   - **features:** density heatmaps, **printing the achieved coverage % per mask per region**
   - **sites:** Seats, forts, descents, bridges, spawns
-- Output: `out/atlas/seed-<n>/<layer>-<mode>.png`. Target ≤ 30 s at 2048².
+- Output: `out/atlas/<world>/seed-<n>/<layer>-<mode>.png`, with a separate annotated review image and source/statistics receipt. Target ≤ 30 s at 2048². Main defaults to the full 45,056 m frame; `--world test` keeps the 512 m sandbox view. Phase 1.2 supports regions/sites in all plan layers and surface height; feature masks arrive in 1.3 and underground floor height in the cavern phases.
 
 ### 14.2 Slices (Node)
-`npm run slice -- --seed 1 --from -15556,15556 --to 15556,-15556`
+`npm run slice -- --world main --seed 1 --from -15556,15556 --to 15556,-15556`
 - Writes a **16 m/px overview** of the whole line, plus windows of up to 2 km at 1–2 m/px (`--window x,z --len 2000 --px 1`).
 - Coloured by material (air black, water blue, lava orange, emissive highlighted). It shows caves, caverns, shelves, the funnel and descents.
 - **Required slice:** the SW→NE line through (0, 0) above, compared in spirit with `docs/diagrams/funnel.svg`. In phase 1.2, before caverns exist, the slice shows the surface profile plus footprint and shelf bands tinted from the WorldPlan.
+- Outputs are separated by world at `out/slices/<world>/seed-<n>/`. `--overlays plan|none` controls the diagnostic tint without changing material/density data; the annotation identifies planned bands on solid rock. Main windows include the full world height; test windows retain the sandbox's -64..48 m range.
 
 ### 14.3 Postcards (headless browser)
 `npm run postcards -- --seed 1 [--only HELL-1,HELL-3] [--phase 1.3] [--commit]`

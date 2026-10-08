@@ -48,13 +48,9 @@ export function seedValue(flags: Arguments): number {
     throw new Error("Seed must be an unsigned 32-bit integer");
   return seed;
 }
-export function testWorldOnly(flags: Arguments): void {
-  if (value(flags, "world", "test") !== "test")
-    throw new Error(
-      "Phase 1.1 only has the test world; Kaldmark's WorldPlan is not implemented",
-    );
-  if (value(flags, "layer", "surface") !== "surface")
-    throw new Error(
-      "Phase 1.1 supports --layer surface only; WorldPlan layers are not implemented",
-    );
+export function worldValue(flags: Arguments): "main" | "test" {
+  const world = value(flags, "world", "main");
+  if (world !== "main" && world !== "test")
+    throw new Error("World must be main or test");
+  return world;
 }

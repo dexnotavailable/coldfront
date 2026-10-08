@@ -121,9 +121,18 @@ describe("height atlas", () => {
       ]);
   });
   it("rejects unsupported content and stretched/invalid bounds instead of inventing maps", () => {
-    expect(() => parseAtlas(["--mode", "regions"])).toThrow(/WorldPlan/);
-    expect(() => parseAtlas(["--layer", "maw"])).toThrow(/WorldPlan/);
-    expect(() => parseAtlas(["--world", "main"])).toThrow(/WorldPlan/);
+    expect(() => parseAtlas(["--world", "test", "--mode", "regions"])).toThrow(
+      /WorldPlan/,
+    );
+    expect(() => parseAtlas(["--layer", "maw"])).toThrow(/floor heights/);
+    expect(parseAtlas(["--world", "main", "--mode", "regions"])).toMatchObject({
+      world: "main",
+      request: {
+        mode: "regions",
+        bounds: { minX: -22528, maxX: 22528, minZ: -22528, maxZ: 22528 },
+      },
+    });
+    expect(() => parseAtlas(["--mode", "features"])).toThrow(/phase 1.3/);
     expect(() => parseAtlas(["--region", "hellscape"])).toThrow(/Unsupported/);
     expect(() =>
       renderAtlas(small(0, 0, 2, 4), createTestWorldSource(1)),

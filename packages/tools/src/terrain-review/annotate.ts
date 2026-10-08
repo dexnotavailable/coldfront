@@ -38,10 +38,13 @@ async function frame<T>(
   yLabel: string,
   legend: readonly LegendEntry[],
   verticalLegend: boolean,
+  legendTitle = "Legend",
 ): Promise<Raster<ReviewMetadata<T>>> {
   const left = 84,
-    top = raster.width > 600 ? 38 : 60,
-    right = verticalLegend ? 150 : 24;
+    top = 60,
+    right = verticalLegend
+      ? Math.max(150, ...legend.map((item) => 64 + item.name.length * 9))
+      : 24;
   const legendRows: LegendEntry[][] = [[]];
   let rowWidth = 0;
   if (!verticalLegend)
@@ -55,7 +58,11 @@ async function frame<T>(
       rowWidth += w;
     }
   const bottom = verticalLegend ? 64 : 66 + legendRows.length * 23;
-  const width = Math.max(512, left + raster.width + right),
+  const width = Math.max(
+      512,
+      left + raster.width + right,
+      left + Math.max(title.length, subtitle.length) * 9 + 24,
+    ),
     height =
       top +
       Math.max(raster.height, verticalLegend ? legend.length * 25 + 24 : 0) +
@@ -136,8 +143,7 @@ async function frame<T>(
       }
   }
   await text(left, 8, title);
-  if (raster.width > 600) await text(left + raster.width, 8, subtitle, "right");
-  else await text(left, 30, subtitle);
+  await text(left, 30, subtitle);
   await text(left - 10, 8, yLabel, "right");
   for (const tick of xTicks) {
     if (raster.width < 240 && tick.t > 0 && tick.t < 1) continue;
@@ -175,7 +181,7 @@ async function frame<T>(
     "center",
   );
   if (verticalLegend) {
-    await text(left + raster.width + 16, top, "Height (m)");
+    await text(left + raster.width + 16, top, legendTitle);
     for (let i = 0; i < legend.length; i++) {
       const item = legend[i];
       if (!item) continue;
@@ -214,8 +220,12 @@ export function atlasReview(
     b = m.bounds;
   return frame(
     raster,
-    "Ground height",
-    `Test world · seed ${m.seed} · ${number(m.metresPerPixel.x)} m/px · north ↑`,
+    m.mode === "height"
+      ? "Ground height"
+      : m.mode === "regions"
+        ? `${m.layer} · planned regions`
+        : `${m.layer} · site census`,
+    `${m.world} world · seed ${m.seed} · ${number(m.metresPerPixel.x)} m/px · north ↑${m.mode === "sites" ? " · symbols are not footprints" : ""}`,
     [
       { t: 0, text: number(b.minX) },
       { t: 0.5, text: number((b.minX + b.maxX) / 2) },
@@ -228,7 +238,7 @@ export function atlasReview(
     ],
     "X (m)",
     "Z (m)",
-    [
+    m.legend ?? [
       ...m.heightRamp.map((stop) => ({
         name: number(stop.height),
         rgb: stop.rgb,
@@ -236,6 +246,11 @@ export function atlasReview(
       { name: "Water", rgb: [63, 115, 145] },
     ],
     true,
+    m.mode === "height"
+      ? "Height (m)"
+      : m.mode === "regions"
+        ? "Dominant area"
+        : "Site symbols",
   );
 }
 export function sliceReview(
@@ -249,7 +264,7 @@ export function sliceReview(
   return frame(
     raster,
     `${m.kind === "overview" ? "Overview" : "Window"} · ${number(m.metresPerPixel)} m/px`,
-    `XZ ${m.from.map(number).join(",")} → ${m.to.map(number).join(",")} · test seed ${m.seed}`,
+    `XZ ${m.from.map(number).join(",")} → ${m.to.map(number).join(",")} · ${m.world} seed ${m.seed}${m.overlays.mode === "plan" ? " · plan tint on solid rock; no cavern air" : ""}`,
     [
       { t: 0, text: "0" },
       { t: 0.5, text: number(m.lengthMetres / 2) },
@@ -258,7 +273,10 @@ export function sliceReview(
     [{ t: 0, text: number(m.yMax) }, ...zero, { t: 1, text: number(m.yMin) }],
     "Distance along section (m)",
     "Y (m)",
-    m.materials.map((item) => ({ name: item.name, rgb: item.rgb })),
+    [
+      ...m.materials.map((item) => ({ name: item.name, rgb: item.rgb })),
+      ...m.overlays.bands.map((item) => ({ name: item.name, rgb: item.rgb })),
+    ],
     false,
   );
 }

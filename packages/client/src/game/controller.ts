@@ -245,4 +245,6 @@ export function stepBody(
   b.walkDistance += Math.hypot(b.x - ox, b.z - oz);
   b.x = Math.max(-22527.6, Math.min(22527.6, b.x));
   b.z = Math.max(-22527.6, Math.min(22527.6, b.z));
+  b.y = Math.max(-1536, Math.min(1024 - PHYSICS.height - 0.001, b.y));
+  if (b.y === -1536 || b.y >= 1024 - PHYSICS.height - 0.001) b.vy = 0;
 }

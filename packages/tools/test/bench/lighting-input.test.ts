@@ -2,6 +2,7 @@ import { expect, it } from "vitest";
 import { BLOCK_REGISTRY } from "../../../shared/src/blocks/registry.js";
 import { lightIndex, solveLight } from "../../../shared/src/lighting/flood.js";
 import { haloIndex } from "../../../shared/src/world/coordinates.js";
+import { createWorldContext } from "../../../shared/src/world/world-context.js";
 import { generateTestChunk } from "../../../shared/src/worldgen/chunk.js";
 import {
   extractHaloLight,
@@ -10,10 +11,34 @@ import {
 import { benchmarkCases } from "../../src/bench/samples.js";
 
 it("prepares real neighbour opacity, solves skylight and extracts the exact centre halo", () => {
-  const sample = benchmarkCases(1, 0)[0];
+  const context = createWorldContext({ kind: "test", seed: 1 });
+  const sample = benchmarkCases(context, 0)[0];
   if (!sample) throw new Error("Missing benchmark sample");
   const chunk = generateTestChunk(sample);
-  const volume = prepareChunkLighting(sample);
+  let preparedAreas = 0;
+  let skyColumns = 0;
+  const volume = prepareChunkLighting(sample, {
+    ...context,
+    sampleVoxel() {
+      throw new Error("Use the prepared area, not point feature collection");
+    },
+    skyInput() {
+      throw new Error("Use the prepared area's sky inputs");
+    },
+    prepareArea(bounds) {
+      preparedAreas++;
+      const area = context.prepareArea(bounds);
+      return {
+        ...area,
+        skyInput(x, z, out, column) {
+          skyColumns++;
+          return area.skyInput(x, z, out, column);
+        },
+      };
+    },
+  });
+  expect(preparedAreas).toBe(1);
+  expect(skyColumns).toBe(96 * 96);
   let compared = 0;
   for (let y = -1; y < 40; y++)
     for (let z = -1; z <= 32; z++)
@@ -34,7 +59,7 @@ it("prepares real neighbour opacity, solves skylight and extracts the exact cent
     expect(halo[haloIndex(i, i, i)]).toBe(
       volume.light[lightIndex(volume, i + 32, i + 32, i + 32)],
     );
-  expect(() => prepareChunkLighting({ ...sample, lod: 1, spacing: 2 })).toThrow(
-    "LOD0",
-  );
+  expect(() =>
+    prepareChunkLighting({ ...sample, lod: 1, spacing: 2 }, context),
+  ).toThrow("LOD0");
 });

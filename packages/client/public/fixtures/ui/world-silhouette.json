@@ -1,4 +1,10 @@
 {
+  "rendering": {
+    "visible": true,
+    "animationRenders": 6,
+    "hiddenFrames": 0
+  },
+  "mapReports": [],
   "camera": {
     "position": {
       "x": 0,
@@ -32,15 +38,15 @@
     "flying": false,
     "walkDistance": 0,
     "stepRise": 0,
-    "yaw": 3.1412256040760504,
+    "yaw": 2.9729724348052304,
     "headYaw": 3.141592653589793
   },
   "target": null,
   "ghost": null,
-  "loaded": 59,
+  "loaded": 148,
   "queued": 0,
   "ready": true,
-  "displayTimeMs": 1149.955,
+  "displayTimeMs": 549.9900000000007,
   "editCount": 15,
   "lastAction": null,
   "lastEdit": {
@@ -49,7 +55,7 @@
     "z": 1,
     "block": 2
   },
-  "worldTimeSeconds": 1201.2499549999998,
+  "worldTimeSeconds": 1200.649985,
   "rendered": {
     "outline": false,
     "silhouette": true,

@@ -1,8 +1,10 @@
+import type { LayerId } from "../../../shared/src/world/types.js";
 import type { Raster } from "../terrain-review/output.js";
 import {
   createSurfaceSample,
   type TerrainReviewSource,
 } from "../terrain-review/source.js";
+import { renderPlanAtlas } from "./plan.js";
 
 export interface AtlasBounds {
   readonly minX: number;
@@ -11,6 +13,8 @@ export interface AtlasBounds {
   readonly maxZ: number;
 }
 export interface AtlasRequest {
+  readonly mode?: "height" | "regions" | "sites";
+  readonly layer?: LayerId;
   readonly width: number;
   readonly height: number;
   readonly bounds: AtlasBounds;
@@ -29,12 +33,12 @@ export interface AtlasMetadata {
   readonly world: string;
   readonly seed: number;
   readonly worldgenVersion: number;
-  readonly layer: "surface";
-  readonly mode: "height";
+  readonly layer: LayerId;
+  readonly mode: "height" | "regions" | "sites";
   readonly bounds: AtlasBounds;
   readonly metresPerPixel: Readonly<{ x: number; z: number }>;
   readonly orientation: "north (-z) at top; east (+x) at right";
-  readonly sampleConvention: "pixel centres; half-open bounds; terrain height excludes canopy";
+  readonly sampleConvention: string;
   readonly shading: Readonly<{
     verticalExaggeration: number;
     lightDirection: readonly number[];
@@ -45,15 +49,36 @@ export interface AtlasMetadata {
     rgb: readonly number[];
   }>[];
   readonly statistics: Readonly<{
-    minHeight: number;
-    maxHeight: number;
-    meanHeight: number;
-    waterPixels: number;
-    waterShare: number;
-    dryBelowDatumPixels: number;
-    rampClippedLow: number;
-    rampClippedHigh: number;
+    minHeight: number | null;
+    maxHeight: number | null;
+    meanHeight: number | null;
+    waterPixels: number | null;
+    waterShare: number | null;
+    dryBelowDatumPixels: number | null;
+    rampClippedLow: number | null;
+    rampClippedHigh: number | null;
   }>;
+  readonly legend?: readonly { name: string; rgb: readonly number[] }[];
+  readonly regions?: readonly {
+    id: string;
+    dominantAreaKm2: number;
+    weightedAreaKm2: number;
+  }[];
+  readonly footprint?: {
+    coreAreaKm2: number;
+    weightedAreaKm2: number;
+    threshold: 0.5;
+  };
+  readonly sites?: {
+    scope: string;
+    symbols: string;
+    counts: readonly { kind: string; total: number; visible: number }[];
+    descentTypes: readonly { type: string; total: number; visible: number }[];
+    spawnClearance: {
+      minimumRadius: number | null;
+      minimumSeatDistance: number | null;
+    };
+  };
 }
 function positiveInt(v: number, name: string): void {
   if (!Number.isInteger(v) || v < 1 || v > 8192)
@@ -63,6 +88,18 @@ export function validateAtlas(
   request: AtlasRequest,
   source: TerrainReviewSource,
 ): void {
+  const mode = request.mode ?? "height",
+    layer = request.layer ?? "surface";
+  if (mode !== "height" && mode !== "regions" && mode !== "sites")
+    throw new Error("Unsupported atlas mode");
+  if (!["surface", "upper_deep", "undercrown", "maw", "pit"].includes(layer))
+    throw new Error("Unsupported atlas layer");
+  if (mode === "height" && layer !== "surface")
+    throw new Error(
+      "Underground floor heights do not exist in phase 1.2; use regions or sites",
+    );
+  if ((mode !== "height" || layer !== "surface") && !source.plan)
+    throw new Error("Region/site maps require a main WorldPlan");
   positiveInt(request.width, "Width");
   positiveInt(request.height, "Height");
   if (request.width * request.height > 16_777_216)
@@ -132,6 +169,8 @@ export function renderAtlas(
   source: TerrainReviewSource,
 ): Raster<AtlasMetadata> {
   validateAtlas(request, source);
+  if ((request.mode ?? "height") !== "height")
+    return renderPlanAtlas(request, source);
   const { width, height, bounds } = request,
     dx = (bounds.maxX - bounds.minX) / width,
     dz = (bounds.maxZ - bounds.minZ) / height;

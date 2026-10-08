@@ -23,7 +23,9 @@ page.on("console", (message) => {
   if (message.type() === "warning") warnings.push(message.text());
 });
 try {
-  await page.goto(browserTestUrl(), {
+  const url = new URL(browserTestUrl());
+  url.searchParams.set("world", "test");
+  await page.goto(url.href, {
     waitUntil: "domcontentloaded",
   });
   const play = page.locator('[data-ui="title.play"]');

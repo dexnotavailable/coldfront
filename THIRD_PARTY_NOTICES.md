@@ -95,7 +95,7 @@ Adaptations use bounded typed arrays, packed sky/RGB channels, heightmap seeding
 - postprocessing 6.39.5: Zlib; Copyright © 2015 Raoul van Rüschen. Used unmodified for the composer, bloom and tone mapping.
 - Preact 11.0.1, @preact/signals 2.11.3 and their installed runtime dependencies: MIT.
 - Lucide 1.53.0: ISC.
-- Inter and Cormorant SC from @fontsource 5.3.0 packages: SIL Open Font License 1.1. Font files are bundled locally and unmodified.
+- Inter, Cormorant SC and Noto Serif JP from @fontsource 5.3.0 packages: SIL Open Font License 1.1. Font files are bundled locally and unmodified. Noto Serif JP supplies the catalogue's Japanese discovery-card glyphs; its Google Inc. copyright and full OFL notice are collected from the installed package.
 
 The production build collects the complete notices from the installed runtime packages, including transitive dependencies, into `/licenses/`. The menu's Licences action opens that collection. Any MPL source added later is copied separately with its original header.
 
@@ -104,3 +104,33 @@ The production build collects the complete notices from the installed runtime pa
 Playwright 1.63.0 is Apache-2.0; PostCSS 8.5.29 and preact-render-to-string 6.8.0 are MIT. Sharp 0.35.5 is Apache-2.0 and retains its bundled libvips notices. These are development/capture tools, not runtime network dependencies or game assets. Their complete notices remain in their npm distributions.
 
 The terrain atlas and slice tools use pngjs 7.0.0 and @types/pngjs 6.0.5 (MIT). These run in Node and do not add a browser runtime dependency; the complete MIT notices remain in the installed npm packages.
+
+## psrdnoise 2D (MIT)
+
+The nonperiodic 2D lattice and attenuation port is in `packages/shared/src/noise/psrd2.ts`; its independent test reference is in `packages/shared/test/psrd2-reference.ts`. Original authors: Stefan Gustavson and Ian McEwan. Upstream source: `stegu/psrdnoise`, `src/psrdnoise2.glsl`, revision `419175a270862ce7ae692038fafafb42ec0427e9`.
+
+Source and original licence header: https://github.com/stegu/psrdnoise/blob/419175a270862ce7ae692038fafafb42ec0427e9/src/psrdnoise2.glsl
+
+The port retains the upstream lattice, attenuation, gradient equation and normalisation. Its gradient selection deliberately uses a seeded deterministic unit-vector table, with an analytically derived Hessian. Optional upstream period/animation arguments are not implemented. The full licence is also shipped beside the port as `packages/shared/src/noise/LICENSE.psrdnoise`.
+
+MIT License
+
+Copyright (c) 2021 Stefan Gustavson and Ian McEwan.
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.

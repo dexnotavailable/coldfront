@@ -1,0 +1,88 @@
+{
+  "sourceReceipt": "D:\\Dex\\Temp\\coldfront-phase1-2-world\\out\\phase1-2-world\\plan-seed1-attempt1.json",
+  "sourceReceiptSha256": "19f6bca6501aa2d184408f23e2d5c60f5ca031f650d12fea5e3cdf0bae8f6153",
+  "capturedTrial": "browser-1791489367595",
+  "historicalCheckpoint": true,
+  "names": [
+    {
+      "regionId": "plains",
+      "x": -12023.621965629849,
+      "z": -12850.425191336075
+    },
+    {
+      "regionId": "tundra",
+      "x": -808.1481025011049,
+      "z": -17437.02963292499
+    },
+    {
+      "regionId": "mountains",
+      "x": 12558.98137557958,
+      "z": -10919.845800188185
+    },
+    {
+      "regionId": "desert",
+      "x": 16032.750231791963,
+      "z": 1015.5795325899184
+    },
+    {
+      "regionId": "boneyard",
+      "x": 12330.978421766478,
+      "z": 10721.539722993031
+    },
+    {
+      "regionId": "jungle",
+      "x": -436.6783204775376,
+      "z": 15503.004638570786
+    },
+    {
+      "regionId": "swamp",
+      "x": -12033.60560337331,
+      "z": 11900.264628481358
+    },
+    {
+      "regionId": "lake",
+      "x": -16356.3160980341,
+      "z": -979.6654467952451
+    },
+    {
+      "regionId": "twilight",
+      "x": -5704.700075328416,
+      "z": -5672.903443850402
+    },
+    {
+      "regionId": "hellscape",
+      "x": 5690.394931412391,
+      "z": 5762.58571041132
+    },
+    {
+      "regionId": "shardfields",
+      "x": 7098.551118901372,
+      "z": -6359.076993292225
+    },
+    {
+      "regionId": "isles",
+      "x": -7138.661287086137,
+      "z": 6647.469655293452
+    },
+    {
+      "regionId": "nadir",
+      "x": 0,
+      "z": 0
+    },
+    {
+      "regionId": "blackwater",
+      "x": 0,
+      "z": -5600
+    },
+    {
+      "regionId": "rim",
+      "x": 0,
+      "z": -21000
+    },
+    {
+      "regionId": "frost",
+      "x": 0,
+      "z": -22000
+    }
+  ]
+}

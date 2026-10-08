@@ -64,6 +64,7 @@ async function open(scene = ""): Promise<Page> {
     if (m.type() === "warning") warnings.push(m.text());
   });
   const url = new URL(base);
+  url.searchParams.set("world", "test");
   if (scene) url.searchParams.set("scene", scene);
   await page.goto(url.href);
   const play = page.locator('[data-ui="title.play"]');

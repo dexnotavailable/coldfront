@@ -311,6 +311,9 @@ button:active:not(:disabled),
 }
 .cf-card {
   text-align: center;
+  color: var(--text);
+  -webkit-text-stroke: 1px var(--ink-0);
+  paint-order: stroke fill;
 }
 .cf-alert {
   display: flex;
@@ -472,4 +475,109 @@ button:active:not(:disabled),
 }
 .cf-control-row[data-disabled="true"] input {
   opacity: 1;
+}
+.cf-select-control > label {
+  white-space: nowrap;
+}
+.cf-select-box {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+.cf-select-box > .cf-select {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  white-space: nowrap;
+}
+.cf-select-box > .cf-select::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  transform: rotate(45deg);
+  flex: none;
+  margin-bottom: var(--s-1);
+}
+.cf-select-list {
+  position: absolute;
+  top: calc(100% + var(--s-1));
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: var(--ink-0);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  border-radius: var(--r-ctl);
+  padding: var(--s-1);
+  max-height: calc(var(--h-row) * 8 + var(--s-2));
+  overflow-y: auto;
+}
+.cf-select-option {
+  display: block;
+  width: 100%;
+  min-height: var(--h-row);
+  padding: 0 var(--s-2);
+  background: transparent;
+  border: 0;
+  text-align: left;
+  white-space: nowrap;
+}
+.cf-discovery {
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: calc(100% - var(--s-6));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-2);
+  pointer-events: none;
+  white-space: nowrap;
+  animation: cf-discovery 4.6s var(--ease-out) forwards;
+}
+.cf-discovery-name {
+  font-family: var(--font-display);
+  font-size: var(--fs-28);
+  font-weight: 600;
+}
+.cf-discovery-kanji {
+  font-family: var(--font-kanji);
+  font-size: var(--fs-16);
+}
+.cf-discovery-story {
+  font-size: var(--fs-16);
+}
+@keyframes cf-discovery {
+  0% {
+    opacity: 0;
+  }
+  6.521739%,
+  93.478261% {
+    opacity: 1;
+    animation-timing-function: linear;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes cf-discovery-reduced {
+  0%,
+  99.999% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cf-discovery {
+    animation-name: cf-discovery-reduced;
+    animation-duration: 4s !important;
+    animation-timing-function: step-end;
+  }
 }
