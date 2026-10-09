@@ -129,6 +129,7 @@ export class TerrainWorkers {
           job.resolve(message);
         }
         this.dispatch(lane);
+        this.dispatchIdle();
       };
       worker.onerror = (event) =>
         this.fail(new Error(event.message || "Terrain worker failed"));
@@ -154,8 +155,13 @@ export class TerrainWorkers {
     void this.ready.catch(() => {});
   }
   private affinity(a: Address): Lane {
-    const hash = (Math.imul(a.cx, 73856093) ^ Math.imul(a.cz, 19349663)) >>> 0;
-    return this.lanes[hash % this.lanes.length] as Lane;
+    // Prefer one cache owner for four neighboring columns and every Y level.
+    // Stagger successive 2x2 rows across the lanes: hashing these small cells
+    // can leave nearby views with idle workers and very uneven queues.
+    const count = this.lanes.length;
+    const cell =
+      Math.floor(a.cx / 2) + Math.floor(a.cz / 2) * Math.ceil(count / 2);
+    return this.lanes[((cell % count) + count) % count] as Lane;
   }
   request(
     address: Address,
@@ -191,6 +197,29 @@ export class TerrainWorkers {
       address: job.address,
       revision: job.revision,
     } satisfies WorkerRequest);
+  }
+  private dispatchIdle(): void {
+    // Wait for a completion so the initial request batch can establish locality.
+    // Only pending work may move; a running job keeps its worker and callbacks.
+    if (this.stopped || !this.lanes.every((lane) => lane.ready)) return;
+    for (const lane of this.lanes) {
+      if (lane.current || lane.jobs.length > 0) continue;
+      let donor: Lane | undefined;
+      let next: Job | undefined;
+      for (const source of this.lanes) {
+        const head = source.jobs[0];
+        if (
+          head &&
+          (!next || (head.priority - next.priority || head.id - next.id) < 0)
+        ) {
+          donor = source;
+          next = head;
+        }
+      }
+      if (!donor) return;
+      lane.jobs.push(donor.jobs.shift() as Job);
+      this.dispatch(lane);
+    }
   }
   edit(edit: VoxelEdit): void {
     if (this.stopped) return;

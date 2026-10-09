@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { validatePostcardSelection } from "../../../client/src/bootstrap/postcard.js";
@@ -129,7 +130,21 @@ export function preparePostcards(
         "packages/tools/postcards/cameras",
         `seed-${seed}.json`,
       );
-      const document = JSON.parse(await readFile(path, "utf8")) as unknown;
+      // Resolvers persist JSON; finish with the repository's pinned formatter so
+      // repeated preparation preserves the camera bytes used by build metadata.
+      const serialized = await readFile(path, "utf8");
+      const formatted = execFileSync(
+        process.execPath,
+        [
+          resolve(root, "node_modules/@biomejs/biome/bin/biome"),
+          "format",
+          "--stdin-file-path",
+          path,
+        ],
+        { cwd: root, input: serialized, encoding: "utf8", windowsHide: true },
+      );
+      if (formatted !== serialized) await writeFile(path, formatted);
+      const document = JSON.parse(formatted) as unknown;
       const selected = validatePostcardSelection(
         document,
         ids[0] as string,

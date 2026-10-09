@@ -233,7 +233,8 @@ async function scenario(cached: boolean) {
       if (!cacheStats) throw new Error("Missing block cache counters");
       stats.push(cacheStats);
       rawCalls.push(calls);
-      expect(cacheStats.pages).toBeLessThanOrEqual(64);
+      expect(cacheStats.pageLimit).toBe(96);
+      expect(cacheStats.pages).toBeLessThanOrEqual(96);
       expect(cacheStats.typedArrayBytes).toBe(
         cacheStats.pages * BLOCK_SAMPLE_PAGE_BYTES,
       );
@@ -290,7 +291,8 @@ async function scenario(cached: boolean) {
     expect(topSky()).toBe(15);
     expect(rawCalls.at(-1)).toBe(0);
     request(-1);
-    request(6); // Enough new owners to recycle raw pages and whole volumes.
+    request(6);
+    request(12); // Exceed 96 raw pages and recycle whole-volume owners too.
     request(-1);
     if (cached) expect(stats.at(-1)?.evictions).toBeGreaterThan(0);
     init(); // Same identity and session must still flush every page and edit.

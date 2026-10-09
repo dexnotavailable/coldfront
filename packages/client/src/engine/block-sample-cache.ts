@@ -7,7 +7,9 @@ const EDGE = 32;
 const CELLS = EDGE ** 3;
 /** Uint16 block IDs plus one validity bit per cell. Air (0) is a valid value. */
 export const BLOCK_SAMPLE_PAGE_BYTES = CELLS * 2 + CELLS / 8;
-export const BLOCK_SAMPLE_PAGE_LIMIT = 64;
+// A same-Y 2x2 column group spans at most 4x4x5 pages including incoming sky.
+// Keep that 80-page footprint plus bounded slack (6.375 MiB of typed arrays).
+export const BLOCK_SAMPLE_PAGE_LIMIT = 96;
 
 export interface BlockSampleCacheStats {
   readonly pages: number;

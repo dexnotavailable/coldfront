@@ -190,6 +190,7 @@ export function fixtureController(
   const browserActions: string[] = [];
   const travels: TeleportRequest[] = [];
   const cancelled: number[] = [];
+  let finishPendingPostcard: (() => void) | undefined;
   const emit = (event: GameEvent): void => {
     for (const listener of listeners) listener(event);
   };
@@ -248,8 +249,6 @@ export function fixtureController(
       },
     };
   }
-  if (scenario === "tools-postcard-pending")
-    snapshot = { ...snapshot, lifecycle: "loading" };
   if (scenario === "tools-postcard-error")
     snapshot = { ...snapshot, postcards: [] };
   if (scenario === "system-storage")
@@ -391,6 +390,12 @@ export function fixtureController(
         !snapshot.postcards.some((camera) => camera.id === request.id)
       )
         return { sessionId: request.sessionId, committed: false };
+      if (scenario === "tools-postcard-pending") {
+        await new Promise<void>((resolve) => {
+          finishPendingPostcard = resolve;
+        });
+        return { sessionId: request.sessionId, committed: false };
+      }
       snapshot = {
         ...snapshot,
         activePostcardId: request.id,
@@ -401,6 +406,8 @@ export function fixtureController(
     },
     cancelTeleport(sessionId) {
       cancelled.push(sessionId);
+      finishPendingPostcard?.();
+      finishPendingPostcard = undefined;
     },
     capturePng: () =>
       Promise.reject(new Error("Gallery adapter cannot capture a game world")),
@@ -451,6 +458,8 @@ export function fixtureController(
   }
   if (scenario.startsWith("tools")) {
     ui.toolsOpen.value = true;
+    if (scenario === "tools-postcard-pending")
+      void ui.goToPostcard(hellPostcards[0].id);
     if (scenario === "tools-on") {
       snapshot = {
         ...snapshot,

@@ -52,7 +52,7 @@ describe("generation-only lighting block pages", () => {
     expect(f.calls).toEqual(cells.map((p) => p.map((v) => v + 0.5)));
     expect(cache.statistics()).toEqual({
       pages: 5,
-      pageLimit: 64,
+      pageLimit: 96,
       hits: 7,
       misses: 7,
       evictions: 0,
@@ -120,12 +120,54 @@ describe("generation-only lighting block pages", () => {
           y = direction * n,
           z = -direction * n;
         expect(f.sample(cache, x, y, z)).toBe(blockAt(x, y, z));
-        expect(cache.statistics().pages).toBeLessThanOrEqual(64);
+        expect(cache.statistics().pages).toBeLessThanOrEqual(96);
       }
-    expect(cache.statistics().typedArrayBytes).toBe(4_456_448);
+    expect(cache.statistics().typedArrayBytes).toBe(6_684_672);
     expect(cache.statistics().evictions).toBeGreaterThan(0);
-    expect(BLOCK_SAMPLE_PAGE_LIMIT).toBe(64);
+    expect(BLOCK_SAMPLE_PAGE_LIMIT).toBe(96);
+    expect(6 * cache.statistics().typedArrayBytes).toBe(40_108_032);
     expect(() => new BlockSampleCache(0)).toThrow(RangeError);
+  });
+
+  it("retains a same-Y 2x2 column group's conservative volume-and-sky page footprint", () => {
+    const cache = new BlockSampleCache(),
+      f = fixture(),
+      owners = new Map<string, readonly [number, number, number]>();
+    // buildVolume starts at 32*(c-1), covers three pages per axis, and samples
+    // incoming sky through 64m above its top: cy-1..cy+3. Use negative owners
+    // and one cell per page to test retention without actual world generation.
+    const cy = -1;
+    for (const cx of [-2, -1])
+      for (const cz of [0, 1])
+        for (let pz = cz - 1; pz <= cz + 1; pz++)
+          for (let px = cx - 1; px <= cx + 1; px++)
+            for (let py = cy - 1; py <= cy + 3; py++)
+              owners.set(`${px},${py},${pz}`, [px * 32, py * 32, pz * 32]);
+    expect(owners.size).toBe(80);
+    const expected = [...owners.values()].map(([x, y, z]) =>
+      f.sample(cache, x, y, z),
+    );
+    expect(f.calls).toHaveLength(80);
+    expect(
+      [...owners.values()].map(([x, y, z]) => f.sample(cache, x, y, z)),
+    ).toEqual(expected);
+    expect(f.calls).toHaveLength(80);
+    expect(cache.statistics()).toMatchObject({
+      pages: 80,
+      hits: 80,
+      misses: 80,
+      evictions: 0,
+      typedArrayBytes: 80 * BLOCK_SAMPLE_PAGE_BYTES,
+    });
+    cache.clear();
+    expect(cache.statistics()).toEqual({
+      pages: 0,
+      pageLimit: 96,
+      hits: 0,
+      misses: 0,
+      evictions: 0,
+      typedArrayBytes: 0,
+    });
   });
 
   it("recycles capacity-one pages without reusing the last page's valid values", () => {

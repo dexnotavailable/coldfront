@@ -5,11 +5,11 @@
       "id": "outline-ghost",
       "rows": ["hud.outline", "hud.ghost"],
       "image": "fixtures/ui/world-outline-ghost.jpg",
-      "imageSha256": "2dba01cca61c8c8ac86c299e4a9ce243d57fafdfe07410755727964a286d61c4",
+      "imageSha256": "f992e44bd29c709f76b56e78085c9c3d2ab44b40fdf2a63190e7bdd491c4db8e",
       "telemetry": "fixtures/ui/world-outline-ghost.json",
-      "telemetrySha256": "72de8cf7d1541e4017aeae614c491c9999979356e290eee31066fadc6bce2637",
+      "telemetrySha256": "cb2c284a0476b53498aca8fa32ea16e9165464e74ebef638c34919f31b2e9f26",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "39dc1985dd892282fab7cdb1a4bc072dda360765e2c6ace156fbfdcdebf7fb94",
+      "runReceiptSha256": "775347b92a50f707fde5bedd5d551689c30c598ab8b5d87f97818a08dab4e715",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -25,7 +25,7 @@
         },
         {
           "path": "packages/client/src/engine/block-sample-cache.ts",
-          "sha256": "ea58515a6ef344cdbc977c09327a5e09cfeb5414e7a8151128b7078a1e84751e"
+          "sha256": "1645e845ac71d87e7a08cf49b305812be48121e727b726a53983d41de0b856d2"
         },
         {
           "path": "packages/client/src/engine/chunk-store.ts",
@@ -77,7 +77,7 @@
         },
         {
           "path": "packages/client/src/engine/worker-pool.ts",
-          "sha256": "0157b29d8c7f7c1745823b187561a7b3f54f8a2a8059e7c05fc25a288c923527"
+          "sha256": "f46e6f07ccfd8070085afa46597f28c05f251fad456a7505874132e6db6b682e"
         },
         {
           "path": "packages/client/src/engine/worker-protocol.ts",
@@ -367,7 +367,7 @@
       "encoding": {
         "sourceFormat": "png",
         "sourceImage": "out/engine/hud-repair/outline-ghost.png",
-        "sourceImageSha256": "40c9c6eb06d5c0ff606ed28f6e37928905ea637d597dd016719fe2ca73dd609a",
+        "sourceImageSha256": "7421390c09499dd62a5c26d88cc320ab227f0d195d3a5d33526c0ec81a14d338",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
         "format": "jpeg",
@@ -381,11 +381,11 @@
       "id": "silhouette",
       "rows": ["hud.silhouette"],
       "image": "fixtures/ui/world-silhouette.jpg",
-      "imageSha256": "4ee00065e9d7097daea7ed4e0c61e5298e748af772087b9484d2940140d15c82",
+      "imageSha256": "dff2a878802ae55027d778884b6dd0b94b3a21945da39e1af6afc148fddbcb16",
       "telemetry": "fixtures/ui/world-silhouette.json",
-      "telemetrySha256": "6e09826ef743a71ac69f02797a2dddec9452360c5b633c30b4f64f611b9b2400",
+      "telemetrySha256": "cffd00b93e884f6bd5e7a50f685af3a5112c7d9a8371b9fea74f3b9001271c5c",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "39dc1985dd892282fab7cdb1a4bc072dda360765e2c6ace156fbfdcdebf7fb94",
+      "runReceiptSha256": "775347b92a50f707fde5bedd5d551689c30c598ab8b5d87f97818a08dab4e715",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -401,7 +401,7 @@
         },
         {
           "path": "packages/client/src/engine/block-sample-cache.ts",
-          "sha256": "ea58515a6ef344cdbc977c09327a5e09cfeb5414e7a8151128b7078a1e84751e"
+          "sha256": "1645e845ac71d87e7a08cf49b305812be48121e727b726a53983d41de0b856d2"
         },
         {
           "path": "packages/client/src/engine/chunk-store.ts",
@@ -453,7 +453,7 @@
         },
         {
           "path": "packages/client/src/engine/worker-pool.ts",
-          "sha256": "0157b29d8c7f7c1745823b187561a7b3f54f8a2a8059e7c05fc25a288c923527"
+          "sha256": "f46e6f07ccfd8070085afa46597f28c05f251fad456a7505874132e6db6b682e"
         },
         {
           "path": "packages/client/src/engine/worker-protocol.ts",
@@ -743,7 +743,7 @@
       "encoding": {
         "sourceFormat": "png",
         "sourceImage": "out/engine/hud-repair/silhouette.png",
-        "sourceImageSha256": "60d0a2650847bc897e871291ec5d715c49f15a469281864e6145a2a2362f0639",
+        "sourceImageSha256": "04718c16dc857c15d5fa865051efebf0cd75158fabfff9c7a8a88a765df3551d",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
         "format": "jpeg",
