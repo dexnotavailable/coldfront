@@ -12,7 +12,7 @@
 | 1.1 Foundations | ✓ Complete, with recorded limits | 190 tests, check/build, clean Node22 build, complete UI lint and all-three-browser CI pass; accepted images/tools/save fixes published as d4c4c49. Public-site browser launch remains unavailable. |
 | 1.2 World plan | ✓ Complete, with recorded limits | Runtime, three-seed geography, atlas/slice, all-region travel and sixteen ungraded postcards accepted; 310 tests, check/build, complete UI lint, clean Node22 build and all-three-browser CI pass. Live as 18a975d. [Phase plan](plans/phase-1-2.md). |
 | 1.3 Terrain toolkit + Ibara | Contract preparation | [Reviewed integration plan](plans/phase-1-3.md); isolated thorn/arch study accepted within its scope. Full region, materials/lava/light and strict three-seed HELL gates remain. |
-| 1.4 Far terrain | ☐ | |
+| 1.4 Far terrain | ☐ Specified, not implemented | LOD0–LOD6, full-height column tiles beyond LOD1, ~16 km maximum reach at altitude; acceptance includes at least 5 km of real terrain. 04 §13.5 / roadmap 1.4. |
 | 1.5 Kurogane + Selva | ☐ | |
 | 1.6 Fantasy regions | ☐ | |
 | 1.7 Rest of the surface | ☐ | |
@@ -22,6 +22,8 @@
 
 ## Current session
 **9 October 2026 · Codex · `codex/phase-1-3-ibara`**
+
+**Restart recovery and owner correction:** the 10:14 Bangkok PC restart left canonical `28b596b` clean and pushed; the three isolated P1/P2/P3 source sets survived. No terrain jobs remained alive, so fresh checks and explicit queue grants replace stale process claims. Public version readback still matches live `18a975d`. The owner asked for less noisy terrain, broader forms and more flatter ground. An Astra surface lane is measuring and comparing the current always-on detail against calmer regional recipes, preserving the established macro geography and owned water. Decision 112 records the direction. Far LOD was already specified; it is still unimplemented and remains phase 1.4 work. P1 feature A/B and P2 full numerical audits continue after the prioritized surface comparison.
 
 **Phase 1.3 start:** phase 1.2 merged as `1a28c2a` after both release and final-documentation CI passed. P0's five unchanged SDF modules and additive feature/lava/plan contracts are integrated; all 322 tests, check and build pass, with refreshed source-bound HUD captures opened by the coordinator. Generation output and version remain unchanged. The new dependency fingerprint will not be deployed by itself: live remains `18a975d` until actual generation-3 terrain is ready. Next are three disjoint Astra authors for thorn features, volcanic terrain/lava, and materials; the [frozen contracts](plans/phase-1-3.md) define their boundaries. Full regional distributions, terrain placement, lighting and HELL acceptance are still ahead.
 

@@ -199,10 +199,12 @@ Per (x, z), at the chunk's sample spacing. Results are cached per chunk column i
 **Outputs:**
 - region weights and blended parameters
 - `Hm(x, z)`: macro + meso height: `macroHeight` (§5.3: blended bases, bowl tilt, WorldPlan shapes, coarse erosion) plus Σ wᵢ · Hᵢ, where every `Hᵢ` is zero-mean relief; rivers carved (the valley profile lowers `Hm` toward the bed).
-- `Hμ(x, z)`: micro height detail (4–30 m wavelength, ±0.5–2 m amplitude)
+- `Hμ(x, z)`: localized micro height detail. Rough patches may use 4–30 m wavelengths and ±0.5–2 m amplitude; these are not minimums or an always-on layer across ordinary ground.
 - `∇Hm` from central differences
 - `g = 1 / sqrt(1 + min(|∇Hm|², 64))`, the distance correction (§7)
 - water level and kind; moisture and temperature proxies; feature masks; dominant region
+
+**Owner terrain-readability direction, 9 October 2026:** most ordinary surface ground should offer broad, connected gentle areas for building and travel. Stretch small repeated undulations into larger coherent landforms and suppress the everywhere-noisy micro-relief carpet. Localize stronger detail with continuous spatial masks; do not achieve calm ground by quantizing heights into artificial terraces. Keep major mountains, cliffs, calderas and named fantasy features dramatic in their proper regions. Preserve the world frame, regional footprints, vertical layout and fluid ownership. Compare fixed locations before/after using both visible one-metre step frequency and patch-scale height/slope measures, then inspect matched views. The distant LOD specification remains §13.5; calmer ground does not substitute for implementing it in roadmap phase 1.4.
 
 **Height-function toolkit** (`packages/shared/src/noise/`):
 - `fbm2`, `ridged2` (weight feedback), `billow2`, `warp2`, `warp3`
