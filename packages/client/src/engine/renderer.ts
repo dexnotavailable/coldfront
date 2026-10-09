@@ -15,12 +15,14 @@ import {
   DepthTexture,
   EdgesGeometry,
   FogExp2,
+  Frustum,
   Group,
   HalfFloatType,
   HemisphereLight,
   LineBasicMaterial,
   LineSegments,
   type Material,
+  Matrix4,
   Mesh,
   MeshBasicMaterial,
   NoToneMapping,
@@ -60,7 +62,7 @@ interface RenderChunk {
   readonly border: LineSegments;
   readonly geometries: BufferGeometry[];
   readonly gpuBytes: number;
-  readonly hasFluid: boolean;
+  readonly fluid: Mesh | null;
 }
 function geometry(part: MeshPart): BufferGeometry {
   const g = new BufferGeometry();
@@ -87,6 +89,8 @@ export class WorldRenderer {
   readonly effects = new BlockEffects();
   readonly rayPoint = new Vector3();
   private readonly chunks = new Map<string, RenderChunk>();
+  private readonly waterFrustum = new Frustum();
+  private readonly waterViewProjection = new Matrix4();
   private readonly clip = new Plane(new Vector3(0, -1, 0), 100000);
   private readonly terrain = createTerrainMaterials(this.clip);
   private readonly waterDepthTarget = new WebGLRenderTarget(1, 1, {
@@ -114,6 +118,7 @@ export class WorldRenderer {
   private hud = true;
   private postcard = false;
   private ready = false;
+  private shadowMapInvalid = false;
   private cut = Infinity;
   private worldId = 0;
   contextLost = false;
@@ -235,6 +240,9 @@ export class WorldRenderer {
   private restored = (): void => {
     this.contextLost = false;
     this.ready = false;
+    // The target object survives context loss, but its GPU depth does not.
+    this.shadowMapInvalid = true;
+    this.renderer.shadowMap.needsUpdate = true;
     this.onRestored();
   };
   resize(): void {
@@ -262,7 +270,8 @@ export class WorldRenderer {
     const group = new Group(),
       depth = new Group(),
       geometries: BufferGeometry[] = [];
-    let bytes = 0;
+    let bytes = 0,
+      fluid: Mesh | null = null;
     group.position.set(
       result.address.cx * 32,
       result.address.cy * 32,
@@ -284,6 +293,7 @@ export class WorldRenderer {
       mesh.castShadow = index < 2;
       mesh.receiveShadow = true;
       group.add(mesh);
+      if (index === 3) fluid = mesh;
       if (index < 2) depth.add(new Mesh(g, this.depthMaterial));
     });
     const region = new Color().setRGB(
@@ -325,7 +335,7 @@ export class WorldRenderer {
       border,
       geometries,
       gpuBytes: bytes + 32768,
-      hasFluid: (result.mesh.parts[3]?.indices.length ?? 0) > 0,
+      fluid,
     });
     group.visible = depth.visible = result.world.id === this.worldId;
     cap.mesh.visible &&= result.world.id === this.worldId;
@@ -490,6 +500,12 @@ export class WorldRenderer {
     for (const m of this.terrain.materials) m.wireframe = tools.wireframe;
     this.fog.density = tools.fog ? 0.004 : 0;
     this.sun.shadow.intensity = tools.shadows ? 1 : 0;
+    // Keep the shadowed shader variant. Its depth sampler needs a valid map even
+    // at zero intensity, so initialize once before suspending disabled updates.
+    // Re-enabling must refresh after any intervening camera/world/cut changes.
+    this.renderer.shadowMap.autoUpdate = tools.shadows;
+    this.renderer.shadowMap.needsUpdate =
+      tools.shadows || this.shadowMapInvalid || this.sun.shadow.map === null;
     this.setTime(tools.timeHours);
   }
   private setSkyUniform(name: string, value: number | Vector3): void {
@@ -565,30 +581,56 @@ export class WorldRenderer {
     this.renderer.info.reset();
     this.prepareWaterDepth();
     this.composer.render(0);
-    if (!this.postcard && this.hud) {
+    this.shadowMapInvalid = false;
+    if (
+      !this.postcard &&
+      this.hud &&
+      this.marks.children.some((mark) => mark.visible)
+    ) {
       // EffectPass ends on the default framebuffer. Rebuild only depth with the
       // same loaded near geometry/caps; the unlit marks then test that depth.
       // No screen-space AO/outline filter or private framebuffer access.
       this.renderer.setRenderTarget(null);
-      this.renderer.autoClear = false;
-      this.renderer.clearDepth();
-      this.renderer.render(this.depthScene, this.camera);
-      this.renderer.render(this.marks, this.camera);
-      this.renderer.autoClear = true;
+      const oldAutoClear = this.renderer.autoClear;
+      try {
+        this.renderer.autoClear = false;
+        this.renderer.clearDepth();
+        this.renderer.render(this.depthScene, this.camera);
+        this.renderer.render(this.marks, this.camera);
+      } finally {
+        this.renderer.autoClear = oldAutoClear;
+      }
     }
   }
   private prepareWaterDepth(): void {
     this.terrain.uniforms.waterDepthReady.value = 0;
+    // Match Three's conservative sphere culling. Uploaded groups have not
+    // necessarily reached their first render, so refresh their world matrices.
+    if (this.camera.parent === null && this.camera.matrixWorldAutoUpdate)
+      this.camera.updateMatrixWorld();
+    this.waterFrustum.setFromProjectionMatrix(
+      this.waterViewProjection.multiplyMatrices(
+        this.camera.projectionMatrix,
+        this.camera.matrixWorldInverse,
+      ),
+      this.camera.coordinateSystem,
+      this.camera.reversedDepth,
+    );
     let hasFluid = false;
-    for (const chunk of this.chunks.values())
+    for (const chunk of this.chunks.values()) {
+      const fluid = chunk.fluid;
       if (
         chunk.worldId === this.worldId &&
         chunk.group.visible &&
-        chunk.hasFluid
+        fluid?.visible
       ) {
-        hasFluid = true;
-        break;
+        fluid.updateWorldMatrix(true, false);
+        if (!fluid.frustumCulled || this.waterFrustum.intersectsObject(fluid)) {
+          hasFluid = true;
+          break;
+        }
       }
+    }
     if (!hasFluid) return;
     const oldTarget = this.renderer.getRenderTarget(),
       oldAutoClear = this.renderer.autoClear;

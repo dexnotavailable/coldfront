@@ -1,7 +1,7 @@
 # Progress log
 
 **Current milestone:** 1 · The World
-**Current phase:** 1.3 · Terrain toolkit + Ibara (isolated packages and world integration)
+**Current phase:** 1.3 · Terrain toolkit + Ibara; a separate live movement-performance increment is prioritized
 **Playable link:** [dex.place/coldfront](https://dex.place/coldfront/) · [Interface gallery](https://dex.place/coldfront/?gallery) · [Calmer terrain PR #6](https://github.com/dexnotavailable/coldfront/pull/6). Live game commit: `174669c`. The unrelated `coldfront.pages.dev` site is not this game's preview.
 **Agent guide:** `AGENTS.md` (Codex and Claude Code both follow it). **Interface:** only what `docs/11-interface-catalogue.md` lists.
 
@@ -11,7 +11,7 @@
 |---|---|---|
 | 1.1 Foundations | ✓ Complete, with recorded limits | 190 tests, check/build, clean Node22 build, complete UI lint and all-three-browser CI pass; accepted images/tools/save fixes published as d4c4c49. Public-site browser launch remains unavailable. |
 | 1.2 World plan | ✓ Complete, with recorded limits | Runtime, three-seed geography, atlas/slice, all-region travel and sixteen ungraded postcards accepted; 310 tests, check/build, complete UI lint, clean Node22 build and all-three-browser CI pass. Live as 18a975d. [Phase plan](plans/phase-1-2.md). |
-| 1.3 Terrain toolkit + Ibara | In progress | [Reviewed integration plan](plans/phase-1-3.md); SDF/contracts integrated, feature/volcanic/material packages authored in isolation, world adapter underway. Calmer ordinary ground is being released first. Full region, materials/lava/light and strict three-seed HELL gates remain. |
+| 1.3 Terrain toolkit + Ibara | In progress on `codex/phase-1-3-world` | Generation-4 terrain, lava, materials, lighting and tools are integrated locally. Three-seed geometry and variation checks pass; strict HELL screenshots and final release checks remain. This separate performance increment retains the live generation-3 terrain. |
 | 1.4 Far terrain | ☐ Specified, not implemented | LOD0–LOD6, full-height column tiles beyond LOD1, ~16 km maximum reach at altitude; acceptance includes at least 5 km of real terrain. 04 §13.5 / roadmap 1.4. |
 | 1.5 Kurogane + Selva | ☐ | |
 | 1.6 Fantasy regions | ☐ | |
@@ -21,7 +21,11 @@
 | 1.10 Polish + performance | ☐ | |
 
 ## Current session
-**9 October 2026 · Codex · `codex/phase-1-3-ibara`**
+**9 October 2026 · Codex · `codex/performance-movement`**
+
+**Movement-performance increment:** the owner reports low FPS or stutter while moving on a friend's RX 9060 XT. The exact live generation-3 build was profiled locally using hardware-accelerated Chromium on an RTX 4090 at 1920 × 1080, DPR 1. The short walk stayed near 180 frames/s; a separate 436 m flight had two intervals above 33 ms and none above 50 ms. This does not reproduce the friend's hardware slowdown. The trace nevertheless shows repeated terrain depth redraws with no visible HUD marks. The patch skips that work, skips water depth preparation when no water mesh intersects the camera view, and makes the existing Shadows-off state stop shadow-map updates. Terrain, camera range, resolution, bloom and visible effects are preserved.
+
+**Performance checks:** the corrected renderer passes independent source review, 349 tests across 55 files, check, build, fresh HUD evidence, nine selected gallery captures and local browser smoke/drive on Node 22.23.3. The native matched walk uses 19.04% fewer draw calls and 33.61% less measured JavaScript rendering time; both runs stay near the local 180 FPS limit. The real initial-shadow-off/context-restoration test caught and closed a draft WebGL error. Biome retains 54 warnings and two informational findings. Regional postcard refresh, final committed-checkout build and publication remain open. [Measurements and limits](reports/movement-performance.md). No new release has been published yet.
 
 **Calmer ground published:** `174669c` is live. All 337 tests, check/build, complete UI lint, local browser drive and nineteen-case region tour pass. The clean Node 22.23.3/npm 10.9.8 checkout build passed, and CI run37887180950 passed 300 actual chunk samples in each of Chromium, Firefox and WebKit. Fresh public version, entry-asset hashes and isolation headers match the release. The independently reviewed generation-3 images and matched comparisons support the quieter ordinary terrain; the benchmark below records the remaining lighting/meshing misses. [PR #6](https://github.com/dexnotavailable/coldfront/pull/6) is the bounded release; Ibara world features and far LOD remain unfinished.
 
