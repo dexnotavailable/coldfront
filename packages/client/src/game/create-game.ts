@@ -1,4 +1,9 @@
 import { BLOCK_REGISTRY, Block } from "../../../shared/src/blocks/registry.js";
+import {
+  type GenerationVariant,
+  generationKey,
+  generationVariant,
+} from "../../../shared/src/world/generation-variant.js";
 import type {
   SurfaceRegionId,
   WorldContext,
@@ -32,6 +37,7 @@ import { blockIcon } from "../engine/effects.js";
 import { ease, GameClocks } from "../engine/motion.js";
 import { PlanPreparation } from "../engine/prepare-plan.js";
 import { type WorldColors, WorldRenderer } from "../engine/renderer.js";
+import type { TerrainViewMode } from "../engine/terrain-material.js";
 import {
   type Address,
   chunkKey,
@@ -55,6 +61,7 @@ import type {
   PostcardView,
   WorldPostcard,
 } from "./postcard.js";
+import { parseTerrainViewMode, postcardPresentations } from "./postcard.js";
 import {
   actionRay,
   type BlockHit,
@@ -78,6 +85,11 @@ import {
 } from "./world-save.js";
 
 export interface GameOptions {
+  readonly resolvePostcards?: (
+    identity: WorldIdentity,
+  ) => Promise<readonly WorldPostcard[]>;
+  readonly initialViewMode?: TerrainViewMode;
+  readonly generationVariant?: GenerationVariant;
   readonly colors: WorldColors;
   readonly keyboardLocked: () => boolean;
   readonly onWindowedSprint: () => void;
@@ -152,7 +164,8 @@ export interface GameHandle {
     cancelDrag(): boolean;
   };
 }
-const initialTools = (): ToolState => ({
+const initialTools = (viewMode: TerrainViewMode = "normal"): ToolState => ({
+  viewMode,
   timeHours: 12,
   clockRuns: true,
   fog: true,
@@ -233,6 +246,7 @@ class GameRuntime implements GamePort {
   private initialPostcardConsumed = false;
   private postcardView: GameOptions["postcard"] | null = null;
   private postcardReport: PostcardRenderReport | null = null;
+  private postcards: readonly WorldPostcard[] = [];
   private target: BlockHit | null = null;
   private ghost: Point | null = null;
   private aim: Point = { x: 0, y: 6, z: -5 };
@@ -281,6 +295,7 @@ class GameRuntime implements GamePort {
     private readonly canvas: HTMLCanvasElement,
     private readonly options: GameOptions,
   ) {
+    this.tools = initialTools(parseTerrainViewMode(options.initialViewMode));
     this.persistence = new EditPersistence(
       `${WORLDGEN_VERSION}:${options.cacheTag}`,
     );
@@ -367,6 +382,9 @@ class GameRuntime implements GamePort {
       loadProgress: this.loadProgress,
       seed: this.seed,
       mode: this.mode,
+      postcards:
+        lifecycle === "ready" ? postcardPresentations(this.postcards) : [],
+      activePostcardId: this.postcardView?.id ?? null,
       worldPaused: this.clocks.paused,
       tools: { ...this.tools, timeHours: this.clocks.hours },
       hotbar: {
@@ -497,6 +515,13 @@ class GameRuntime implements GamePort {
         break;
       case "set-time":
         this.clocks.setHours(command.hours);
+        break;
+      case "set-view":
+        this.tools = {
+          ...this.tools,
+          viewMode: parseTerrainViewMode(command.value),
+        };
+        this.renderer?.setViewMode(this.tools.viewMode);
         break;
       case "set-tool":
         this.tools = { ...this.tools, [command.key]: command.value };
@@ -746,7 +771,11 @@ class GameRuntime implements GamePort {
         identity: Object.freeze({
           kind,
           seed: seed >>> 0,
-          generation: `${WORLDGEN_VERSION}:${this.options.cacheTag}`,
+          generation: generationKey(
+            WORLDGEN_VERSION,
+            this.options.cacheTag,
+            kind === "main" ? this.options.generationVariant : "production",
+          ),
         }),
       });
       if (
@@ -773,6 +802,7 @@ class GameRuntime implements GamePort {
               kind,
               seed: world.identity.seed,
               plan: plan as WorldPlanData,
+              variant: generationVariant(world.identity),
             })
           : createWorldContext({ kind, seed: world.identity.seed });
       const planMs = performance.now() - planStarted;
@@ -801,6 +831,7 @@ class GameRuntime implements GamePort {
       this.publish();
       if (!this.renderer)
         this.renderer = new WorldRenderer(this.canvas, this.options.colors);
+      this.renderer.setViewMode(this.tools.viewMode);
       this.graphics = "available";
       this.renderer.onLost = () => {
         this.graphics = "lost";
@@ -841,7 +872,7 @@ class GameRuntime implements GamePort {
         0,
         Infinity,
         {
-          ...initialTools(),
+          ...initialTools(this.tools.viewMode),
           timeHours: postcard?.hours ?? 12,
           flying: pose.flying,
         },
@@ -849,6 +880,8 @@ class GameRuntime implements GamePort {
         null,
         Block.Stone,
         false,
+        candidate,
+        true,
       );
       this.renderer.prepareView(
         world.id,
@@ -869,7 +902,7 @@ class GameRuntime implements GamePort {
         0,
         Infinity,
         {
-          ...initialTools(),
+          ...initialTools(this.tools.viewMode),
           timeHours: postcard?.hours ?? 12,
           flying: pose.flying,
         },
@@ -877,6 +910,7 @@ class GameRuntime implements GamePort {
         null,
         Block.Stone,
         false,
+        candidate,
       );
       this.renderer.render();
       this.renderer.render();
@@ -885,6 +919,8 @@ class GameRuntime implements GamePort {
       this.store = candidate;
       candidate = null;
       this.world = world;
+      this.postcards = [];
+      void this.resolvePostcardCatalogue(world, request);
       this.viewpoints = viewpoints;
       const discoveryKey = worldKey(world.identity);
       this.discoveries =
@@ -902,7 +938,10 @@ class GameRuntime implements GamePort {
       this.clocks.paused = false;
       this.clocks.runs = true;
       this.clocks.displayMs = 0;
-      this.tools = { ...initialTools(), flying: pose.flying };
+      this.tools = {
+        ...initialTools(this.tools.viewMode),
+        flying: pose.flying,
+      };
       this.mode = postcard ? "postcard" : "overhead";
       this.initialPostcardConsumed = true;
       this.postcardView = postcard ?? null;
@@ -982,10 +1021,38 @@ class GameRuntime implements GamePort {
       return;
     this.uploadStore(this.store, limit);
   }
+  private async resolvePostcardCatalogue(
+    world: WorldSession,
+    request: number,
+  ): Promise<void> {
+    try {
+      const cameras =
+        (await this.options.resolvePostcards?.(world.identity)) ?? [];
+      if (this.stopped || this.world !== world || request !== this.worldRequest)
+        return;
+      const seen = new Set<PostcardId>();
+      this.postcards = cameras.filter((camera) => {
+        if (
+          !sameIdentity(camera.identity, world.identity) ||
+          seen.has(camera.id)
+        )
+          return false;
+        seen.add(camera.id);
+        return true;
+      });
+      this.publish();
+    } catch {
+      if (this.world === world && request === this.worldRequest) {
+        this.postcards = [];
+        this.publish();
+      }
+    }
+  }
   private rebuildGraphics(): void {
     if (!this.renderer || !this.store) return;
     for (const chunk of this.store.chunks.values())
       if (chunk.result) this.renderer.upload(chunk.result);
+    this.renderer.setViewMode(this.tools.viewMode);
     this.renderer.compile();
     this.renderer.render();
     this.graphics = "available";
@@ -1199,6 +1266,7 @@ class GameRuntime implements GamePort {
       this.ghost,
       this.slots[this.selected] ?? Block.Stone,
       this.occluded,
+      this.store ?? undefined,
     );
   }
   private recordEdit(edit: VoxelEdit): void {
@@ -1281,16 +1349,27 @@ class GameRuntime implements GamePort {
     } else {
       if (this.postcardView) {
         const world = this.world,
-          store = this.store;
-        await this.prepareNear(
+          store = this.store,
+          request = this.worldRequest;
+        const prepared = await this.prepareNear(
           store,
           this.body,
           Math.max(96, Math.min(224, this.camera.distance * 1.3)),
-          () => this.world === world && !this.stopped,
+          () =>
+            this.world === world &&
+            this.worldRequest === request &&
+            !this.stopped,
         );
+        if (
+          !prepared ||
+          this.world !== world ||
+          this.worldRequest !== request ||
+          this.stopped
+        )
+          return;
         this.postcardView = null;
         this.postcardReport = null;
-        this.renderer.setView(this.camera.position, this.camera.focus);
+        this.renderer.setView(this.camera.position, this.camera.focus, true);
         this.updatePicture(1);
         this.renderer.prepareView(
           world?.id ?? 0,
@@ -1337,6 +1416,9 @@ class GameRuntime implements GamePort {
     this.store?.dispose();
     this.store = null;
     this.world = null;
+    this.postcards = [];
+    this.postcardView = null;
+    this.postcardReport = null;
     this.renderer?.dispose();
     this.renderer = null;
     this.lifecycle = "idle";
@@ -1514,6 +1596,8 @@ class GameRuntime implements GamePort {
         null,
         this.slots[this.selected] ?? Block.Stone,
         false,
+        store,
+        true,
       );
       try {
         renderer.prepareView(world.id, camera.position, camera.focus);
@@ -1535,6 +1619,7 @@ class GameRuntime implements GamePort {
       renderer.setView(
         glide ? fromPosition : camera.position,
         glide ? fromFocus : camera.focus,
+        !glide,
       );
       renderer.update(
         body,
@@ -1547,6 +1632,7 @@ class GameRuntime implements GamePort {
         null,
         this.slots[this.selected] ?? Block.Stone,
         false,
+        store,
       );
       renderer.render();
       this.body = body;
@@ -1596,6 +1682,180 @@ class GameRuntime implements GamePort {
       }
     }
   }
+  /** Owner travel keeps edits, relocates the free body, and publishes only after
+   * both the destination and the exact postcard GPU view have been prepared. */
+  async goToPostcard(request: {
+    sessionId: number;
+    id: PostcardId;
+  }): Promise<TeleportResult> {
+    const world = this.world,
+      store = this.store,
+      renderer = this.renderer;
+    const view = this.postcards.find((camera) => camera.id === request.id);
+    const result = (committed: boolean): TeleportResult => ({
+      sessionId: request.sessionId,
+      committed,
+    });
+    if (
+      !world ||
+      !store ||
+      !renderer ||
+      !view ||
+      world.id !== request.sessionId ||
+      !sameIdentity(view.identity, world.identity) ||
+      this.lifecycle !== "ready" ||
+      this.pendingTransitions ||
+      this.mode !== "overhead"
+    )
+      return result(false);
+    const worldRequest = this.worldRequest;
+    this.cancelNavigation();
+    let committed = false,
+      failure: unknown;
+    await this.transition(async () => {
+      if (
+        this.stopped ||
+        this.world !== world ||
+        this.worldRequest !== worldRequest
+      )
+        return;
+      const ticket = this.navigation.begin(world.id);
+      const current = () =>
+        !this.stopped &&
+        this.world === world &&
+        this.store === store &&
+        this.worldRequest === worldRequest &&
+        this.navigation.current(ticket, this.world.id);
+      if (!current()) return;
+      cancelAnimationFrame(this.frame);
+      const oldPosition = { ...this.camera.position },
+        oldFocus = { ...this.camera.focus };
+      try {
+        const preferred: SavedPose = {
+          x: view.position.x,
+          y: view.position.y - 1.62,
+          z: view.position.z,
+          yaw: Math.atan2(
+            view.target.x - view.position.x,
+            -(view.target.z - view.position.z),
+          ),
+          flying: false,
+        };
+        const atFeet = store.get(
+          Math.floor(preferred.x),
+          Math.floor(preferred.y),
+          Math.floor(preferred.z),
+        );
+        const supported = [-0.29, 0.29].some((dx) =>
+          [-0.29, 0.29].some(
+            (dz) =>
+              BLOCK_REGISTRY[
+                store.get(
+                  Math.floor(preferred.x + dx),
+                  Math.floor(preferred.y - 0.01),
+                  Math.floor(preferred.z + dz),
+                )
+              ]?.solid,
+          ),
+        );
+        const pose = this.destination(
+          store,
+          preferred.x,
+          preferred.z,
+          !supported || atFeet === Block.Lava || atFeet === Block.Water
+            ? null
+            : preferred,
+        );
+        const body = makeBody(pose.x, pose.y, pose.z);
+        body.yaw = body.headYaw = pose.yaw;
+        body.flying = pose.flying;
+        const camera = this.camera.destination(body, store.get, store.surface);
+        if (!(await this.prepareNear(store, body, 96, current))) return;
+        const prepared = await this.loadPostcardChunks(
+          store,
+          view,
+          current,
+          undefined,
+          view.id === "TEST-1",
+        );
+        if (!prepared || !current()) return;
+        renderer.setPostcard(true);
+        renderer.setViewMode(this.tools.viewMode);
+        renderer.update(
+          body,
+          body,
+          1,
+          0,
+          Infinity,
+          { ...this.tools, flying: pose.flying, timeHours: view.hours },
+          null,
+          null,
+          this.slots[this.selected] ?? Block.Stone,
+          false,
+          store,
+          true,
+        );
+        renderer.prepareView(world.id, view.position, view.target);
+        if (!current()) return;
+        renderer.setView(view.position, view.target, true);
+        // Offscreen preparation restores source-camera effect/origin state.
+        // Refresh it at the final eye before either draw or atomic publication.
+        renderer.update(
+          body,
+          body,
+          1,
+          0,
+          Infinity,
+          { ...this.tools, flying: pose.flying, timeHours: view.hours },
+          null,
+          null,
+          this.slots[this.selected] ?? Block.Stone,
+          false,
+          store,
+        );
+        renderer.render();
+        renderer.render();
+        // No await between successful draw preparation and body/camera publication.
+        this.body = body;
+        this.previous = { ...body };
+        this.camera = camera;
+        this.cameraTransition = null;
+        this.tools = { ...this.tools, flying: pose.flying };
+        this.mode = "postcard";
+        this.postcardView = view;
+        this.postcardReport = null;
+        this.clocks.displayMs = 0;
+        this.clocks.setHours(view.hours);
+        renderer.effects.reset();
+        this.target = this.ghost = null;
+        this.occluded = false;
+        this.accumulator = this.lastFrame = 0;
+        this.lastView = "";
+        this.aim = { x: body.x, y: body.y + 1, z: body.z - 1 };
+        this.input.dispose();
+        this.input = this.makeInput();
+        this.input.setScope("inactive");
+        committed = true;
+        void this.persistence.savePose(world.identity, this.pose());
+        this.publish();
+      } catch (error) {
+        failure = error;
+        throw error;
+      } finally {
+        this.navigation.finish(ticket);
+        if (!committed && this.world === world && this.renderer === renderer) {
+          renderer.setPostcard(false);
+          renderer.setView(oldPosition, oldFocus);
+          this.updatePicture(1);
+          renderer.render();
+          this.lastFrame = 0;
+          this.frame = requestAnimationFrame(this.animate);
+        }
+      }
+    });
+    if (failure) throw failure;
+    return result(committed);
+  }
   whenReady(): Promise<void> {
     return this.promise;
   }
@@ -1610,6 +1870,10 @@ class GameRuntime implements GamePort {
       this.lifecycle !== "ready"
     )
       throw new Error("Postcard does not match the loaded world");
+    if (this.store?.edits.size)
+      throw new Error(
+        "Automatic postcards require an unedited generation profile",
+      );
     let blob: Blob | undefined, failure: unknown;
     await this.transition(async () => {
       const store = this.store,
@@ -1657,7 +1921,7 @@ class GameRuntime implements GamePort {
         if (!prepared || !current())
           throw new Error("Postcard preparation cancelled");
         const renderStarted = performance.now();
-        renderer.setView(view.position, view.target);
+        renderer.setView(view.position, view.target, true);
         this.target = this.ghost = null;
         this.occluded = false;
         this.updatePicture(1);

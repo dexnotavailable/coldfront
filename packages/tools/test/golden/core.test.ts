@@ -16,6 +16,7 @@ import {
   compareGoldenRecords,
   encodeFloat64,
   encodeUint16,
+  encodeUint32,
   type GoldenRecord,
   hashChunk,
   sha256,
@@ -31,6 +32,9 @@ describe("portable golden bytes", () => {
     expect([...encodeUint16(new Uint16Array([0, 1, 0x1234, 65535]))]).toEqual([
       0, 0, 1, 0, 0x34, 0x12, 255, 255,
     ]);
+    expect([...encodeUint32(new Uint32Array([0x1234567, 0xffffffff]))]).toEqual(
+      [0x67, 0x45, 0x23, 0x01, 255, 255, 255, 255],
+    );
     const values = new Float64Array([
       0,
       -0,
@@ -117,6 +121,49 @@ describe("portable golden bytes", () => {
     await expect(
       hashChunk({ ...chunk, columns: chunk.columns.slice(1) }, context.columns),
     ).rejects.toThrow("layout");
+  });
+  it("requires both main halo feature buffers, preserves binary64 t, and detects either buffer changing", async () => {
+    const context = createWorldContext({ kind: "test", seed: 1 });
+    const chunk = generateTestChunk({ seed: 1, cx: 0, cy: 0, cz: 0 });
+    const featureIds = new Uint32Array(chunk.density.length),
+      featureT = new Float64Array(chunk.density.length);
+    featureIds[0] = 0x1234567;
+    featureT[0] = 0.1234567891234567;
+    const main = { ...chunk, featureIds, featureT };
+    await expect(hashChunk(chunk, context.columns, "main")).rejects.toThrow(
+      "pair",
+    );
+    await expect(
+      hashChunk({ ...chunk, featureIds }, context.columns, "main"),
+    ).rejects.toThrow("pair");
+    await expect(
+      hashChunk(
+        { ...main, featureT: featureT.slice(1) },
+        context.columns,
+        "main",
+      ),
+    ).rejects.toThrow("pair");
+    await expect(hashChunk(main, context.columns, "test")).rejects.toThrow(
+      "absent",
+    );
+    const hashes = await hashChunk(main, context.columns, "main");
+    featureIds[0] = 0x1234566;
+    const changedId = await hashChunk(main, context.columns, "main");
+    expect(changedId.featureIds).not.toBe(hashes.featureIds);
+    expect(changedId.featureT).toBe(hashes.featureT);
+    featureT[0] = Math.fround(featureT[0] as number);
+    const changedT = await hashChunk(main, context.columns, "main");
+    expect(changedT.featureT).not.toBe(changedId.featureT);
+    const sample = {
+      ...testGoldenCases()[0],
+      world: "main",
+    } as GoldenRecord["sample"];
+    expect(
+      compareGoldenRecords(
+        [{ sample, hashes }],
+        [{ sample, hashes: changedT }],
+      ),
+    ).toHaveLength(2);
   });
 });
 describe("browser evidence policy", () => {

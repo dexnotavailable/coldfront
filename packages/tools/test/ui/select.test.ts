@@ -48,7 +48,7 @@ describe("typed Select options", () => {
   });
   it("rejects future catalogue labels and duplicate stable values", () => {
     const options: readonly SelectOption[] = [
-      { value: "late", label: { kind: "catalogue", id: "tools.postcard" } },
+      { value: "late", label: { kind: "catalogue", id: "tools.lod" } },
     ];
     expect(() =>
       renderToString(

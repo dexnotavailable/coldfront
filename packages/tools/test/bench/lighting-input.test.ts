@@ -1,7 +1,8 @@
 import { expect, it } from "vitest";
-import { BLOCK_REGISTRY } from "../../../shared/src/blocks/registry.js";
+import { BLOCK_REGISTRY, Block } from "../../../shared/src/blocks/registry.js";
 import { lightIndex, solveLight } from "../../../shared/src/lighting/flood.js";
 import { haloIndex } from "../../../shared/src/world/coordinates.js";
+import type { WorldContext } from "../../../shared/src/world/types.js";
 import { createWorldContext } from "../../../shared/src/world/world-context.js";
 import { generateTestChunk } from "../../../shared/src/worldgen/chunk.js";
 import {
@@ -9,6 +10,52 @@ import {
   prepareChunkLighting,
 } from "../../src/bench/lighting-input.js";
 import { benchmarkCases } from "../../src/bench/samples.js";
+
+it("seeds static RGB throughout a synthetic neighbourhood including the top sky row", () => {
+  const area = {
+    createColumn: () => new Float64Array(8),
+    sampleColumn: (_x: number, _z: number, out: Float64Array) => out,
+    sampleVoxel: (x: number, y: number, z: number, out: { block: number }) => {
+      out.block =
+        x === 0.5 && z === 0.5 && (y === 0.5 || y === 63.5)
+          ? Block.Lava
+          : Block.Stone;
+      return out;
+    },
+    skyInput: (
+      _x: number,
+      _z: number,
+      out: { highestFilterY: number; solidBelowY: number },
+    ) => {
+      out.highestFilterY = 63;
+      out.solidBelowY = -32;
+      return out;
+    },
+  };
+  const context = {
+    kind: "test",
+    seed: 1,
+    prepareArea: () => area,
+  } as unknown as WorldContext;
+  const volume = prepareChunkLighting(
+    {
+      id: "synthetic-rgb",
+      world: "test",
+      seed: 1,
+      region: "test",
+      lod: 0,
+      cx: 0,
+      cy: 0,
+      cz: 0,
+      spacing: 1,
+    },
+    context,
+  );
+  expect(volume.sources[lightIndex(volume, 32, 32, 32)]).toBe(0x0f72);
+  expect(volume.sources[lightIndex(volume, 32, 95, 32)]).toBe(0x0f72);
+  expect(volume.sources[lightIndex(volume, 33, 95, 32)]).toBe(0);
+  expect(volume.opacity[lightIndex(volume, 32, 32, 32)]).toBe(15);
+});
 
 it("prepares real neighbour opacity, solves skylight and extracts the exact centre halo", () => {
   const context = createWorldContext({ kind: "test", seed: 1 });

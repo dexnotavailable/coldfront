@@ -39,22 +39,24 @@ export function lightIndex(
 export function channel(word: number, shift: number): number {
   return (word >>> shift) & 15;
 }
+/** Static source RGB only; skylight occupies the independent high nibble. */
+export function emissionLight(rgb: readonly [number, number, number]): number {
+  return (rgb[0] << 8) | (rgb[1] << 4) | rgb[2];
+}
 function write(v: LightVolume, i: number, shift: number, value: number): void {
   v.light[i] = ((v.light[i] as number) & ~(15 << shift)) | (value << shift);
 }
-function neighbours(v: LightVolume, i: number): number[] {
+function neighbours(v: LightVolume, i: number, out: Int32Array): void {
   const x = i % v.width,
     yz = Math.floor(i / v.width),
     z = yz % v.depth,
     y = Math.floor(yz / v.depth);
-  return [
-    x + 1 < v.width ? i + 1 : -1,
-    x > 0 ? i - 1 : -1,
-    z + 1 < v.depth ? i + v.width : -1,
-    z > 0 ? i - v.width : -1,
-    y + 1 < v.height ? i + v.width * v.depth : -1,
-    y > 0 ? i - v.width * v.depth : -1,
-  ];
+  out[0] = x + 1 < v.width ? i + 1 : -1;
+  out[1] = x > 0 ? i - 1 : -1;
+  out[2] = z + 1 < v.depth ? i + v.width : -1;
+  out[3] = z > 0 ? i - v.width : -1;
+  out[4] = y + 1 < v.height ? i + v.width * v.depth : -1;
+  out[5] = y > 0 ? i - v.width * v.depth : -1;
 }
 export function floodLight(
   v: LightVolume,
@@ -62,11 +64,12 @@ export function floodLight(
   shift: number,
 ): void {
   const queue = Array.from(seeds);
+  const adjacent = new Int32Array(6);
   for (let head = 0; head < queue.length; head++) {
     const i = Number(queue[head]),
       level = channel(v.light[i] as number, shift);
     if (!level) continue;
-    const adjacent = neighbours(v, i);
+    neighbours(v, i, adjacent);
     for (let d = 0; d < 6; d++) {
       const j = Number(adjacent[d]);
       if (j < 0 || (v.opacity[j] as number) >= 15) continue;
@@ -106,6 +109,7 @@ export function removeLightsBatch(
     levels: number[] = [],
     fill: number[] = [],
     emitters = new Set<number>();
+  const adjacent = new Int32Array(6);
   for (const i of cells) {
     const level = channel(v.light[i] as number, shift);
     if (level) {
@@ -118,7 +122,7 @@ export function removeLightsBatch(
   for (let head = 0; head < queue.length; head++) {
     const i = Number(queue[head]),
       level = levels[head] as number;
-    const adjacent = neighbours(v, i);
+    neighbours(v, i, adjacent);
     for (let d = 0; d < 6; d++) {
       const j = Number(adjacent[d]);
       if (j < 0) continue;
@@ -154,6 +158,7 @@ export function solveLight(v: LightVolume): void {
 }
 /** Call after changing opacity/sources. Reuses the existing field and frontiers. */
 export function relightEdits(v: LightVolume, cells: readonly number[]): void {
+  const adjacent = new Int32Array(6);
   for (const shift of [0, 4, 8, 12]) {
     removeLightsBatch(v, cells, shift);
     const fill: number[] = [];
@@ -163,7 +168,8 @@ export function relightEdits(v: LightVolume, cells: readonly number[]): void {
         write(v, i, shift, source);
         fill.push(i);
       }
-      for (const j of neighbours(v, i))
+      neighbours(v, i, adjacent);
+      for (const j of adjacent)
         if (j >= 0 && channel(v.light[j] as number, shift)) fill.push(j);
     }
     floodLight(v, fill, shift);

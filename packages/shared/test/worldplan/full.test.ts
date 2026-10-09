@@ -14,6 +14,7 @@ import {
   collectMainTrees,
   sampleMainVoxel,
 } from "../../src/worldgen/main/features.js";
+import { createIbaraGround } from "../../src/worldgen/main/ibara-ground.js";
 import {
   createMainField,
   MainColumn,
@@ -294,6 +295,10 @@ describe("complete main WorldPlans, seeds1–3", () => {
       const data = plan(seed);
       const ctx = context(seed);
       const column = ctx.createColumn();
+      const baseField = createMainField(data, data.sites.bridges);
+      const baseColumn = baseField.createColumn();
+      const ground = createIbaraGround(baseField, data.ibara);
+      const groundSample = { density: 0, surfaceY: 0, tag: "base" as const };
       const water = {
         bodyId: 0,
         kind: "none" as "none" | "water",
@@ -319,13 +324,29 @@ describe("complete main WorldPlans, seeds1–3", () => {
           const x = data.grid.minX + (cell % data.grid.width) * 64;
           const z = data.grid.minZ + Math.floor(cell / data.grid.width) * 64;
           ctx.sampleColumn(x, z, column);
+          baseField.sampleColumn(x, z, baseColumn);
           expect(column[MainColumn.Macro]).toBe(data.terrainMacro[cell]);
-          expect(column[MainColumn.NaturalHeight]).toBe(
-            (column[MainColumn.Macro] as number) +
-              (column[MainColumn.Meso] as number) +
-              (column[MainColumn.Micro] as number),
+          // These diagnostic lanes describe the pre-volcanic field; the final
+          // natural height also includes Ibara's structured ground.
+          expect(baseColumn[MainColumn.NaturalHeight]).toBe(
+            (baseColumn[MainColumn.Macro] as number) +
+              (baseColumn[MainColumn.Meso] as number) +
+              (baseColumn[MainColumn.Micro] as number),
           );
+          for (const lane of [
+            MainColumn.Macro,
+            MainColumn.Meso,
+            MainColumn.Micro,
+          ])
+            expect(column[lane]).toBe(baseColumn[lane]);
+          expect(column[MainColumn.Height]).toBe(ground.height(x, z));
           if ((column[MainColumn.BridgeMargin] as number) > 0) continue;
+          const naturalHeight = column[MainColumn.NaturalHeight] as number;
+          expect(naturalHeight).toBe(ground.height(x, z));
+          ground.sample(x, naturalHeight - 0.25, z, groundSample);
+          expect(groundSample.density).toBeGreaterThan(0);
+          ground.sample(x, naturalHeight + 0.25, z, groundSample);
+          expect(groundSample.density).toBeLessThan(0);
           ctx.waterQuery(x, z, water);
           expect(water.kind).toBe("water");
           expect(water.level).toBe(body.level);

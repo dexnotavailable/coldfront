@@ -230,20 +230,20 @@ try {
         await page.evaluate(() => {
           const probe = document.createElement("button");
           probe.id = "future-phase-probe";
-          probe.dataset.ui = "tools.postcard";
+          probe.dataset.ui = "tools.lod";
           probe.style.cssText =
             "position:absolute;left:0;top:0;width:32px;height:32px";
           document.querySelector("#gallery-stage")!.append(probe);
         });
         const future = await inspectPage(page, rows, fixture.sampleContent);
-        if (!future.errors.includes("unknown/future control tools.postcard"))
+        if (!future.errors.includes("unknown/future control tools.lod"))
           throw new Error(
-            "Phase 1.3 control was incorrectly accepted in phase 1.2",
+            "Phase 1.4 control was incorrectly accepted in phase 1.3",
           );
         await page.evaluate(() =>
           document.getElementById("future-phase-probe")!.remove(),
         );
-        receipt.auditProbes.push("phase 1.3 control rejected in phase 1.2");
+        receipt.auditProbes.push("phase 1.4 control rejected in phase 1.3");
         await page.evaluate(() => {
           const probe = document.createElement("div");
           probe.id = "wrap-policy-probe";

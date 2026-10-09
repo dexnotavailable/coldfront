@@ -5,13 +5,30 @@ import { WorldRenderer } from "../../../client/src/engine/renderer.js";
 
 /** Real renderer view/restore methods and Three transforms, with GPU calls stubbed.
  * This is a spatial invariant check, not shader/pixel acceptance. */
-function fixture() {
+function fixture(failDraw = false) {
   const camera = new PerspectiveCamera(70, 16 / 9, 0.2, 1600),
     sky = new Sky();
   sky.scale.setScalar(4500);
   const scene = new Scene();
   scene.add(sky);
-  const observed: Vector3[] = [];
+  const terrain = {
+    uniforms: {
+      origin: { value: new Vector3() },
+      waterDepthReady: { value: 0 },
+    },
+  };
+  const observed: {
+    sky: Vector3;
+    origin: Vector3;
+    waterDepthReady: number;
+  }[] = [];
+  const observe = () => {
+    observed.push({
+      sky: sky.position.clone(),
+      origin: terrain.uniforms.origin.value.clone(),
+      waterDepthReady: terrain.uniforms.waterDepthReady.value,
+    });
+  };
   const renderer = Object.assign(
     Object.create(WorldRenderer.prototype) as object,
     {
@@ -24,18 +41,19 @@ function fixture() {
       worldId: 1,
       cut: Infinity,
       contextLost: false,
-      terrain: { uniforms: { waterDepthReady: { value: 0 } } },
+      terrain,
       composer: {
         passes: [],
         render() {
-          observed.push(sky.position.clone());
+          observe();
         },
       },
       renderer: {
         getRenderTarget: () => null,
         setRenderTarget() {},
         render() {
-          observed.push(sky.position.clone());
+          observe();
+          if (failDraw) throw new Error("Destination draw failed");
         },
         getContext: () => ({
           isContextLost: () => false,
@@ -46,7 +64,7 @@ function fixture() {
       compile() {},
     },
   ) as unknown as WorldRenderer;
-  return { renderer, camera, sky, observed };
+  return { renderer, camera, sky, terrain, observed };
 }
 describe("main-world sky spatial invariants", () => {
   it("keeps the camera inside the actual Sky box across distant world positions", () => {
@@ -66,23 +84,43 @@ describe("main-world sky spatial invariants", () => {
       expect(sky.position.equals(camera.position)).toBe(true);
     }
   });
-  it("centres Sky during offscreen preparation and restores the source camera's sky afterwards", () => {
-    const { renderer, camera, sky, observed } = fixture();
-    const source = { x: -16000, y: 100, z: -11000 },
-      target = { x: 20000, y: 800, z: 19000 };
-    renderer.setView(source, { x: source.x, y: 80, z: source.z - 30 });
-    renderer.prepareView(1, target, {
-      x: target.x + 30,
-      y: target.y - 10,
-      z: target.z,
-    });
-    expect(observed.length).toBeGreaterThan(0);
-    expect(
-      observed.every((point) =>
-        point.equals(new Vector3(target.x, target.y, target.z)),
-      ),
-    ).toBe(true);
-    expect(camera.position.toArray()).toEqual([source.x, source.y, source.z]);
-    expect(sky.position.equals(camera.position)).toBe(true);
-  });
+  it.each([false, true])(
+    "centres Sky during offscreen preparation and restores the source view (draw failure=%s)",
+    (failDraw) => {
+      const { renderer, camera, sky, terrain, observed } = fixture(failDraw);
+      const source = { x: -16000, y: 100, z: -11000 },
+        target = { x: 20000, y: 800, z: 19000 };
+      renderer.setView(source, { x: source.x, y: 80, z: source.z - 30 });
+      const sourceQuaternion = camera.quaternion.clone();
+      const sourceOrigin = new Vector3(-16384, 0, -11264);
+      terrain.uniforms.origin.value.copy(sourceOrigin);
+      terrain.uniforms.waterDepthReady.value = 1;
+      const prepare = () =>
+        renderer.prepareView(1, target, {
+          x: target.x + 30,
+          y: target.y - 10,
+          z: target.z,
+        });
+      if (failDraw) expect(prepare).toThrow("Destination draw failed");
+      else expect(prepare).not.toThrow();
+      expect(observed.length).toBeGreaterThan(0);
+      expect(
+        observed.every((view) =>
+          view.sky.equals(new Vector3(target.x, target.y, target.z)),
+        ),
+      ).toBe(true);
+      for (const view of observed) {
+        expect(view.origin.toArray()).toEqual([19456, 0, 18432]);
+        expect(view.waterDepthReady).toBe(0);
+      }
+      expect(camera.position.toArray()).toEqual([source.x, source.y, source.z]);
+      expect(camera.quaternion.equals(sourceQuaternion)).toBe(true);
+      expect(sky.position.equals(camera.position)).toBe(true);
+      expect(new Box3().setFromObject(sky).containsPoint(camera.position)).toBe(
+        true,
+      );
+      expect(terrain.uniforms.origin.value.equals(sourceOrigin)).toBe(true);
+      expect(terrain.uniforms.waterDepthReady.value).toBe(1);
+    },
+  );
 });

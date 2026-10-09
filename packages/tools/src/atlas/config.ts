@@ -30,10 +30,13 @@ export function parseAtlas(args: readonly string[]): AtlasCommand {
   const world = worldValue(flags),
     mode = value(flags, "mode", "height"),
     layer = value(flags, "layer", "surface");
-  if (mode !== "height" && mode !== "regions" && mode !== "sites")
-    throw new Error(
-      "Mode must be height, regions or sites; feature masks arrive with the phase 1.3 toolkit",
-    );
+  if (
+    mode !== "height" &&
+    mode !== "regions" &&
+    mode !== "sites" &&
+    mode !== "features"
+  )
+    throw new Error("Mode must be height, regions, sites or features");
   if (
     layer !== "surface" &&
     layer !== "upper_deep" &&
@@ -48,6 +51,8 @@ export function parseAtlas(args: readonly string[]): AtlasCommand {
     throw new Error(
       "Underground floor heights do not exist in phase 1.2; use regions or sites",
     );
+  if (mode === "features" && layer !== "surface")
+    throw new Error("Ibara feature masks are surface-only in phase 1.3");
   if (flags.has("bounds") && (flags.has("center") || flags.has("span")))
     throw new Error("Choose --bounds or --center/--span, not both");
   const seed = seedValue(flags),

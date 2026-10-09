@@ -238,6 +238,12 @@ d = T · g  +  K(x, y, z)  +  micro(x, y, z)
 - **Structure fitting.** Under structure massing (the Keep, ruins, the Buried City) add density, and above it remove density, with a falloff, so buildings sit into the ground (Minecraft's "beardifier" idea).
 - **Crumb cleanup (LOD0).** After carving, flood-fill solids. Remove components under 64 voxels that **don't touch the chunk's outermost voxel layer**, except where the region allows floating features.
 
+  Use six face neighbours and the canonical 32³ world owner of each unit cell, including negative coordinates. Classify against the unmodified field; only a completed, closed component below 64 may be removed. Keep components that reach the boundary, an eligible floating-feature owner, or 64 solids. Cache eviction must not change the answer.
+
+  The shared spacing-1 sampler applies this mask to point and prepared queries, core voxels and every halo entry, including the eight upper layers. Collision, camera rays and lighting therefore see the same cleanup; chunk-buffer-only deletion is insufficient. Removed cells have negative density and zero feature ID/t, followed by legitimate owned-fluid refill. User edits remain outside cleanup. TEST and spacings above 1 retain their existing generators.
+
+  This policy introduces unit-cell density discontinuities and conservatively retains boundary-touching crumbs; report those limits rather than claiming a smooth or globally crumb-free field. Conservative upper bounds may overestimate after deletion. The present shortcut through proven solid ground relies on monotonic ground plus additive features: subtractive caves must replace or disable that proof.
+
 ---
 
 ## 8. Stage D: features (the SDF system)
@@ -353,6 +359,17 @@ This is the feature that failed before. Follow it closely, then tune by eye. Eve
 - branched: 30–40% of thorns ≥ 40 m
 - ≥ 95% of thorns differ from their nearest neighbour by ≥ 20% in height, ≥ 8° in lean or ≥ 0.1 h in bend
 - no tip thinner than 0.7 m for longer than `max(1.5 m, 0.04 L)`
+
+For the neighbour check, evaluate each accepted ordinary thorn against the closest
+other accepted ordinary base in XZ; exact distance ties choose the lower unsigned
+feature ID. Landmarks are reported separately. Height and bend differences use
+the focal thorn's height as the denominator. Lean means the scalar inclination
+from vertical, and bend means its unsigned amplitude; heading is a separate
+orientation field. Any one of the three inclusive thresholds qualifies that
+thorn as different. This fixes the conventions used by the first measured
+census (decision 113); the 95% requirement and all other bands remain unchanged.
+Receipts retain exact comparison operands for the accepted population so the
+reported nearest pairs and directed comparisons can be independently reproduced.
 
 ### 8.6 Feature catalogue (other regions)
 

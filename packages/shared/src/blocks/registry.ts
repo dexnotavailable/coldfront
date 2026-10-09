@@ -32,9 +32,17 @@ export const Block = Object.freeze({
   Ash: 29,
   DarkPlanks: 30,
   Bricks: 31,
+  Bark: 32,
+  Obsidian: 33,
+  EmberCrust: 34,
+  BrimstoneCrust: 35,
+  SulphurCrust: 36,
+  Lava: 37,
+  VentMouth: 38,
 } as const);
 export type BlockId = (typeof Block)[keyof typeof Block];
 export type RenderType = "opaque" | "cutout" | "translucent" | "fluid";
+export type FluidKind = "none" | "water" | "lava";
 export interface BlockDefinition {
   readonly id: BlockId;
   readonly key: string;
@@ -48,7 +56,17 @@ export interface BlockDefinition {
   /** Semantic recipe key, not a texture index or downloaded asset. */
   readonly texture: string;
   readonly variantCount: number;
+  /** Steady RGB source light, as integer nibbles (0..15); not rendered glow. */
+  readonly emission: readonly [number, number, number];
+  /** HDR multiplier for the rendered source, separate from propagated light. */
+  readonly emissionStrength: number;
+  readonly gloss: number;
+  readonly fluidKind: FluidKind;
 }
+type MaterialProperties = Pick<
+  BlockDefinition,
+  "emission" | "emissionStrength" | "gloss" | "fluidKind"
+>;
 function define(
   id: BlockId,
   key: string,
@@ -59,7 +77,13 @@ function define(
   breakable: boolean,
   lightFiltering: number,
   texture = key,
+  material: Partial<MaterialProperties> = {},
 ): Readonly<BlockDefinition> {
+  const emission: readonly [number, number, number] = Object.freeze([
+    material.emission?.[0] ?? 0,
+    material.emission?.[1] ?? 0,
+    material.emission?.[2] ?? 0,
+  ]);
   return Object.freeze({
     id,
     key,
@@ -71,6 +95,10 @@ function define(
     lightFiltering,
     texture,
     variantCount: id === Block.Air ? 0 : 3,
+    emission,
+    emissionStrength: material.emissionStrength ?? 0,
+    gloss: material.gloss ?? 0,
+    fluidKind: material.fluidKind ?? (id === Block.Water ? "water" : "none"),
   });
 }
 export const BLOCK_REGISTRY: readonly Readonly<BlockDefinition>[] =
@@ -224,6 +252,80 @@ export const BLOCK_REGISTRY: readonly Readonly<BlockDefinition>[] =
       15,
     ),
     define(Block.Bricks, "bricks", "Bricks", "opaque", true, true, true, 15),
+    define(Block.Bark, "bark", "Bark wood", "opaque", true, true, true, 15),
+    define(
+      Block.Obsidian,
+      "obsidian",
+      "Obsidian",
+      "opaque",
+      true,
+      true,
+      true,
+      15,
+      undefined,
+      { gloss: 0.86 },
+    ),
+    define(
+      Block.EmberCrust,
+      "ember_crust",
+      "Ember crust",
+      "opaque",
+      true,
+      true,
+      true,
+      15,
+      undefined,
+      { emission: [8, 2, 1], emissionStrength: 1.7, gloss: 0.08 },
+    ),
+    define(
+      Block.BrimstoneCrust,
+      "brimstone_crust",
+      "Brimstone crust",
+      "opaque",
+      true,
+      true,
+      true,
+      15,
+    ),
+    define(
+      Block.SulphurCrust,
+      "sulphur_crust",
+      "Sulphur crust",
+      "opaque",
+      true,
+      true,
+      true,
+      15,
+    ),
+    define(
+      Block.Lava,
+      "lava",
+      "Lava",
+      "fluid",
+      false,
+      true,
+      false,
+      15,
+      undefined,
+      {
+        emission: [15, 7, 2],
+        emissionStrength: 3.2,
+        gloss: 0.2,
+        fluidKind: "lava",
+      },
+    ),
+    define(
+      Block.VentMouth,
+      "vent_mouth",
+      "Vent mouth",
+      "opaque",
+      true,
+      true,
+      true,
+      15,
+      undefined,
+      { emission: [12, 4, 1], emissionStrength: 2.6 },
+    ),
   ]);
 export function getBlockDefinition(id: number): Readonly<BlockDefinition> {
   const block = BLOCK_REGISTRY[id];

@@ -12,10 +12,17 @@ import type {
   UiHost,
   WorldKind,
 } from "../../../client/src/contracts/game-ui";
+import { postcardPresentations } from "../../../client/src/game/postcard";
 import { createUiController } from "../../../client/src/ui/controller";
 import { BLOCK_REGISTRY } from "../../../shared/src/blocks/registry";
 import { SURFACE_REGIONS } from "../../../shared/src/world/regions";
 import mapAnchorReview from "./map-anchor-review.json";
+
+const hellPostcards = [{ id: "HELL-1" }, { id: "HELL-2" }] as const;
+const fullPostcards = postcardPresentations([
+  ...SURFACE_REGIONS.map((region) => ({ id: `P12-${region.id}` as const })),
+  ...hellPostcards,
+]);
 
 const colors = [
   "#242932",
@@ -37,6 +44,7 @@ export const fixtureBlocks: readonly BlockPresentation[] =
   }));
 export const sampleContent = [
   ...fixtureBlocks.map((block) => block.name),
+  ...fullPostcards.map((camera) => camera.name),
   "0.1.0",
   "eced20f",
   "ffffffffffffffffffffffffffffffffffffffff",
@@ -127,8 +135,11 @@ export function sampleSnapshot(): GameSnapshot {
     loadProgress: 0.6,
     seed: 1,
     mode: "overhead",
+    postcards: [],
+    activePostcardId: null,
     worldPaused: false,
     tools: {
+      viewMode: "normal",
       timeHours: 12,
       clockRuns: true,
       fog: true,
@@ -179,6 +190,7 @@ export function fixtureController(
   const browserActions: string[] = [];
   const travels: TeleportRequest[] = [];
   const cancelled: number[] = [];
+  let finishPendingPostcard: (() => void) | undefined;
   const emit = (event: GameEvent): void => {
     for (const listener of listeners) listener(event);
   };
@@ -217,6 +229,28 @@ export function fixtureController(
           ? 0.35
           : 0.2,
     };
+  if (
+    scenario.startsWith("tools-postcard") ||
+    scenario === "tools-clay" ||
+    scenario === "tools-features"
+  ) {
+    const all = scenario.endsWith("full");
+    snapshot = {
+      ...snapshot,
+      postcards: all ? fullPostcards : postcardPresentations(hellPostcards),
+      tools: {
+        ...snapshot.tools,
+        viewMode:
+          scenario === "tools-clay"
+            ? "clay"
+            : scenario === "tools-features"
+              ? "features"
+              : "normal",
+      },
+    };
+  }
+  if (scenario === "tools-postcard-error")
+    snapshot = { ...snapshot, postcards: [] };
   if (scenario === "system-storage")
     snapshot = { ...snapshot, storage: "blocked" };
   if (scenario === "system-context")
@@ -241,6 +275,11 @@ export function fixtureController(
         snapshot = {
           ...snapshot,
           tools: { ...snapshot.tools, [command.key]: command.value },
+        };
+      if (command.type === "set-view")
+        snapshot = {
+          ...snapshot,
+          tools: { ...snapshot.tools, viewMode: command.value },
         };
       if (command.type === "set-time")
         snapshot = {
@@ -345,8 +384,30 @@ export function fixtureController(
         });
       return { sessionId: request.sessionId, committed: true };
     },
+    async goToPostcard(request) {
+      if (
+        request.sessionId !== snapshot.world?.id ||
+        !snapshot.postcards.some((camera) => camera.id === request.id)
+      )
+        return { sessionId: request.sessionId, committed: false };
+      if (scenario === "tools-postcard-pending") {
+        await new Promise<void>((resolve) => {
+          finishPendingPostcard = resolve;
+        });
+        return { sessionId: request.sessionId, committed: false };
+      }
+      snapshot = {
+        ...snapshot,
+        activePostcardId: request.id,
+        mode: "postcard",
+      };
+      publish();
+      return { sessionId: request.sessionId, committed: true };
+    },
     cancelTeleport(sessionId) {
       cancelled.push(sessionId);
+      finishPendingPostcard?.();
+      finishPendingPostcard = undefined;
     },
     capturePng: () =>
       Promise.reject(new Error("Gallery adapter cannot capture a game world")),
@@ -397,6 +458,8 @@ export function fixtureController(
   }
   if (scenario.startsWith("tools")) {
     ui.toolsOpen.value = true;
+    if (scenario === "tools-postcard-pending")
+      void ui.goToPostcard(hellPostcards[0].id);
     if (scenario === "tools-on") {
       snapshot = {
         ...snapshot,

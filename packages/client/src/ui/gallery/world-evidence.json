@@ -5,11 +5,11 @@
       "id": "outline-ghost",
       "rows": ["hud.outline", "hud.ghost"],
       "image": "fixtures/ui/world-outline-ghost.jpg",
-      "imageSha256": "c5273cd6ba0ff6f55265c8dda7a7ca196fe809271d7234d348e35ce601dc0614",
+      "imageSha256": "26b0c9ed461f5d510876067743fbd282fb9524866419f7c5144f0ee7d6026e8f",
       "telemetry": "fixtures/ui/world-outline-ghost.json",
-      "telemetrySha256": "079296c24131fe707c3b887cddca12c4b1b9600db25f0321d28e4debc5d4d87e",
+      "telemetrySha256": "008e5ab54a4831860c2d4b5d178a3750e7e8b7c7c96210a5199fd3236f8471ed",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "cda5327fdb671fd5e9e225f3990b6b04dd3f4ecfb5c58de96b60b1faa446ddd2",
+      "runReceiptSha256": "a5fab7a8be2ff1bf4bedc3a61308903144b5aafde1ea7d8680d9284e738a5b80",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -24,8 +24,12 @@
           "sha256": "2f3dd2b96d98fb2fcea620a3d6557bc5dd41078157f0519a117f9e2d6c829242"
         },
         {
+          "path": "packages/client/src/engine/block-sample-cache.ts",
+          "sha256": "1645e845ac71d87e7a08cf49b305812be48121e727b726a53983d41de0b856d2"
+        },
+        {
           "path": "packages/client/src/engine/chunk-store.ts",
-          "sha256": "a0b5b6dbc09650604dc9d77137b45da026b121f0a4aa5dc974a9acea48c33a32"
+          "sha256": "a32ac094d1311cbfcf8bd14f441218e20d4f641260163edd3d3307b02909be7e"
         },
         {
           "path": "packages/client/src/engine/cut-cap.ts",
@@ -34,6 +38,14 @@
         {
           "path": "packages/client/src/engine/effects.ts",
           "sha256": "91b046d290e39381d7e6140637f02a2bf950f4fa5801303603bc062823b5c4e5"
+        },
+        {
+          "path": "packages/client/src/engine/ibara-atmosphere.ts",
+          "sha256": "9d39c75f5da27231a81e534df1e8c9a1b9cceb03abbf9fc7082ad7b6d2cb46b6"
+        },
+        {
+          "path": "packages/client/src/engine/ibara-effects.ts",
+          "sha256": "e7eae28b2b3c92aad81ceb50a875880c3f9334162cc9c7ac5db6f583fb4ef2e1"
         },
         {
           "path": "packages/client/src/engine/motion.ts",
@@ -45,7 +57,7 @@
         },
         {
           "path": "packages/client/src/engine/plan-validation.ts",
-          "sha256": "987c90fd02894acf70e3c3792d2a3074707fa0f872e0f1cbac92393661abb068"
+          "sha256": "d4a2292b4b6c7c71ba17b43e20107d0239a0c5d76034dbcec4a694ff7b0692f0"
         },
         {
           "path": "packages/client/src/engine/plan-worker.ts",
@@ -57,23 +69,23 @@
         },
         {
           "path": "packages/client/src/engine/renderer.ts",
-          "sha256": "110e1260dc025ae66bf32037acc0c469fe5df6df593f206d30f14e5c10d2caca"
+          "sha256": "ea85d6b9dfaa735eb597e031f302fb1b211456f47676dfb57bad01fae21e2f76"
         },
         {
           "path": "packages/client/src/engine/terrain-material.ts",
-          "sha256": "9a4638b2ed6a14c4e3032214b28b8e9cc2bcc21c72b0caaa9f2d267d5190c071"
+          "sha256": "490392fad55eced009d8056448a94c53a0d2d20cbdda5bbee184d9f3b3c23a75"
         },
         {
           "path": "packages/client/src/engine/terrain-worker.ts",
-          "sha256": "1a96204bd6a968e80eab4c1544d8718e2a29d484325b15ea071c8d2c464359fb"
+          "sha256": "9d619cce24284e8252ecf74485ee5ef364c4303f988bad7187390e77d1734968"
         },
         {
           "path": "packages/client/src/engine/worker-pool.ts",
-          "sha256": "0157b29d8c7f7c1745823b187561a7b3f54f8a2a8059e7c05fc25a288c923527"
+          "sha256": "f46e6f07ccfd8070085afa46597f28c05f251fad456a7505874132e6db6b682e"
         },
         {
           "path": "packages/client/src/engine/worker-protocol.ts",
-          "sha256": "0447727df9d608a80487c9743b9d28d06e128b2bb5928877052c995cf08a98fe"
+          "sha256": "a51e737834d931523922be5004e2dc8b8d079a0ac787789e7d66217470f72338"
         },
         {
           "path": "packages/client/src/engine/world-plan-cache.ts",
@@ -93,7 +105,7 @@
         },
         {
           "path": "packages/client/src/game/create-game.ts",
-          "sha256": "326b5ce676b6b1601a718d0f0b20c9d732488cb85292ebe0e477dfecbbbf4e39"
+          "sha256": "f3985d5af9b0b8da6a8d0c5d1adaa68185152b72b31380fa99779b7315a357e0"
         },
         {
           "path": "packages/client/src/game/destination.ts",
@@ -109,7 +121,7 @@
         },
         {
           "path": "packages/client/src/game/postcard.ts",
-          "sha256": "736a8ef889d5605888df9868df10d6aac2e10e9f41ef5c3716ccfd360298a95d"
+          "sha256": "eacaab708a0d6ddd09c8515f9e245916560055a1d3019e7ac3c526e7ce0f6f96"
         },
         {
           "path": "packages/client/src/game/raycast.ts",
@@ -125,15 +137,39 @@
         },
         {
           "path": "packages/client/src/game/world-save.ts",
-          "sha256": "40975c9a65723dff94e35447179541ac10d468baf7eddb6b8e0a5170bf4bed3f"
+          "sha256": "1d29327cfc05be763b83e0cc72e8c92a833ce66aa518f0b9e32bec5cbc2e9171"
         },
         {
           "path": "packages/shared/src/blocks/registry.ts",
-          "sha256": "bf0e9d4b480f67949101e1fe91d415963c597939f77f3671bcab8e165f585fee"
+          "sha256": "22ef236c241694f4237899df2866ae88d3826503fcd4a45ff1a9e34aa52a3cdd"
         },
         {
           "path": "packages/shared/src/blocks/textures/recipes.ts",
-          "sha256": "3f39718fde0ef538fb112e684e26afea8bf3ea6b816455f0a732193a0112d27e"
+          "sha256": "7b27cd16856695f3c65af7d5caed9fe93b70df7d09393d793f0e71eff3eddbf9"
+        },
+        {
+          "path": "packages/shared/src/features/ibara/cells.ts",
+          "sha256": "fbb004b1af76b02122a351de560c95439ea162ee2770b7f3d2456ea9f0f713b5"
+        },
+        {
+          "path": "packages/shared/src/features/ibara/field.ts",
+          "sha256": "12fd2daa7a161f91303572be715e876119646df7719b8ac244a859eb31885f36"
+        },
+        {
+          "path": "packages/shared/src/features/ibara/neighbour-contrast.ts",
+          "sha256": "e6f182a4018072c1e67818420a33fd5f17ca2365fa50d2a54fe4c9aa4f50a083"
+        },
+        {
+          "path": "packages/shared/src/features/ibara/sample.ts",
+          "sha256": "1cab6a6bdafb7a5f708b41086455be06d4a20dbbbc076d01cdf76087570c021a"
+        },
+        {
+          "path": "packages/shared/src/features/ibara/shape.ts",
+          "sha256": "277ac86587567d4a05a79aa24d06157ec2f982b534fb750c742986640fd42f59"
+        },
+        {
+          "path": "packages/shared/src/features/ibara/types.ts",
+          "sha256": "050505b6db7c0f2a0764c63477fbc39c7abe572e762550edf9657b8bf556df49"
         },
         {
           "path": "packages/shared/src/index.ts",
@@ -141,7 +177,7 @@
         },
         {
           "path": "packages/shared/src/lighting/flood.ts",
-          "sha256": "56233970dd05ead94a491feb01829578534502dcafef08e28498e62cbce0eb5a"
+          "sha256": "08b3d87341a06b7786c8ffccd2288acd9304c7ed9158044ac6659518fedc7b27"
         },
         {
           "path": "packages/shared/src/math/det.ts",
@@ -157,7 +193,7 @@
         },
         {
           "path": "packages/shared/src/meshing/greedy.ts",
-          "sha256": "4cff76bec4a05b30baa314ebf749310e950fd5f77608f89667a39e01df8afea3"
+          "sha256": "7df88615c8bc29887c2b2c51ab995b0fe741876569fdbf2f01f1b161467cc0c1"
         },
         {
           "path": "packages/shared/src/noise/fractal.ts",
@@ -220,16 +256,20 @@
           "sha256": "5a5bb19808aaa0a27c2cf819068ab22676a7acd46bd55aa9e2e5ba0da8efc982"
         },
         {
+          "path": "packages/shared/src/world/generation-variant.ts",
+          "sha256": "efc8fca3b244d55e5ea372df66cb6e64d58fcc14e222ebcee962c76879bfb4fa"
+        },
+        {
           "path": "packages/shared/src/world/regions.ts",
           "sha256": "609349d13f7368a23651ff17d8c281acea70a250186f9750d2e2645c9e22d806"
         },
         {
           "path": "packages/shared/src/world/types.ts",
-          "sha256": "6129fc5bf4fcac05804880dea211d24bd8228646896baafc2f7b0b7e3214d535"
+          "sha256": "6eb333377c6cd1eeb034a57fddacf9d729b2942d95b7d2e3989578363c7c1814"
         },
         {
           "path": "packages/shared/src/world/world-context.ts",
-          "sha256": "462920324e6873ee09b3903037c390d8b6d2d2b565f28afe02b65f4b372832a5"
+          "sha256": "2f6f79ce21552223640ce4f73c74ea247da2d96c884c821d328e8d7982e1c926"
         },
         {
           "path": "packages/shared/src/worldgen/chunk.ts",
@@ -237,15 +277,35 @@
         },
         {
           "path": "packages/shared/src/worldgen/main/chunk.ts",
-          "sha256": "cbd04ec48a1cfbe1ac288a1cc719edc68716ba39131f7e9447dc09f5b5d0f686"
+          "sha256": "dabfff964f7578967bcdab6bd266a06b5f0eed2bf6dbb56fc3dd5f51d698346b"
+        },
+        {
+          "path": "packages/shared/src/worldgen/main/crumb-cleanup.ts",
+          "sha256": "5a4f2c36c5e0cc849ce38b4cb10c81a48e4ee81a13ee3f487e7d03e6358212e5"
         },
         {
           "path": "packages/shared/src/worldgen/main/features.ts",
-          "sha256": "723aca388622e57c126341d2edf249f2798b8c2eb37ebf6daf62d03bffcf5ef2"
+          "sha256": "0e6c7698967a9800b62ce6f55c30736a3e8ce7f37b628a30d9e36baf27bbb141"
+        },
+        {
+          "path": "packages/shared/src/worldgen/main/ibara-ground.ts",
+          "sha256": "372d7dc75f3b3808743870f71edca9edd4b33d9307233613637e49b89791a259"
+        },
+        {
+          "path": "packages/shared/src/worldgen/main/ibara-material.ts",
+          "sha256": "cff91f41e9bffd77a739a91efdfd1d109f7ead7a3e3929e618602a98524437c1"
+        },
+        {
+          "path": "packages/shared/src/worldgen/main/ibara-primitive.ts",
+          "sha256": "312245422e70e0df6f53c2288f41647a832ee0e24ce48ccd3e4d8c945b692cde"
+        },
+        {
+          "path": "packages/shared/src/worldgen/main/ibara-volcanic.ts",
+          "sha256": "ead8f443a8b85d8c793e01962b1766e180d63368f9b9cc0170414489b4b8e8cf"
         },
         {
           "path": "packages/shared/src/worldgen/main/surface.ts",
-          "sha256": "dc55103744e57955b1ef3c7dd5d72136b1395cdf11e5cb1c8fe87e0b0cb17eb0"
+          "sha256": "b3fd1305ad1941c89bd561f07637457b3f603fe26935146a9fbcd9e9ac4ab621"
         },
         {
           "path": "packages/shared/src/worldgen/test-world.ts",
@@ -253,7 +313,7 @@
         },
         {
           "path": "packages/shared/src/worldgen/version.ts",
-          "sha256": "897a09b4dc403a2a7646908105380e9165bd2d6e5c4b0679f460575b42c88941"
+          "sha256": "a5a59e8c3e71c2b7100e82fd68ae3deef3570159a9a50684d10577481bc30e70"
         },
         {
           "path": "packages/shared/src/worldplan/bridges.ts",
@@ -261,7 +321,7 @@
         },
         {
           "path": "packages/shared/src/worldplan/build.ts",
-          "sha256": "44926e3503ec3de849f63f86496c1c0930ce7cd3b3cf125880c39b904cb83c4a"
+          "sha256": "3e5de7da22e805c312de73c3c222307f963267b7bea73b41d3e77a1a7b5592ab"
         },
         {
           "path": "packages/shared/src/worldplan/drainage.ts",
@@ -276,12 +336,20 @@
           "sha256": "de4b442737cfd388e6c362ca681fa739774afdaf1ee4560386edc6736459e0db"
         },
         {
+          "path": "packages/shared/src/worldplan/ibara.ts",
+          "sha256": "0e19673c18ab816c49c635ab0ddab7c864b5fc927876ac58fa7616a2cac3f834"
+        },
+        {
           "path": "packages/shared/src/worldplan/index.ts",
-          "sha256": "7f250402a63c014732e66320ed0744d8d33116e15618c2315d81d7cbb44d2475"
+          "sha256": "5b02365328b53f7c604624485feabd3b6ed1bf673613e0771c6aefa2f1c7c842"
+        },
+        {
+          "path": "packages/shared/src/worldplan/lava.ts",
+          "sha256": "138520681ec014665dcc01f723f978bf0407bdf3db0a1ca79bbf70f29fc039df"
         },
         {
           "path": "packages/shared/src/worldplan/query.ts",
-          "sha256": "3237fba67a1f55930d6f081d8252e5e72163304b53ebab8f5132c8a455696919"
+          "sha256": "3cd4b1b609da9099ffaedf82beec779242caac86a0fcb9079d9aa54513475298"
         },
         {
           "path": "packages/shared/src/worldplan/sites.ts",
@@ -294,19 +362,15 @@
         {
           "path": "packages/shared/src/worldplan/water.ts",
           "sha256": "f4fec8ded17103e8c46f6c9633f0cfdae93dcc23df1978d1e31e8bce98a677f4"
-        },
-        {
-          "path": "packages/tools/src/browser-tests/hud-proof.ts",
-          "sha256": "6eaeda24f3c771d68538e28ef2d0f43c77a134f92a760c348ac8d2ad95bb4438"
         }
       ],
       "encoding": {
         "sourceFormat": "png",
-        "sourceImage": "out/engine/hud-repair/outline-ghost.png",
-        "sourceImageSha256": "610980d1be0ff2d34ae48c9e6991675ea7ea8bb4da40efe9c3cd6002c255cad5",
+        "format": "jpeg",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
-        "format": "jpeg",
+        "sourceImage": "out/engine/hud-repair/outline-ghost.png",
+        "sourceImageSha256": "c0b74601395e9c10c5d77378c59c9a14ca90e8078185d512649678de58fd7f1e",
         "quality": 85,
         "width": 1280,
         "height": 720,
@@ -317,11 +381,11 @@
       "id": "silhouette",
       "rows": ["hud.silhouette"],
       "image": "fixtures/ui/world-silhouette.jpg",
-      "imageSha256": "99654add0b303bbff8f5ed0db4c7f53719e70c7e3215d3bb35fb860ecc750755",
+      "imageSha256": "4df87d0fca3d4a72b8f9beefc9014e37f6464c1e49f1b29d1af767c73b7a5d64",
       "telemetry": "fixtures/ui/world-silhouette.json",
-      "telemetrySha256": "257b4d806fd91cce8773652721d010a8bc80a7b7b84157f71b9da4509f54aad2",
+      "telemetrySha256": "32f69610cd1b8ba530650d8277491a24aa5172238f9b0890b33a90d925f93a56",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "cda5327fdb671fd5e9e225f3990b6b04dd3f4ecfb5c58de96b60b1faa446ddd2",
+      "runReceiptSha256": "a5fab7a8be2ff1bf4bedc3a61308903144b5aafde1ea7d8680d9284e738a5b80",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -336,8 +400,12 @@
           "sha256": "2f3dd2b96d98fb2fcea620a3d6557bc5dd41078157f0519a117f9e2d6c829242"
         },
         {
+          "path": "packages/client/src/engine/block-sample-cache.ts",
+          "sha256": "1645e845ac71d87e7a08cf49b305812be48121e727b726a53983d41de0b856d2"
+        },
+        {
           "path": "packages/client/src/engine/chunk-store.ts",
-          "sha256": "a0b5b6dbc09650604dc9d77137b45da026b121f0a4aa5dc974a9acea48c33a32"
+          "sha256": "a32ac094d1311cbfcf8bd14f441218e20d4f641260163edd3d3307b02909be7e"
         },
         {
           "path": "packages/client/src/engine/cut-cap.ts",
@@ -346,6 +414,14 @@
         {
           "path": "packages/client/src/engine/effects.ts",
           "sha256": "91b046d290e39381d7e6140637f02a2bf950f4fa5801303603bc062823b5c4e5"
+        },
+        {
+          "path": "packages/client/src/engine/ibara-atmosphere.ts",
+          "sha256": "9d39c75f5da27231a81e534df1e8c9a1b9cceb03abbf9fc7082ad7b6d2cb46b6"
+        },
+        {
+          "path": "packages/client/src/engine/ibara-effects.ts",
+          "sha256": "e7eae28b2b3c92aad81ceb50a875880c3f9334162cc9c7ac5db6f583fb4ef2e1"
         },
         {
           "path": "packages/client/src/engine/motion.ts",
@@ -357,7 +433,7 @@
         },
         {
           "path": "packages/client/src/engine/plan-validation.ts",
-          "sha256": "987c90fd02894acf70e3c3792d2a3074707fa0f872e0f1cbac92393661abb068"
+          "sha256": "d4a2292b4b6c7c71ba17b43e20107d0239a0c5d76034dbcec4a694ff7b0692f0"
         },
         {
           "path": "packages/client/src/engine/plan-worker.ts",
@@ -369,23 +445,23 @@
         },
         {
           "path": "packages/client/src/engine/renderer.ts",
-          "sha256": "110e1260dc025ae66bf32037acc0c469fe5df6df593f206d30f14e5c10d2caca"
+          "sha256": "ea85d6b9dfaa735eb597e031f302fb1b211456f47676dfb57bad01fae21e2f76"
         },
         {
           "path": "packages/client/src/engine/terrain-material.ts",
-          "sha256": "9a4638b2ed6a14c4e3032214b28b8e9cc2bcc21c72b0caaa9f2d267d5190c071"
+          "sha256": "490392fad55eced009d8056448a94c53a0d2d20cbdda5bbee184d9f3b3c23a75"
         },
         {
           "path": "packages/client/src/engine/terrain-worker.ts",
-          "sha256": "1a96204bd6a968e80eab4c1544d8718e2a29d484325b15ea071c8d2c464359fb"
+          "sha256": "9d619cce24284e8252ecf74485ee5ef364c4303f988bad7187390e77d1734968"
         },
         {
           "path": "packages/client/src/engine/worker-pool.ts",
-          "sha256": "0157b29d8c7f7c1745823b187561a7b3f54f8a2a8059e7c05fc25a288c923527"
+          "sha256": "f46e6f07ccfd8070085afa46597f28c05f251fad456a7505874132e6db6b682e"
         },
         {
           "path": "packages/client/src/engine/worker-protocol.ts",
-          "sha256": "0447727df9d608a80487c9743b9d28d06e128b2bb5928877052c995cf08a98fe"
+          "sha256": "a51e737834d931523922be5004e2dc8b8d079a0ac787789e7d66217470f72338"
         },
         {
           "path": "packages/client/src/engine/world-plan-cache.ts",
@@ -405,7 +481,7 @@
         },
         {
           "path": "packages/client/src/game/create-game.ts",
-          "sha256": "326b5ce676b6b1601a718d0f0b20c9d732488cb85292ebe0e477dfecbbbf4e39"
+          "sha256": "f3985d5af9b0b8da6a8d0c5d1adaa68185152b72b31380fa99779b7315a357e0"
         },
         {
           "path": "packages/client/src/game/destination.ts",
@@ -421,7 +497,7 @@
         },
         {
           "path": "packages/client/src/game/postcard.ts",
-          "sha256": "736a8ef889d5605888df9868df10d6aac2e10e9f41ef5c3716ccfd360298a95d"
+          "sha256": "eacaab708a0d6ddd09c8515f9e245916560055a1d3019e7ac3c526e7ce0f6f96"
         },
         {
           "path": "packages/client/src/game/raycast.ts",
@@ -437,15 +513,39 @@
         },
         {
           "path": "packages/client/src/game/world-save.ts",
-          "sha256": "40975c9a65723dff94e35447179541ac10d468baf7eddb6b8e0a5170bf4bed3f"
+          "sha256": "1d29327cfc05be763b83e0cc72e8c92a833ce66aa518f0b9e32bec5cbc2e9171"
         },
         {
           "path": "packages/shared/src/blocks/registry.ts",
-          "sha256": "bf0e9d4b480f67949101e1fe91d415963c597939f77f3671bcab8e165f585fee"
+          "sha256": "22ef236c241694f4237899df2866ae88d3826503fcd4a45ff1a9e34aa52a3cdd"
         },
         {
           "path": "packages/shared/src/blocks/textures/recipes.ts",
-          "sha256": "3f39718fde0ef538fb112e684e26afea8bf3ea6b816455f0a732193a0112d27e"
+          "sha256": "7b27cd16856695f3c65af7d5caed9fe93b70df7d09393d793f0e71eff3eddbf9"
+        },
+        {
+          "path": "packages/shared/src/features/ibara/cells.ts",
+          "sha256": "fbb004b1af76b02122a351de560c95439ea162ee2770b7f3d2456ea9f0f713b5"
+        },
+        {
+          "path": "packages/shared/src/features/ibara/field.ts",
+          "sha256": "12fd2daa7a161f91303572be715e876119646df7719b8ac244a859eb31885f36"
+        },
+        {
+          "path": "packages/shared/src/features/ibara/neighbour-contrast.ts",
+          "sha256": "e6f182a4018072c1e67818420a33fd5f17ca2365fa50d2a54fe4c9aa4f50a083"
+        },
+        {
+          "path": "packages/shared/src/features/ibara/sample.ts",
+          "sha256": "1cab6a6bdafb7a5f708b41086455be06d4a20dbbbc076d01cdf76087570c021a"
+        },
+        {
+          "path": "packages/shared/src/features/ibara/shape.ts",
+          "sha256": "277ac86587567d4a05a79aa24d06157ec2f982b534fb750c742986640fd42f59"
+        },
+        {
+          "path": "packages/shared/src/features/ibara/types.ts",
+          "sha256": "050505b6db7c0f2a0764c63477fbc39c7abe572e762550edf9657b8bf556df49"
         },
         {
           "path": "packages/shared/src/index.ts",
@@ -453,7 +553,7 @@
         },
         {
           "path": "packages/shared/src/lighting/flood.ts",
-          "sha256": "56233970dd05ead94a491feb01829578534502dcafef08e28498e62cbce0eb5a"
+          "sha256": "08b3d87341a06b7786c8ffccd2288acd9304c7ed9158044ac6659518fedc7b27"
         },
         {
           "path": "packages/shared/src/math/det.ts",
@@ -469,7 +569,7 @@
         },
         {
           "path": "packages/shared/src/meshing/greedy.ts",
-          "sha256": "4cff76bec4a05b30baa314ebf749310e950fd5f77608f89667a39e01df8afea3"
+          "sha256": "7df88615c8bc29887c2b2c51ab995b0fe741876569fdbf2f01f1b161467cc0c1"
         },
         {
           "path": "packages/shared/src/noise/fractal.ts",
@@ -532,16 +632,20 @@
           "sha256": "5a5bb19808aaa0a27c2cf819068ab22676a7acd46bd55aa9e2e5ba0da8efc982"
         },
         {
+          "path": "packages/shared/src/world/generation-variant.ts",
+          "sha256": "efc8fca3b244d55e5ea372df66cb6e64d58fcc14e222ebcee962c76879bfb4fa"
+        },
+        {
           "path": "packages/shared/src/world/regions.ts",
           "sha256": "609349d13f7368a23651ff17d8c281acea70a250186f9750d2e2645c9e22d806"
         },
         {
           "path": "packages/shared/src/world/types.ts",
-          "sha256": "6129fc5bf4fcac05804880dea211d24bd8228646896baafc2f7b0b7e3214d535"
+          "sha256": "6eb333377c6cd1eeb034a57fddacf9d729b2942d95b7d2e3989578363c7c1814"
         },
         {
           "path": "packages/shared/src/world/world-context.ts",
-          "sha256": "462920324e6873ee09b3903037c390d8b6d2d2b565f28afe02b65f4b372832a5"
+          "sha256": "2f6f79ce21552223640ce4f73c74ea247da2d96c884c821d328e8d7982e1c926"
         },
         {
           "path": "packages/shared/src/worldgen/chunk.ts",
@@ -549,15 +653,35 @@
         },
         {
           "path": "packages/shared/src/worldgen/main/chunk.ts",
-          "sha256": "cbd04ec48a1cfbe1ac288a1cc719edc68716ba39131f7e9447dc09f5b5d0f686"
+          "sha256": "dabfff964f7578967bcdab6bd266a06b5f0eed2bf6dbb56fc3dd5f51d698346b"
+        },
+        {
+          "path": "packages/shared/src/worldgen/main/crumb-cleanup.ts",
+          "sha256": "5a4f2c36c5e0cc849ce38b4cb10c81a48e4ee81a13ee3f487e7d03e6358212e5"
         },
         {
           "path": "packages/shared/src/worldgen/main/features.ts",
-          "sha256": "723aca388622e57c126341d2edf249f2798b8c2eb37ebf6daf62d03bffcf5ef2"
+          "sha256": "0e6c7698967a9800b62ce6f55c30736a3e8ce7f37b628a30d9e36baf27bbb141"
+        },
+        {
+          "path": "packages/shared/src/worldgen/main/ibara-ground.ts",
+          "sha256": "372d7dc75f3b3808743870f71edca9edd4b33d9307233613637e49b89791a259"
+        },
+        {
+          "path": "packages/shared/src/worldgen/main/ibara-material.ts",
+          "sha256": "cff91f41e9bffd77a739a91efdfd1d109f7ead7a3e3929e618602a98524437c1"
+        },
+        {
+          "path": "packages/shared/src/worldgen/main/ibara-primitive.ts",
+          "sha256": "312245422e70e0df6f53c2288f41647a832ee0e24ce48ccd3e4d8c945b692cde"
+        },
+        {
+          "path": "packages/shared/src/worldgen/main/ibara-volcanic.ts",
+          "sha256": "ead8f443a8b85d8c793e01962b1766e180d63368f9b9cc0170414489b4b8e8cf"
         },
         {
           "path": "packages/shared/src/worldgen/main/surface.ts",
-          "sha256": "dc55103744e57955b1ef3c7dd5d72136b1395cdf11e5cb1c8fe87e0b0cb17eb0"
+          "sha256": "b3fd1305ad1941c89bd561f07637457b3f603fe26935146a9fbcd9e9ac4ab621"
         },
         {
           "path": "packages/shared/src/worldgen/test-world.ts",
@@ -565,7 +689,7 @@
         },
         {
           "path": "packages/shared/src/worldgen/version.ts",
-          "sha256": "897a09b4dc403a2a7646908105380e9165bd2d6e5c4b0679f460575b42c88941"
+          "sha256": "a5a59e8c3e71c2b7100e82fd68ae3deef3570159a9a50684d10577481bc30e70"
         },
         {
           "path": "packages/shared/src/worldplan/bridges.ts",
@@ -573,7 +697,7 @@
         },
         {
           "path": "packages/shared/src/worldplan/build.ts",
-          "sha256": "44926e3503ec3de849f63f86496c1c0930ce7cd3b3cf125880c39b904cb83c4a"
+          "sha256": "3e5de7da22e805c312de73c3c222307f963267b7bea73b41d3e77a1a7b5592ab"
         },
         {
           "path": "packages/shared/src/worldplan/drainage.ts",
@@ -588,12 +712,20 @@
           "sha256": "de4b442737cfd388e6c362ca681fa739774afdaf1ee4560386edc6736459e0db"
         },
         {
+          "path": "packages/shared/src/worldplan/ibara.ts",
+          "sha256": "0e19673c18ab816c49c635ab0ddab7c864b5fc927876ac58fa7616a2cac3f834"
+        },
+        {
           "path": "packages/shared/src/worldplan/index.ts",
-          "sha256": "7f250402a63c014732e66320ed0744d8d33116e15618c2315d81d7cbb44d2475"
+          "sha256": "5b02365328b53f7c604624485feabd3b6ed1bf673613e0771c6aefa2f1c7c842"
+        },
+        {
+          "path": "packages/shared/src/worldplan/lava.ts",
+          "sha256": "138520681ec014665dcc01f723f978bf0407bdf3db0a1ca79bbf70f29fc039df"
         },
         {
           "path": "packages/shared/src/worldplan/query.ts",
-          "sha256": "3237fba67a1f55930d6f081d8252e5e72163304b53ebab8f5132c8a455696919"
+          "sha256": "3cd4b1b609da9099ffaedf82beec779242caac86a0fcb9079d9aa54513475298"
         },
         {
           "path": "packages/shared/src/worldplan/sites.ts",
@@ -606,19 +738,15 @@
         {
           "path": "packages/shared/src/worldplan/water.ts",
           "sha256": "f4fec8ded17103e8c46f6c9633f0cfdae93dcc23df1978d1e31e8bce98a677f4"
-        },
-        {
-          "path": "packages/tools/src/browser-tests/hud-proof.ts",
-          "sha256": "6eaeda24f3c771d68538e28ef2d0f43c77a134f92a760c348ac8d2ad95bb4438"
         }
       ],
       "encoding": {
         "sourceFormat": "png",
-        "sourceImage": "out/engine/hud-repair/silhouette.png",
-        "sourceImageSha256": "29c49deb41357f90e073fa56040e58880bb7f4142ede8dd20cdea0bddffb73a9",
+        "format": "jpeg",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
-        "format": "jpeg",
+        "sourceImage": "out/engine/hud-repair/silhouette.png",
+        "sourceImageSha256": "6ad1c54a364dcae4a1f4ac52fab350296dfdd2f19734905269a56886253075ad",
         "quality": 85,
         "width": 1280,
         "height": 720,

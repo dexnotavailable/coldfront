@@ -45,7 +45,19 @@ import type { BlockHit, Point } from "../game/raycast.js";
 import { Avatar } from "./avatar.js";
 import { CutCap } from "./cut-cap.js";
 import { BlockEffects } from "./effects.js";
-import { createTerrainMaterials, waterDepthRange } from "./terrain-material.js";
+import {
+  IbaraAtmosphere,
+  ibaraFogDensity,
+  type WorldAtmosphereSource,
+} from "./ibara-atmosphere.js";
+import { IbaraEffects, ventAnchors } from "./ibara-effects.js";
+import {
+  createTerrainMaterials,
+  TERRAIN_BLOOM_THRESHOLD,
+  TERRAIN_VIEW_MODES,
+  type TerrainViewMode,
+  waterDepthRange,
+} from "./terrain-material.js";
 import { type ChunkResult, chunkKey } from "./worker-protocol.js";
 
 export interface WorldColors {
@@ -74,6 +86,11 @@ function geometry(part: MeshPart): BufferGeometry {
     new BufferAttribute(part.packedPositions, 1),
   );
   g.setAttribute("aSurface", new BufferAttribute(part.surfaces, 3));
+  // Uint16 values use the float-input path; each half is exactly representable.
+  g.setAttribute(
+    "aFeatureIdParts",
+    new BufferAttribute(part.featureIdParts, 2, false),
+  );
   g.setIndex(new BufferAttribute(part.indices, 1));
   g.computeBoundingBox();
   g.computeBoundingSphere();
@@ -93,6 +110,7 @@ export class WorldRenderer {
   private readonly waterViewProjection = new Matrix4();
   private readonly clip = new Plane(new Vector3(0, -1, 0), 100000);
   private readonly terrain = createTerrainMaterials(this.clip);
+  readonly ibaraEffects = new IbaraEffects(this.clip);
   private readonly waterDepthTarget = new WebGLRenderTarget(1, 1, {
     depthBuffer: true,
     stencilBuffer: false,
@@ -102,8 +120,19 @@ export class WorldRenderer {
   private readonly ambient = new HemisphereLight(0xc1d3e3, 0x777363, 1.2);
   private readonly sky = new Sky();
   private readonly skyDay = { value: 1 };
+  private readonly atmosphere = new IbaraAtmosphere();
+  private readonly airColor = new Color();
+  private readonly skyIbara = { value: 0 };
+  private readonly skyIbaraZenith = { value: new Color() };
+  private readonly skyIbaraHorizon = { value: new Color() };
+  private airHours = 12;
+  private airDisplayMs = 0;
+  private airSnap = true;
+  private airSnapView = true;
+  private fogEnabled = true;
   private readonly fog = new FogExp2(0xaab5b4, 0.004);
   private readonly composer: EffectComposer;
+  private readonly bloom: BloomEffect;
   private readonly depthMaterial = new MeshBasicMaterial({
     colorWrite: false,
     clippingPlanes: [this.clip],
@@ -117,6 +146,7 @@ export class WorldRenderer {
   private readonly resizeObserver: ResizeObserver;
   private hud = true;
   private postcard = false;
+  private viewMode: TerrainViewMode = "normal";
   private ready = false;
   private shadowMapInvalid = false;
   private cut = Infinity;
@@ -176,8 +206,18 @@ export class WorldRenderer {
     this.setSkyUniform("mieDirectionalG", 0.8);
     this.scene.add(this.sky);
     this.sky.material.uniforms.uDay = this.skyDay;
+    this.sky.material.uniforms.uIbara = this.skyIbara;
+    this.sky.material.uniforms.uIbaraZenith = this.skyIbaraZenith;
+    this.sky.material.uniforms.uIbaraHorizon = this.skyIbaraHorizon;
     this.sky.material.fragmentShader = this.sky.material.fragmentShader
-      .replace("void main()", "uniform float uDay;\nvoid main()")
+      .replace(
+        "void main()",
+        `uniform float uDay;
+        uniform float uIbara;
+        uniform vec3 uIbaraZenith;
+        uniform vec3 uIbaraHorizon;
+        void main()`,
+      )
       .replace(
         "gl_FragColor = vec4( texColor, 1.0 );",
         `
@@ -186,13 +226,24 @@ export class WorldRenderer {
       starHash^=starHash>>16u; starHash*=0x7feb352du; starHash^=starHash>>15u;
       float star=(starHash&4095u)==0u && direction.y>0.08 ? 0.55 : 0.0;
       vec3 nightSky=mix(vec3(0.028,0.045,0.078),vec3(0.009,0.017,0.037),max(0.0,direction.y))+star;
-      gl_FragColor = vec4(mix(nightSky,texColor,uDay),1.0);`,
+      vec3 ordinarySky=mix(nightSky,texColor,uDay);
+      // Standing smoke is part of regional air, including frozen postcards.
+      // The original sun direction/disc are retained; this dim red disc and
+      // broad ochre-grey sky remain below the emissive bloom threshold.
+      if(uIbara>0.0){
+        vec3 smoke=mix(uIbaraZenith,uIbaraHorizon,exp(-max(0.0,direction.y)*4.0));
+        smoke*=0.97+0.03*noise(direction.xz*3.0+vec2(direction.y*4.0));
+        smoke+=vec3(0.4,0.09,0.04)*sundisc*uDay;
+        ordinarySky=mix(ordinarySky,smoke,uIbara);
+      }
+      gl_FragColor = vec4(ordinarySky,1.0);`,
       );
     this.avatar = new Avatar(colors.steel, colors.ink);
     this.scene.add(this.avatar.group);
     this.depthScene.add(this.avatar.depth);
     this.marks.add(this.avatar.silhouette);
     this.scene.add(this.effects.particles, this.effects.pop);
+    this.scene.add(this.ibaraEffects.flames, this.ibaraEffects.embers);
     this.marks.add(this.effects.ghost);
     this.outline = new LineSegments(
       new EdgesGeometry(new BoxGeometry(1.006, 1.006, 1.006)),
@@ -211,10 +262,11 @@ export class WorldRenderer {
     this.composer.addPass(new RenderPass(this.scene, this.camera));
     const bloom = new BloomEffect({
       intensity: 0.2,
-      luminanceThreshold: 8,
+      luminanceThreshold: TERRAIN_BLOOM_THRESHOLD,
       luminanceSmoothing: 0.05,
       mipmapBlur: true,
     });
+    this.bloom = bloom;
     this.composer.addPass(
       new EffectPass(
         this.camera,
@@ -288,14 +340,21 @@ export class WorldRenderer {
         part.expansions.byteLength +
         part.packedPositions.byteLength +
         part.surfaces.byteLength +
+        part.featureIdParts.byteLength +
         part.indices.byteLength;
       const mesh = new Mesh(g, this.terrain.materials[index]);
-      mesh.castShadow = index < 2;
+      mesh.castShadow = index < 2 || index === 4;
       mesh.receiveShadow = true;
       group.add(mesh);
       if (index === 3) fluid = mesh;
-      if (index < 2) depth.add(new Mesh(g, this.depthMaterial));
+      if (index < 2 || index === 4) depth.add(new Mesh(g, this.depthMaterial));
     });
+    const opaque = result.mesh.parts[0];
+    this.ibaraEffects.register(
+      key,
+      result.world.id,
+      opaque ? ventAnchors(opaque, group.position) : [],
+    );
     const region = new Color().setRGB(
       result.regionColor[0] / 255,
       result.regionColor[1] / 255,
@@ -352,9 +411,15 @@ export class WorldRenderer {
     (c.depthCap.material as Material).dispose();
     c.border.geometry.dispose();
     this.chunks.delete(key);
+    this.ibaraEffects.remove(key);
   }
   setWorld(worldId: number): void {
+    if (worldId !== this.worldId) this.airSnap = this.airSnapView = true;
     this.worldId = worldId;
+    // A new world settles immediately. Re-selecting the restored source must
+    // not discard an in-progress blend after a failed travel transaction.
+    if (this.atmosphere) this.setTime(this.airHours);
+    this.ibaraEffects?.setWorld(worldId);
     for (const chunk of this.chunks.values()) {
       const active = chunk.worldId === worldId;
       chunk.group.visible = chunk.depth.visible = active;
@@ -365,6 +430,7 @@ export class WorldRenderer {
     }
   }
   removeWorld(worldId: number): void {
+    this.atmosphere?.remove(worldId);
     for (const key of [...this.chunks.keys()])
       if (key.startsWith(`${worldId}:`))
         this.remove(key.slice(key.indexOf(":") + 1), worldId);
@@ -378,7 +444,11 @@ export class WorldRenderer {
     const oldWorld = this.worldId,
       oldPosition = this.camera.position.clone(),
       oldQuaternion = this.camera.quaternion.clone(),
-      oldWaterDepthReady = this.terrain.uniforms.waterDepthReady.value;
+      oldOrigin = this.terrain.uniforms.origin.value.clone(),
+      oldWaterDepthReady = this.terrain.uniforms.waterDepthReady.value,
+      restoreAir = this.atmosphere?.checkpoint(),
+      oldAirSnap = this.airSnap,
+      oldAirSnapView = this.airSnapView;
     const target = new WebGLRenderTarget(128, 72, {
       depthBuffer: true,
       stencilBuffer: true,
@@ -394,7 +464,17 @@ export class WorldRenderer {
       // texture belonging to the source view; normal render refreshes it first.
       this.terrain.uniforms.waterDepthReady.value = 0;
       this.setWorld(worldId);
-      this.setView(position, focus);
+      this.setView(position, focus, true);
+      this.terrain.uniforms.origin.value.set(
+        Math.floor(position.x / 1024) * 1024,
+        0,
+        Math.floor(position.z / 1024) * 1024,
+      );
+      this.ibaraEffects?.update(
+        this.terrain.uniforms.display.value,
+        this.cut,
+        this.camera.position,
+      );
       for (const chunk of this.chunks.values())
         if (chunk.worldId === worldId)
           for (const group of [chunk.group, chunk.depth])
@@ -426,16 +506,36 @@ export class WorldRenderer {
       this.sky.position.copy(oldPosition);
       this.camera.quaternion.copy(oldQuaternion);
       this.camera.updateMatrixWorld();
+      this.terrain.uniforms.origin.value.copy(oldOrigin);
       this.setWorld(oldWorld);
+      if (restoreAir) {
+        restoreAir();
+        // Reapply the saved blend at the unchanged display time without
+        // consuming a pending snap; restore both flags after the light update.
+        this.airSnap = false;
+        this.setTime(this.airHours);
+        this.airSnap = oldAirSnap;
+        this.airSnapView = oldAirSnapView;
+      }
+      this.ibaraEffects?.update(
+        this.terrain.uniforms.display.value,
+        this.cut,
+        this.camera.position,
+      );
     }
   }
-  setView(position: Point, focus: Point): void {
+  setView(position: Point, focus: Point, settleAtmosphere = false): void {
     this.camera.position.set(position.x, position.y, position.z);
     // Sky is a4500m box. Keep the camera inside it everywhere in the45km world;
     // its shader derives the ray from worldPosition-cameraPosition.
     this.sky.position.copy(this.camera.position);
     this.camera.lookAt(focus.x, focus.y, focus.z);
     this.camera.updateMatrixWorld();
+    if (this.atmosphere) {
+      this.airSnap ||= this.airSnapView || settleAtmosphere;
+      this.airSnapView = false;
+      this.setTime(this.airHours);
+    }
   }
   pointerRay(x: number, y: number): { origin: Point; direction: Point } {
     this.rayPoint
@@ -456,7 +556,13 @@ export class WorldRenderer {
     ghost: Point | null,
     block: number,
     occluded: boolean,
+    atmosphereSource?: WorldAtmosphereSource,
+    preparingAtmosphere = false,
   ): void {
+    if (atmosphereSource) this.atmosphere.register(atmosphereSource);
+    // A candidate can reset its clock even within the same world. Preparation
+    // explicitly preserves the source blend clock until the final view commits.
+    if (!preparingAtmosphere) this.airDisplayMs = displayMs;
     this.cut = cut;
     this.clip.constant = Number.isFinite(cut) ? cut : 100000;
     this.terrain.uniforms.cut.value = this.clip.constant;
@@ -481,8 +587,11 @@ export class WorldRenderer {
     this.avatar.depth.visible = !this.postcard;
     this.avatar.silhouette.visible = this.hud && !this.postcard && occluded;
     this.effects.update(displayMs, cut, this.camera.position);
-    this.effects.particles.visible = !this.postcard;
-    this.effects.pop.visible &&= !this.postcard;
+    this.effects.particles.visible =
+      !this.postcard && this.viewMode === "normal";
+    this.effects.pop.visible &&= !this.postcard && this.viewMode === "normal";
+    this.ibaraEffects.setMode(this.viewMode, this.postcard);
+    this.ibaraEffects.update(displayMs, cut, this.camera.position);
     this.terrain.uniforms.pop.value
       .copy(this.effects.pop.position)
       .addScalar(-0.5);
@@ -498,6 +607,7 @@ export class WorldRenderer {
       c.border.visible = tools.chunkBorders && c.worldId === this.worldId;
     }
     for (const m of this.terrain.materials) m.wireframe = tools.wireframe;
+    this.fogEnabled = tools.fog;
     this.fog.density = tools.fog ? 0.004 : 0;
     this.sun.shadow.intensity = tools.shadows ? 1 : 0;
     // Keep the shadowed shader variant. Its depth sampler needs a valid map even
@@ -514,6 +624,7 @@ export class WorldRenderer {
     uniform.value = value;
   }
   setTime(hours: number): void {
+    this.airHours = hours;
     const angle = ((hours - 6) / 12) * Math.PI,
       elevation = Math.sin(angle),
       day = Math.max(0, Math.min(1, (elevation + 0.08) / 0.25));
@@ -536,14 +647,67 @@ export class WorldRenderer {
     this.fog.color.set(
       day > 0.2 ? (elevation < 0.4 ? 0xb6aa92 : 0xa6b6bd) : 0x3b526f,
     );
+    const regionalWeight = this.atmosphere.sample(
+        this.worldId,
+        this.camera.position,
+        this.airDisplayMs,
+        this.airSnap,
+      ),
+      // Clay/feature diagnostics retain their original neutral strong light.
+      // Under a cut, surface air must not replace the underground ambience.
+      weight =
+        this.viewMode === "normal" && this.cut === Infinity
+          ? regionalWeight
+          : 0;
+    this.airSnap = false;
+    this.skyIbara.value = weight;
+    this.skyIbaraZenith.value
+      .set(0x68615c)
+      .lerp(this.airColor.set(0x343941), 1 - day);
+    this.skyIbaraHorizon.value
+      .set(0x86745f)
+      .lerp(this.airColor.set(0x4b4540), 1 - day);
+    this.sun.color.lerp(this.airColor.set(0xe58d69), weight * day);
+    this.sun.intensity *= 1 - weight * 0.5;
+    this.ambient.color.lerp(
+      this.airColor.set(day > 0.2 ? 0xd0c0ac : 0x9eacbb),
+      weight,
+    );
+    this.ambient.groundColor.lerp(
+      this.airColor.set(day > 0.2 ? 0x827362 : 0x596574),
+      weight,
+    );
+    // Diffuse warm fill preserves the existing dark rock's surface reading
+    // while smoke attenuates directional sunlight. Exposure stays fixed.
+    this.ambient.intensity +=
+      (2.4 - day * 0.55 - this.ambient.intensity) * weight;
+    this.fog.color.lerp(
+      this.airColor.set(day > 0.2 ? 0x736554 : 0x41454d),
+      weight,
+    );
+    this.fog.density = this.fogEnabled
+      ? 0.004 + (ibaraFogDensity(this.camera.position.y) - 0.004) * weight
+      : 0;
     this.scene.background = this.fog.color;
     this.terrain.uniforms.night.value = 1 - day;
   }
   setHud(visible: boolean): void {
     this.hud = visible;
   }
+  setViewMode(mode: TerrainViewMode): void {
+    this.viewMode = mode;
+    this.terrain.uniforms.viewMode.value = TERRAIN_VIEW_MODES[mode];
+    this.bloom.intensity = mode === "normal" ? 0.2 : 0;
+    this.ibaraEffects.setMode(mode, this.postcard);
+    if (mode !== "normal") {
+      this.effects.particles.visible = this.effects.pop.visible = false;
+      this.terrain.uniforms.popActive.value = 0;
+    }
+    if (this.atmosphere) this.setTime(this.airHours);
+  }
   setPostcard(active: boolean): void {
     this.postcard = active;
+    this.ibaraEffects?.setMode(this.viewMode ?? "normal", active);
     this.camera.fov = active ? 70 : 40;
     this.camera.updateProjectionMatrix();
     this.resize();
@@ -552,15 +716,43 @@ export class WorldRenderer {
     const saved: { object: { visible: boolean }; visible: boolean }[] = [];
     const sample = [...this.chunks.values()].find((c) => c.geometries.length)
       ?.geometries[0];
-    const variants = sample
-      ? this.terrain.materials.map((material) => new Mesh(sample, material))
-      : [];
+    // Compile even when an empty destination has no sample geometry. Both
+    // shadow-receiving and unshadowed variants use the production attribute ABI.
+    const fallback = sample ? null : new BoxGeometry(1, 1, 1);
+    if (fallback) {
+      const count = fallback.getAttribute("position").count;
+      fallback.setAttribute(
+        "aPackedPosition",
+        new BufferAttribute(new Float32Array(count), 1),
+      );
+      fallback.setAttribute(
+        "aSurface",
+        new BufferAttribute(new Float32Array(count * 3), 3),
+      );
+      fallback.setAttribute(
+        "aExpand",
+        new BufferAttribute(new Int8Array(count * 3), 3),
+      );
+      fallback.setAttribute(
+        "aFeatureIdParts",
+        new BufferAttribute(new Uint16Array(count * 2), 2, false),
+      );
+    }
+    const variants = this.terrain.materials.flatMap((material) =>
+      [false, true].map((shadows) => {
+        const mesh = new Mesh(sample ?? (fallback as BufferGeometry), material);
+        mesh.receiveShadow = mesh.castShadow = shadows;
+        return mesh;
+      }),
+    );
     this.scene.add(...variants);
     for (const object of [
       this.effects.pop,
       this.effects.ghost,
       this.avatar.silhouette,
       this.outline,
+      this.ibaraEffects.flames,
+      this.ibaraEffects.embers,
       ...[...this.chunks.values()].flatMap((c) => [c.cap.mesh, c.depthCap]),
     ]) {
       saved.push({ object, visible: object.visible });
@@ -574,6 +766,7 @@ export class WorldRenderer {
     } finally {
       for (const s of saved) s.object.visible = s.visible;
       this.scene.remove(...variants);
+      fallback?.dispose();
     }
   }
   render(): void {
@@ -644,7 +837,7 @@ export class WorldRenderer {
     try {
       this.renderer.autoClear = true;
       this.renderer.setRenderTarget(this.waterDepthTarget);
-      // Only opaque/cutout geometry is present here; it cannot sample the water
+      // Only opaque/cutout/lava geometry is present; it cannot sample the water
       // texture attached to this framebuffer. Cleared depth1 represents sky.
       this.renderer.render(this.depthScene, this.camera);
     } finally {
@@ -656,6 +849,7 @@ export class WorldRenderer {
   get statistics(): { draws: number; triangles: number; memory: number } {
     let memory = this.terrain.texture.image.data?.byteLength ?? 0;
     memory += this.waterDepthTarget.width * this.waterDepthTarget.height * 8;
+    memory += this.ibaraEffects.statistics.memory;
     for (const c of this.chunks.values()) memory += c.gpuBytes;
     return {
       draws: this.renderer.info.render.calls,
@@ -675,6 +869,7 @@ export class WorldRenderer {
     );
   }
   dispose(): void {
+    this.atmosphere?.clear();
     this.resizeObserver.disconnect();
     this.canvas.removeEventListener("webglcontextlost", this.lost);
     this.canvas.removeEventListener("webglcontextrestored", this.restored);
@@ -682,6 +877,7 @@ export class WorldRenderer {
       this.removeWorld(chunk.worldId);
     this.avatar.dispose();
     this.effects.dispose();
+    this.ibaraEffects?.dispose();
     this.outline.geometry.dispose();
     (this.outline.material as Material).dispose();
     this.depthMaterial.dispose();

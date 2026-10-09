@@ -11,6 +11,7 @@ import { join } from "node:path";
 import { performance } from "node:perf_hooks";
 import { fileURLToPath } from "node:url";
 import { createWorldContext } from "../../../shared/src/world/world-context.js";
+import { WORLDGEN_VERSION } from "../../../shared/src/worldgen/version.js";
 import { buildWorldPlan } from "../../../shared/src/worldplan/index.js";
 import { contentHash, sourceFiles } from "../build/metadata.js";
 import { goldenSourceProvenance, REPO_ROOT } from "../golden/fixture.js";
@@ -19,12 +20,14 @@ import {
   measureGeneration,
   measurePipeline,
   type PipelineMeasurement,
+  typedBufferBytes,
 } from "./pipeline.js";
 import {
   BENCH_SAMPLE_SET_VERSION,
   type BenchmarkCase,
   benchmarkCases,
   benchmarkOptions,
+  denseIbaraBenchmarkCases,
 } from "./samples.js";
 import {
   compareBudget,
@@ -44,26 +47,32 @@ const attemptOutput = join(
 );
 const rawLOD0: PipelineMeasurement[] = [];
 const rawLOD1: GenerationMeasurement[] = [];
+const denseCases: BenchmarkCase[] = [];
+const rawDense: PipelineMeasurement[] = [];
 const hardware = cpus();
 const summary: Record<
   string,
   { timing: TimingSummary; budget: ReturnType<typeof compareBudget> }
 > = {};
 const receipt = {
-  schema: 2,
+  schema: 3,
   status: "running",
   startedAt,
   attemptOutput,
   options,
+  worldgenVersion: WORLDGEN_VERSION,
   worldPlanColdBuildMs: null as number | null,
   worldContextPreparationMs: null as number | null,
   sampleSelectionMs: null as number | null,
+  worldPlanTypedBytes: null as number | null,
   source: goldenSourceProvenance(),
   harnessHash: contentHash(
     REPO_ROOT,
     [
       ...sourceFiles(fileURLToPath(new URL("./", import.meta.url))),
       fileURLToPath(new URL("../golden/worlds.ts", import.meta.url)),
+      fileURLToPath(new URL("../terrain-report/ibara.ts", import.meta.url)),
+      fileURLToPath(new URL("../terrain-review/source.ts", import.meta.url)),
     ].filter((path) => path.endsWith(".ts")),
   ),
   hardware: {
@@ -91,7 +100,11 @@ const receipt = {
     lighting:
       "solveLight over a real, unedited 96-cubed volume spanning 3x3x3 LOD0 chunks; preparation and halo extraction reported separately",
     meshing:
-      "meshChunk using generated halo blocks and solved halo light; includes kernel allocations",
+      "meshChunk using generated halo blocks, exact Uint32 feature IDs and solved packed RGB/sky halo light; includes kernel allocations",
+    denseSelection:
+      "50 additional LOD0 accepted ordinary roots: live hellscape weight>=0.85, saturated production thorn mask, >=3 accepted roots in the aligned 96x96m neighbourhood; unique feature-intersecting chunks, deterministic evenly spaced selection in canonical enumeration order. Each measured case must produce nonzero core feature voxels. Regional cases unchanged.",
+    memory:
+      "Exact unique retained typed ArrayBuffer byte lengths for world plan, generated chunk, lighting volume, halo light and mesh; excludes temporary kernel allocations and unmeasured JS heap. Feature-cache snapshots are object/reference COUNTS ONLY; do not sum snapshots or overlapping prepared references.",
     coldPlan:
       "First buildWorldPlan call in this fresh process, before sample selection or warmup; hydration/context creation separately timed",
     sampleSelection:
@@ -111,13 +124,14 @@ const receipt = {
     ...(options.world === "test"
       ? ["WorldPlan cold-build timing: not applicable to the test world"]
       : []),
-    "Detailed Ibara feature-dense benchmark: phase 1.3; current region cases measure first-pass terrain",
     "LOD2–6 full-height column tiles: phase 1.4; LOD1 voxel timings are not tile timings",
     "Lighting edits, worker-cache/transfer/upload, rendering and FPS are outside this kernel benchmark",
   ],
-  warmupCompleted: { lod0: 0, lod1: 0 },
+  warmupCompleted: { lod0: 0, lod1: 0, dense: 0 },
   rawLOD0,
   rawLOD1,
+  denseCases,
+  rawDense,
   summary,
   elapsedMs: 0,
   error: null as string | null,
@@ -134,6 +148,7 @@ try {
   let contextStart = performance.now();
   const plan = options.world === "main" ? buildWorldPlan(options.seed) : null;
   if (plan) receipt.worldPlanColdBuildMs = performance.now() - contextStart;
+  receipt.worldPlanTypedBytes = plan ? typedBufferBytes(plan) : null;
   contextStart = performance.now();
   const context = createWorldContext(
     plan
@@ -144,13 +159,15 @@ try {
   const selectionStart = performance.now();
   lod0.push(...benchmarkCases(context, 0, options.regions));
   lod1.push(...benchmarkCases(context, 1, options.regions));
+  if (options.world === "main" && options.regions.includes("hellscape"))
+    denseCases.push(...(await denseIbaraBenchmarkCases(context)));
   receipt.sampleSelectionMs = performance.now() - selectionStart;
   receipt.methodology.uniqueSurfaceCases = {
     lod0: lod0.length,
     lod1: lod1.length,
   };
   receipt.methodology.sampleSetHash = createHash("sha256")
-    .update(JSON.stringify({ lod0, lod1 }))
+    .update(JSON.stringify({ lod0, lod1, denseCases }))
     .digest("hex");
   await save();
   for (let i = 0; i < options.warmup; i++) {
@@ -166,9 +183,19 @@ try {
       context,
     );
     receipt.warmupCompleted.lod1++;
+    if (denseCases.length) {
+      measurePipeline(
+        denseCases[
+          Math.floor((i * denseCases.length) / options.warmup)
+        ] as BenchmarkCase,
+        -1,
+        context,
+      );
+      receipt.warmupCompleted.dense++;
+    }
   }
   console.log(
-    `Warmup complete: ${options.warmup} real pipelines and ${options.warmup} LOD1 chunks discarded.`,
+    `Warmup complete: ${options.warmup} regional pipelines, ${options.warmup} LOD1 chunks and ${receipt.warmupCompleted.dense} dense pipelines discarded.`,
   );
   for (let repetition = 0; repetition < options.repetitions; repetition++) {
     for (const sample of lod0) {
@@ -182,6 +209,10 @@ try {
     }
     for (const sample of lod1)
       rawLOD1.push(measureGeneration(sample, repetition, context));
+    for (const sample of denseCases) {
+      rawDense.push(measurePipeline(sample, repetition, context));
+      await save();
+    }
   }
   const addSummary = (
     name: string,
@@ -199,6 +230,28 @@ try {
     rawLOD0.map((row) => row.generationMs),
     { medianMs: 12, p95Ms: 40 },
   );
+  if (rawDense.length) {
+    addSummary(
+      "denseIbara.lod0Generation",
+      rawDense.map((r) => r.generationMs),
+      { p95Ms: 60 },
+    );
+    addSummary(
+      "denseIbara.lighting",
+      rawDense.map((r) => r.lightingMs),
+      { medianMs: 3 },
+    );
+    addSummary(
+      "denseIbara.meshing",
+      rawDense.map((r) => r.meshingMs),
+      { medianMs: 4 },
+    );
+    addSummary(
+      "denseIbara.pipelineTotal",
+      rawDense.map((r) => r.totalMeasuredStagesMs),
+      null,
+    );
+  }
   addSummary(
     "lod0Lighting",
     rawLOD0.map((row) => row.lightingMs),
@@ -260,6 +313,10 @@ try {
     rawLOD1.map((row) => row.generationMs),
     null,
   );
+  if (goldenSourceProvenance().sourceHash !== receipt.source.sourceHash)
+    throw new Error(
+      "Production source changed during benchmark; receipt invalid",
+    );
   receipt.status = "pass";
 } catch (error) {
   receipt.status = "fail";

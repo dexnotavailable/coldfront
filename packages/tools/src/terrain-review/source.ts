@@ -1,3 +1,9 @@
+import { ibaraMask } from "../../../shared/src/features/ibara/cells.js";
+import { instantiateThorn } from "../../../shared/src/features/ibara/shape.js";
+import type {
+  IbaraEnvironment,
+  ThornParameters,
+} from "../../../shared/src/features/ibara/types.js";
 import {
   WORLD_MAX_XZ,
   WORLD_MAX_Y,
@@ -10,7 +16,41 @@ import type {
   WorldPlan,
 } from "../../../shared/src/world/types.js";
 import { createWorldContext } from "../../../shared/src/world/world-context.js";
+import { createMainIbaraField } from "../../../shared/src/worldgen/main/features.js";
+import { createIbaraAnalytic } from "../../../shared/src/worldgen/main/ibara-volcanic.js";
+import { createMainField } from "../../../shared/src/worldgen/main/surface.js";
 import { buildWorldPlan } from "../../../shared/src/worldplan/index.js";
+
+export interface FeatureMaskSample {
+  weight: number;
+  thorn: number;
+}
+/** Uses the same production factories and immutable plan as the live context.
+ * Building this adapter constructs no thorn curves. */
+export function ibaraReviewFromContext(context: WorldContext) {
+  if (context.kind !== "main" || !context.plan)
+    throw new Error("Ibara diagnostics require a production main context");
+  const data = context.plan.data;
+  const field = createMainField(data, data.sites.bridges, data.ibara);
+  const ground = field.ibara;
+  if (!ground) throw new Error("Production volcanic ground is unavailable");
+  const features = createMainIbaraField(field);
+  const environment: IbaraEnvironment = {
+    seed: context.seed,
+    surfaceAt: ground.height,
+    weightAt: features.groundWeightAt,
+    lavaAt: ground.lavaAt,
+  };
+  return {
+    context,
+    plan: data.ibara,
+    features,
+    environment,
+    mask: (x: number, z: number) => ibaraMask(environment, x, z),
+    instantiate: (p: ThornParameters) => instantiateThorn(p, environment),
+  };
+}
+export type IbaraReview = ReturnType<typeof ibaraReviewFromContext>;
 
 export interface SurfaceSample {
   height: number;
@@ -33,6 +73,8 @@ export interface TerrainReviewSource {
   readonly world: string;
   readonly seed: number;
   readonly version: number;
+  /** Optional production mask adapter; no placement or noise formulas in tools. */
+  writeFeatureMasks?(x: number, z: number, out: FeatureMaskSample): void;
   /** Actual immutable plan; null for the accepted test generator. */
   readonly plan?: Pick<
     WorldPlan,
@@ -72,11 +114,33 @@ export function createSurfaceSample(): SurfaceSample {
 export function sourceFromContext(context: WorldContext): TerrainReviewSource {
   const raw = context.createColumn(),
     layout = context.columns;
+  // A feature atlas samples the shared analytic mask only, never instantiates
+  // geometry or prepares a 45 km feature batch.
+  const analytic =
+    context.kind === "main" ? createIbaraAnalytic(context.seed) : null;
+  const maskEnvironment: IbaraEnvironment | null = analytic
+    ? {
+        seed: context.seed,
+        surfaceAt: () => {
+          throw new Error("Mask queries must not request geometry");
+        },
+        weightAt: analytic.weight,
+      }
+    : null;
   return {
     world: context.kind,
     seed: context.seed,
     version: context.worldgenVersion,
     plan: context.plan,
+    ...(maskEnvironment
+      ? {
+          writeFeatureMasks(x: number, z: number, out: FeatureMaskSample) {
+            checkXZ(x, z);
+            out.weight = maskEnvironment.weightAt(x, z);
+            out.thorn = ibaraMask(maskEnvironment, x, z);
+          },
+        }
+      : {}),
     bounds: {
       minXZ: WORLD_MIN_XZ,
       maxXZ: WORLD_MAX_XZ,

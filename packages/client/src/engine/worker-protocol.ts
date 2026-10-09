@@ -1,6 +1,7 @@
 import type { ChunkMesh } from "../../../shared/src/meshing/greedy.js";
 import type { WorldPlanData } from "../../../shared/src/world/types.js";
 import type { WorldSession } from "../contracts/game-ui.js";
+import type { BlockSampleCacheStats } from "./block-sample-cache.js";
 export interface Address {
   readonly cx: number;
   readonly cy: number;
@@ -11,6 +12,17 @@ export interface VoxelEdit {
   readonly y: number;
   readonly z: number;
   readonly block: number;
+}
+/** Structural match for the optional world sampler diagnostic. Counts describe
+ * retained geometry, never guessed JavaScript heap bytes. Shared-cache counts
+ * are one snapshot per context; prepared references belong to that sampler. */
+export interface WorkerFeatureCacheStats {
+  readonly geometryCells: number;
+  readonly geometryCellLimit: number;
+  readonly placementCells: number;
+  readonly placementCellLimit: number;
+  readonly cachedInstances: number;
+  readonly preparedInstanceReferences: number;
 }
 export type WorkerRequest =
   | {
@@ -42,7 +54,11 @@ export interface ChunkResult {
   readonly mesh: ChunkMesh;
   readonly regionColor: readonly [number, number, number];
   readonly timings: Readonly<{ generate: number; light: number; mesh: number }>;
+  /** Tracked worker typed-array payload, including block-sample pages; not JS
+   * heap or total worker memory. Shared sampler caches have separate counts. */
   readonly cacheBytes: number;
+  readonly blockSampleCacheStats?: BlockSampleCacheStats;
+  readonly featureCacheStats?: WorkerFeatureCacheStats;
 }
 export type WorkerStage = "generating" | "generated" | "lighting" | "meshing";
 export type WorkerResponse =
@@ -75,6 +91,7 @@ export function meshTransfers(mesh: ChunkMesh): ArrayBuffer[] {
         p.expansions.buffer,
         p.packedPositions.buffer,
         p.surfaces.buffer,
+        p.featureIdParts.buffer,
         p.indices.buffer,
       ] as ArrayBuffer[],
   );

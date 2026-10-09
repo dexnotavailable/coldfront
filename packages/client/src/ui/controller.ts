@@ -9,11 +9,13 @@ import type {
   MapRequest,
   SurfaceRegionId,
   TeleportTarget,
+  TerrainViewMode,
   ToolBoolean,
   UiHost,
   WorldKind,
   WorldSession,
 } from "../contracts/game-ui";
+import type { PostcardId } from "../game/postcard";
 import type { DiscoveryContent } from "./components/DiscoveryCard";
 import type { CatalogueId, TextValues } from "./t";
 export type BlockingScreen =
@@ -54,6 +56,8 @@ export interface UiController {
   key(id: CatalogueId): boolean;
   toggleTool(key: ToolBoolean, value: boolean): void;
   setTime(hours: number): void;
+  setView(value: TerrainViewMode): void;
+  goToPostcard(id: PostcardId): Promise<void>;
   selectSlot(index: HotbarIndex): void;
   assignBlock(blockId: number, index?: HotbarIndex): void;
   randomizeSeed(): void;
@@ -381,6 +385,37 @@ export function createUiController(
     toggleTool(key, value) {
       port.apply({ type: "set-tool", key, value });
       refresh();
+    },
+    setView(value) {
+      port.apply({ type: "set-view", value });
+      refresh();
+    },
+    async goToPostcard(id) {
+      const world = game.value.world;
+      if (
+        !world ||
+        game.value.lifecycle !== "ready" ||
+        travelPending.value ||
+        !game.value.postcards.some((camera) => camera.id === id)
+      )
+        return;
+      const sequence = ++travelSequence;
+      travelPending.value = true;
+      try {
+        const result = await port.goToPostcard({ sessionId: world.id, id });
+        refresh();
+        if (
+          sequence === travelSequence &&
+          sameWorld(world, game.value.world) &&
+          result.committed &&
+          result.sessionId === world.id
+        )
+          toolsOpen.value = false;
+      } catch (error) {
+        if (sequence === travelSequence) fail(error);
+      } finally {
+        if (sequence === travelSequence) travelPending.value = false;
+      }
     },
     setTime(hours) {
       port.apply({ type: "set-time", hours });

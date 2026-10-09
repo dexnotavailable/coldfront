@@ -11,14 +11,90 @@ import {
   sampleTestColumn,
 } from "../../../shared/src/worldgen/test-world.js";
 import { regionSurfaceAddresses } from "../golden/worlds.js";
+import { censusParameters } from "../terrain-report/ibara.js";
+import { ibaraReviewFromContext } from "../terrain-review/source.js";
 
-export const BENCH_SAMPLE_SET_VERSION = 2;
+export const BENCH_SAMPLE_SET_VERSION = 3;
 export interface BenchmarkCase extends ChunkRequest {
   readonly id: string;
   readonly world: WorldKind;
   readonly region: SurfaceRegionId | "test";
   readonly lod: 0 | 1;
   readonly spacing: 1 | 2;
+  readonly category?: "dense-ibara";
+  readonly denseEvidence?: {
+    readonly mask: number;
+    readonly weight: number;
+    readonly acceptedRootsWithin96m: number;
+    readonly featureId: number;
+  };
+}
+/** Additional cases only. Select from accepted production roots without creating
+ * curves; actual pipeline measurements later prove the chunks contain features. */
+export async function denseIbaraBenchmarkCases(
+  context: WorldContext,
+  count = 50,
+): Promise<BenchmarkCase[]> {
+  if (context.kind !== "main") return [];
+  if (!Number.isInteger(count) || count < 1 || count > 100)
+    throw new Error("Dense benchmark case count must be 1..100");
+  const review = ibaraReviewFromContext(context),
+    census = await censusParameters(review),
+    ordinary = census.parameters.filter((p) => !p.landmark);
+  const buckets = new Map<string, typeof ordinary>();
+  for (const p of ordinary) {
+    const k = `${Math.floor(p.base[0] / 32)},${Math.floor(p.base[2] / 32)}`;
+    const bucket = buckets.get(k) ?? [];
+    bucket.push(p);
+    buckets.set(k, bucket);
+  }
+  const candidates: BenchmarkCase[] = [],
+    seen = new Set<string>();
+  for (const p of ordinary) {
+    const cx = Math.floor(p.base[0] / 32),
+      cz = Math.floor(p.base[2] / 32),
+      cy = Math.floor((p.base[1] + Math.min(8, p.height * 0.25)) / 32),
+      k = `${cx},${cy},${cz}`;
+    if (seen.has(k)) continue;
+    const weight = review.environment.weightAt(p.base[0], p.base[2]),
+      mask = review.mask(p.base[0], p.base[2]);
+    if (weight < 0.85 || mask < weight * (1 - 1e-12)) continue;
+    let roots = 0;
+    for (let z = cz - 1; z <= cz + 1; z++)
+      for (let x = cx - 1; x <= cx + 1; x++)
+        roots += (buckets.get(`${x},${z}`) ?? []).length;
+    if (roots < 3) continue;
+    seen.add(k);
+    candidates.push({
+      id: `main-s${context.seed}-dense-ibara-${p.id}`,
+      world: "main",
+      region: "hellscape",
+      seed: context.seed,
+      cx,
+      cy,
+      cz,
+      lod: 0,
+      spacing: 1,
+      category: "dense-ibara",
+      denseEvidence: {
+        mask,
+        weight,
+        acceptedRootsWithin96m: roots,
+        featureId: p.id,
+      },
+    });
+  }
+  if (candidates.length < count)
+    throw new Error(
+      `Dense Ibara selection found ${candidates.length}/${count} cases; no sparse substitutions allowed`,
+    );
+  return Array.from(
+    { length: count },
+    (_, i) =>
+      candidates[
+        Math.floor(((i + 0.5) * candidates.length) / count)
+      ] as BenchmarkCase,
+  );
 }
 /** Fixed XZ positions, centre-column cy: every case intersects its current surface band. */
 export function benchmarkCases(

@@ -62,6 +62,13 @@ const scenarios = [
   "tools-on",
   "tools-test",
   "tools-region-open",
+  "tools-postcard",
+  "tools-postcard-open",
+  "tools-postcard-full",
+  "tools-postcard-pending",
+  "tools-postcard-error",
+  "tools-clay",
+  "tools-features",
   "debug",
   "debug-largest",
   "palette",
@@ -138,13 +145,18 @@ export const currentScreenFixtures: readonly GalleryFixture[] = [
       scenario === "toast-palette" ||
       scenario.startsWith("map-") ||
       scenario === "confirm-clear",
-    ...(scenario === "title-world-open" || scenario === "tools-region-open"
+    ...(scenario === "title-world-open" ||
+    scenario === "tools-region-open" ||
+    scenario === "tools-postcard-open" ||
+    scenario === "tools-postcard-full"
       ? {
           prepare: {
             kind: "select-open" as const,
             selector: scenario.startsWith("title")
               ? '[data-ui="title.world"]'
-              : '[data-ui="tools.region"]',
+              : scenario.startsWith("tools-postcard")
+                ? '[data-ui="tools.postcard"]'
+                : '[data-ui="tools.region"]',
           },
         }
       : scenario === "map-selected" ||

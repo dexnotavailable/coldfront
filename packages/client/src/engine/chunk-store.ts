@@ -19,6 +19,7 @@ import {
   chunkKey,
   editKey,
   type VoxelEdit,
+  type WorkerFeatureCacheStats,
 } from "./worker-protocol.js";
 export type ChunkState =
   | "requested"
@@ -375,9 +376,12 @@ export class ChunkStore {
       if (
         Math.abs(stored.address.cx - cx) > 1 ||
         Math.abs(stored.address.cz - cz) > 1 ||
-        Math.abs(stored.address.cy - cy) > 1
+        edit.y < stored.address.cy * 32 - 32 ||
+        edit.y >= stored.address.cy * 32 + 128
       )
         continue;
+      // Match the worker's 96m volume plus its 64m incoming-sky window.
+      // A roof can invalidate lower meshes up to three chunk levels away.
       stored.revision++;
       if (
         stored.result &&
@@ -394,6 +398,23 @@ export class ChunkStore {
   get queueSize(): number {
     return this.workers.queued;
   }
+  /** Shared geometry counted once; each retained prepared area counted once,
+   * including areas still referenced by point columns after area-LRU eviction. */
+  get featureCacheStats(): WorkerFeatureCacheStats | undefined {
+    type DiagnosticSampler = WorldAreaSampler & {
+      featureCacheStats?(): WorkerFeatureCacheStats;
+    };
+    const shared = (this.context as DiagnosticSampler).featureCacheStats?.();
+    if (!shared) return undefined;
+    const retained = new Set(this.pointAreas.values());
+    for (const column of this.pointColumns.values()) retained.add(column.area);
+    let preparedInstanceReferences = 0;
+    for (const area of retained)
+      preparedInstanceReferences +=
+        (area as DiagnosticSampler).featureCacheStats?.()
+          .preparedInstanceReferences ?? 0;
+    return { ...shared, preparedInstanceReferences };
+  }
   get memoryBytes(): number {
     let size = this.workers.memoryBytes + planBytes(this.context.plan?.data);
     for (const column of this.pointColumns.values())
@@ -408,6 +429,7 @@ export class ChunkStore {
             p.expansions.byteLength +
             p.packedPositions.byteLength +
             p.surfaces.byteLength +
+            p.featureIdParts.byteLength +
             p.indices.byteLength;
       }
     return size;

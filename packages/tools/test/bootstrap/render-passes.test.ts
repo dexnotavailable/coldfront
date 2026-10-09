@@ -18,6 +18,7 @@ import { describe, expect, it } from "vitest";
 import type { ToolState } from "../../../client/src/contracts/game-ui.js";
 import { Avatar } from "../../../client/src/engine/avatar.js";
 import { BlockEffects } from "../../../client/src/engine/effects.js";
+import { IbaraEffects } from "../../../client/src/engine/ibara-effects.js";
 import { WorldRenderer } from "../../../client/src/engine/renderer.js";
 import { createTerrainMaterials } from "../../../client/src/engine/terrain-material.js";
 import type { ChunkResult } from "../../../client/src/engine/worker-protocol.js";
@@ -39,10 +40,13 @@ function fixture() {
       new LineBasicMaterial(),
     ),
     clip = new Plane(new Vector3(0, -1, 0), 100000),
+    ibaraEffects = new IbaraEffects(clip),
     terrain = createTerrainMaterials(clip),
     sun = new SunLight(),
     waterDepthTarget = new WebGLRenderTarget(1, 1);
   sun.castShadow = true;
+  scene.add(ibaraEffects.flames, ibaraEffects.embers);
+  ibaraEffects.setWorld(1);
   marks.add(avatar.silhouette, effects.ghost, outline);
   const calls: (Scene | "composer" | "clearDepth")[] = [],
     state = { throwOn: null as Scene | null };
@@ -71,6 +75,7 @@ function fixture() {
       marks,
       avatar,
       effects,
+      ibaraEffects,
       outline,
       clip,
       terrain,
@@ -85,6 +90,7 @@ function fixture() {
       ready: true,
       hud: true,
       postcard: false,
+      viewMode: "normal",
       contextLost: false,
       colors: { cap: 0x222222 },
       borderMaterial: new LineBasicMaterial(),
@@ -116,6 +122,7 @@ function fixture() {
     } = {},
   ) {
     const tools: ToolState = {
+      viewMode: "normal",
       timeHours: 12,
       clockRuns: false,
       fog: true,
@@ -323,6 +330,7 @@ describe("conditional render passes", () => {
       expansions: new Int8Array(),
       packedPositions: new Float32Array(),
       surfaces: new Float32Array(),
+      featureIdParts: new Uint16Array(),
       indices: new Uint32Array(),
     };
     const part: MeshPart = {
@@ -331,17 +339,22 @@ describe("conditional render passes", () => {
       expansions: new Int8Array(9),
       packedPositions: new Float32Array([0, 2, 128]),
       surfaces: new Float32Array(9),
+      featureIdParts: new Uint16Array(6),
       indices: new Uint32Array([0, 1, 2]),
     };
     const result: ChunkResult = {
       type: "chunk",
-      world: { id: 1, identity: { kind: "test", seed: 1, generation: "3" } },
+      world: { id: 1, identity: { kind: "test", seed: 1, generation: "4" } },
       id: 1,
       address: { cx: 0, cy: 0, cz: -1 },
       revision: 0,
       blocks: new Uint16Array(32768),
       light: new Uint16Array(32768),
-      mesh: { parts: [part, empty, empty, part], skirts: empty, quads: 2 },
+      mesh: {
+        parts: [part, empty, empty, part, empty],
+        skirts: empty,
+        quads: 2,
+      },
       regionColor: [80, 100, 120],
       timings: { generate: 0, light: 0, mesh: 0 },
       cacheBytes: 0,

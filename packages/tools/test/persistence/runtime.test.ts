@@ -1,5 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { WorldSession } from "../../../client/src/contracts/game-ui.js";
+import type {
+  TerrainViewMode,
+  WorldSession,
+} from "../../../client/src/contracts/game-ui.js";
 import type { VoxelEdit } from "../../../client/src/engine/worker-protocol.js";
 import {
   type WorldSave,
@@ -146,6 +149,7 @@ vi.mock("../../../client/src/engine/chunk-store.js", () => ({
 vi.mock("../../../client/src/engine/renderer.js", () => ({
   WorldRenderer: class {
     camera = { position: { x: 0, y: 24, z: 24 }, fov: 40 };
+    viewMode: TerrainViewMode = "normal";
     statistics = { draws: 0, triangles: 0, memory: 0 };
     effects = {
       placementActive: () => false,
@@ -165,6 +169,9 @@ vi.mock("../../../client/src/engine/renderer.js", () => ({
     }
     setPostcard(active: boolean) {
       this.camera.fov = active ? 70 : 40;
+    }
+    setViewMode(mode: TerrainViewMode) {
+      this.viewMode = mode;
     }
     setHud() {}
     setWorld() {}

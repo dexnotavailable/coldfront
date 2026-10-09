@@ -1,4 +1,10 @@
+import { Region } from "../../../shared/src/world/regions.js";
 import type { RegionWeights } from "../../../shared/src/world/types.js";
+import {
+  accumulateCoverage,
+  type CoverageAccumulator,
+  coverageSummary,
+} from "../terrain-report/ibara.js";
 import type { Raster } from "../terrain-review/output.js";
 import type { TerrainReviewSource } from "../terrain-review/source.js";
 import { ATLAS_REGIONS, SITE_LEGEND } from "./palette.js";
@@ -27,6 +33,16 @@ export function renderPlanAtlas(
   };
   let coreAreaKm2 = 0,
     weightedAreaKm2 = 0;
+  const coverage: CoverageAccumulator = {
+    samples: 0,
+    weight: 0,
+    thornWeight: 0,
+    denseWeight: 0,
+    dominantSamples: 0,
+    dominantThorns: 0,
+    dominantDense: 0,
+  };
+  const featureMask = { weight: 0, thorn: 0 };
   for (let row = 0; row < height; row++)
     for (let col = 0; col < width; col++) {
       const x = bounds.minX + (col + 0.5) * dx,
@@ -60,6 +76,21 @@ export function renderPlanAtlas(
           (Number(color[c]) * mask + 18 * (1 - mask)) * dim,
         );
       rgba[i + 3] = 255;
+      if (mode === "features") {
+        if (!source.writeFeatureMasks)
+          throw new Error("Production feature mask adapter unavailable");
+        source.writeFeatureMasks(x, z, featureMask);
+        accumulateCoverage(
+          coverage,
+          featureMask.weight,
+          featureMask.thorn,
+          weights.ids[0] === Region.Hellscape,
+        );
+        // Density heatmap of the actual production mask; dark outside Ibara.
+        rgba[i] = Math.round(18 + 220 * featureMask.thorn);
+        rgba[i + 1] = Math.round(22 + 120 * featureMask.thorn);
+        rgba[i + 2] = Math.round(28 + 20 * featureMask.weight);
+      }
     }
   const counts: { kind: string; total: number; visible: number }[] = [];
   function pixel(x: number, z: number, rgb: readonly number[]): void {
@@ -249,6 +280,8 @@ export function renderPlanAtlas(
     const c = counts.find((c) => c.kind === kind);
     return c ? `${c.visible}/${c.total}` : "0/0";
   };
+  const coveragePercent = (fraction: number | null) =>
+    fraction === null ? "n/a" : `${(100 * fraction).toFixed(2)}%`;
   return {
     width,
     height,
@@ -263,7 +296,9 @@ export function renderPlanAtlas(
       metresPerPixel: { x: dx, z: dz },
       orientation: "north (-z) at top; east (+x) at right",
       sampleConvention:
-        "pixel centres; half-open bounds; region RGB blends top-three weights; underground footprint alpha is a plan overlay, not cavern air",
+        mode === "features"
+          ? "pixel centres; half-open requested bounds; production Ibara mask density, not projected voxel occupancy; coverage percentages describe this requested raster domain"
+          : "pixel centres; half-open bounds; region RGB blends top-three weights; underground footprint alpha is a plan overlay, not cavern air",
       shading: { verticalExaggeration: 0, lightDirection: [], ambient: 1 },
       heightRamp: [],
       statistics: {
@@ -277,29 +312,52 @@ export function renderPlanAtlas(
         rampClippedHigh: null,
       },
       regions,
+      ...(mode === "features"
+        ? {
+            features: {
+              region: "hellscape" as const,
+              ...coverageSummary(coverage),
+            },
+          }
+        : {}),
       footprint: { coreAreaKm2, weightedAreaKm2, threshold: 0.5 },
       legend:
-        mode === "sites"
+        mode === "features"
           ? [
-              ...SITE_LEGEND.map((entry, i) => ({
-                name: `${entry.name}${i < 5 ? ` ${countLabel(["seats", "forts", "descents", "spawns", "bridges"][i] ?? "")}` : ""}`,
-                rgb: entry.rgb,
-              })),
-              ...descentTypes.map((d) => ({
-                name: `${d.type} ${d.visible}/${d.total}`,
-                rgb: SITE_LEGEND[2].rgb,
-              })),
+              {
+                name: `hellscape thorn ${coveragePercent(coverageSummary(coverage).weighted.thorn)} weighted (${coverage.weight ? "sampled" : "no region samples"})`,
+                rgb: [238, 142, 48],
+              },
+              {
+                name: `hellscape dense ${coveragePercent(coverageSummary(coverage).weighted.dense)} weighted`,
+                rgb: [158, 98, 43],
+              },
+              {
+                name: "mask density 0 to 1; targets approximately 45% / 20%",
+                rgb: [18, 22, 28],
+              },
             ]
-          : ATLAS_REGIONS.flatMap((r, i) =>
-              Number(weighted[i]) > 0
-                ? [
-                    {
-                      name: `${r.name} (${Number(dominant[i]).toFixed(1)} km²)`,
-                      rgb: r.rgb,
-                    },
-                  ]
-                : [],
-            ),
+          : mode === "sites"
+            ? [
+                ...SITE_LEGEND.map((entry, i) => ({
+                  name: `${entry.name}${i < 5 ? ` ${countLabel(["seats", "forts", "descents", "spawns", "bridges"][i] ?? "")}` : ""}`,
+                  rgb: entry.rgb,
+                })),
+                ...descentTypes.map((d) => ({
+                  name: `${d.type} ${d.visible}/${d.total}`,
+                  rgb: SITE_LEGEND[2].rgb,
+                })),
+              ]
+            : ATLAS_REGIONS.flatMap((r, i) =>
+                Number(weighted[i]) > 0
+                  ? [
+                      {
+                        name: `${r.name} (${Number(dominant[i]).toFixed(1)} km²)`,
+                        rgb: r.rgb,
+                      },
+                    ]
+                  : [],
+              ),
       ...(mode === "sites"
         ? {
             sites: {
