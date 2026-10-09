@@ -29,7 +29,11 @@ Generation kernels are unchanged. The preceding isolated generation-3 benchmark 
 
 ## Verification and limits
 
-The revised renderer passes 349 tests across 55 files, TypeScript/Biome/UI lint, production build and the local browser smoke/drive. These checks ran in an isolated checkout with its own dependencies on Node 22.23.3. Nine selected gallery images pass; fresh source-bound HUD captures preserve the outline, placement preview and under-cover silhouette. Final committed-checkout verification and publication are recorded in the release report.
+The revised renderer passes 349 tests across 55 files, TypeScript/Biome/UI lint, production build and the local browser smoke/drive. These checks ran in an isolated checkout with its own dependencies on Node 22.23.3. A separate clean checkout of committed runtime `71b839263b17ea98d987c173240a795117aad2ed` passes Node 22.23.3/npm 10.9.8 install/build, the site build and local play at its `/coldfront/` base path. Nine selected gallery images pass independent review; fresh source-bound HUD captures preserve the outline, placement preview and under-cover silhouette.
+
+All sixteen regional postcards and TEST-1 were regenerated and individually reviewed. Their JPEGs are byte-identical to the preceding release. TEST-1 remains 15/20; the regional phase-1.2 cards stay ungraded. Regional capture median/p95 is 8.461/21.299 seconds; both capture commands together took 191.599 seconds. The atlas and both slice views were regenerated and opened. These retain the current geography and planned underground bands; they do not claim implemented caves.
+
+Runtime `71b8392` was published on 9 October 2026. Public HTTP200, exact version/build identity, entry JavaScript/CSS hashes and isolation headers match the tested release. [PR #7](https://github.com/dexnotavailable/coldfront/pull/7) carries the final CI/merge state. The save-generation fingerprint remains unchanged.
 
 Nine native image pairs cover ordinary ground, visible and offscreen water, each HUD mark, the cut and shadow transitions. Their maximum channel difference is 1/255. Initial Shadows-off drawing and two actual graphics-context loss/restoration cycles return GL0, with exactly one necessary map refresh and zero subsequent updates while disabled. An earlier candidate failed this real test despite passing its mocked drawing tests; it was repaired before publication.
 
@@ -39,7 +43,7 @@ The site's earlier public-browser launch remains blocked by automatic approval r
 
 ## Try this
 
-1. Reload [COLDFRONT](https://dex.place/coldfront/) after the release is published, then walk and rotate the camera through the same area that stuttered.
+1. Reload [COLDFRONT](https://dex.place/coldfront/), then walk and rotate the camera through the same area that stuttered.
 2. Open Tools with **F4** and toggle **Shadows** to compare. The off setting now removes ongoing shadow rendering work.
 3. Aim at a nearby block and try a placement preview; walk behind cover to check the avatar silhouette.
 
