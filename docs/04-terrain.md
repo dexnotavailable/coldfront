@@ -354,6 +354,17 @@ This is the feature that failed before. Follow it closely, then tune by eye. Eve
 - ≥ 95% of thorns differ from their nearest neighbour by ≥ 20% in height, ≥ 8° in lean or ≥ 0.1 h in bend
 - no tip thinner than 0.7 m for longer than `max(1.5 m, 0.04 L)`
 
+For the neighbour check, evaluate each accepted ordinary thorn against the closest
+other accepted ordinary base in XZ; exact distance ties choose the lower unsigned
+feature ID. Landmarks are reported separately. Height and bend differences use
+the focal thorn's height as the denominator. Lean means the scalar inclination
+from vertical, and bend means its unsigned amplitude; heading is a separate
+orientation field. Any one of the three inclusive thresholds qualifies that
+thorn as different. This fixes the conventions used by the first measured
+census (decision 113); the 95% requirement and all other bands remain unchanged.
+Receipts retain exact comparison operands for the accepted population so the
+reported nearest pairs and directed comparisons can be independently reproduced.
+
 ### 8.6 Feature catalogue (other regions)
 
 | Feature | Used in | Construction notes |

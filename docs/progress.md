@@ -21,7 +21,9 @@
 | 1.10 Polish + performance | ☐ | |
 
 ## Current session
-**9 October 2026 · Codex · `codex/phase-1-3-ibara`**
+**9 October 2026 · Codex · `codex/phase-1-3-world`**
+
+**Ibara integration work:** the calmer release merged as `e52f50e` in PR #6; its live runtime remains `174669c`. Isolated thorn/arch revisions passed independent image review, with inherited small-post ambiguity and provisional materials retained. The world adapter's validation and column-reuse findings are repaired; all 28 worker/light tests pass against it. The renderer has real isolated GPU captures; an emitter-specific ember-bloom gap was reproduced and repaired, with independent closure still pending. The first complete parameter census across seeds 1–3 passes all seven distribution bands, but the neighbour-variation check is only **92.3487%, 92.1675% and 92.6445%** against **95%**. Independent metric review found no demonstrated algorithm error. Decision 113 fixes the existing strict conventions, and exact operand witnesses are being added before tuning. Geometry, mask coverage, sampled voxel checks and the strict HELL postcards remain open; no isolated package is being called a completed region.
 
 **Calmer ground published:** `174669c` is live. All 337 tests, check/build, complete UI lint, local browser drive and nineteen-case region tour pass. The clean Node 22.23.3/npm 10.9.8 checkout build passed, and CI run37887180950 passed 300 actual chunk samples in each of Chromium, Firefox and WebKit. Fresh public version, entry-asset hashes and isolation headers match the release. The independently reviewed generation-3 images and matched comparisons support the quieter ordinary terrain; the benchmark below records the remaining lighting/meshing misses. [PR #6](https://github.com/dexnotavailable/coldfront/pull/6) is the bounded release; Ibara world features and far LOD remain unfinished.
 
