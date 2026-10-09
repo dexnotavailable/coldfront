@@ -1,4 +1,5 @@
 import type { GameHandle } from "../game/create-game.js";
+import type { WorldPostcard } from "../game/postcard.js";
 
 function freezeDeep<T>(value: T): Readonly<T> {
   if (value !== null && typeof value === "object") {
@@ -18,6 +19,7 @@ function dataUrl(blob: Blob): Promise<string> {
 export function exposeTelemetry(
   game: GameHandle,
   keyboardLocked: () => boolean,
+  postcards: readonly WorldPostcard[] = [],
 ): void {
   const telemetry = (): ReturnType<GameHandle["telemetry"]> =>
     freezeDeep(structuredClone(game.telemetry()));
@@ -45,6 +47,12 @@ export function exposeTelemetry(
     },
     renderStill: async (displayTimeMs = 0): Promise<string> =>
       dataUrl(await game.renderStill(displayTimeMs)),
+    renderPostcard: async (id: string): Promise<string> => {
+      const camera = postcards.find((candidate) => candidate.id === id);
+      if (!camera)
+        throw new Error("Postcard is not in the validated local manifest");
+      return dataUrl(await game.renderPostcard(camera));
+    },
   });
   Object.defineProperty(window, "__cf", {
     value: hook,

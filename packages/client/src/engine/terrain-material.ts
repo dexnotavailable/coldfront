@@ -1,12 +1,14 @@
 import {
   Color,
   DataArrayTexture,
+  type DepthTexture,
   type IUniform,
   LinearMipmapLinearFilter,
   MeshLambertMaterial,
   NearestFilter,
   type Plane,
   SRGBColorSpace,
+  Vector2,
   Vector3,
 } from "three";
 import { generateTextureArray } from "../../../shared/src/blocks/textures/recipes.js";
@@ -20,6 +22,25 @@ export interface TerrainUniforms {
   readonly pop: IUniform<Vector3>;
   readonly popActive: IUniform<number>;
   readonly pixelScale: IUniform<number>;
+  readonly waterDepth: IUniform<DepthTexture | null>;
+  readonly waterDepthSize: IUniform<Vector2>;
+  readonly waterDepthLinearize: IUniform<Vector2>;
+  readonly waterDepthReady: IUniform<number>;
+}
+/** Positive view distance =1/(x+depth*y), matching a perspective depth buffer. */
+export function waterDepthRange(
+  near: number,
+  far: number,
+  out: Vector2,
+): Vector2 {
+  if (
+    !Number.isFinite(near) ||
+    !Number.isFinite(far) ||
+    near <= 0 ||
+    far <= near
+  )
+    throw new RangeError("Invalid water depth camera range");
+  return out.set(1 / near, 1 / far - 1 / near);
 }
 export function createTerrainMaterials(clip: Plane): {
   materials: MeshLambertMaterial[];
@@ -47,6 +68,10 @@ export function createTerrainMaterials(clip: Plane): {
     pop: { value: new Vector3() },
     popActive: { value: 0 },
     pixelScale: { value: 0.00035 },
+    waterDepth: { value: null },
+    waterDepthSize: { value: new Vector2(1, 1) },
+    waterDepthLinearize: { value: new Vector2() },
+    waterDepthReady: { value: 0 },
   };
   const materials = [0, 1, 2, 3].map((kind) => {
     const material = new MeshLambertMaterial({
@@ -59,7 +84,7 @@ export function createTerrainMaterials(clip: Plane): {
       clipShadows: true,
     });
     material.customProgramCacheKey = () =>
-      `coldfront-terrain-r186-v1-class-${kind}`;
+      `coldfront-terrain-r186-v2-class-${kind}`;
     material.onBeforeCompile = (shader) => {
       Object.assign(shader.uniforms, {
         uTiles: uniforms.tiles,
@@ -70,6 +95,10 @@ export function createTerrainMaterials(clip: Plane): {
         uPop: uniforms.pop,
         uPopActive: uniforms.popActive,
         uPixelScale: uniforms.pixelScale,
+        uWaterDepth: uniforms.waterDepth,
+        uWaterDepthSize: uniforms.waterDepthSize,
+        uWaterDepthLinearize: uniforms.waterDepthLinearize,
+        uWaterDepthReady: uniforms.waterDepthReady,
       });
       shader.vertexShader = shader.vertexShader.replace(
         "#include <common>",
@@ -93,7 +122,7 @@ vec3 transformed = vec3(px,py,pz);
 vVoxelWorld = (modelMatrix * vec4(transformed,1.0)).xyz - uRenderOrigin;
 vVoxelNormal = normal;
 vSurface = aSurface;
-transformed += aExpand * abs((modelViewMatrix * vec4(transformed,1.0)).z) * uPixelScale;
+${kind < 2 ? "transformed += aExpand * abs((modelViewMatrix * vec4(transformed,1.0)).z) * uPixelScale;" : ""}
 `,
       );
       shader.fragmentShader = shader.fragmentShader.replace(
@@ -104,6 +133,10 @@ uniform sampler2DArray uTiles;
 uniform float uCut;
 uniform float uDisplay;
 uniform float uNight;
+uniform sampler2D uWaterDepth;
+uniform vec2 uWaterDepthSize;
+uniform vec2 uWaterDepthLinearize;
+uniform float uWaterDepthReady;
 uniform vec3 uRenderOrigin;
 varying vec3 vVoxelWorld;
 varying vec3 vVoxelNormal;
@@ -141,6 +174,19 @@ float micro=0.94+float((hash>>5u)&255u)/255.0*0.12;
 float macro=0.88+cfMacro(absoluteWorld.xz/128.0)*0.24;
 vec3 hue=vec3(1.0+float((hash>>13u)&31u)/31.0*0.06-0.03,1.0,1.0-float((hash>>13u)&31u)/31.0*0.06+0.03);
 diffuseColor *= vec4(texel.rgb*micro*macro*hue, texel.a);
+${
+  kind === 3
+    ? `
+// Keep thin/shallow water transparent. Deep water absorbs the background rather
+// than exposing the bright sky where the bed lies beyond the loaded near field.
+if(uWaterDepthReady>0.5) {
+  float opaqueDepth=texture2D(uWaterDepth,gl_FragCoord.xy/uWaterDepthSize).x;
+  float opaqueDistance=1.0/dot(vec2(1.0,opaqueDepth),uWaterDepthLinearize);
+  float waterPath=max(0.0,opaqueDistance-vViewPosition.z)*length(vViewPosition)/max(vViewPosition.z,0.0001);
+  diffuseColor.a=1.0-(1.0-diffuseColor.a)*exp(-waterPath*0.08);
+}`
+    : ""
+}
 `,
       );
       shader.fragmentShader = shader.fragmentShader.replace(

@@ -12,6 +12,7 @@ import {
   BufferGeometry,
   Color,
   type ColorRepresentation,
+  DepthTexture,
   EdgesGeometry,
   FogExp2,
   Group,
@@ -28,6 +29,7 @@ import {
   Plane,
   Scene,
   SRGBColorSpace,
+  UnsignedIntType,
   Vector3,
   WebGLRenderer,
   WebGLRenderTarget,
@@ -41,7 +43,7 @@ import type { BlockHit, Point } from "../game/raycast.js";
 import { Avatar } from "./avatar.js";
 import { CutCap } from "./cut-cap.js";
 import { BlockEffects } from "./effects.js";
-import { createTerrainMaterials } from "./terrain-material.js";
+import { createTerrainMaterials, waterDepthRange } from "./terrain-material.js";
 import { type ChunkResult, chunkKey } from "./worker-protocol.js";
 
 export interface WorldColors {
@@ -58,6 +60,7 @@ interface RenderChunk {
   readonly border: LineSegments;
   readonly geometries: BufferGeometry[];
   readonly gpuBytes: number;
+  readonly hasFluid: boolean;
 }
 function geometry(part: MeshPart): BufferGeometry {
   const g = new BufferGeometry();
@@ -86,6 +89,11 @@ export class WorldRenderer {
   private readonly chunks = new Map<string, RenderChunk>();
   private readonly clip = new Plane(new Vector3(0, -1, 0), 100000);
   private readonly terrain = createTerrainMaterials(this.clip);
+  private readonly waterDepthTarget = new WebGLRenderTarget(1, 1, {
+    depthBuffer: true,
+    stencilBuffer: false,
+    depthTexture: new DepthTexture(1, 1, UnsignedIntType),
+  });
   private readonly sun = new SunLight(0xffebcf, 2.4);
   private readonly ambient = new HemisphereLight(0xc1d3e3, 0x777363, 1.2);
   private readonly sky = new Sky();
@@ -129,6 +137,7 @@ export class WorldRenderer {
       preserveDrawingBuffer: true,
       stencil: true,
     });
+    this.terrain.uniforms.waterDepth.value = this.waterDepthTarget.depthTexture;
     if (
       context.getParameter(context.MAX_ARRAY_TEXTURE_LAYERS) <
       this.terrain.texture.image.depth
@@ -220,6 +229,7 @@ export class WorldRenderer {
   private lost = (event: Event): void => {
     event.preventDefault();
     this.contextLost = true;
+    this.terrain.uniforms.waterDepthReady.value = 0;
     this.onLost();
   };
   private restored = (): void => {
@@ -235,6 +245,10 @@ export class WorldRenderer {
     );
     this.renderer.setSize(width, height, false);
     this.composer.setSize(width, height);
+    const waterSize = this.terrain.uniforms.waterDepthSize.value;
+    this.renderer.getDrawingBufferSize(waterSize);
+    this.waterDepthTarget.setSize(waterSize.x, waterSize.y);
+    this.terrain.uniforms.waterDepthReady.value = 0;
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.terrain.uniforms.pixelScale.value =
@@ -311,6 +325,7 @@ export class WorldRenderer {
       border,
       geometries,
       gpuBytes: bytes + 32768,
+      hasFluid: (result.mesh.parts[3]?.indices.length ?? 0) > 0,
     });
     group.visible = depth.visible = result.world.id === this.worldId;
     cap.mesh.visible &&= result.world.id === this.worldId;
@@ -352,7 +367,8 @@ export class WorldRenderer {
       throw new Error("WebGL context lost during view preparation");
     const oldWorld = this.worldId,
       oldPosition = this.camera.position.clone(),
-      oldQuaternion = this.camera.quaternion.clone();
+      oldQuaternion = this.camera.quaternion.clone(),
+      oldWaterDepthReady = this.terrain.uniforms.waterDepthReady.value;
     const target = new WebGLRenderTarget(128, 72, {
       depthBuffer: true,
       stencilBuffer: true,
@@ -364,6 +380,9 @@ export class WorldRenderer {
     }));
     const culling: { object: Mesh; value: boolean }[] = [];
     try {
+      // This preparation draws at another viewport/camera. Never sample a depth
+      // texture belonging to the source view; normal render refreshes it first.
+      this.terrain.uniforms.waterDepthReady.value = 0;
       this.setWorld(worldId);
       this.setView(position, focus);
       for (const chunk of this.chunks.values())
@@ -388,6 +407,7 @@ export class WorldRenderer {
       if (gl.isContextLost() || gl.getError() !== gl.NO_ERROR)
         throw new Error("Destination render preparation failed");
     } finally {
+      this.terrain.uniforms.waterDepthReady.value = oldWaterDepthReady;
       for (const item of screenPasses) item.pass.renderToScreen = item.screen;
       for (const item of culling) item.object.frustumCulled = item.value;
       this.renderer.setRenderTarget(oldTarget);
@@ -432,9 +452,11 @@ export class WorldRenderer {
     this.terrain.uniforms.cut.value = this.clip.constant;
     this.terrain.uniforms.display.value = displayMs;
     this.terrain.uniforms.origin.value.set(
-      Math.floor(body.x / 1024) * 1024,
+      Math.floor((this.postcard ? this.camera.position.x : body.x) / 1024) *
+        1024,
       0,
-      Math.floor(body.z / 1024) * 1024,
+      Math.floor((this.postcard ? this.camera.position.z : body.z) / 1024) *
+        1024,
     );
     const bodyDistance = Math.hypot(
       this.camera.position.x - body.x,
@@ -541,6 +563,7 @@ export class WorldRenderer {
   render(): void {
     if (!this.ready || this.contextLost) return;
     this.renderer.info.reset();
+    this.prepareWaterDepth();
     this.composer.render(0);
     if (!this.postcard && this.hud) {
       // EffectPass ends on the default framebuffer. Rebuild only depth with the
@@ -554,8 +577,43 @@ export class WorldRenderer {
       this.renderer.autoClear = true;
     }
   }
+  private prepareWaterDepth(): void {
+    this.terrain.uniforms.waterDepthReady.value = 0;
+    let hasFluid = false;
+    for (const chunk of this.chunks.values())
+      if (
+        chunk.worldId === this.worldId &&
+        chunk.group.visible &&
+        chunk.hasFluid
+      ) {
+        hasFluid = true;
+        break;
+      }
+    if (!hasFluid) return;
+    const oldTarget = this.renderer.getRenderTarget(),
+      oldAutoClear = this.renderer.autoClear;
+    if (oldTarget === this.waterDepthTarget)
+      throw new Error("Water depth target must not be the active scene target");
+    waterDepthRange(
+      this.camera.near,
+      this.camera.far,
+      this.terrain.uniforms.waterDepthLinearize.value,
+    );
+    try {
+      this.renderer.autoClear = true;
+      this.renderer.setRenderTarget(this.waterDepthTarget);
+      // Only opaque/cutout geometry is present here; it cannot sample the water
+      // texture attached to this framebuffer. Cleared depth1 represents sky.
+      this.renderer.render(this.depthScene, this.camera);
+    } finally {
+      this.renderer.setRenderTarget(oldTarget);
+      this.renderer.autoClear = oldAutoClear;
+    }
+    this.terrain.uniforms.waterDepthReady.value = 1;
+  }
   get statistics(): { draws: number; triangles: number; memory: number } {
     let memory = this.terrain.texture.image.data?.byteLength ?? 0;
+    memory += this.waterDepthTarget.width * this.waterDepthTarget.height * 8;
     for (const c of this.chunks.values()) memory += c.gpuBytes;
     return {
       draws: this.renderer.info.render.calls,
@@ -590,6 +648,7 @@ export class WorldRenderer {
     this.terrain.texture.dispose();
     this.sky.geometry.dispose();
     this.sky.material.dispose();
+    this.waterDepthTarget.dispose();
     this.composer.dispose();
     this.renderer.dispose();
   }

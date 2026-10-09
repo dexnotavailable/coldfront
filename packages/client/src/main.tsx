@@ -55,7 +55,7 @@ async function boot(): Promise<void> {
   let postcard: Awaited<ReturnType<typeof loadPostcard>>;
   let postcardError: unknown;
   try {
-    postcard = await loadPostcard(query, seed, base);
+    postcard = await loadPostcard(query, seed, base, __CF_BUILD__.cacheTag);
   } catch (error) {
     postcardError = error;
   }
@@ -90,11 +90,11 @@ async function boot(): Promise<void> {
     cacheTag: __CF_BUILD__.cacheTag,
     externalKeyboard: true,
     worldVisible: () => ui?.blocking.peek() !== "map",
-    ...(postcard ? { postcard } : {}),
+    ...(postcard ? { postcard: postcard.initial } : {}),
   });
   ui = createUiController(game.port, browserHost(fullscreen, base), {
     manageInputScope: false,
-    initialWorld: postcard ? "test" : rememberedWorld(query),
+    initialWorld: postcard?.initial.identity.kind ?? rememberedWorld(query),
   });
   ui.seedDraft.value = draft;
   input = bindInput(ui, game, fullscreen);
@@ -117,7 +117,7 @@ async function boot(): Promise<void> {
     );
   }
   render(<Application />, uiRoot);
-  exposeTelemetry(game, () => fullscreen.locked());
+  exposeTelemetry(game, () => fullscreen.locked(), postcard?.cameras);
   const stopLifecycle = bindWorldLifecycle(
     game.port,
     window,
@@ -141,7 +141,11 @@ async function boot(): Promise<void> {
     console.error(postcardError);
   } else if (postcard) {
     controller.blocking.value = "loading";
-    game.port.apply({ type: "start", seed, worldKind: "test" });
+    game.port.apply({
+      type: "start",
+      seed,
+      worldKind: postcard.initial.identity.kind,
+    });
     await game.ready();
   }
   if (import.meta.hot)

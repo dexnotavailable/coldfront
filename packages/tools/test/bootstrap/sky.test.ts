@@ -24,6 +24,7 @@ function fixture() {
       worldId: 1,
       cut: Infinity,
       contextLost: false,
+      terrain: { uniforms: { waterDepthReady: { value: 0 } } },
       composer: {
         passes: [],
         render() {

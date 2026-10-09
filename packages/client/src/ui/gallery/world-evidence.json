@@ -5,11 +5,11 @@
       "id": "outline-ghost",
       "rows": ["hud.outline", "hud.ghost"],
       "image": "fixtures/ui/world-outline-ghost.jpg",
-      "imageSha256": "deebc1ee509ff0899d486bfe801ee78eb886e6280885c9feb3d4a875ce273a7f",
+      "imageSha256": "17f67316991bf7b859b41938e09fab1fbfefd7cf03f2ec9722e2a57ba2df4a00",
       "telemetry": "fixtures/ui/world-outline-ghost.json",
-      "telemetrySha256": "d0268e12c4266c505e5d033a617adba059c2272a31613ad23d0064482068d152",
+      "telemetrySha256": "e84e8bca220c16dbd85b04fb2f66fc3ed1f4577961493d89a1ab61399f6ef2fb",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "cf8ba98aa2518b7319a05772369a2113ca207cc25a45f8ae7243c606b09613fc",
+      "runReceiptSha256": "e1aa8d50ba527b0f49569aa9d3c6cacfee16228e0ca09390179fc4619d9f32e5",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -25,7 +25,7 @@
         },
         {
           "path": "packages/client/src/engine/chunk-store.ts",
-          "sha256": "7e97b1b5b6db32035079958ab829cd0577272bdb5769493232277ecc62862254"
+          "sha256": "a0b5b6dbc09650604dc9d77137b45da026b121f0a4aa5dc974a9acea48c33a32"
         },
         {
           "path": "packages/client/src/engine/cut-cap.ts",
@@ -57,11 +57,11 @@
         },
         {
           "path": "packages/client/src/engine/renderer.ts",
-          "sha256": "debd937955b33ddc5015af972fe645967ebc4708eb6209d9534af5df8f66a212"
+          "sha256": "02f3712f2eed85fa2dbe22a028900f6d7e345aad7bff9036275fdedb2eba4897"
         },
         {
           "path": "packages/client/src/engine/terrain-material.ts",
-          "sha256": "c093ded495088ccd11f3a45e41043f2e27752fd3fdf7d4cd8603251711ac5677"
+          "sha256": "9a4638b2ed6a14c4e3032214b28b8e9cc2bcc21c72b0caaa9f2d267d5190c071"
         },
         {
           "path": "packages/client/src/engine/terrain-worker.ts",
@@ -93,7 +93,7 @@
         },
         {
           "path": "packages/client/src/game/create-game.ts",
-          "sha256": "8eafc4106d8869672bbbe749483590c0e8ba9870a74c00b1b0678afe7f987d13"
+          "sha256": "326b5ce676b6b1601a718d0f0b20c9d732488cb85292ebe0e477dfecbbbf4e39"
         },
         {
           "path": "packages/client/src/game/destination.ts",
@@ -106,6 +106,10 @@
         {
           "path": "packages/client/src/game/persistence.ts",
           "sha256": "a5b141b0131ecba5ee1b22dd59f2f5e91114e838774334856cc9cd6b48b0c897"
+        },
+        {
+          "path": "packages/client/src/game/postcard.ts",
+          "sha256": "736a8ef889d5605888df9868df10d6aac2e10e9f41ef5c3716ccfd360298a95d"
         },
         {
           "path": "packages/client/src/game/raycast.ts",
@@ -279,7 +283,7 @@
       "encoding": {
         "sourceFormat": "png",
         "sourceImage": "out/engine/hud-repair/outline-ghost.png",
-        "sourceImageSha256": "3f00a44f65dc852477c6b3ca4974c66e38929856afd04208df35ca8f57917c4c",
+        "sourceImageSha256": "d2753ca4054b30cdd1d89499903931055da57a13ef40b16f4ac21321ff8c9fcf",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
         "format": "jpeg",
@@ -293,11 +297,11 @@
       "id": "silhouette",
       "rows": ["hud.silhouette"],
       "image": "fixtures/ui/world-silhouette.jpg",
-      "imageSha256": "a5dcf31ed5f347cab0f10a4595f3a91feee22fdced492c4009cb0352e0f6795d",
+      "imageSha256": "b6970f1d7692cccc009b1f6805ee29b45d5cacec06daa1ce47ba1313b92e0303",
       "telemetry": "fixtures/ui/world-silhouette.json",
-      "telemetrySha256": "5d22410d40b03e1576094467285dfabef2325eefe268f9302bb834f594145dd0",
+      "telemetrySha256": "351cd33ed2db63371e25c212da2a85b02a374de6cfd908dee21dd612db02d55a",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "cf8ba98aa2518b7319a05772369a2113ca207cc25a45f8ae7243c606b09613fc",
+      "runReceiptSha256": "e1aa8d50ba527b0f49569aa9d3c6cacfee16228e0ca09390179fc4619d9f32e5",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -313,7 +317,7 @@
         },
         {
           "path": "packages/client/src/engine/chunk-store.ts",
-          "sha256": "7e97b1b5b6db32035079958ab829cd0577272bdb5769493232277ecc62862254"
+          "sha256": "a0b5b6dbc09650604dc9d77137b45da026b121f0a4aa5dc974a9acea48c33a32"
         },
         {
           "path": "packages/client/src/engine/cut-cap.ts",
@@ -345,11 +349,11 @@
         },
         {
           "path": "packages/client/src/engine/renderer.ts",
-          "sha256": "debd937955b33ddc5015af972fe645967ebc4708eb6209d9534af5df8f66a212"
+          "sha256": "02f3712f2eed85fa2dbe22a028900f6d7e345aad7bff9036275fdedb2eba4897"
         },
         {
           "path": "packages/client/src/engine/terrain-material.ts",
-          "sha256": "c093ded495088ccd11f3a45e41043f2e27752fd3fdf7d4cd8603251711ac5677"
+          "sha256": "9a4638b2ed6a14c4e3032214b28b8e9cc2bcc21c72b0caaa9f2d267d5190c071"
         },
         {
           "path": "packages/client/src/engine/terrain-worker.ts",
@@ -381,7 +385,7 @@
         },
         {
           "path": "packages/client/src/game/create-game.ts",
-          "sha256": "8eafc4106d8869672bbbe749483590c0e8ba9870a74c00b1b0678afe7f987d13"
+          "sha256": "326b5ce676b6b1601a718d0f0b20c9d732488cb85292ebe0e477dfecbbbf4e39"
         },
         {
           "path": "packages/client/src/game/destination.ts",
@@ -394,6 +398,10 @@
         {
           "path": "packages/client/src/game/persistence.ts",
           "sha256": "a5b141b0131ecba5ee1b22dd59f2f5e91114e838774334856cc9cd6b48b0c897"
+        },
+        {
+          "path": "packages/client/src/game/postcard.ts",
+          "sha256": "736a8ef889d5605888df9868df10d6aac2e10e9f41ef5c3716ccfd360298a95d"
         },
         {
           "path": "packages/client/src/game/raycast.ts",
@@ -567,7 +575,7 @@
       "encoding": {
         "sourceFormat": "png",
         "sourceImage": "out/engine/hud-repair/silhouette.png",
-        "sourceImageSha256": "212ff68c0fe6dbd55f614dc3111c3bca4d924e75adb69846a5fdec252e92756f",
+        "sourceImageSha256": "0fad78b7eac5076d9f6131a472052a025234f2669a9b21ac89cff8d32d569f24",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
         "format": "jpeg",

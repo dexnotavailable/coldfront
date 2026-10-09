@@ -1,159 +1,399 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { chromium } from "playwright";
 import sharp from "sharp";
+import { validatePostcardSelection } from "../../../client/src/bootstrap/postcard.js";
+import type { GameSnapshot } from "../../../client/src/contracts/game-ui.js";
+import type { GameTelemetry } from "../../../client/src/game/create-game.js";
+import type { PostcardId } from "../../../client/src/game/postcard.js";
 import { browserExecutable, browserTestUrl } from "../browser-tests/browser.js";
-import { resolveTestCamera } from "./resolve.js";
+import { sourceFiles, sourceFingerprints } from "../build/metadata.js";
+import { preparePostcards } from "./prepare.js";
 
-const args = process.argv.slice(2);
-function flag(name: string, fallback: string): string {
-  const i = args.indexOf(name);
-  return i < 0 ? fallback : (args[i + 1] ?? fallback);
+interface Hook {
+  ready: boolean;
+  queued: number;
+  telemetry: GameTelemetry;
+  snapshot: GameSnapshot;
+  renderStill(time: number): Promise<string>;
+  renderPostcard(id: string): Promise<string>;
 }
-const seed = Number(flag("--seed", "1")),
-  only = flag("--only", "TEST-1");
-if (only !== "TEST-1") throw new Error("Only TEST-1 exists in phase 1.1");
-const base = browserTestUrl(),
+const prepared = await preparePostcards(),
+  base = browserTestUrl(),
   root = process.cwd();
-const camera = await resolveTestCamera(seed, root);
-const output = resolve(root, "out/postcards");
-await mkdir(output, { recursive: true });
-const executablePath = browserExecutable();
-const browser = await chromium.launchPersistentContext(
-  resolve(root, "out/postcards/profile"),
-  {
-    headless: true,
-    executablePath,
-    args: ["--enable-unsafe-swiftshader"],
-    viewport: { width: 1280, height: 720 },
-    deviceScaleFactor: 1,
-  },
-);
-const page = await browser.newPage(),
-  errors: string[] = [],
-  warnings: string[] = [],
-  external: string[] = [];
-page.on("pageerror", (error) => errors.push(error.message));
-page.on("console", (message) => {
-  if (message.type() === "error") errors.push(message.text());
-  if (message.type() === "warning") warnings.push(message.text());
-});
-page.on("request", (request) => {
-  const url = request.url();
-  if (/^https?:/.test(url) && new URL(url).origin !== new URL(base).origin)
-    external.push(url);
-});
-try {
-  const url = new URL(base);
-  url.searchParams.set("postcard", "TEST-1");
-  url.searchParams.set("seed", String(seed));
-  url.searchParams.set("camera", JSON.stringify(camera));
-  const started = performance.now();
-  await page.goto(url.href, { waitUntil: "domcontentloaded" });
-  await page.waitForFunction(
-    () =>
-      (window as unknown as { __cf?: { ready: boolean } }).__cf?.ready === true,
-    undefined,
-    { timeout: 180000 },
+const output = resolve(root, "out/postcards"),
+  attempt = resolve(
+    output,
+    "runs",
+    `${prepared.world}-s${prepared.seed}-${Date.now()}`,
   );
-  const receipt = await page.evaluate(async () => {
-    const cf = (
-      window as unknown as {
-        __cf: {
-          ready: boolean;
-          queued: number;
-          renderStill(time: number): Promise<string>;
-          telemetry: unknown;
-        };
-      }
-    ).__cf;
-    const canvas = document.querySelector("canvas");
-    if (!canvas) throw new Error("World canvas missing");
-    const gl = canvas.getContext("webgl2");
-    if (!crossOriginIsolated || !gl || gl.isContextLost())
-      throw new Error("Postcard preflight failed");
-    if (cf.queued !== 0)
-      throw new Error("Ready before all requested meshes completed");
-    const png = await cf.renderStill(0);
-    return {
-      png,
-      isolated: crossOriginIsolated,
-      contextLost: gl.isContextLost(),
-      telemetry: cf.telemetry,
-    };
+await mkdir(attempt, { recursive: true });
+const hash = (bytes: Uint8Array | string): string =>
+  createHash("sha256").update(bytes).digest("hex");
+const sourcePaths = [
+  ...sourceFiles(resolve(root, "packages/client/src")),
+  ...sourceFiles(resolve(root, "packages/shared/src")),
+  ...sourceFiles(resolve(root, "packages/tools/src/postcards")),
+  prepared.path,
+];
+const sources = await Promise.all(
+  sourcePaths.map(async (path) => ({
+    path: path.slice(root.length + 1).replaceAll("\\", "/"),
+    sha256: hash(await readFile(path)),
+  })),
+);
+const errors: string[] = [],
+  warnings: string[] = [],
+  external: string[] = [],
+  results: unknown[] = [],
+  sheets: unknown[] = [];
+let browser: Awaited<
+  ReturnType<typeof chromium.launchPersistentContext>
+> | null = null;
+let failure: unknown,
+  build: unknown,
+  browserClosed = false;
+try {
+  const version = await fetch(new URL("version.json", base));
+  if (!version.ok) throw new Error("Served build metadata missing");
+  const metadata = (await version.json()) as {
+    basePath: string;
+    cacheTag: string;
+    commit: string;
+    buildId: string;
+  };
+  build = metadata;
+  const local = sourceFingerprints(root, metadata.basePath);
+  if (
+    metadata.cacheTag !== prepared.sourceHash ||
+    metadata.buildId !== `${metadata.commit}-${local.releaseHash}`
+  )
+    throw new Error(
+      "Served renderer/camera source differs; resolve first, then rebuild or restart the local server",
+    );
+  const response = await fetch(
+    new URL(`postcards/cameras/seed-${prepared.seed}.json`, base),
+  );
+  if (!response.ok)
+    throw new Error(
+      "Served camera manifest missing; resolve then rebuild preview",
+    );
+  const selection = validatePostcardSelection(
+    await response.json(),
+    prepared.ids[0] as string,
+    prepared.seed,
+    prepared.sourceHash,
+  );
+  for (const camera of prepared.cameras)
+    assert.deepEqual(
+      selection.cameras.find((item) => item.id === camera.id),
+      camera,
+      "Built camera differs from freshly validated source; rebuild preview",
+    );
+  browser = await chromium.launchPersistentContext(
+    resolve(root, "out/postcards/profile"),
+    {
+      headless: true,
+      executablePath: browserExecutable(),
+      args: ["--enable-unsafe-swiftshader"],
+      viewport: { width: 1280, height: 720 },
+      deviceScaleFactor: 1,
+    },
+  );
+  await browser.route("**/*", (route) => {
+    const url = route.request().url();
+    if (/^https?:/.test(url) && new URL(url).origin !== new URL(base).origin) {
+      external.push(url);
+      return route.abort();
+    }
+    return route.continue();
   });
-  if (errors.length || external.length)
-    throw new Error(JSON.stringify({ errors, external }));
-  const png = Buffer.from(receipt.png.split(",")[1] as string, "base64"),
-    path = resolve(output, `TEST-1-s${seed}.jpg`);
-  await sharp(png).jpeg({ quality: 85 }).toFile(path);
-  if (args.includes("--commit")) {
-    const committed = resolve(root, "docs/postcards/m1");
-    await mkdir(committed, { recursive: true });
-    await sharp(png)
-      .jpeg({ quality: 85 })
-      .toFile(resolve(committed, `TEST-1-s${seed}.jpg`));
-  }
-  const durationMs = performance.now() - started;
-  const sheetStarted = performance.now();
-  const sheetPath = resolve(output, "_sheet-test.jpg");
-  const sheet = await browser.newPage();
-  try {
-    sheet.on("pageerror", (error) => errors.push(error.message));
-    sheet.on("console", (message) => {
+  const page = browser.pages()[0] ?? (await browser.newPage());
+  const observe = (target: typeof page): void => {
+    target.on("pageerror", (error) => errors.push(error.message));
+    target.on("console", (message) => {
       if (message.type() === "error") errors.push(message.text());
       if (message.type() === "warning") warnings.push(message.text());
     });
-    sheet.on("request", (request) => {
-      if (/^https?:/.test(request.url())) external.push(request.url());
-    });
-    await sheet.setViewportSize({ width: 1280, height: 720 });
-    await sheet.setContent(
-      '<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;width:1280px;height:720px}body{display:grid;grid-template-columns:1fr;grid-template-rows:1fr}img{display:block;width:100%;height:100%;object-fit:contain}</style></head><body><img alt=""></body></html>',
+  };
+  observe(page);
+  const url = new URL(base);
+  url.searchParams.set("postcard", prepared.ids[0] as string);
+  url.searchParams.set("seed", String(prepared.seed));
+  url.searchParams.set("world", prepared.world);
+  const startup = performance.now();
+  await page.goto(url.href, { waitUntil: "domcontentloaded" });
+  await page.waitForFunction(
+    () => (window as unknown as { __cf?: Hook }).__cf?.ready === true,
+    undefined,
+    { timeout: 180000 },
+  );
+  let session: number | undefined;
+  const captured: { id: PostcardId; region: string; data: string }[] = [];
+  for (let index = 0; index < prepared.ids.length; index++) {
+    const id = prepared.ids[index] as PostcardId,
+      started = index === 0 ? startup : performance.now();
+    const receipt = await page.evaluate(
+      async ({ id, first }) => {
+        const cf = (window as unknown as { __cf: Hook }).__cf;
+        const canvas =
+          document.querySelector<HTMLCanvasElement>("canvas.cf-world") ??
+          document.querySelector("canvas");
+        const gl = canvas?.getContext("webgl2");
+        if (!canvas || !crossOriginIsolated || !gl || gl.isContextLost())
+          throw new Error("Postcard isolation/WebGL2 preflight failed");
+        const png = first
+          ? await cf.renderStill(0)
+          : await cf.renderPostcard(id);
+        if (
+          !cf.ready ||
+          cf.queued !== 0 ||
+          cf.snapshot.mode !== "postcard" ||
+          gl.isContextLost()
+        )
+          throw new Error("Postcard is not fully ready after capture");
+        const telemetry = cf.telemetry;
+        if (
+          telemetry.camera.fov !== 70 ||
+          telemetry.displayTimeMs !== 0 ||
+          telemetry.rendered.outline ||
+          telemetry.rendered.ghost ||
+          telemetry.rendered.silhouette
+        )
+          throw new Error("Postcard camera/HUD/frozen-time invariant failed");
+        if (
+          !telemetry.postcard ||
+          telemetry.postcard.id !== id ||
+          telemetry.postcard.requestedChunks < 1 ||
+          telemetry.postcard.readyChunks !== telemetry.postcard.requestedChunks
+        )
+          throw new Error("Postcard requested set is incomplete");
+        if (canvas.width !== 1280 || canvas.height !== 720)
+          throw new Error("Postcard is not1280x720 atDPR1");
+        return {
+          png,
+          telemetry,
+          snapshot: cf.snapshot,
+          isolated: crossOriginIsolated,
+          contextLost: gl.isContextLost(),
+          canvas: { width: canvas.width, height: canvas.height },
+        };
+      },
+      { id, first: index === 0 },
     );
-    await sheet.locator("img").evaluate(async (element, source) => {
-      const image = element as HTMLImageElement;
-      image.src = source;
-      await image.decode();
-    }, receipt.png);
-    const jpeg = await sheet.screenshot({ type: "jpeg", quality: 85 });
+    const world = receipt.snapshot.world;
+    const expected = prepared.cameras.find((camera) => camera.id === id);
+    if (!expected) throw new Error("Missing validated camera");
+    assert.deepEqual(
+      receipt.telemetry.camera.position,
+      expected.position,
+      "Renderer did not use the resolved eye",
+    );
+    assert.deepEqual(
+      receipt.telemetry.camera.focus,
+      expected.target,
+      "Renderer did not use the resolved target",
+    );
+    assert.equal(
+      receipt.telemetry.editCount,
+      0,
+      "Postcards must show the sampled generation",
+    );
+    assert.equal(
+      receipt.telemetry.rendering.animationRenders,
+      0,
+      "Automatic postcard page must not run a3D animation loop",
+    );
+    assert(
+      world &&
+        world.identity.kind === prepared.world &&
+        world.identity.seed === prepared.seed,
+    );
+    session ??= world.id;
+    assert.equal(
+      world.id,
+      session,
+      "All shots must reuse one loaded world session/plan",
+    );
+    if (index > 0) assert.equal(receipt.telemetry.postcard?.planReused, true);
     if (errors.length || external.length)
       throw new Error(JSON.stringify({ errors, external }));
-    await writeFile(sheetPath, jpeg);
-    if (args.includes("--commit"))
-      await writeFile(resolve(root, "docs/postcards/m1/_sheet-test.jpg"), jpeg);
+    const png = Buffer.from(receipt.png.split(",")[1] as string, "base64");
+    const dimensions = await sharp(png).metadata();
+    assert.equal(dimensions.width, 1280);
+    assert.equal(dimensions.height, 720);
+    const jpeg = await sharp(png).jpeg({ quality: 85 }).toBuffer();
+    const name = `${id}-s${prepared.seed}`,
+      image = resolve(output, `${name}.jpg`),
+      original = resolve(attempt, `${name}.png`);
+    await writeFile(original, png);
+    await writeFile(resolve(attempt, `${name}.jpg`), jpeg);
+    await writeFile(image, jpeg);
+    const best = resolve(output, "_best");
+    await mkdir(best, { recursive: true });
+    try {
+      await writeFile(resolve(best, `${name}.jpg`), jpeg, { flag: "wx" });
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+    }
+    if (process.argv.includes("--commit")) {
+      const directory = resolve(root, "docs/postcards/m1");
+      await mkdir(directory, { recursive: true });
+      await writeFile(resolve(directory, `${name}.jpg`), jpeg);
+    }
+    const { png: _png, ...proof } = receipt;
+    const record = {
+      id,
+      seed: prepared.seed,
+      ungraded: prepared.world === "main",
+      camera: prepared.definitions.find((item) => item.id === id),
+      durationMs: performance.now() - started,
+      ...proof,
+      image,
+      imageSha256: hash(jpeg),
+      sourcePng: original,
+      sourcePngSha256: hash(png),
+      encoding: {
+        encoder: "sharp",
+        encoderVersion: sharp.versions.sharp,
+        format: "jpeg",
+        quality: 85,
+        width: 1280,
+        height: 720,
+        resized: false,
+      },
+      build,
+      sourceHash: prepared.sourceHash,
+      sources,
+      errors: [...errors],
+      warnings: [...warnings],
+      external: [...external],
+      resolutionReceipt: prepared.receipt,
+      status: "captured",
+    };
+    await writeFile(
+      resolve(attempt, `${name}.receipt.json`),
+      JSON.stringify(record, null, 2),
+    );
+    await writeFile(
+      resolve(output, `${name}.receipt.json`),
+      JSON.stringify(record, null, 2),
+    );
+    results.push(record);
+    captured.push({
+      id,
+      region: id === "TEST-1" ? "test" : id.slice(4),
+      data: receipt.png,
+    });
+    console.log(
+      JSON.stringify({
+        id,
+        image,
+        milliseconds: record.durationMs,
+        requestedChunks: receipt.telemetry.postcard?.requestedChunks,
+      }),
+    );
+  }
+  const groups = new Map<string, typeof captured>();
+  for (const shot of captured)
+    groups.set(shot.region, [...(groups.get(shot.region) ?? []), shot]);
+  if (captured.length > 1) groups.set("phase12", captured);
+  const sheet = await browser.newPage();
+  observe(sheet);
+  try {
+    for (const [region, shots] of groups) {
+      const columns = Math.ceil(Math.sqrt(shots.length)),
+        rows = Math.ceil(shots.length / columns),
+        started = performance.now();
+      await sheet.setContent(
+        `<!doctype html><html><meta charset="utf-8"><style>html,body{margin:0;width:1280px;height:720px;background:#11151a}body{display:grid;grid-template-columns:repeat(${columns},1fr);grid-template-rows:repeat(${rows},1fr)}img{display:block;width:100%;height:100%;object-fit:contain}</style><body>${shots.map(() => '<img alt="">').join("")}</body></html>`,
+      );
+      await sheet.locator("img").evaluateAll(
+        async (elements, sources) => {
+          await Promise.all(
+            elements.map(async (element, index) => {
+              const image = element as HTMLImageElement;
+              image.src = sources[index] as string;
+              await image.decode();
+            }),
+          );
+        },
+        shots.map((shot) => shot.data),
+      );
+      const jpeg = await sheet.screenshot({ type: "jpeg", quality: 85 });
+      if (errors.length || external.length)
+        throw new Error(JSON.stringify({ errors, external }));
+      const name = `_sheet-${region}.jpg`;
+      await writeFile(resolve(output, name), jpeg);
+      await writeFile(resolve(attempt, name), jpeg);
+      if (process.argv.includes("--commit"))
+        await writeFile(resolve(root, "docs/postcards/m1", name), jpeg);
+      sheets.push({
+        region,
+        image: resolve(output, name),
+        imageSha256: hash(jpeg),
+        ids: shots.map((shot) => shot.id),
+        width: 1280,
+        height: 720,
+        quality: 85,
+        durationMs: performance.now() - started,
+      });
+    }
   } finally {
     await sheet.close();
   }
-  const contactSheet = {
-    image: sheetPath,
-    postcards: ["TEST-1"],
-    width: 1280,
-    height: 720,
-    quality: 85,
-    durationMs: performance.now() - sheetStarted,
-  };
+  for (const result of results) {
+    const record = result as { id: PostcardId; contactSheet?: unknown };
+    const region = record.id === "TEST-1" ? "test" : record.id.slice(4);
+    record.contactSheet = sheets.find(
+      (value) => (value as { region: string }).region === region,
+    );
+    const name = `${record.id}-s${prepared.seed}.receipt.json`;
+    await writeFile(resolve(attempt, name), JSON.stringify(record, null, 2));
+    await writeFile(resolve(output, name), JSON.stringify(record, null, 2));
+  }
+  for (const source of sources)
+    if (hash(await readFile(resolve(root, source.path))) !== source.sha256)
+      throw new Error(`Source changed during postcard run: ${source.path}`);
+} catch (error) {
+  failure = String(error);
+} finally {
+  if (browser) {
+    await browser.close();
+    browserClosed = true;
+  }
   await writeFile(
-    resolve(output, `TEST-1-s${seed}.receipt.json`),
+    resolve(attempt, "run.json"),
     JSON.stringify(
       {
-        seed,
-        camera,
-        durationMs,
-        isolated: receipt.isolated,
-        contextLost: receipt.contextLost,
-        telemetry: receipt.telemetry,
+        status: failure ? "failed" : "passed",
+        failure: failure ?? null,
+        world: prepared.world,
+        seed: prepared.seed,
+        ids: prepared.ids,
+        results,
+        sheets,
+        build,
+        sources,
         errors,
         warnings,
         external,
-        screenshot: path,
-        contactSheet,
+        browserClosed,
+        resolutionReceipt: prepared.receipt,
       },
       null,
       2,
     ),
   );
-  console.log(JSON.stringify({ image: path, contactSheet, warnings, errors }));
-} finally {
-  await browser.close();
 }
+console.log(
+  JSON.stringify({
+    run: resolve(attempt, "run.json"),
+    status: failure ? "failed" : "passed",
+    images: results.length,
+    browserClosed,
+  }),
+);
+if (failure) throw new Error(String(failure));
