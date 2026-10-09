@@ -331,11 +331,12 @@ Acceptance:
 
 Dependencies: P1-ibara-feature-author, P2-volcanic-terrain-author, P3-material-asset-author.
 
-Root alone stitches the packages into createMainField, sampleMainVoxel, createWorldContext and generateWorldChunk. Build volcanic plan data before final surface-dependent site evaluation; update plan schema/validation coherently. Evaluate volcanic ground, canonical additive features, explicit carvers, owned fluids, then materials. Keep water ownership intact and reset feature attributes on air, ordinary terrain and edits. Forward spacing into prepared areas. Extend conservativeBounds and skyInput with feature/carver bounds rather than treating column height as the whole solid surface. Add features to sourceFingerprints: sdf is already included, features currently is not.
+An isolated Astra author prepares the adapter package; root alone reviews and applies it to the canonical tree. It connects createMainField, sampleMainVoxel, createWorldContext and generateWorldChunk. Build volcanic plan data before final surface-dependent site evaluation; update plan schema/validation coherently. Evaluate volcanic ground, canonical additive features, explicit carvers, owned fluids, then materials. Keep water ownership intact and reset feature attributes on air, ordinary terrain and edits. Forward spacing into prepared areas. Extend conservativeBounds and skyInput with feature/carver bounds rather than treating column height as the whole solid surface. Add features to sourceFingerprints: sdf is already included, features currently is not.
 
 Owned paths:
 
 - `packages/shared/src/world/world-context.ts`
+- `packages/shared/src/world/types.ts` (attach the Ibara payload and update the enclosing plan schema; retain the frozen P0 subtypes)
 - `packages/shared/src/worldgen/main/surface.ts`
 - `packages/shared/src/worldgen/main/features.ts`
 - `packages/shared/src/worldgen/main/chunk.ts`
@@ -348,13 +349,18 @@ Owned paths:
 - `packages/shared/test/worldplan/context-adapter.test.ts`
 - `packages/shared/test/ibara-world.test.ts`
 
+The pre-Ibara builder input needs only `Pick<WorldPlanData, "seed" | "grid">`.
+P4 may make that type-only amendment to P2's `worldplan/ibara.ts` signature and
+the matching preplan fixture typing; numerical P2 behavior remains separately
+owned. Record those amendments separately from the seeded dependency files.
+
 Acceptance:
 
 - Point queries, prepared-area queries, generated core/halo samples and worker neighbourhood queries agree on blocks, density, fluids, feature IDs and t.
 - Test all six chunk boundaries, corners, negative coordinates, overlapping areas and feature crossings at spacings 1, 2, 4, 8, 16, 32 and 64; compare equal positions under equal sampling policy.
 - WorldPlan cloning, persistence checksums and hydration include the new data, work with and without SharedArrayBuffer, and reject incompatible cached plans.
 - Retain current main/test behaviour outside the declared Ibara changes, including owned-water regressions and safe travel.
-- Set WORLDGEN_VERSION from 2 to 3 once when generation/registry changes actually integrate into the next PR; subsequent tuning updates goldens without additional bumps.
+- The owner's calmer-ground correction now occupies generation 3 in its own bounded release before P4. After that release merges, Ibara generation/registry integration uses a new PR and advances to generation 4 once; subsequent tuning in that PR updates goldens without additional bumps.
 
 ### P5-worker-mesh-and-light
 

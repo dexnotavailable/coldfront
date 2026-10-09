@@ -5,11 +5,11 @@
       "id": "outline-ghost",
       "rows": ["hud.outline", "hud.ghost"],
       "image": "fixtures/ui/world-outline-ghost.jpg",
-      "imageSha256": "c2c9122beaa46a2397d2cd8a28599496da87a94c8b35cb8dae1ca675f7208847",
+      "imageSha256": "e049693ae02eb307f262576edb629cac58b82510ac90b3ed8ee2a13e68d01eaf",
       "telemetry": "fixtures/ui/world-outline-ghost.json",
-      "telemetrySha256": "228f94c760d99a7ae81de572cbbd35ed4512e9154b4a6bda4aa1314f700110e4",
+      "telemetrySha256": "2ddcb8a6b692f0f4100fb21a5f95fda406337e6e78ec82f9f800183f2b135117",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "1ba7187b000fb7130589226ab63e32d3722d3e0771aed97d540770887ec73075",
+      "runReceiptSha256": "56ecd6f23bf8e19282f3ad7349facad723360ac6e3e2418c558496ba0b6709bf",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -253,7 +253,7 @@
         },
         {
           "path": "packages/shared/src/worldgen/version.ts",
-          "sha256": "451bea5563639ba6a6ab60d8971297b3c7ca04f05aa4fbabe38131bbc5dd2f0c"
+          "sha256": "897a09b4dc403a2a7646908105380e9165bd2d6e5c4b0679f460575b42c88941"
         },
         {
           "path": "packages/shared/src/worldplan/bridges.ts",
@@ -289,7 +289,7 @@
         },
         {
           "path": "packages/shared/src/worldplan/terrain.ts",
-          "sha256": "04f793bd8947524ebb798ec7a42b1e42fd2fc6838439f591639e434aecb1b792"
+          "sha256": "dab90efd28342749a02bc74d5d0f0fcd10262dabb09135f951e664d7b5305a91"
         },
         {
           "path": "packages/shared/src/worldplan/water.ts",
@@ -303,7 +303,7 @@
       "encoding": {
         "sourceFormat": "png",
         "sourceImage": "out/engine/hud-repair/outline-ghost.png",
-        "sourceImageSha256": "91ece8bb7f8544495c7abbad625d33599624b422a14b6e5d4a30cd9a14ed8805",
+        "sourceImageSha256": "ac7dfc49ef77581cb9244e3b9bb835b4932e01a95284e00edec66b18ec8df3c2",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
         "format": "jpeg",
@@ -317,11 +317,11 @@
       "id": "silhouette",
       "rows": ["hud.silhouette"],
       "image": "fixtures/ui/world-silhouette.jpg",
-      "imageSha256": "b6970f1d7692cccc009b1f6805ee29b45d5cacec06daa1ce47ba1313b92e0303",
+      "imageSha256": "fa312104d98db5d3d4d8a5e7fd15911dc4200705af303cb51a9e1d80a22b8542",
       "telemetry": "fixtures/ui/world-silhouette.json",
-      "telemetrySha256": "de2a355b582185662ec459cdf19cf9fdcaae619d7368206d4d7f8828a5f8863b",
+      "telemetrySha256": "e475908d270c953770ce337918e0a253165c7f90bc67d36eda986942d407ab08",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "1ba7187b000fb7130589226ab63e32d3722d3e0771aed97d540770887ec73075",
+      "runReceiptSha256": "56ecd6f23bf8e19282f3ad7349facad723360ac6e3e2418c558496ba0b6709bf",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -565,7 +565,7 @@
         },
         {
           "path": "packages/shared/src/worldgen/version.ts",
-          "sha256": "451bea5563639ba6a6ab60d8971297b3c7ca04f05aa4fbabe38131bbc5dd2f0c"
+          "sha256": "897a09b4dc403a2a7646908105380e9165bd2d6e5c4b0679f460575b42c88941"
         },
         {
           "path": "packages/shared/src/worldplan/bridges.ts",
@@ -601,7 +601,7 @@
         },
         {
           "path": "packages/shared/src/worldplan/terrain.ts",
-          "sha256": "04f793bd8947524ebb798ec7a42b1e42fd2fc6838439f591639e434aecb1b792"
+          "sha256": "dab90efd28342749a02bc74d5d0f0fcd10262dabb09135f951e664d7b5305a91"
         },
         {
           "path": "packages/shared/src/worldplan/water.ts",
@@ -615,7 +615,7 @@
       "encoding": {
         "sourceFormat": "png",
         "sourceImage": "out/engine/hud-repair/silhouette.png",
-        "sourceImageSha256": "0fad78b7eac5076d9f6131a472052a025234f2669a9b21ac89cff8d32d569f24",
+        "sourceImageSha256": "375ae5578e25daa1d1b7e1a4fb04df95b3564d60105d3c8e3703db3e748a5f47",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
         "format": "jpeg",

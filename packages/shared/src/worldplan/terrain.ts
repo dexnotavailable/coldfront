@@ -1,6 +1,6 @@
 /** First-pass regional profiles: docs04 section11. No rivers, erosion, caverns or thorn substitutes. */
 import { Block } from "../blocks/registry.js";
-import { psrd2 } from "../noise/psrd2.js";
+import { psrd2, psrd2Quantile } from "../noise/psrd2.js";
 import { Region } from "../world/regions.js";
 import type { RegionWeights } from "../world/types.js";
 import {
@@ -55,16 +55,20 @@ function recipe(
     trees,
   });
 }
-/** Index is the stable surface Region numeric ID,0..15. */
+/**
+ * Index is the stable surface Region numeric ID,0..15. Ordinary hills occupy the
+ * broad end of the regional meso range; short detail is localized below. Macro
+ * amplitudes/scales and the mountain, water-bed and Rim profiles stay intact.
+ */
 export const TERRAIN_RECIPES: readonly TerrainRecipe[] = Object.freeze([
   recipe(
     40,
     25,
     3000,
     12,
-    400,
+    600,
     1,
-    14,
+    24,
     Block.Grass,
     Block.Dirt,
     Block.Limestone,
@@ -76,9 +80,9 @@ export const TERRAIN_RECIPES: readonly TerrainRecipe[] = Object.freeze([
     30,
     3000,
     6,
-    240,
+    500,
     0.7,
-    16,
+    24,
     Block.Snow,
     Block.Dirt,
     Block.Granite,
@@ -104,9 +108,9 @@ export const TERRAIN_RECIPES: readonly TerrainRecipe[] = Object.freeze([
     35,
     4000,
     16,
-    240,
+    500,
     0.6,
-    20,
+    28,
     Block.Sand,
     Block.Sand,
     Block.Sandstone,
@@ -118,9 +122,9 @@ export const TERRAIN_RECIPES: readonly TerrainRecipe[] = Object.freeze([
     10,
     2500,
     3,
-    160,
+    400,
     0.8,
-    18,
+    26,
     Block.Ash,
     Block.Dirt,
     Block.Limestone,
@@ -132,9 +136,9 @@ export const TERRAIN_RECIPES: readonly TerrainRecipe[] = Object.freeze([
     55,
     3000,
     20,
-    180,
+    500,
     1.2,
-    12,
+    24,
     Block.Grass,
     Block.Dirt,
     Block.Limestone,
@@ -146,9 +150,9 @@ export const TERRAIN_RECIPES: readonly TerrainRecipe[] = Object.freeze([
     0,
     2000,
     0.6,
-    140,
+    300,
     0.4,
-    14,
+    24,
     Block.Mud,
     Block.Clay,
     Block.Limestone,
@@ -174,9 +178,9 @@ export const TERRAIN_RECIPES: readonly TerrainRecipe[] = Object.freeze([
     30,
     1500,
     12,
-    120,
+    500,
     0.8,
-    18,
+    26,
     Block.MossyStone,
     Block.Dirt,
     Block.Slate,
@@ -188,9 +192,9 @@ export const TERRAIN_RECIPES: readonly TerrainRecipe[] = Object.freeze([
     20,
     3000,
     8,
-    250,
+    500,
     1,
-    20,
+    28,
     Block.Ash,
     Block.Basalt,
     Block.Basalt,
@@ -202,9 +206,9 @@ export const TERRAIN_RECIPES: readonly TerrainRecipe[] = Object.freeze([
     15,
     2800,
     5,
-    300,
+    500,
     0.7,
-    12,
+    24,
     Block.Slate,
     Block.Stone,
     Block.Slate,
@@ -216,9 +220,9 @@ export const TERRAIN_RECIPES: readonly TerrainRecipe[] = Object.freeze([
     15,
     2300,
     8,
-    280,
+    500,
     0.8,
-    18,
+    26,
     Block.Grass,
     Block.Dirt,
     Block.Slate,
@@ -230,9 +234,9 @@ export const TERRAIN_RECIPES: readonly TerrainRecipe[] = Object.freeze([
     30,
     3200,
     6,
-    200,
+    500,
     0.8,
-    12,
+    24,
     Block.Basalt,
     Block.Ash,
     Block.Basalt,
@@ -387,6 +391,22 @@ export function fineAmplitude(weights: RegionWeights): number {
   }
   return amplitude;
 }
+const DETAIL_START = psrd2Quantile(0.55);
+const DETAIL_FULL = psrd2Quantile(0.8);
+/**
+ * A world-anchored1.6km envelope: about55% calm,20% fully rough, with a smooth
+ * transition. Measured psrd quantiles give deliberate area coverage rather than
+ * an arbitrary noise threshold. It modulates relief, never quantizes heights.
+ */
+export function terrainDetailMask(
+  seed: number,
+  x: number,
+  z: number,
+  scratch: Float64Array,
+): number {
+  const value = boundedNoise(seed ^ 0x6f4a7c15, x / 1600, z / 1600, scratch);
+  return smoothUnit((value - DETAIL_START) / (DETAIL_FULL - DETAIL_START));
+}
 /** Meso/micro only; macro relief is already present in WorldPlanData.terrainMacro. */
 export function fineRelief(
   seed: number,
@@ -398,14 +418,27 @@ export function fineRelief(
 ): void {
   let meso = 0;
   let micro = 0;
+  let detail = -1;
   for (let i = 0; i < weights.count; i++) {
     const id = Number(weights.ids[i]);
     const w = Number(weights.weights[i]);
     const r = TERRAIN_RECIPES[id] as TerrainRecipe;
+    // Preserve rugged mountains and WorldPlan-owned water/ice profiles. Blend
+    // each region's contribution separately so border weights remain continuous.
+    const ordinary =
+      id !== Region.Mountains &&
+      id !== Region.Lake &&
+      id !== Region.Blackwater &&
+      id !== Region.Rim &&
+      id !== Region.Frost;
+    if (ordinary && detail < 0) detail = terrainDetailMask(seed, x, z, scratch);
+    const hillStrength = ordinary ? 0.25 + 0.75 * detail : 1;
+    const detailStrength = ordinary ? 0.08 + 0.92 * detail : 1;
     if (r.mesoAmplitude)
       meso +=
         w *
         r.mesoAmplitude *
+        hillStrength *
         boundedNoise(
           seed ^ Math.imul(id + 1, 0x27d4eb2d),
           x / r.mesoScale,
@@ -416,6 +449,7 @@ export function fineRelief(
       micro +=
         w *
         r.microAmplitude *
+        detailStrength *
         boundedNoise(
           seed ^ Math.imul(id + 1, 0x165667b1),
           x / r.microScale,
