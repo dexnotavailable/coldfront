@@ -2,7 +2,8 @@
 
 The owner's 9 October correction is implemented: ordinary hills extend over
 larger distances and strong small-scale detail occupies coherent patches.
-The change is integrated for generation 3; publication checks are in progress.
+The change is published as `174669c`, generation 3, at
+[dex.place/coldfront](https://dex.place/coldfront/).
 The independent Astra reviewer accepted the bounded change after opening all
 twelve matched diagnostic images.
 
@@ -68,7 +69,12 @@ slice were regenerated and reviewed. The independent reviewer opened 37 current
 images and verified their source and image hashes. The five protected regional
 postcards and TEST-1 are byte-identical to their previous accepted captures;
 TEST-1 remains 15/20. Regional postcards remain ungraded first-pass evidence.
-Clean Node 22 build, the fresh kernel benchmark and publication are still pending.
+Clean Node 22.23.3/npm 10.9.8 install/build and publication pass. Public version,
+entry JavaScript/CSS hashes and isolation headers match the release. CI
+run37887180950 also passes 300 actual chunk samples in each of Chromium,
+Firefox and WebKit. Public gameplay browser verification remains unavailable
+after the earlier automatic approval-review rejection; local browser proof and
+public artifact checks remain separate.
 
 Two failed checks were retained and resolved without weakening assertions. The
 gallery's negative text probe was below the viewport when an image-only fixture
@@ -100,6 +106,26 @@ This is selected-fixture regression coverage; unchanged screens retain their
 previous acceptance.
 
 ![Current selected UI states](../postcards/wip/ui.jpg)
+
+## Measured costs
+
+The fresh all-region benchmark ran alone for 250.146 seconds on the Ryzen 9
+7950X, Windows, Node 24.18.0. After five warmups it measured three passes over
+800 distinct LOD0 chunks and 320 LOD1 chunks: 2,400 complete pipelines and
+960 LOD1 generations.
+
+| Kernel | Median | p95 | Target status |
+|---|---:|---:|---|
+| LOD0 generation | 7.369 ms | 10.746 ms | Within target |
+| Skylight | 13.569 ms | 20.934 ms | Above 3 ms median target |
+| Meshing | 4.545 ms | 7.100 ms | Above 4 ms median target |
+| Complete measured pipeline | 97.104 ms | 126.991 ms | Informational |
+| LOD1 generation | 7.240 ms | 11.442 ms | Not the later column-tile budget |
+
+One cold WorldPlan build took 1.421 seconds. Sixteen postcard captures took
+9.264 seconds median and 23.241 seconds nearest-rank p95/max, with camera search
+measured separately. These are kernel and software-capture measurements, not
+browser FPS. Lighting and meshing remain phase 1.10 work.
 
 Distant terrain was already required by terrain specification §13.5 and
 roadmap phase 1.4: LOD0–6, full-height column tiles, up to about 16 km reach at

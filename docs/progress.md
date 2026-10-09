@@ -2,7 +2,7 @@
 
 **Current milestone:** 1 · The World
 **Current phase:** 1.3 · Terrain toolkit + Ibara (isolated packages and world integration)
-**Playable link:** [dex.place/coldfront](https://dex.place/coldfront/) · [Interface gallery](https://dex.place/coldfront/?gallery) · [Postcards and water PR #5](https://github.com/dexnotavailable/coldfront/pull/5). Live game commit: `18a975d`. The unrelated `coldfront.pages.dev` site is not this game's preview.
+**Playable link:** [dex.place/coldfront](https://dex.place/coldfront/) · [Interface gallery](https://dex.place/coldfront/?gallery) · [Calmer terrain PR #6](https://github.com/dexnotavailable/coldfront/pull/6). Live game commit: `174669c`. The unrelated `coldfront.pages.dev` site is not this game's preview.
 **Agent guide:** `AGENTS.md` (Codex and Claude Code both follow it). **Interface:** only what `docs/11-interface-catalogue.md` lists.
 
 ## Status board
@@ -23,9 +23,11 @@
 ## Current session
 **9 October 2026 · Codex · `codex/phase-1-3-ibara`**
 
-**Calmer-ground increment:** the owner correction is integrated for generation 3 and undergoing release checks. Broader ordinary hills and a kilometre-scale detail mask reduce repeated small steps; all twelve matched before/after aerials were opened by the coordinator and an independent Astra reviewer. Local patch step rates fell 39% in plains, 74% in desert, 68% in jungle and 61% in swamp; these are sampled patches, not world-wide percentages. Mountain and Rim image pairs are identical. The candidate passed 67 focused/forbidden-token checks, eighteen three-seed invariants and all 150 preserved test-world goldens. [Comparison and limits](reports/calmer-surface.md). A fresh full postcard/atlas/slice and release-validation run is in progress. This bounded increment will publish before the larger Ibara integration.
+**Calmer ground published:** `174669c` is live. All 337 tests, check/build, complete UI lint, local browser drive and nineteen-case region tour pass. The clean Node 22.23.3/npm 10.9.8 checkout build passed, and CI run37887180950 passed 300 actual chunk samples in each of Chromium, Firefox and WebKit. Fresh public version, entry-asset hashes and isolation headers match the release. The independently reviewed generation-3 images and matched comparisons support the quieter ordinary terrain; the benchmark below records the remaining lighting/meshing misses. [PR #6](https://github.com/dexnotavailable/coldfront/pull/6) is the bounded release; Ibara world features and far LOD remain unfinished.
 
-**Calmer-ground verification:** all 337 tests, TypeScript/lint, complete UI lint and production build pass. The local browser drive and nineteen-case world tour pass. Sixteen regenerated postcards, TEST-1, refreshed atlas/slice outputs and nine selected gallery profiles have been opened and independently reviewed; TEST-1 remains 15/20, the first-pass regional cards stay ungraded. The gallery preflight needed the title fixture ahead of image-only fixtures, and one stale generation-2 assertion was updated to 3; both original failures are preserved. Clean Node22 build, publication and the new kernel benchmark remain pending.
+**Calmer-ground increment:** the owner correction is published as generation 3. Broader ordinary hills and a kilometre-scale detail mask reduce repeated small steps; all twelve matched before/after aerials were opened by the coordinator and an independent Astra reviewer. Local patch step rates fell 39% in plains, 74% in desert, 68% in jungle and 61% in swamp; these are sampled patches, not world-wide percentages. Mountain and Rim image pairs are identical. The candidate passed 67 focused/forbidden-token checks, eighteen three-seed invariants and all 150 preserved test-world goldens. [Comparison and limits](reports/calmer-surface.md). Fresh postcard/atlas/slice and release validation are complete for this bounded increment. It ships before the larger Ibara integration.
+
+**Calmer-ground verification:** all 337 tests, TypeScript/lint, complete UI lint and production build pass. The local browser drive and nineteen-case world tour pass. Sixteen regenerated postcards, TEST-1, refreshed atlas/slice outputs and nine selected gallery profiles have been opened and independently reviewed; TEST-1 remains 15/20, the first-pass regional cards stay ungraded. The gallery preflight needed the title fixture ahead of image-only fixtures, and one stale generation-2 assertion was updated to 3; both original failures are preserved. Clean Node22 build, publication and the new kernel benchmark have passed; the benchmark retains the lighting/meshing target misses below.
 
 **Restart recovery and owner correction:** the 10:14 Bangkok PC restart left canonical `28b596b` clean and pushed; the three isolated P1/P2/P3 source sets survived. No terrain jobs remained alive, so fresh checks and explicit queue grants replace stale process claims. Public version readback still matches live `18a975d`. The owner asked for less noisy terrain, broader forms and more flatter ground. An Astra surface lane is measuring and comparing the current always-on detail against calmer regional recipes, preserving the established macro geography and owned water. Decision 112 records the direction. Far LOD was already specified; it is still unimplemented and remains phase 1.4 work. P1 feature A/B and P2 full numerical audits continue after the prioritized surface comparison.
 
@@ -87,22 +89,24 @@ The release is a creative test world. Kingdoms, multiplayer, civilization simula
 
 ## Bench (latest)
 
-Main world, all sixteen surface regions, seed 1; Node 24.18.0 / Windows / Ryzen 9 7950X. Five warmups were discarded before three passes over 800 distinct LOD0 chunks and 320 LOD1 chunks: 2,400 measured full pipelines and 960 LOD1 generations. The run took 326.074 s alone, with no renderer or other sampler running.
+Generation 3 at `174669c`: main world, all sixteen surface regions, seed 1; Node 24.18.0 / Windows / Ryzen 9 7950X. Five warmups were discarded before three passes over 800 distinct LOD0 chunks and 320 LOD1 chunks: 2,400 measured full pipelines and 960 LOD1 generations. The run took 250.146 s alone, with no renderer or other sampler running.
 
 | Metric | Median | p95 | Budget |
 |---|---|---|---|
-| LOD0 generation | 10.115 ms | 12.075 ms | ≤12 / ≤40 ms; passes |
-| Skylight solve | 18.022 ms | 25.479 ms | Median ≤3 ms; over target |
-| LOD0 meshing | 6.372 ms | 8.735 ms | Median ≤4 ms; over target |
-| Neighbourhood preparation | 97.552 ms | 113.165 ms | Separately measured work |
-| Halo light extraction | 0.208 ms | 0.258 ms | Separately measured work |
-| Complete measured kernel pipeline | 132.713 ms | 149.398 ms | Not browser/worker/FPS timing |
-| LOD1 voxel generation | 10.032 ms | 11.790 ms | LOD2+ tile budget does not apply |
-| WorldPlan cold build | One observed build: 1.409 s | Not sampled | ≤3 s target |
+| LOD0 generation | 7.369 ms | 10.746 ms | ≤12 / ≤40 ms; passes |
+| Skylight solve | 13.569 ms | 20.934 ms | Median ≤3 ms; over target |
+| LOD0 meshing | 4.545 ms | 7.100 ms | Median ≤4 ms; over target |
+| Neighbourhood preparation | 71.405 ms | 95.153 ms | Separately measured work |
+| Halo light extraction | 0.145 ms | 0.230 ms | Separately measured work |
+| Complete measured kernel pipeline | 97.104 ms | 126.991 ms | Not browser/worker/FPS timing |
+| LOD1 voxel generation | 7.240 ms | 11.442 ms | LOD2+ tile budget does not apply |
+| WorldPlan cold build | One observed build: 1.421 s | Not sampled | ≤3 s target |
 
-Context hydration took 31.858 ms and sample selection 38.952 ms, separately from the cold plan. The report retains raw observations and per-region summaries, exact sample/source/harness hashes and physical evidence for dark submerged cases. Lighting and meshing remain above their phase 1.10 targets. Terrain is first-pass; detailed Ibara features, later LOD tiles, relighting, transfers, GPU uploads and FPS are not represented by these Node measurements.
+Context hydration took 32.402 ms and sample selection 39.551 ms, separately from the cold plan. The report retains raw observations and per-region summaries, exact sample/source/harness hashes and physical evidence for dark submerged cases. Lighting and meshing remain above their phase 1.10 targets. Terrain is first-pass; detailed Ibara features, later LOD tiles, relighting, transfers, GPU uploads and FPS are not represented by these Node measurements. Current receipt: `out/step4/bench-gen-2026-10-09T05-12-00.146Z.json`.
 
-Single atlas timings: seed 1 regions 2.010 s, height 21.538 s and sites 2.216 s at 2048²; all below the 30 s target. The SW–NE overview took 0.147 s to sample. Final phase 1.2 postcard median/p95/max: **8.634 / 14.809 / 21.104 s**, with 305–1,204 requested chunks and all ready before each shot. Sixteen images plus sheets took 187.622 s including cached-camera validation and browser setup. Camera search is separate: the repaired Blackwater search took 92.952 s for fifty candidates. These are software-renderer capture timings, not FPS. Private kernel benchmark receipt: `out/step4/bench-gen-2026-10-08T21-12-50.522Z.json`.
+Current generation-3 atlas sampling: regions **1.841 s**, height **19.698 s**, at 2048²; SW–NE overview **0.107 s**. The fresh sixteen-card capture including sheets took **201.238 s**; median/p95/max per image **9.264 / 23.241 / 23.241 s**, using nearest-rank p95. The separate fifty-candidate-per-region camera search took **1,667.956 s**. All images were opened and no application errors were recorded.
+
+Historical phase 1.2 timings: seed 1 regions 2.010 s, height 21.538 s and sites 2.216 s at 2048²; all below the 30 s target. The SW–NE overview took 0.147 s to sample. Final phase 1.2 postcard median/p95/max: **8.634 / 14.809 / 21.104 s**, with 305–1,204 requested chunks and all ready before each shot. Sixteen images plus sheets took 187.622 s including cached-camera validation and browser setup. Camera search is separate: the repaired Blackwater search took 92.952 s for fifty candidates. These are software-renderer capture timings, not FPS. Private kernel benchmark receipt: `out/step4/bench-gen-2026-10-08T21-12-50.522Z.json`.
 
 The following records describe the completed phase 1.1 tooling and acceptance.
 **Step 4 tooling:** 150 deterministic chunk baselines cover three seeds, LOD0/1, signed coordinates, vertical bands and world edges. Node, local Chromium 153 and local WebKit 26.6 match all 150. GitHub CI independently passed 150/150 in each of Chromium, Firefox and WebKit; Firefox is absent locally. An independent source review found no consequential golden/benchmark issue. The 2048² test-world height atlas took 877 ms to sample; the full SW→NE overview took 29 ms. All ten atlas/slice raw and annotated images were opened by their author, and the coordinator opened the four main annotated views. They show actual test-world height/material data, with matching metre scales and source hashes. They do not depict the future WorldPlan or cavern layout.
@@ -112,15 +116,15 @@ The following records describe the completed phase 1.1 tooling and acceptance.
 ## Known issues and next
 
 - First playable commit f8f9d95 is pushed and published at [dex.place/coldfront](https://dex.place/coldfront/), with [PR #2](https://github.com/dexnotavailable/coldfront/pull/2) merged as the working step-3 increment. GitHub CI and the clean Node 22.23.3/npm 10.9.8 checkout build pass. Public version, HTTP200 and isolation headers are verified.
-- Next: finish and publish the calmer-ground increment, then integrate the Ibara features, volcanic ground, owned lava, materials and light under the phase 1.3 plan. Phase 1.4 implements the specified distant LOD. Continue isolated asset refinement before integration.
-- The current main-world release uses generation version 2. As specified for Milestone 1, generation/registry changes invalidate prior saves: old phase 1.1 records remain stored but will not load into the new generation. Within version 2, main/test worlds, seeds and discovery memory are kept separate; Clear my edits affects only the current world's edits.
+- Next: merge the verified calmer-ground release, then integrate the Ibara features, volcanic ground, owned lava, materials and light under the phase 1.3 plan. Phase 1.4 implements the specified distant LOD. Continue isolated asset refinement before integration.
+- The current main-world release uses generation version 3. As specified for Milestone 1, generation/registry changes use a new save identity: earlier records remain stored but will not load into the new generation. Main/test worlds, seeds and discovery memory are kept separate; Clear my edits affects only the current world's edits.
 - Save/transition corrections are published in d4c4c49: 11 targeted regressions, independent source review, and local production checks of a visible placed block through immediate Quit/Play and reload/Play. Reads and writes are ordered; failed reads cannot erase prior saves, storage errors do not poison later writes, and Clear cannot race new edits or another world. Queued Play readiness and postcard Escape routing have regressions too. Existing save keys/schema and worldgen cache identity are unchanged.
 - GPU uploads currently cap eight chunk results per frame, rather than eight individual meshes. CPU mesh arrays remain for context restoration; freeing them after upload is still pending. Postcards currently record total duration, not aggregated worker-stage durations.
 - Local production browser checks prove exact seed restoration and retained block edits after reload. Automatic approval review rejected launching the public-site browser check without giving a detailed reason. No public browser started; public gameplay verification remains unavailable. That action was not retried through another route.
 - The build reports a large main chunk (about 944 kB, 243 kB gzip); optimization follows measurements. Biome has 54 warnings and two information notes, with no errors. Most warnings are controlled test/gallery assertions and motion CSS overrides.
 - The documented Pages name was corrected: coldfront.pages.dev belongs to another website. Ordinary build remains compatible with Pages; the actual release uses the owner's existing site mount.
 
-## Try this (current world-plan build)
+## Try this (current calmer-terrain build)
 
 1. Open [COLDFRONT](https://dex.place/coldfront/), choose **Kaldmark** and press **Play**. Walk with **W A S D**; zoom with the wheel, turn with **← →**, and tilt with **↑ ↓**.
 2. Double-tap **Space** to fly. Use **Space** to rise and **Shift** to descend. Double-tap **W** to sprint when playing in a window.
@@ -134,6 +138,8 @@ Local development: run **npm ci**, then **npm run dev** and open the printed add
 
 ## Session log (newest first)
 *(Date, phase, summary, PR link.)*
+
+- **2026-10-09 · Calmer ordinary terrain · [PR #6](https://github.com/dexnotavailable/coldfront/pull/6).** Published `174669c`, generation 3. Broader hills and localized small detail; matched comparisons and all regenerated region/TEST1/atlas/slice/UI evidence independently reviewed. 337 tests, check/build, clean Node22 build and CI pass, including 300 actual chunks in all three browsers. Local browser tour passes nineteen cases. Benchmark generation 7.369/10.746 ms median/p95; lighting and meshing remain above later targets. Public version/assets/headers match; public browser gameplay remains unavailable. Ibara adapter, worker/light and asset revisions continue in isolation.
 
 - **2026-10-09 · 1.2 postcards and water · [PR #5](https://github.com/dexnotavailable/coldfront/pull/5).** Published `18a975d` after 310 tests, check/build, complete UI lint, local browser tests and clean Node22 install/build. All sixteen region postcards, TEST-1, combined sheet and HUD proof opened by coordinator and independent Astra reviewer; final TEST-1 is 15/20, regional set remains ungraded. Fixed capture restoration, Blackwater viewpoint selection and water seams/background leakage. Public metadata/assets/headers match; public gameplay browser remains unavailable. Released-code CI run37874156686 passes all three browser golden checks.
 
