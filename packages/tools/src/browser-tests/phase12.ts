@@ -78,7 +78,31 @@ async function capture(name: string): Promise<void> {
       ?.getContext("webgl2");
     if (!crossOriginIsolated || !gl || gl.isContextLost())
       throw new Error("Isolation/WebGL2 preflight failed");
-    return { isolated: crossOriginIsolated, contextLost: gl.isContextLost() };
+    const card = document.querySelector(".cf-discovery");
+    const style = card ? getComputedStyle(card) : null;
+    const glyphStyle = card
+      ? getComputedStyle(card.querySelector(".cf-discovery-name") ?? card)
+      : null;
+    return {
+      isolated: crossOriginIsolated,
+      contextLost: gl.isContextLost(),
+      discovery: card
+        ? {
+            dateNow: Date.now(),
+            performanceNow: performance.now(),
+            opacity: style?.opacity,
+            strokeTarget: "name",
+            webkitTextStrokeWidth: glyphStyle?.webkitTextStrokeWidth,
+            webkitTextStrokeColor: glyphStyle?.webkitTextStrokeColor,
+            paintOrder: glyphStyle?.paintOrder,
+            animations: card.getAnimations().map((animation) => ({
+              currentTime: animation.currentTime,
+              playState: animation.playState,
+              duration: animation.effect?.getTiming().duration,
+            })),
+          }
+        : null,
+    };
   });
   const data = await state();
   const image = `${name}.jpg`;

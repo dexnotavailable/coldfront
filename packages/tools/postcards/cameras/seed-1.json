@@ -23,5 +23,617 @@
     "horizonFraction": 0.31814465513232976,
     "sunOffsetDegrees": 114.81982153924723
   },
-  "score": 102.90029482698495
+  "score": 102.90029482698495,
+  "phase12": {
+    "schema": 1,
+    "worldKind": "main",
+    "seed": 1,
+    "worldgenVersion": 2,
+    "sourceHash": "8db3a459782cb309bc020898ec8071e6e373041599274ec9d79cb5caf7f4bd0e",
+    "resolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147",
+    "cameras": [
+      {
+        "region": "plains",
+        "kind": "aerial",
+        "position": {
+          "x": -16083.20060008718,
+          "y": 100.38024384663129,
+          "z": -10417.792835588461
+        },
+        "target": {
+          "x": -16127.011614866617,
+          "y": 90.24363966586097,
+          "z": -10464.446827743432
+        },
+        "hours": 17.25,
+        "radius": 320,
+        "terrainUpperBound": 76.38024384663129,
+        "id": "P12-plains",
+        "seed": 1,
+        "ungraded": true,
+        "validation": {
+          "eyeClear": true,
+          "walkable": false,
+          "centralClear": true,
+          "skyFraction": 0.4926215277777778,
+          "featureFraction": 0.4266493055555556,
+          "waterFraction": 0.0642361111111111,
+          "horizonFraction": 0.38690178862577373,
+          "sunOffsetDegrees": 92.28561677997489,
+          "sunElevationDegrees": 11.33313571163032,
+          "highestVisibleSample": 50.508425919658286,
+          "altitudeAboveHighestSample": 49.871817926973,
+          "rayColumns": 64,
+          "rayRows": 36,
+          "passed": true
+        },
+        "score": 107.40677083333334,
+        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+      },
+      {
+        "region": "tundra",
+        "kind": "eye-level",
+        "position": {
+          "x": -774.3325358334366,
+          "y": 90.62,
+          "z": -17424.680242213522
+        },
+        "target": {
+          "x": -716.4236044756113,
+          "y": 80.48339581922968,
+          "z": -17397.43036755336
+        },
+        "hours": 17.25,
+        "radius": 320,
+        "id": "P12-tundra",
+        "seed": 1,
+        "ungraded": true,
+        "validation": {
+          "eyeClear": true,
+          "walkable": true,
+          "centralClear": true,
+          "skyFraction": 0.3901909722222222,
+          "featureFraction": 0.6080729166666666,
+          "waterFraction": 0,
+          "horizonFraction": 0.386901788625773,
+          "sunOffsetDegrees": 66.11438322002394,
+          "sunElevationDegrees": 11.33313571163032,
+          "highestVisibleSample": 96.35762381178375,
+          "altitudeAboveHighestSample": -5.737623811783749,
+          "rayColumns": 64,
+          "rayRows": 36,
+          "passed": true
+        },
+        "score": 114.05954861111111,
+        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+      },
+      {
+        "region": "mountains",
+        "kind": "eye-level",
+        "position": {
+          "x": 12582.846057577915,
+          "y": 790.62,
+          "z": -10878.19874803418
+        },
+        "target": {
+          "x": 12566.929904799365,
+          "y": 780.4833958192297,
+          "z": -10940.188070346412
+        },
+        "hours": 17.25,
+        "radius": 320,
+        "id": "P12-mountains",
+        "seed": 1,
+        "ungraded": true,
+        "validation": {
+          "eyeClear": true,
+          "walkable": true,
+          "centralClear": true,
+          "skyFraction": 0.5251736111111112,
+          "featureFraction": 0.4735243055555556,
+          "waterFraction": 0,
+          "horizonFraction": 0.3869017886257749,
+          "sunOffsetDegrees": 63.485616779975,
+          "sunElevationDegrees": 11.33313571163032,
+          "highestVisibleSample": 788.9995626370753,
+          "altitudeAboveHighestSample": 1.6204373629246902,
+          "rayColumns": 64,
+          "rayRows": 36,
+          "passed": true
+        },
+        "score": 110.01875,
+        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+      },
+      {
+        "region": "desert",
+        "kind": "eye-level",
+        "position": {
+          "x": 16036.3416381653,
+          "y": 36.62,
+          "z": 1027.0295020336132
+        },
+        "target": {
+          "x": 16059.90160953712,
+          "y": 26.483395819229678,
+          "z": 1086.5351971304613
+        },
+        "hours": 17.25,
+        "radius": 320,
+        "id": "P12-desert",
+        "seed": 1,
+        "ungraded": true,
+        "validation": {
+          "eyeClear": true,
+          "walkable": true,
+          "centralClear": true,
+          "skyFraction": 0.3129340277777778,
+          "featureFraction": 0.6870659722222222,
+          "waterFraction": 0,
+          "horizonFraction": 0.38690178862577457,
+          "sunOffsetDegrees": 109.31438322002444,
+          "sunElevationDegrees": 11.33313571163032,
+          "highestVisibleSample": 58.86066219777308,
+          "altitudeAboveHighestSample": -22.240662197773084,
+          "rayColumns": 64,
+          "rayRows": 36,
+          "passed": true
+        },
+        "score": 115.07065972222222,
+        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+      },
+      {
+        "region": "boneyard",
+        "kind": "aerial",
+        "position": {
+          "x": 12338.879751059349,
+          "y": 77.86104173504111,
+          "z": 10686.417522102347
+        },
+        "target": {
+          "x": 12308.047515916838,
+          "y": 67.72443755427079,
+          "z": 10630.33389457954
+        },
+        "hours": 17.25,
+        "radius": 320,
+        "terrainUpperBound": 53.861041735041105,
+        "id": "P12-boneyard",
+        "seed": 1,
+        "ungraded": true,
+        "validation": {
+          "eyeClear": true,
+          "walkable": false,
+          "centralClear": true,
+          "skyFraction": 0.4800347222222222,
+          "featureFraction": 0.4509548611111111,
+          "waterFraction": 0,
+          "horizonFraction": 0.3869017886257736,
+          "sunOffsetDegrees": 77.88561677997565,
+          "sunElevationDegrees": 11.33313571163032,
+          "highestVisibleSample": 28.335517120487708,
+          "altitudeAboveHighestSample": 49.525524614553404,
+          "rayColumns": 64,
+          "rayRows": 36,
+          "passed": true
+        },
+        "score": 108.01875000000001,
+        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+      },
+      {
+        "region": "jungle",
+        "kind": "aerial",
+        "position": {
+          "x": 5018.017858914923,
+          "y": 120.61860924112953,
+          "z": 19175.106322117543
+        },
+        "target": {
+          "x": 4955.151474868287,
+          "y": 110.48200506035921,
+          "z": 19187.098726251028
+        },
+        "hours": 17.25,
+        "radius": 320,
+        "terrainUpperBound": 96.61860924112953,
+        "id": "P12-jungle",
+        "seed": 1,
+        "ungraded": true,
+        "validation": {
+          "eyeClear": true,
+          "walkable": false,
+          "centralClear": true,
+          "skyFraction": 0.4822048611111111,
+          "featureFraction": 0.4197048611111111,
+          "waterFraction": 0,
+          "horizonFraction": 0.38690178862577373,
+          "sunOffsetDegrees": 149.8856167799739,
+          "sunElevationDegrees": 11.33313571163032,
+          "highestVisibleSample": 90.14057989062894,
+          "altitudeAboveHighestSample": 30.47802935050059,
+          "rayColumns": 64,
+          "rayRows": 36,
+          "passed": true
+        },
+        "score": 107.37204861111111,
+        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+      },
+      {
+        "region": "swamp",
+        "kind": "eye-level",
+        "position": {
+          "x": -9492.265069034078,
+          "y": 3.62,
+          "z": 15988.466218050422
+        },
+        "target": {
+          "x": -9484.243742085962,
+          "y": -6.516604180770321,
+          "z": 16051.961558934549
+        },
+        "hours": 17.25,
+        "radius": 320,
+        "id": "P12-swamp",
+        "seed": 1,
+        "ungraded": true,
+        "validation": {
+          "eyeClear": true,
+          "walkable": true,
+          "centralClear": true,
+          "skyFraction": 0.3767361111111111,
+          "featureFraction": 0.6232638888888888,
+          "waterFraction": 0.0030381944444444445,
+          "horizonFraction": 0.38690178862577407,
+          "sunOffsetDegrees": 123.71438322002508,
+          "sunElevationDegrees": 11.33313571163032,
+          "highestVisibleSample": 11.636105968226602,
+          "altitudeAboveHighestSample": -8.0161059682266,
+          "rayColumns": 64,
+          "rayRows": 36,
+          "passed": true
+        },
+        "score": 114.43263888888889,
+        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+      },
+      {
+        "region": "lake",
+        "kind": "aerial",
+        "position": {
+          "x": -18644.265069034078,
+          "y": 97.52252278315905,
+          "z": -7435.533781949578
+        },
+        "target": {
+          "x": -18636.243742085964,
+          "y": 87.38591860238873,
+          "z": -7372.0384410654515
+        },
+        "hours": 17.25,
+        "radius": 320,
+        "terrainUpperBound": 73.52252278315905,
+        "id": "P12-lake",
+        "seed": 1,
+        "ungraded": true,
+        "validation": {
+          "eyeClear": true,
+          "walkable": false,
+          "centralClear": true,
+          "skyFraction": 0.5486111111111112,
+          "featureFraction": 0.1762152777777778,
+          "waterFraction": 0.1762152777777778,
+          "horizonFraction": 0.3869017886257736,
+          "sunOffsetDegrees": 123.7143832200267,
+          "sunElevationDegrees": 11.33313571163032,
+          "highestVisibleSample": 20.36394706295009,
+          "altitudeAboveHighestSample": 77.15857572020896,
+          "rayColumns": 64,
+          "rayRows": 36,
+          "passed": true
+        },
+        "score": 101.83819444444444,
+        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+      },
+      {
+        "region": "twilight",
+        "kind": "eye-level",
+        "position": {
+          "x": -5701.1086689550775,
+          "y": 79.62,
+          "z": -5661.453474406708
+        },
+        "target": {
+          "x": -5677.548697583258,
+          "y": 69.48339581922968,
+          "z": -5601.9477793098595
+        },
+        "hours": 17.25,
+        "radius": 320,
+        "id": "P12-twilight",
+        "seed": 1,
+        "ungraded": true,
+        "validation": {
+          "eyeClear": true,
+          "walkable": true,
+          "centralClear": true,
+          "skyFraction": 0.3923611111111111,
+          "featureFraction": 0.6037326388888888,
+          "waterFraction": 0,
+          "horizonFraction": 0.38690178862577435,
+          "sunOffsetDegrees": 109.31438322002529,
+          "sunElevationDegrees": 11.33313571163032,
+          "highestVisibleSample": 82.59876621852973,
+          "altitudeAboveHighestSample": -2.978766218529728,
+          "rayColumns": 64,
+          "rayRows": 36,
+          "passed": true
+        },
+        "score": 113.95104166666665,
+        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+      },
+      {
+        "region": "hellscape",
+        "kind": "aerial",
+        "position": {
+          "x": 5669.629862378313,
+          "y": 94.20991591244835,
+          "z": 5750.551928461742
+        },
+        "target": {
+          "x": 5677.651189326429,
+          "y": 84.07331173167803,
+          "z": 5814.047269345869
+        },
+        "hours": 17.25,
+        "radius": 320,
+        "terrainUpperBound": 70.20991591244835,
+        "id": "P12-hellscape",
+        "seed": 1,
+        "ungraded": true,
+        "validation": {
+          "eyeClear": true,
+          "walkable": false,
+          "centralClear": true,
+          "skyFraction": 0.4826388888888889,
+          "featureFraction": 0.4279513888888889,
+          "waterFraction": 0,
+          "horizonFraction": 0.38690178862577407,
+          "sunOffsetDegrees": 123.71438322002508,
+          "sunElevationDegrees": 11.33313571163032,
+          "highestVisibleSample": 47.35997680394219,
+          "altitudeAboveHighestSample": 46.84993910850616,
+          "rayColumns": 64,
+          "rayRows": 36,
+          "passed": true
+        },
+        "score": 107.53263888888888,
+        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+      },
+      {
+        "region": "shardfields",
+        "kind": "eye-level",
+        "position": {
+          "x": 7110.44395185417,
+          "y": 74.62,
+          "z": -6357.4768294391015
+        },
+        "target": {
+          "x": 7056.406964622041,
+          "y": 64.48339581922968,
+          "z": -6391.769744317758
+        },
+        "hours": 17.25,
+        "radius": 320,
+        "id": "P12-shardfields",
+        "seed": 1,
+        "ungraded": true,
+        "validation": {
+          "eyeClear": true,
+          "walkable": true,
+          "centralClear": true,
+          "skyFraction": 0.3893229166666667,
+          "featureFraction": 0.5924479166666666,
+          "waterFraction": 0,
+          "horizonFraction": 0.38690178862577435,
+          "sunOffsetDegrees": 106.68561677997461,
+          "sunElevationDegrees": 11.33313571163032,
+          "highestVisibleSample": 72.99966443469268,
+          "altitudeAboveHighestSample": 1.6203355653073288,
+          "rayColumns": 64,
+          "rayRows": 36,
+          "passed": true
+        },
+        "score": 113.75572916666667,
+        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+      },
+      {
+        "region": "isles",
+        "kind": "aerial",
+        "position": {
+          "x": -7140.878476491274,
+          "y": 89.14775272558893,
+          "z": 6695.418420357234
+        },
+        "target": {
+          "x": -7204.752187110684,
+          "y": 79.01114854481861,
+          "z": 6691.399827107358
+        },
+        "hours": 17.25,
+        "radius": 320,
+        "terrainUpperBound": 65.14775272558893,
+        "id": "P12-isles",
+        "seed": 1,
+        "ungraded": true,
+        "validation": {
+          "eyeClear": true,
+          "walkable": false,
+          "centralClear": true,
+          "skyFraction": 0.4869791666666667,
+          "featureFraction": 0.4453125,
+          "waterFraction": 0,
+          "horizonFraction": 0.38690178862577407,
+          "sunOffsetDegrees": 135.48561677997478,
+          "sunElevationDegrees": 11.33313571163032,
+          "highestVisibleSample": 42.473458084349005,
+          "altitudeAboveHighestSample": 46.674294641239925,
+          "rayColumns": 64,
+          "rayRows": 36,
+          "passed": true
+        },
+        "score": 107.83645833333334,
+        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+      },
+      {
+        "region": "nadir",
+        "kind": "aerial",
+        "position": {
+          "x": -2.2171894051374386,
+          "y": 376.34586664820415,
+          "z": 47.94876506378184
+        },
+        "target": {
+          "x": -66.09090002454681,
+          "y": 366.2092624674338,
+          "z": 43.93017181390582
+        },
+        "hours": 17.25,
+        "radius": 320,
+        "terrainUpperBound": 352.34586664820415,
+        "id": "P12-nadir",
+        "seed": 1,
+        "ungraded": true,
+        "validation": {
+          "eyeClear": true,
+          "walkable": false,
+          "centralClear": true,
+          "skyFraction": 0.52734375,
+          "featureFraction": 0.4379340277777778,
+          "waterFraction": 0,
+          "horizonFraction": 0.38690178862577373,
+          "sunOffsetDegrees": 135.48561677997492,
+          "sunElevationDegrees": 11.33313571163032,
+          "highestVisibleSample": 336.36120882773,
+          "altitudeAboveHighestSample": 39.984657820474126,
+          "rayColumns": 64,
+          "rayRows": 36,
+          "passed": true
+        },
+        "score": 107.28524305555555,
+        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+      },
+      {
+        "region": "blackwater",
+        "kind": "aerial",
+        "position": {
+          "x": 2092.3897781426335,
+          "y": 42,
+          "z": -5349.55218962343
+        },
+        "target": {
+          "x": 2084.368451194518,
+          "y": 31.86339581922968,
+          "z": -5286.056848739304
+        },
+        "hours": 17.25,
+        "radius": 320,
+        "terrainUpperBound": 18,
+        "id": "P12-blackwater",
+        "seed": 1,
+        "ungraded": true,
+        "validation": {
+          "eyeClear": true,
+          "walkable": false,
+          "centralClear": true,
+          "skyFraction": 0.4557291666666667,
+          "featureFraction": 0.4869791666666667,
+          "waterFraction": 0.4869791666666667,
+          "horizonFraction": 0.38690178862577407,
+          "sunOffsetDegrees": 138.1143832200252,
+          "sunElevationDegrees": 11.33313571163032,
+          "highestVisibleSample": 10.786688785016299,
+          "altitudeAboveHighestSample": 31.2133112149837,
+          "rayColumns": 64,
+          "rayRows": 36,
+          "passed": true
+        },
+        "score": 108.98229166666667,
+        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+      },
+      {
+        "region": "rim",
+        "kind": "aerial",
+        "position": {
+          "x": 7.901329292869749,
+          "y": 653.5000001,
+          "z": -21035.122200890684
+        },
+        "target": {
+          "x": -22.93090584964008,
+          "y": 643.3633959192297,
+          "z": -21091.20582841349
+        },
+        "hours": 17.25,
+        "radius": 320,
+        "terrainUpperBound": 629.5000001,
+        "id": "P12-rim",
+        "seed": 1,
+        "ungraded": true,
+        "validation": {
+          "eyeClear": true,
+          "walkable": false,
+          "centralClear": true,
+          "skyFraction": 0.4982638888888889,
+          "featureFraction": 0.3546006944444444,
+          "waterFraction": 0,
+          "horizonFraction": 0.3869017886257735,
+          "sunOffsetDegrees": 77.8856167799752,
+          "sunElevationDegrees": 11.33313571163032,
+          "highestVisibleSample": 600.3576234828158,
+          "altitudeAboveHighestSample": 53.14237661718414,
+          "rayColumns": 64,
+          "rayRows": 36,
+          "passed": true
+        },
+        "score": 105.909375,
+        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+      },
+      {
+        "region": "frost",
+        "kind": "aerial",
+        "position": {
+          "x": 33.81556666766825,
+          "y": 653.5000001,
+          "z": -21987.650609288532
+        },
+        "target": {
+          "x": 91.72449802549349,
+          "y": 643.3633959192297,
+          "z": -21960.40073462837
+        },
+        "hours": 17.25,
+        "radius": 320,
+        "terrainUpperBound": 629.5000001,
+        "id": "P12-frost",
+        "seed": 1,
+        "ungraded": true,
+        "validation": {
+          "eyeClear": true,
+          "walkable": false,
+          "centralClear": true,
+          "skyFraction": 0.4817708333333333,
+          "featureFraction": 0.4539930555555556,
+          "waterFraction": 0,
+          "horizonFraction": 0.3869017886257733,
+          "sunOffsetDegrees": 66.11438322002397,
+          "sunElevationDegrees": 11.33313571163032,
+          "highestVisibleSample": 599.9987415104524,
+          "altitudeAboveHighestSample": 53.50125858954755,
+          "rayColumns": 64,
+          "rayRows": 36,
+          "passed": true
+        },
+        "score": 108.06215277777778,
+        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+      }
+    ]
+  }
 }

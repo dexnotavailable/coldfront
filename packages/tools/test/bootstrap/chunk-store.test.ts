@@ -29,6 +29,7 @@ vi.mock("../../../client/src/engine/worker-pool.js", () => ({
         revision,
         blocks: new Uint16Array(32768),
         light: new Uint16Array(32768),
+        timings: { generate: 0, light: 0, mesh: 0 },
       } as ChunkResult;
     }
     edit() {}

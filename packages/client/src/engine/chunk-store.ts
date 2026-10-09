@@ -8,6 +8,7 @@ import type {
   WorldPlanData,
 } from "../../../shared/src/world/types.js";
 import type { WorldSession } from "../contracts/game-ui.js";
+import { type PostcardView, postcardColumnVisible } from "../game/postcard.js";
 import { sameSession } from "../game/session.js";
 import { insideFrame } from "../game/world-save.js";
 import { planBytes } from "./plan-transport.js";
@@ -42,6 +43,14 @@ export class ChunkStore {
   workers: TerrainWorkers;
   onFailure: (error: Error) => void = () => {};
   private tick = 0;
+  private readonly completedWork = { generate: 0, light: 0, mesh: 0 };
+  get workTotals(): Readonly<{
+    generate: number;
+    light: number;
+    mesh: number;
+  }> {
+    return { ...this.completedWork };
+  }
   private readonly pending = new Map<string, Promise<void>>();
   private readonly pointColumns = new Map<
     string,
@@ -212,6 +221,8 @@ export class ChunkStore {
       })
       .then((result) => {
         if (this.stopped) return;
+        for (const key of ["generate", "light", "mesh"] as const)
+          this.completedWork[key] += result.timings[key];
         const current = this.chunks.get(key);
         if (!current) return;
         if (
@@ -250,6 +261,7 @@ export class ChunkStore {
     y: number,
     z: number,
     radius: number,
+    includeColumn?: (cx: number, cz: number) => boolean,
   ): Promise<readonly Address[]> {
     if (
       !insideFrame(x, y, z) ||
@@ -270,6 +282,7 @@ export class ChunkStore {
         const ax = cx + dx,
           az = cz + dz;
         if (ax < -704 || ax >= 704 || az < -704 || az >= 704) continue;
+        if (includeColumn && !includeColumn(ax, az)) continue;
         const bounds: WorldBounds = {
           minSurfaceY: 0,
           maxSurfaceY: 0,
@@ -325,6 +338,26 @@ export class ChunkStore {
     if (!this.hasView(addresses))
       throw new Error("Requested terrain is not complete");
     return addresses;
+  }
+  requestCamera(view: PostcardView): Promise<readonly Address[]> {
+    return this.requestView(
+      view.position.x,
+      Math.max(-1535, Math.min(1023, view.position.y)),
+      view.position.z,
+      view.radius,
+      (cx, cz) => postcardColumnVisible(view, cx, cz),
+    );
+  }
+  retain(addresses: readonly Address[]): string[] {
+    const keep = new Set(addresses.map(chunkKey)),
+      removed: string[] = [];
+    for (const [key, chunk] of this.chunks)
+      if (!keep.has(key) && !this.pending.has(key)) {
+        chunk.state = "evicted";
+        this.chunks.delete(key);
+        removed.push(key);
+      }
+    return removed;
   }
   edit(edit: VoxelEdit): void {
     if (

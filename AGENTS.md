@@ -76,7 +76,7 @@ This covers every screen, panel, control, key binding, camera move and word the 
 | `npm run publish:site -- --dist packages/client/dist --expected-sha <sha>` | publish a verified site build, preserving release checksums and rollback receipts |
 | `npm run atlas -- --seed 1 --layer surface --mode regions` | main-world map PNGs and receipts → `out/atlas/main/`; use `--world test --mode height` for the sandbox |
 | `npm run slice -- --seed 1 --from -15556,15556 --to 15556,-15556` | the main SW→NE cross-section (overview + windows) → `out/slices/main/`; `--world test` keeps the sandbox |
-| `npm run postcards -- --seed 1 [--only ID,ID] [--phase 1.3] [--commit]` | headless screenshots → `out/postcards/`; `--commit` writes phase-end renders to `docs/postcards/m1/`. Slow: up to ~60 s a shot |
+| `npm run postcards -- --seed 1 [--only ID,ID] [--phase 1.2] [--commit]` | headless screenshots → `out/postcards/`; phase 1.2 selects all sixteen first-pass regions, default selects TEST-1. `--resolve-only` saves cameras before a production build; `--commit` writes renders to `docs/postcards/m1/`. Slow: up to ~60 s a shot, with camera search measured separately |
 | `npm run terrain-report -- --seed 1 --region hellscape` | coverage, slopes, walkable share, crumbs, feature statistics |
 | `npm run bench:gen` | generation, lighting and meshing timings. Run it on its own, never alongside renders |
 | `npm run golden:update` | regenerate the golden hashes (whenever generated output changes) |

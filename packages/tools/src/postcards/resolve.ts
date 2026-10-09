@@ -183,9 +183,26 @@ export async function resolveTestCamera(
       `seed-${seed}.json`,
     ),
     q = query(seed);
+  let document: Record<string, unknown> = {};
   try {
-    const old = JSON.parse(await readFile(path, "utf8")) as PostcardCamera;
-    const checked = inspect(old, q);
+    document = JSON.parse(await readFile(path, "utf8")) as Record<
+      string,
+      unknown
+    >;
+    const old = document as unknown as PostcardCamera;
+    if (old.id !== "TEST-1" || old.seed !== seed)
+      throw new Error("No matching TEST-1 camera");
+    const checked = inspect(
+      {
+        id: old.id,
+        seed: old.seed,
+        position: old.position,
+        target: old.target,
+        hours: old.hours,
+        radius: old.radius,
+      },
+      q,
+    );
     if (checked.score >= 100) return checked;
     console.log("Stored TEST-1 camera failed validation; resolving again");
   } catch {
@@ -216,6 +233,9 @@ export async function resolveTestCamera(
       `No TEST-1 camera passed all geometric checks: ${JSON.stringify(best)}`,
     );
   await mkdir(dirname(path), { recursive: true });
-  await writeFile(path, `${JSON.stringify(best, null, 2)}\n`);
+  await writeFile(
+    path,
+    `${JSON.stringify({ ...document, ...best }, null, 2)}\n`,
+  );
   return best;
 }

@@ -2,6 +2,7 @@ import { BLOCK_REGISTRY, Block } from "../../../shared/src/blocks/registry.js";
 import type {
   SurfaceRegionId,
   WorldContext,
+  WorldIdentity,
   WorldKind,
   WorldPlanData,
   XZ,
@@ -31,7 +32,11 @@ import { blockIcon } from "../engine/effects.js";
 import { ease, GameClocks } from "../engine/motion.js";
 import { PlanPreparation } from "../engine/prepare-plan.js";
 import { type WorldColors, WorldRenderer } from "../engine/renderer.js";
-import { chunkKey, type VoxelEdit } from "../engine/worker-protocol.js";
+import {
+  type Address,
+  chunkKey,
+  type VoxelEdit,
+} from "../engine/worker-protocol.js";
 import { WORLD_BUTTONS, WORLD_CODES } from "./bindings.js";
 import { OverheadCamera } from "./camera.js";
 import {
@@ -44,6 +49,12 @@ import {
 import { insideXZ, resolveDestination } from "./destination.js";
 import { FLY_SPEEDS, WorldInput } from "./input.js";
 import { EditPersistence } from "./persistence.js";
+import type {
+  PostcardId,
+  PostcardRenderReport,
+  PostcardView,
+  WorldPostcard,
+} from "./postcard.js";
 import {
   actionRay,
   type BlockHit,
@@ -59,7 +70,12 @@ import {
   regionViewpoints,
   topRegions,
 } from "./world-map.js";
-import { insideFrame, type SavedPose, worldKey } from "./world-save.js";
+import {
+  insideFrame,
+  type SavedPose,
+  sameIdentity,
+  worldKey,
+} from "./world-save.js";
 
 export interface GameOptions {
   readonly colors: WorldColors;
@@ -72,6 +88,8 @@ export interface GameOptions {
   /** The opaque map covers the canvas; simulation/clocks continue without hidden draws. */
   readonly worldVisible?: () => boolean;
   readonly postcard?: {
+    readonly id?: PostcardId;
+    readonly identity?: WorldIdentity;
     readonly position: Point;
     readonly target: Point;
     readonly hours: number;
@@ -79,6 +97,7 @@ export interface GameOptions {
   };
 }
 export interface GameTelemetry {
+  readonly postcard: PostcardRenderReport | null;
   readonly rendering: Readonly<{
     visible: boolean;
     animationRenders: number;
@@ -125,6 +144,7 @@ export interface GameHandle {
   readonly telemetry: () => GameTelemetry;
   readonly ready: () => Promise<void>;
   readonly renderStill: (displayTimeMs?: number) => Promise<Blob>;
+  readonly renderPostcard: (camera: WorldPostcard) => Promise<Blob>;
   readonly input: {
     keydown(event: KeyboardEvent): void;
     keyup(event: KeyboardEvent): void;
@@ -160,7 +180,7 @@ export function createGame(
 ): GamePort {
   return createGameHandle(canvas, options).port;
 }
-/** Harness gets readonly telemetry and a frozen still renderer, never camera setters. */
+/** Harness gets telemetry and frozen captures; the page only receives validated local postcard IDs. */
 export function createGameHandle(
   canvas: HTMLCanvasElement,
   options: GameOptions,
@@ -171,6 +191,7 @@ export function createGameHandle(
     telemetry: () => runtime.telemetry(),
     ready: () => runtime.whenReady(),
     renderStill: (time) => runtime.renderStill(time),
+    renderPostcard: (camera) => runtime.renderPostcard(camera),
     input: {
       keydown: (event) => runtime.keydown(event),
       keyup: (event) => runtime.keyup(event),
@@ -209,6 +230,9 @@ class GameRuntime implements GamePort {
   private loadProgress = 0;
   private scope: InputScope = "inactive";
   private mode: "overhead" | "postcard" = "overhead";
+  private initialPostcardConsumed = false;
+  private postcardView: GameOptions["postcard"] | null = null;
+  private postcardReport: PostcardRenderReport | null = null;
   private target: BlockHit | null = null;
   private ghost: Point | null = null;
   private aim: Point = { x: 0, y: 6, z: -5 };
@@ -615,14 +639,76 @@ class GameRuntime implements GamePort {
     const addresses = await pending;
     if (failure) throw failure;
     while (store.uploads.length && current()) {
-      this.uploadStore(store, this.options.postcard ? Infinity : 8);
-      if (!this.options.postcard)
-        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+      this.uploadStore(store, 8);
+      await new Promise<void>((resolve) => setTimeout(resolve, 0));
     }
     if (!current()) return false;
     if (!store.hasView(addresses, true))
       throw new Error("Destination meshes are not uploaded");
     return true;
+  }
+  private async loadPostcardChunks(
+    store: ChunkStore,
+    view: PostcardView,
+    current: () => boolean,
+    progress?: (value: number) => void,
+    testView = false,
+  ): Promise<{
+    addresses: readonly Address[];
+    upload: number;
+    worker: { generate: number; light: number; mesh: number };
+  } | null> {
+    const before = store.workTotals;
+    let complete = false,
+      failure: unknown,
+      upload = 0;
+    const request = testView
+      ? store.requestView(
+          view.target.x,
+          view.target.y,
+          view.target.z,
+          view.radius,
+        )
+      : store.requestCamera(view);
+    const pending = request.then(
+      (addresses) => {
+        complete = true;
+        return addresses;
+      },
+      (error: unknown) => {
+        complete = true;
+        failure = error;
+        return [];
+      },
+    );
+    while (!complete && current()) {
+      const started = performance.now();
+      this.uploadStore(store, Infinity);
+      upload += performance.now() - started;
+      progress?.(
+        [...store.chunks.values()].filter((chunk) => chunk.result).length /
+          Math.max(1, store.chunks.size),
+      );
+      await new Promise<void>((resolve) => setTimeout(resolve, 10));
+    }
+    if (!current()) return null;
+    const addresses = await pending;
+    if (failure) throw failure;
+    const uploadStarted = performance.now();
+    this.uploadStore(store, Infinity);
+    upload += performance.now() - uploadStarted;
+    if (!store.hasView(addresses, true))
+      throw new Error("Postcard requested meshes are not uploaded");
+    const after = store.workTotals;
+    return {
+      addresses,
+      upload,
+      worker: {
+        generate: after.generate - before.generate,
+        light: after.light - before.light,
+        mesh: after.mesh - before.mesh,
+      },
+    };
   }
   private async start(
     seed: number,
@@ -633,6 +719,10 @@ class GameRuntime implements GamePort {
     if (kind !== "main" && kind !== "test")
       throw new Error("Unknown world kind");
     if (request !== this.worldRequest || this.stopped) return;
+    const started = performance.now();
+    const postcard = this.initialPostcardConsumed
+      ? undefined
+      : this.options.postcard;
     const current = () => request === this.worldRequest && !this.stopped;
     const oldStore = this.store,
       oldWorld = this.world,
@@ -659,6 +749,12 @@ class GameRuntime implements GamePort {
           generation: `${WORLDGEN_VERSION}:${this.options.cacheTag}`,
         }),
       });
+      if (
+        postcard?.identity &&
+        !sameIdentity(postcard.identity, world.identity)
+      )
+        throw new Error("Postcard world/source identity mismatch");
+      const planStarted = performance.now();
       const plan: WorldPlanData | null = await this.plans.prepare(
         world.identity,
         (value) => {
@@ -679,9 +775,14 @@ class GameRuntime implements GamePort {
               plan: plan as WorldPlanData,
             })
           : createWorldContext({ kind, seed: world.identity.seed });
+      const planMs = performance.now() - planStarted;
       const saved = await this.persistence.loadWorld(world.identity);
       if (!current()) return;
       if (this.persistence.blocked) this.emit({ type: "storage-blocked" });
+      if (postcard && saved.edits.length)
+        throw new Error(
+          "Automatic postcards require an unedited generation profile",
+        );
       candidate = new ChunkStore(world, context, plan, saved.edits);
       const pose = this.destination(
         candidate,
@@ -712,20 +813,26 @@ class GameRuntime implements GamePort {
         this.emit({ type: "graphics-rebuilding" });
         this.rebuildGraphics();
       };
-      const postcard = this.options.postcard;
-      if (postcard && kind !== "test")
+      if (postcard && !postcard.identity && kind !== "test")
         throw new Error("TEST-1 postcard requires the test world");
-      const prepared = await this.prepareNear(
-        candidate,
-        postcard?.target ?? body,
-        postcard?.radius ?? 96,
-        current,
-        (value) => {
-          this.loadProgress = Math.max(this.loadProgress, 0.35 + 0.55 * value);
-          this.publish();
-        },
-      );
+      const progress = (value: number): void => {
+        this.loadProgress = Math.max(this.loadProgress, 0.35 + 0.55 * value);
+        this.publish();
+      };
+      const postcardPrepared = postcard
+        ? await this.loadPostcardChunks(
+            candidate,
+            { ...postcard, radius: postcard.radius ?? 160 },
+            current,
+            progress,
+            (postcard.id ?? "TEST-1") === "TEST-1",
+          )
+        : null;
+      const prepared = postcard
+        ? postcardPrepared !== null
+        : await this.prepareNear(candidate, body, 96, current, progress);
       if (!prepared || !current()) return;
+      const renderStarted = performance.now();
       this.renderer.setPostcard(!!postcard);
       this.renderer.update(
         body,
@@ -773,6 +880,7 @@ class GameRuntime implements GamePort {
       );
       this.renderer.render();
       this.renderer.render();
+      const renderMs = performance.now() - renderStarted;
       // No awaited operation after this point: pose, world and visible GPU set commit together.
       this.store = candidate;
       candidate = null;
@@ -796,6 +904,33 @@ class GameRuntime implements GamePort {
       this.clocks.displayMs = 0;
       this.tools = { ...initialTools(), flying: pose.flying };
       this.mode = postcard ? "postcard" : "overhead";
+      this.initialPostcardConsumed = true;
+      this.postcardView = postcard ?? null;
+      this.postcardReport =
+        postcard && postcardPrepared
+          ? {
+              id: postcard.id ?? "TEST-1",
+              identity: world.identity,
+              requestedChunks: postcardPrepared.addresses.length,
+              readyChunks: postcardPrepared.addresses.length,
+              planReused: false,
+              workerTimingsAreSums: true,
+              timings: {
+                plan: planMs,
+                ...postcardPrepared.worker,
+                upload: postcardPrepared.upload,
+                render: renderMs,
+                total: performance.now() - started,
+              },
+              limits: {
+                dpr: 1,
+                fov: 70,
+                animationTime: 0,
+                renderLoop: false,
+                uploadCap: null,
+              },
+            }
+          : null;
       this.target = this.ghost = null;
       this.actionRecord = null;
       this.cameraTransition = null;
@@ -1144,6 +1279,27 @@ class GameRuntime implements GamePort {
       this.renderer.render();
       this.renderer.render();
     } else {
+      if (this.postcardView) {
+        const world = this.world,
+          store = this.store;
+        await this.prepareNear(
+          store,
+          this.body,
+          Math.max(96, Math.min(224, this.camera.distance * 1.3)),
+          () => this.world === world && !this.stopped,
+        );
+        this.postcardView = null;
+        this.postcardReport = null;
+        this.renderer.setView(this.camera.position, this.camera.focus);
+        this.updatePicture(1);
+        this.renderer.prepareView(
+          world?.id ?? 0,
+          this.camera.position,
+          this.camera.focus,
+        );
+        this.renderer.render();
+      }
+      this.lastView = "";
       this.lastFrame = 0;
       this.frame = requestAnimationFrame(this.animate);
     }
@@ -1250,7 +1406,13 @@ class GameRuntime implements GamePort {
   private discoverRegion(): void {
     const world = this.world,
       store = this.store;
-    if (!world || !store || world.identity.kind === "test") return;
+    if (
+      !world ||
+      !store ||
+      world.identity.kind === "test" ||
+      this.mode === "postcard"
+    )
+      return;
     const region = regionAt(store.context, this.body.x, this.body.z);
     if (region === this.lastRegion) return;
     this.lastRegion = region;
@@ -1437,6 +1599,104 @@ class GameRuntime implements GamePort {
   whenReady(): Promise<void> {
     return this.promise;
   }
+  /** Capture-only boundary: boot validates the local manifest; this method still
+   * enforces the loaded identity and real mesh/GPU readiness for every shot. */
+  async renderPostcard(view: WorldPostcard): Promise<Blob> {
+    const world = this.world,
+      request = this.worldRequest;
+    if (
+      !world ||
+      !sameIdentity(world.identity, view.identity) ||
+      this.lifecycle !== "ready"
+    )
+      throw new Error("Postcard does not match the loaded world");
+    let blob: Blob | undefined, failure: unknown;
+    await this.transition(async () => {
+      const store = this.store,
+        renderer = this.renderer;
+      const current = () =>
+        !this.stopped && this.world === world && this.worldRequest === request;
+      if (!current() || !store || !renderer)
+        throw new Error("Postcard world changed before preparation");
+      if (store.edits.size)
+        throw new Error(
+          "Automatic postcards require an unedited generation profile",
+        );
+      const started = performance.now();
+      try {
+        this.cancelNavigation();
+        // Capture takes over the view; the committed destination must not
+        // resume a glide whose start belongs to the previous display clock.
+        this.cameraTransition = null;
+        cancelAnimationFrame(this.frame);
+        this.input.release();
+        this.mode = "postcard";
+        this.postcardView = view;
+        this.loadStage = "terrain";
+        this.loadProgress = 0;
+        renderer.setPostcard(true);
+        renderer.effects.reset();
+        this.clocks.displayMs = 0;
+        this.clocks.setHours(view.hours);
+        this.publish();
+        await store.settled();
+        if (!current()) throw new Error("Postcard preparation cancelled");
+        // The previous image stays in the default framebuffer while its GPU
+        // chunks are released. Plan, workers, textures and programs stay alive.
+        for (const key of store.retain([])) renderer.remove(key);
+        const prepared = await this.loadPostcardChunks(
+          store,
+          view,
+          current,
+          (value) => {
+            this.loadProgress = Math.max(this.loadProgress, value * 0.9);
+            this.publish();
+          },
+          view.id === "TEST-1",
+        );
+        if (!prepared || !current())
+          throw new Error("Postcard preparation cancelled");
+        const renderStarted = performance.now();
+        renderer.setView(view.position, view.target);
+        this.target = this.ghost = null;
+        this.occluded = false;
+        this.updatePicture(1);
+        renderer.prepareView(world.id, view.position, view.target);
+        if (!current()) throw new Error("Postcard preparation cancelled");
+        blob = await renderer.capturePng();
+        if (!current()) throw new Error("Postcard changed during capture");
+        this.postcardReport = {
+          id: view.id,
+          identity: world.identity,
+          requestedChunks: prepared.addresses.length,
+          readyChunks: prepared.addresses.length,
+          planReused: true,
+          workerTimingsAreSums: true,
+          timings: {
+            plan: 0,
+            ...prepared.worker,
+            upload: prepared.upload,
+            render: performance.now() - renderStarted,
+            total: performance.now() - started,
+          },
+          limits: {
+            dpr: 1,
+            fov: 70,
+            animationTime: 0,
+            renderLoop: false,
+            uploadCap: null,
+          },
+        };
+        this.loadProgress = 1;
+      } catch (error) {
+        failure = error;
+        throw error;
+      }
+    });
+    if (failure) throw failure;
+    if (!blob) throw new Error("Postcard capture did not complete");
+    return blob;
+  }
   async capturePng(): Promise<Blob> {
     if (
       !this.renderer ||
@@ -1464,18 +1724,34 @@ class GameRuntime implements GamePort {
     await this.store.settled();
     this.upload(Infinity);
     this.updatePicture(1);
-    return this.renderer.capturePng();
+    const started = performance.now(),
+      blob = await this.renderer.capturePng();
+    if (this.mode === "postcard" && this.postcardReport) {
+      const elapsed = performance.now() - started;
+      this.postcardReport = {
+        ...this.postcardReport,
+        timings: {
+          ...this.postcardReport.timings,
+          render: this.postcardReport.timings.render + elapsed,
+          total: this.postcardReport.timings.total + elapsed,
+        },
+      };
+    }
+    return blob;
   }
   telemetry(): GameTelemetry {
     const position = this.renderer?.camera.position ?? this.camera.position;
     const focus =
-      this.mode === "postcard" && this.options.postcard
-        ? this.options.postcard.target
+      this.mode === "postcard" && this.postcardView
+        ? this.postcardView.target
         : this.camera.focus;
     const dx = focus.x - position.x,
       dy = focus.y - position.y,
       dz = focus.z - position.z;
     return Object.freeze({
+      postcard: this.postcardReport
+        ? structuredClone(this.postcardReport)
+        : null,
       rendering: {
         visible: this.options.worldVisible?.() ?? true,
         animationRenders: this.animationRenders,

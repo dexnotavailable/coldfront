@@ -1,7 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { WorldSession } from "../../../client/src/contracts/game-ui.js";
 import type { VoxelEdit } from "../../../client/src/engine/worker-protocol.js";
-import { worldKey } from "../../../client/src/game/world-save.js";
+import {
+  type WorldSave,
+  worldKey,
+} from "../../../client/src/game/world-save.js";
 import { createUiController } from "../../../client/src/ui/controller.js";
 import type {
   WorldContext,
@@ -31,6 +34,7 @@ const fixture = vi.hoisted(() => ({
   pools: 0,
   maxPools: 0,
   worldVisible: true,
+  captures: 0,
 }));
 vi.mock("../../../client/src/engine/effects.js", () => ({
   blockIcon: () => "fixture-icon",
@@ -78,6 +82,7 @@ vi.mock("../../../client/src/engine/chunk-store.js", () => ({
     workers = { queues: { generate: 0, light: 0, mesh: 0 }, memoryBytes: 0 };
     memoryBytes = 0;
     queueSize = 0;
+    workTotals = { generate: 0, light: 0, mesh: 0 };
     constructor(
       readonly world: WorldSession,
       readonly context: WorldContext,
@@ -107,6 +112,12 @@ vi.mock("../../../client/src/engine/chunk-store.js", () => ({
       return [];
     }
     async settled() {}
+    async requestCamera() {
+      return this.requestView();
+    }
+    retain() {
+      return [];
+    }
     suspendWorkers() {
       if (this.poolActive) {
         this.poolActive = false;
@@ -152,7 +163,9 @@ vi.mock("../../../client/src/engine/renderer.js", () => ({
         direction: { x: 0, y: -1, z: 0 },
       };
     }
-    setPostcard() {}
+    setPostcard(active: boolean) {
+      this.camera.fov = active ? 70 : 40;
+    }
     setHud() {}
     setWorld() {}
     removeWorld() {}
@@ -164,6 +177,14 @@ vi.mock("../../../client/src/engine/renderer.js", () => ({
     compile() {}
     render() {
       if (fixture.drawFailure) throw new Error("fixture final draw failed");
+    }
+    async capturePng() {
+      this.render();
+      this.render();
+      fixture.captures++;
+      return new Blob(["unit-test renderer seam; not image evidence"], {
+        type: "image/png",
+      });
     }
     update() {}
     upload() {}
@@ -218,6 +239,7 @@ beforeEach(async () => {
   fixture.prepareCalls = 0;
   fixture.pools = fixture.maxPools = 0;
   fixture.worldVisible = true;
+  fixture.captures = 0;
   storage = new StorageFixture();
   vi.stubGlobal("indexedDB", storage.factory);
   vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
@@ -252,6 +274,109 @@ afterEach(async () => {
 });
 
 describe("real game-port lifecycle serialization with deferred storage", () => {
+  it("switches validated postcard views in one world/pool, waits for requested terrain and resumes the original free camera", async () => {
+    const world = currentWorld(),
+      stores = fixture.stores.length;
+    let release = () => {};
+    fixture.viewGate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const camera = {
+      id: "TEST-1" as const,
+      identity: world.identity,
+      position: { x: 10, y: 10, z: 10 },
+      target: { x: 0, y: 6, z: 0 },
+      hours: 17.25,
+      radius: 96,
+    };
+    const capture = game.renderPostcard(camera);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(fixture.captures).toBe(0);
+    expect(game.telemetry().ready).toBe(false);
+    release();
+    fixture.viewGate = null;
+    expect((await capture).type).toBe("image/png");
+    expect(currentWorld()).toEqual(world);
+    expect(fixture.stores).toHaveLength(stores);
+    expect(fixture.pools).toBe(1);
+    expect(fixture.frames.size).toBe(0);
+    expect(game.telemetry().camera.fov).toBe(70);
+    expect(game.telemetry().camera.focus).toEqual(camera.target);
+    expect(game.telemetry().displayTimeMs).toBe(0);
+    expect(game.telemetry().postcard?.planReused).toBe(true);
+    await game.renderPostcard({
+      ...camera,
+      position: { x: 50, y: 16, z: 50 },
+      target: { x: 60, y: 6, z: 60 },
+    });
+    expect(fixture.stores).toHaveLength(stores);
+    expect(fixture.captures).toBe(2);
+    game.port.apply({ type: "postcard", active: false });
+    await drain(game.ready());
+    expect(game.port.read().mode).toBe("overhead");
+    expect(game.telemetry().camera.fov).toBe(40);
+  });
+  it("rejects a resolved postcard from another world generation without queuing a capture", async () => {
+    const world = currentWorld();
+    await expect(
+      game.renderPostcard({
+        id: "TEST-1",
+        identity: { ...world.identity, generation: "stale" },
+        position: { x: 1, y: 8, z: 1 },
+        target: { x: 2, y: 7, z: 2 },
+        hours: 17.25,
+        radius: 96,
+      }),
+    ).rejects.toThrow("loaded world");
+    expect(fixture.captures).toBe(0);
+    expect(currentWorld()).toEqual(world);
+  });
+  it("keeps the committed teleport destination after postcard capture resets the display clock", async () => {
+    tick(1);
+    for (let now = 251; now <= 10001; now += 250) tick(now);
+    const world = currentWorld(),
+      before = game.telemetry(),
+      target = { x: before.body.x + 8, z: before.body.z + 4 };
+    expect(before.displayTimeMs).toBe(10000);
+    expect(
+      await drain(
+        game.port.teleport({
+          sessionId: world.id,
+          target: { kind: "point", ...target },
+        }),
+      ),
+    ).toEqual({ sessionId: world.id, committed: true });
+    // The250ms glide has committed its destination, but has not had a RAF yet.
+    expect(game.telemetry().camera.position).toEqual(before.camera.position);
+    expect(game.telemetry().body).toMatchObject(target);
+    await game.renderPostcard({
+      id: "TEST-1",
+      identity: world.identity,
+      position: { x: 50, y: 16, z: 50 },
+      target: { x: 60, y: 6, z: 60 },
+      hours: 17.25,
+      radius: 96,
+    });
+    expect(game.telemetry().displayTimeMs).toBe(0);
+    game.port.apply({ type: "postcard", active: false });
+    await drain(game.ready());
+    const restored = game.telemetry().camera;
+    expect(restored.position).not.toEqual(before.camera.position);
+    expect(restored.focus).toMatchObject(target);
+    tick(11001); // Resume the single animation clock without a catch-up step.
+    tick(11251);
+    tick(11501);
+    const resumed = game.telemetry();
+    expect(resumed.displayTimeMs).toBe(500);
+    expect(resumed.camera.position.x).toBeCloseTo(restored.position.x, 10);
+    expect(resumed.camera.position.z).toBeCloseTo(restored.position.z, 10);
+    expect(resumed.camera.focus).toMatchObject(target);
+    expect(resumed.body).toMatchObject(target);
+    await storage.flush();
+    const saved = storage.records.get(worldKey(world.identity)) as WorldSave;
+    expect(saved.pose).toMatchObject(target);
+  });
   it("keeps clocks and exact map queries active while an opaque map suppresses hidden3D draws", async () => {
     const world = currentWorld();
     game.port.apply({ type: "input-scope", scope: "blocking-screen" });
