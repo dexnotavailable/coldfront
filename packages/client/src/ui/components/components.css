@@ -323,6 +323,10 @@ button:active:not(:disabled),
 }
 .cf-segmented {
   display: flex;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
 }
 .cf-segmented .cf-button {
   border-radius: 0;

@@ -5,6 +5,7 @@ import { createBridges } from "./bridges.js";
 import { buildDrainage } from "./drainage.js";
 import { createUndergroundCells } from "./geometry.js";
 import { buildGeography } from "./grid.js";
+import { buildIbaraPlan } from "./ibara.js";
 import { buildSites } from "./sites.js";
 import {
   assertWaterTopology,
@@ -46,7 +47,7 @@ export function buildWorldPlan(
   const undergroundCells = createUndergroundCells(seed);
   const bridges = createBridges(seed);
   const core = {
-    schema: 1 as const,
+    schema: 2 as const,
     seed,
     worldgenVersion: WORLDGEN_VERSION,
     grid: geography.grid,
@@ -55,10 +56,11 @@ export function buildWorldPlan(
     ...water,
     undergroundCells,
   };
-  const field = createMainField(core, bridges);
+  const ibara = buildIbaraPlan(core, createMainField(core, bridges));
+  const field = createMainField(core, bridges, ibara);
   progress("sites", 0, 1);
   const sites = buildSites(seed, geography, field, undergroundCells, bridges);
   progress("sites", 1, 1);
   progress("complete", 1, 1);
-  return Object.freeze({ ...core, sites });
+  return Object.freeze({ ...core, ibara, sites });
 }

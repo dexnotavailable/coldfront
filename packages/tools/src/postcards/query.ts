@@ -3,7 +3,9 @@ import type {
   SurfaceRegionId,
   VoxelSample,
   WorldAreaSampler,
+  WorldBounds,
   WorldContext,
+  XZBounds,
 } from "../../../shared/src/world/types.js";
 
 export interface CameraQuery {
@@ -11,12 +13,15 @@ export interface CameraQuery {
   ground(x: number, z: number): number;
   height(x: number, z: number): number;
   region(x: number, z: number): SurfaceRegionId | null;
+  bounds(bounds: XZBounds): Readonly<WorldBounds>;
+  walkableFeet(x: number, z: number, minY: number, maxY: number): number | null;
   clear(): void;
 }
 /** Bounded caches of prepared feature areas and Float64 columns; no client/Node
  * sampler implementation. All answers come from the exact shared context. */
 export function cameraQuery(context: WorldContext): CameraQuery {
   const areas = new Map<string, WorldAreaSampler>();
+  const intervals = new Map<string, Readonly<WorldBounds>>();
   const columns = new Map<
     string,
     { c: Float64Array; area: WorldAreaSampler; region?: SurfaceRegionId | null }
@@ -59,7 +64,7 @@ export function cameraQuery(context: WorldContext): CameraQuery {
   };
   const inFrame = (x: number, z: number) =>
     x >= -22528 && x < 22528 && z >= -22528 && z < 22528;
-  return {
+  const query: CameraQuery = {
     voxel(x, y, z) {
       if (!inFrame(x, z) || y >= 1024)
         return { density: -Infinity, block: Block.Air, fluid: 0 };
@@ -98,11 +103,86 @@ export function cameraQuery(context: WorldContext): CameraQuery {
       }
       return entry.region;
     },
+    bounds(bounds) {
+      const result: WorldBounds = {
+        minSurfaceY: Infinity,
+        maxSurfaceY: -Infinity,
+        maxSolidY: -Infinity,
+        maxFluidY: -Infinity,
+      };
+      for (
+        let z = Math.floor(bounds.minZ / 32);
+        z <= Math.floor(bounds.maxZ / 32);
+        z++
+      )
+        for (
+          let x = Math.floor(bounds.minX / 32);
+          x <= Math.floor(bounds.maxX / 32);
+          x++
+        ) {
+          const key = `${x},${z}`;
+          let bound = intervals.get(key);
+          if (!bound) {
+            bound = Object.freeze(
+              context.conservativeBounds(
+                {
+                  minX: x * 32,
+                  minZ: z * 32,
+                  maxX: x * 32 + 32,
+                  maxZ: z * 32 + 32,
+                },
+                {
+                  minSurfaceY: 0,
+                  maxSurfaceY: 0,
+                  maxSolidY: 0,
+                  maxFluidY: -Infinity,
+                },
+              ),
+            );
+            intervals.set(key, bound);
+            if (intervals.size > 4096)
+              intervals.delete(intervals.keys().next().value as string);
+          }
+          result.minSurfaceY = Math.min(result.minSurfaceY, bound.minSurfaceY);
+          result.maxSurfaceY = Math.max(result.maxSurfaceY, bound.maxSurfaceY);
+          result.maxSolidY = Math.max(result.maxSolidY, bound.maxSolidY);
+          result.maxFluidY = Math.max(result.maxFluidY, bound.maxFluidY);
+        }
+      return result;
+    },
+    walkableFeet(x, z, minY, maxY) {
+      if (
+        !inFrame(x, z) ||
+        !Number.isFinite(minY) ||
+        !Number.isFinite(maxY) ||
+        minY > maxY
+      )
+        return null;
+      const low = Math.max(-1535, Math.ceil(minY)),
+        high = Math.min(1022, Math.floor(maxY));
+      // The column is only a hint. Check actual support and the whole body at
+      // every proposed integer voxel-top surface, including overhangs.
+      const hint = Math.max(low, Math.min(high, query.ground(x, z)));
+      for (let offset = 0; offset <= high - low; offset++) {
+        for (const feet of offset === 0
+          ? [hint]
+          : [hint + offset, hint - offset])
+          if (
+            feet >= low &&
+            feet <= high &&
+            walkableEye(query, x, feet + 1.62, z)
+          )
+            return feet;
+      }
+      return null;
+    },
     clear() {
       columns.clear();
       areas.clear();
+      intervals.clear();
     },
   };
+  return query;
 }
 export function walkableEye(
   q: CameraQuery,
@@ -113,7 +193,8 @@ export function walkableEye(
   const feet = eyeY - 1.62;
   for (const dx of [-0.29, 0.29])
     for (const dz of [-0.29, 0.29]) {
-      if (!BLOCK_REGISTRY[q.voxel(x + dx, feet - 0.01, z + dz).block]?.solid)
+      const support = q.voxel(x + dx, feet - 0.01, z + dz);
+      if (!(support.density > 0) || !BLOCK_REGISTRY[support.block]?.solid)
         return false;
       for (const dy of [0.05, 0.9, 1.79])
         if (q.voxel(x + dx, feet + dy, z + dz).block !== Block.Air)

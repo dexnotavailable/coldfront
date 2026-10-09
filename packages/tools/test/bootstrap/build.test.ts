@@ -95,6 +95,27 @@ describe("build and postcard boundaries", () => {
         "new immutable plan input",
       );
       expect(sourceFingerprints(root).cacheTag).not.toBe(terrain.cacheTag);
+      const plan = sourceFingerprints(root);
+      write(
+        "packages/shared/src/world/generation-variant.ts",
+        "primitive identity codec",
+      );
+      expect(sourceFingerprints(root).cacheTag).not.toBe(plan.cacheTag);
+      const variant = sourceFingerprints(root);
+      write(
+        "packages/tools/src/postcards/hell-resolve.ts",
+        "changed camera resolver",
+      );
+      const resolver = sourceFingerprints(root);
+      expect(resolver.cacheTag).toBe(variant.cacheTag);
+      expect(resolver.releaseHash).not.toBe(variant.releaseHash);
+      write(
+        "packages/tools/postcards/cameras/seed-1.json",
+        "source-bound phase13Primitive camera",
+      );
+      const camera = sourceFingerprints(root);
+      expect(camera.cacheTag).toBe(variant.cacheTag);
+      expect(camera.releaseHash).not.toBe(resolver.releaseHash);
       expect(sourceFingerprints(root, "/coldfront/").cacheTag).toBe(
         sourceFingerprints(root).cacheTag,
       );

@@ -55,6 +55,8 @@ describe("WorldContext accepted test adapter", () => {
       expect(Buffer.from(actual[field].buffer)).toEqual(
         Buffer.from(expected[field].buffer),
       );
+    expect(actual.featureIds).toBeUndefined();
+    expect(actual.featureT).toBeUndefined();
     const sky = { solidBelowY: 0, highestFilterY: 0 };
     context.skyInput(30000, 0, sky);
     expect(sky).toEqual({ solidBelowY: -Infinity, highestFilterY: -Infinity });
@@ -83,5 +85,13 @@ describe("WorldContext accepted test adapter", () => {
           Math.max(bounds.maxSolidY, bounds.maxFluidY),
         );
       }
+  });
+  it("accepts arbitrary finite positive test spacing and rejects invalid spacing", () => {
+    const context = createWorldContext({ kind: "test", seed: 1 });
+    const area = { minX: -1, minZ: -1, maxX: 1, maxZ: 1 };
+    for (const spacing of [0.25, 1.5, 65])
+      expect(() => context.prepareArea(area, spacing)).not.toThrow();
+    for (const spacing of [0, -1, Infinity, NaN])
+      expect(() => context.prepareArea(area, spacing)).toThrow();
   });
 });

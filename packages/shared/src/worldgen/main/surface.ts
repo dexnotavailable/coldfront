@@ -4,6 +4,8 @@ import { WORLD_MAX_XZ, WORLD_MIN_XZ } from "../../world/constants.js";
 import { Region } from "../../world/regions.js";
 import type {
   BridgeSite,
+  IbaraGroundSample,
+  IbaraPlanData,
   SurfaceWaterBody,
   WaterSample,
   WorldBounds,
@@ -29,6 +31,7 @@ import {
   type TerrainRecipe,
 } from "../../worldplan/terrain.js";
 import { buildShoreGuards, potentialWaterBody } from "../../worldplan/water.js";
+import { createIbaraGround, type IbaraGround } from "./ibara-ground.js";
 /** Separate main layout; never modifies/relabels the accepted test-world's eight lanes. */
 export const MainColumn = Object.freeze({
   Height: 0,
@@ -62,6 +65,8 @@ export type MainFieldData = Pick<
 export interface MainField {
   readonly data: MainFieldData;
   readonly bridges: readonly BridgeSite[];
+  /** Present only on the final field; its dependency remains the pre-Ibara field. */
+  readonly ibara?: IbaraGround;
   createColumn(): Float64Array;
   sampleColumn(x: number, z: number, out: Float64Array): Float64Array;
   height(x: number, z: number): number;
@@ -71,6 +76,7 @@ export interface MainField {
 export function createMainField(
   data: MainFieldData,
   bridges: readonly BridgeSite[],
+  ibara?: IbaraPlanData,
 ): MainField {
   const guards = buildShoreGuards(data, MAX_FINE_RELIEF);
   const weights = createRegionWeights();
@@ -127,7 +133,7 @@ export function createMainField(
     point(x, z, temporary);
     return Number(temporary[MainColumn.Height]);
   };
-  return {
+  const base: MainField = {
     data,
     bridges,
     createColumn: () => new Float64Array(MainColumn.Stride),
@@ -195,6 +201,43 @@ export function createMainField(
       out.maxFluidY = fluid;
       return out;
     },
+  };
+  if (!ibara) return base;
+  const volcanic = createIbaraGround(base, ibara);
+  const sample: IbaraGroundSample = { density: 0, surfaceY: 0, tag: "base" };
+  return {
+    data,
+    bridges,
+    ibara: volcanic,
+    createColumn: base.createColumn,
+    height: volcanic.height,
+    sampleColumn(x, z, out) {
+      base.sampleColumn(x, z, out);
+      volcanic.sample(x, 0, z, sample);
+      // Preserve every original lane and arithmetic operation outside Ibara.
+      if (sample.tag === "base") return out;
+      out[MainColumn.Height] = sample.surfaceY;
+      out[MainColumn.NaturalHeight] = sample.surfaceY;
+      const dx = volcanic.height(x + 0.5, z) - volcanic.height(x - 0.5, z);
+      const dz = volcanic.height(x, z + 0.5) - volcanic.height(x, z - 0.5);
+      out[MainColumn.Dx] = dx;
+      out[MainColumn.Dz] = dz;
+      out[MainColumn.DistanceScale] =
+        1 / Math.sqrt(1 + Math.min(dx * dx + dz * dz, 64));
+      if (sample.surfaceY >= Number(out[MainColumn.WaterLevel]))
+        out[MainColumn.WaterLevel] = -Infinity;
+      return out;
+    },
+    waterQuery(x, z, out) {
+      base.waterQuery(x, z, out);
+      if (out.kind === "water" && volcanic.height(x, z) >= out.level) {
+        out.bodyId = 0;
+        out.kind = "none";
+        out.level = -Infinity;
+      }
+      return out;
+    },
+    surfaceBounds: volcanic.conservativeBounds,
   };
 }
 /** Pointwise top/subsoil/stone selection, never based on chunk-local y. */

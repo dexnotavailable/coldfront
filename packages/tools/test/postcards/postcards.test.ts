@@ -40,6 +40,13 @@ const plane: CameraQuery = {
   height: () => 0,
   ground: () => 0,
   region: () => "plains",
+  bounds: () => ({
+    minSurfaceY: -1,
+    maxSurfaceY: 0,
+    maxSolidY: Infinity,
+    maxFluidY: 0,
+  }),
+  walkableFeet: () => 0,
   clear() {},
 };
 describe("first-pass postcard contracts and geometry", () => {
@@ -186,7 +193,7 @@ describe("first-pass postcard contracts and geometry", () => {
       SURFACE_REGIONS.map((region) => `P12-${region.id}`),
     );
     expect(() => parsePostcardIds("1.4", null)).toThrow("Unsupported");
-    expect(() => parsePostcardIds("1.2", "HELL-1")).toThrow("Unknown");
+    expect(() => parsePostcardIds("1.2", "HELL-1")).toThrow("phase1.3");
     expect(() => parsePostcardIds("1.2", "TEST-1,P12-plains")).toThrow(
       "separate",
     );

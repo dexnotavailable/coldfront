@@ -1,4 +1,5 @@
 import type { LayerId } from "../../../shared/src/world/types.js";
+import type { coverageSummary } from "../terrain-report/ibara.js";
 import type { Raster } from "../terrain-review/output.js";
 import {
   createSurfaceSample,
@@ -13,7 +14,7 @@ export interface AtlasBounds {
   readonly maxZ: number;
 }
 export interface AtlasRequest {
-  readonly mode?: "height" | "regions" | "sites";
+  readonly mode?: "height" | "regions" | "sites" | "features";
   readonly layer?: LayerId;
   readonly width: number;
   readonly height: number;
@@ -34,7 +35,10 @@ export interface AtlasMetadata {
   readonly seed: number;
   readonly worldgenVersion: number;
   readonly layer: LayerId;
-  readonly mode: "height" | "regions" | "sites";
+  readonly mode: "height" | "regions" | "sites" | "features";
+  readonly features?: ReturnType<typeof coverageSummary> & {
+    readonly region: "hellscape";
+  };
   readonly bounds: AtlasBounds;
   readonly metresPerPixel: Readonly<{ x: number; z: number }>;
   readonly orientation: "north (-z) at top; east (+x) at right";
@@ -90,7 +94,12 @@ export function validateAtlas(
 ): void {
   const mode = request.mode ?? "height",
     layer = request.layer ?? "surface";
-  if (mode !== "height" && mode !== "regions" && mode !== "sites")
+  if (
+    mode !== "height" &&
+    mode !== "regions" &&
+    mode !== "sites" &&
+    mode !== "features"
+  )
     throw new Error("Unsupported atlas mode");
   if (!["surface", "upper_deep", "undercrown", "maw", "pit"].includes(layer))
     throw new Error("Unsupported atlas layer");
@@ -100,6 +109,10 @@ export function validateAtlas(
     );
   if ((mode !== "height" || layer !== "surface") && !source.plan)
     throw new Error("Region/site maps require a main WorldPlan");
+  if (mode === "features" && (layer !== "surface" || !source.writeFeatureMasks))
+    throw new Error(
+      "Feature masks require the production main surface adapter",
+    );
   positiveInt(request.width, "Width");
   positiveInt(request.height, "Height");
   if (request.width * request.height > 16_777_216)

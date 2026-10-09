@@ -1,7 +1,9 @@
 /// <reference lib="webworker" />
+
 import { BLOCK_REGISTRY } from "../../../shared/src/blocks/registry.js";
 import {
   createLightVolume,
+  emissionLight,
   type LightVolume,
   lightIndex,
   relightEdits,
@@ -16,6 +18,7 @@ import {
   haloIndex,
   voxelIndex,
 } from "../../../shared/src/world/coordinates.js";
+import { generationVariant } from "../../../shared/src/world/generation-variant.js";
 import type {
   SkyInput,
   VoxelSample,
@@ -28,12 +31,14 @@ import { generateWorldChunk } from "../../../shared/src/worldgen/main/chunk.js";
 import type { WorldSession } from "../contracts/game-ui.js";
 import { sameSession } from "../game/session.js";
 import { insideFrame } from "../game/world-save.js";
+import { BlockSampleCache } from "./block-sample-cache.js";
 import {
   type Address,
   chunkKey,
   editKey,
   meshTransfers,
   type VoxelEdit,
+  type WorkerFeatureCacheStats,
   type WorkerRequest,
   type WorkerResponse,
 } from "./worker-protocol.js";
@@ -54,7 +59,11 @@ let context: WorldContext;
 const edits = new Map<number, number>();
 const columns = new Map<string, ColumnCache>();
 const volumes = new Map<string, LitCache>();
+const blockSamples = new BlockSampleCache();
 const voxel: VoxelSample = { density: 0, block: 0, fluid: 0 };
+const emissions = Uint16Array.from(BLOCK_REGISTRY, (b) =>
+  emissionLight(b.emission),
+);
 function columnTile(
   cx: number,
   cz: number,
@@ -89,8 +98,14 @@ function sample(
   z: number,
   c: Float64Array,
 ): number {
+  const block = blockSamples.sample(area, x, y, z, c, voxel);
   const edit = insideFrame(x, y, z) ? edits.get(editKey(x, y, z)) : undefined;
-  return edit ?? area.sampleVoxel(x + 0.5, y + 0.5, z + 0.5, voxel, c).block;
+  if (edit !== undefined) {
+    voxel.featureId = 0;
+    voxel.featureT = 0;
+    return edit;
+  }
+  return block;
 }
 function buildVolume(a: Address): LitCache {
   const chunk = generateWorldChunk(context, a.cx, a.cy, a.cz);
@@ -127,7 +142,15 @@ function buildVolume(a: Address): LitCache {
             : sample(area, wx, oy + y, wz, c));
         blocks[i] = id;
         v.opacity[i] = BLOCK_REGISTRY[id]?.lightFiltering ?? 15;
-        if (inHalo) chunk.haloBlocks[haloIndex(x - 32, y - 32, z - 32)] = id;
+        v.sources[i] = emissions[id] ?? 0;
+        if (inHalo) {
+          const h = haloIndex(x - 32, y - 32, z - 32);
+          chunk.haloBlocks[h] = id;
+          if (edit !== undefined) {
+            if (chunk.featureIds) chunk.featureIds[h] = 0;
+            if (chunk.featureT) chunk.featureT[h] = 0;
+          }
+        }
         if (x >= 32 && x < 64 && y >= 32 && y < 64 && z >= 32 && z < 64)
           chunk.blocks[voxelIndex(x - 32, y - 32, z - 32)] = id;
       }
@@ -162,7 +185,9 @@ function buildVolume(a: Address): LitCache {
           );
       }
       const top = lightIndex(v, x, 95, z);
-      v.sources[top] = Math.max(0, incoming - (v.opacity[top] as number)) << 12;
+      v.sources[top] =
+        ((v.sources[top] as number) & 0x0fff) |
+        (Math.max(0, incoming - (v.opacity[top] as number)) << 12);
     }
   return { address: a, volume: v, blocks, chunk };
 }
@@ -182,8 +207,15 @@ function applyEdit(edit: VoxelEdit): void {
     const i = lightIndex(cached.volume, x, y, z);
     cached.blocks[i] = edit.block;
     cached.volume.opacity[i] = BLOCK_REGISTRY[edit.block]?.lightFiltering ?? 15;
-    if (x >= 31 && x <= 64 && z >= 31 && z <= 64 && y >= 31 && y < 72)
-      cached.chunk.haloBlocks[haloIndex(x - 32, y - 32, z - 32)] = edit.block;
+    cached.volume.sources[i] =
+      ((cached.volume.sources[i] as number) & 0xf000) |
+      (emissions[edit.block] ?? 0);
+    if (x >= 31 && x <= 64 && z >= 31 && z <= 64 && y >= 31 && y < 72) {
+      const h = haloIndex(x - 32, y - 32, z - 32);
+      cached.chunk.haloBlocks[h] = edit.block;
+      if (cached.chunk.featureIds) cached.chunk.featureIds[h] = 0;
+      if (cached.chunk.featureT) cached.chunk.featureT[h] = 0;
+    }
     if (x >= 32 && x < 64 && y >= 32 && y < 64 && z >= 32 && z < 64)
       cached.chunk.blocks[voxelIndex(x - 32, y - 32, z - 32)] = edit.block;
     relightEdits(cached.volume, [i]);
@@ -227,9 +259,10 @@ function generate(request: Extract<WorkerRequest, { type: "chunk" }>): void {
         if (x >= 0 && x < 32 && y >= 0 && y < 32 && z >= 0 && z < 32)
           coreLight[voxelIndex(x, y, z)] = light[h] as number;
       }
-  const mesh = meshChunk(cache.chunk.haloBlocks, light),
+  const mesh = meshChunk(cache.chunk.haloBlocks, light, cache.chunk.featureIds),
     t3 = performance.now();
-  let cacheBytes = 0;
+  const blockSampleCacheStats = blockSamples.statistics();
+  let cacheBytes = emissions.byteLength + blockSampleCacheStats.typedArrayBytes;
   for (const column of columns.values())
     cacheBytes += column.columns.byteLength;
   for (const lit of volumes.values())
@@ -241,7 +274,14 @@ function generate(request: Extract<WorkerRequest, { type: "chunk" }>): void {
       lit.chunk.blocks.byteLength +
       lit.chunk.haloBlocks.byteLength +
       lit.chunk.columns.byteLength +
-      lit.chunk.density.byteLength;
+      lit.chunk.density.byteLength +
+      (lit.chunk.featureIds?.byteLength ?? 0) +
+      (lit.chunk.featureT?.byteLength ?? 0);
+  const featureCacheStats = (
+    context as WorldContext & {
+      featureCacheStats?(): WorkerFeatureCacheStats;
+    }
+  ).featureCacheStats?.();
   const result: WorkerResponse = {
     type: "chunk",
     world: request.world,
@@ -254,6 +294,8 @@ function generate(request: Extract<WorkerRequest, { type: "chunk" }>): void {
     regionColor: regionColor(request.address),
     timings: { generate: t1 - t0, light: t2 - t1, mesh: t3 - t2 },
     cacheBytes,
+    blockSampleCacheStats,
+    ...(featureCacheStats ? { featureCacheStats } : {}),
   };
   self.postMessage(result, {
     transfer: [core.buffer, coreLight.buffer, ...meshTransfers(mesh)],
@@ -283,6 +325,7 @@ self.onmessage = (event: MessageEvent<WorkerRequest>) => {
   const message = event.data;
   try {
     if (message.type === "init") {
+      const variant = generationVariant(message.world.identity);
       if (message.world.identity.kind === "main") {
         if (!message.plan)
           throw new Error("Main terrain requires its WorldPlan");
@@ -290,6 +333,7 @@ self.onmessage = (event: MessageEvent<WorkerRequest>) => {
           kind: "main",
           seed: message.world.identity.seed,
           plan: message.plan,
+          variant,
         });
       } else
         context = createWorldContext({
@@ -300,6 +344,7 @@ self.onmessage = (event: MessageEvent<WorkerRequest>) => {
       edits.clear();
       columns.clear();
       volumes.clear();
+      blockSamples.clear();
       for (const edit of message.edits)
         edits.set(editKey(edit.x, edit.y, edit.z), edit.block);
       self.postMessage({ type: "ready", world } satisfies WorkerResponse);

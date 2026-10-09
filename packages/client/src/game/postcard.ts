@@ -1,10 +1,19 @@
+import { SURFACE_REGIONS } from "../../../shared/src/world/regions.js";
 import type {
   SurfaceRegionId,
   WorldIdentity,
 } from "../../../shared/src/world/types.js";
+import type {
+  PostcardPresentation,
+  TerrainViewMode,
+} from "../contracts/game-ui.js";
 import type { Point } from "./raycast.js";
 
-export type PostcardId = "TEST-1" | `P12-${SurfaceRegionId}`;
+export type PostcardId =
+  | "TEST-1"
+  | `P12-${SurfaceRegionId}`
+  | "HELL-1"
+  | "HELL-2";
 export interface PostcardView {
   readonly position: Point;
   readonly target: Point;
@@ -66,4 +75,36 @@ export function postcardColumnVisible(
     Math.abs(across) <=
       Math.max(0, along) * ((tangent * (16 / 9)) / denominator) + 48
   );
+}
+
+export function parseTerrainViewMode(value: unknown): TerrainViewMode {
+  return value === "clay" || value === "features" ? value : "normal";
+}
+export function postcardPresentations(
+  cameras: readonly Pick<WorldPostcard, "id">[],
+): readonly PostcardPresentation[] {
+  const region = (id: PostcardId) =>
+    id.startsWith("HELL-")
+      ? "hellscape"
+      : id.startsWith("P12-")
+        ? id.slice(4)
+        : null;
+  const counts = new Map<string, number>(),
+    ordinals = new Map<string, number>();
+  for (const camera of cameras) {
+    const key = region(camera.id);
+    if (key) counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  return cameras.map((camera) => {
+    const key = region(camera.id),
+      content = SURFACE_REGIONS.find((item) => item.id === key);
+    const ordinal = key ? (ordinals.get(key) ?? 0) + 1 : 0;
+    if (key) ordinals.set(key, ordinal);
+    return {
+      id: camera.id,
+      name: content
+        ? `${content.name}${(counts.get(content.id) ?? 0) > 1 ? ` ${ordinal}` : ""}`
+        : "",
+    };
+  });
 }

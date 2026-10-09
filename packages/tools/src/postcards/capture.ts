@@ -10,7 +10,7 @@ import type { GameTelemetry } from "../../../client/src/game/create-game.js";
 import type { PostcardId } from "../../../client/src/game/postcard.js";
 import { browserExecutable, browserTestUrl } from "../browser-tests/browser.js";
 import { sourceFiles, sourceFingerprints } from "../build/metadata.js";
-import { preparePostcards } from "./prepare.js";
+import { postcardOutputStem, preparePostcards } from "./prepare.js";
 
 interface Hook {
   ready: boolean;
@@ -27,7 +27,7 @@ const output = resolve(root, "out/postcards"),
   attempt = resolve(
     output,
     "runs",
-    `${prepared.world}-s${prepared.seed}-${Date.now()}`,
+    `${postcardOutputStem(prepared.world, prepared.seed, prepared.variant, prepared.view, prepared.sourceHash)}-${Date.now()}`,
   );
 await mkdir(attempt, { recursive: true });
 const hash = (bytes: Uint8Array | string): string =>
@@ -85,6 +85,7 @@ try {
     prepared.ids[0] as string,
     prepared.seed,
     prepared.sourceHash,
+    prepared.variant,
   );
   for (const camera of prepared.cameras)
     assert.deepEqual(
@@ -123,6 +124,8 @@ try {
   url.searchParams.set("postcard", prepared.ids[0] as string);
   url.searchParams.set("seed", String(prepared.seed));
   url.searchParams.set("world", prepared.world);
+  url.searchParams.set("view", prepared.view);
+  if (prepared.variant === "primitive") url.searchParams.set("primitive", "1");
   const startup = performance.now();
   await page.goto(url.href, { waitUntil: "domcontentloaded" });
   await page.waitForFunction(
@@ -202,6 +205,16 @@ try {
       "Postcards must show the sampled generation",
     );
     assert.equal(
+      receipt.snapshot.tools.viewMode,
+      prepared.view,
+      "Renderer view selection differs from requested capture",
+    );
+    assert.deepEqual(
+      world?.identity,
+      expected.identity,
+      "Generation variant/source differs from resolved camera",
+    );
+    assert.equal(
       receipt.telemetry.rendering.animationRenders,
       0,
       "Automatic postcard page must not run a3D animation loop",
@@ -225,7 +238,13 @@ try {
     assert.equal(dimensions.width, 1280);
     assert.equal(dimensions.height, 720);
     const jpeg = await sharp(png).jpeg({ quality: 85 }).toBuffer();
-    const name = `${id}-s${prepared.seed}`,
+    const name = postcardOutputStem(
+        id,
+        prepared.seed,
+        prepared.variant,
+        prepared.view,
+        prepared.sourceHash,
+      ),
       image = resolve(output, `${name}.jpg`),
       original = resolve(attempt, `${name}.png`);
     await writeFile(original, png);
@@ -247,6 +266,9 @@ try {
     const record = {
       id,
       seed: prepared.seed,
+      phase: prepared.phase,
+      variant: prepared.variant,
+      view: prepared.view,
       ungraded: prepared.world === "main",
       camera: prepared.definitions.find((item) => item.id === id),
       durationMs: performance.now() - started,
@@ -284,7 +306,10 @@ try {
     results.push(record);
     captured.push({
       id,
-      region: id === "TEST-1" ? "test" : id.slice(4),
+      region:
+        prepared.definitions.flatMap((item) =>
+          item.id === id && "region" in item ? [item.region] : [],
+        )[0] ?? "test",
       data: receipt.png,
     });
     console.log(
@@ -299,7 +324,8 @@ try {
   const groups = new Map<string, typeof captured>();
   for (const shot of captured)
     groups.set(shot.region, [...(groups.get(shot.region) ?? []), shot]);
-  if (captured.length > 1) groups.set("phase12", captured);
+  if (captured.length > 1)
+    groups.set(`phase${prepared.phase.replace(".", "")}`, captured);
   const sheet = await browser.newPage();
   observe(sheet);
   try {
@@ -325,13 +351,17 @@ try {
       const jpeg = await sheet.screenshot({ type: "jpeg", quality: 85 });
       if (errors.length || external.length)
         throw new Error(JSON.stringify({ errors, external }));
-      const name = `_sheet-${region}.jpg`;
+      const name = `${postcardOutputStem(`_sheet-${region}`, prepared.seed, prepared.variant, prepared.view, prepared.sourceHash)}.jpg`;
       await writeFile(resolve(output, name), jpeg);
       await writeFile(resolve(attempt, name), jpeg);
       if (process.argv.includes("--commit"))
         await writeFile(resolve(root, "docs/postcards/m1", name), jpeg);
       sheets.push({
         region,
+        phase: prepared.phase,
+        variant: prepared.variant,
+        view: prepared.view,
+        sourceHash: prepared.sourceHash,
         image: resolve(output, name),
         imageSha256: hash(jpeg),
         ids: shots.map((shot) => shot.id),
@@ -346,11 +376,11 @@ try {
   }
   for (const result of results) {
     const record = result as { id: PostcardId; contactSheet?: unknown };
-    const region = record.id === "TEST-1" ? "test" : record.id.slice(4);
+    const region = captured.find((item) => item.id === record.id)?.region;
     record.contactSheet = sheets.find(
       (value) => (value as { region: string }).region === region,
     );
-    const name = `${record.id}-s${prepared.seed}.receipt.json`;
+    const name = `${postcardOutputStem(record.id, prepared.seed, prepared.variant, prepared.view, prepared.sourceHash)}.receipt.json`;
     await writeFile(resolve(attempt, name), JSON.stringify(record, null, 2));
     await writeFile(resolve(output, name), JSON.stringify(record, null, 2));
   }
@@ -371,6 +401,10 @@ try {
         status: failure ? "failed" : "passed",
         failure: failure ?? null,
         world: prepared.world,
+        phase: prepared.phase,
+        variant: prepared.variant,
+        view: prepared.view,
+        sourceHash: prepared.sourceHash,
         seed: prepared.seed,
         ids: prepared.ids,
         results,

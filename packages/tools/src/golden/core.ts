@@ -1,4 +1,5 @@
 /** Browser/Node shared golden harness. No platform-dependent byte order or rounded floats. */
+import { Block } from "../../../shared/src/blocks/registry.js";
 import {
   CHUNK_VOLUME,
   HALO_VOLUME,
@@ -21,17 +22,26 @@ import {
 } from "../../../shared/src/worldgen/test-world.js";
 import { WORLDGEN_VERSION } from "../../../shared/src/worldgen/version.js";
 import { createRegionWeights } from "../../../shared/src/worldplan/index.js";
+import { ibaraGoldenCases } from "./ibara-cases.js";
 import {
   createWorldResolver,
   regionSurfaceAddresses,
   type WorldResolver,
 } from "./worlds.js";
 
-export const GOLDEN_SCHEMA = 1;
-export const SAMPLE_SET_VERSION = 2;
+export const GOLDEN_SCHEMA = 2;
+export const SAMPLE_SET_VERSION = 3;
 export const GOLDEN_SEEDS = [1, 2, 3] as const;
 export const HASH_ENCODING =
-  "sha256; uint16-le; ieee754-binary64-le; signed-zero-preserved; NaN-rejected";
+  "sha256; uint16-le; uint32-le; ieee754-binary64-le; signed-zero-preserved; NaN-rejected; main-feature-pair-halo-aligned";
+export const GOLDEN_HASH_FIELDS = [
+  "blocks",
+  "haloBlocks",
+  "density",
+  "columns",
+  "featureIds",
+  "featureT",
+] as const;
 
 export interface GoldenCase {
   readonly id: string;
@@ -44,12 +54,16 @@ export interface GoldenCase {
   readonly cz: number;
   readonly spacing: 1 | 2;
   readonly coverage: string;
+  readonly targetFeatureId?: number;
+  readonly targetCalderaId?: number;
 }
 export interface ChunkHashes {
   readonly blocks: string;
   readonly haloBlocks: string;
   readonly density: string;
   readonly columns: string;
+  readonly featureIds?: string;
+  readonly featureT?: string;
 }
 export interface GoldenRecord {
   readonly sample: GoldenCase;
@@ -262,6 +276,9 @@ export function goldenCases(
   return [
     ...testGoldenCases(),
     ...GOLDEN_SEEDS.flatMap((seed) => mainGoldenCases(worlds("main", seed))),
+    // Original 300 definitions and ordering remain the prefix. Diagnostic
+    // primitive records never enter this production acceptance set.
+    ...GOLDEN_SEEDS.flatMap((seed) => ibaraGoldenCases(worlds("main", seed))),
   ];
 }
 
@@ -271,6 +288,13 @@ export function encodeUint16(values: Uint16Array): Uint8Array<ArrayBuffer> {
   const view = new DataView(bytes.buffer);
   for (let i = 0; i < values.length; i++)
     view.setUint16(i * 2, values[i] as number, true);
+  return bytes;
+}
+export function encodeUint32(values: Uint32Array): Uint8Array<ArrayBuffer> {
+  const bytes = new Uint8Array(values.length * 4);
+  const view = new DataView(bytes.buffer);
+  for (let i = 0; i < values.length; i++)
+    view.setUint32(i * 4, values[i] as number, true);
   return bytes;
 }
 export function encodeFloat64(values: Float64Array): Uint8Array<ArrayBuffer> {
@@ -296,6 +320,7 @@ export async function sha256(bytes: Uint8Array<ArrayBuffer>): Promise<string> {
 export async function hashChunk(
   chunk: VoxelChunk,
   layout: WorldColumnLayout,
+  world: WorldKind = "test",
 ): Promise<ChunkHashes> {
   if (
     chunk.blocks.length !== CHUNK_VOLUME ||
@@ -306,11 +331,30 @@ export async function hashChunk(
     chunk.columns.length !== HALO_WIDTH * HALO_WIDTH * layout.stride
   )
     throw new Error("Unexpected golden chunk layout");
+  if (
+    world === "main"
+      ? !(chunk.featureIds instanceof Uint32Array) ||
+        !(chunk.featureT instanceof Float64Array) ||
+        chunk.featureIds.length !== HALO_VOLUME ||
+        chunk.featureT.length !== HALO_VOLUME
+      : chunk.featureIds !== undefined || chunk.featureT !== undefined
+  )
+    throw new Error(
+      "Golden feature buffers must be a halo-aligned pair for main and absent for test",
+    );
   return {
     blocks: await sha256(encodeUint16(chunk.blocks)),
     haloBlocks: await sha256(encodeUint16(chunk.haloBlocks)),
     density: await sha256(encodeFloat64(chunk.density)),
     columns: await sha256(encodeFloat64(chunk.columns)),
+    ...(world === "main"
+      ? {
+          featureIds: await sha256(
+            encodeUint32(chunk.featureIds as Uint32Array),
+          ),
+          featureT: await sha256(encodeFloat64(chunk.featureT as Float64Array)),
+        }
+      : {}),
   };
 }
 export async function computeGolden(
@@ -323,18 +367,27 @@ export async function computeGolden(
     sample.spacing !== sample.lod + 1
   )
     throw new Error("Golden sample and world context differ");
+  const chunk = generateWorldChunk(
+    context,
+    sample.cx,
+    sample.cy,
+    sample.cz,
+    sample.spacing,
+  );
+  if (
+    sample.targetFeatureId !== undefined &&
+    !chunk.featureIds?.includes(sample.targetFeatureId)
+  )
+    throw new Error(
+      `${sample.id}: addressed target feature is absent from generated halo`,
+    );
+  if (sample.coverage === "caldera-lava" && !chunk.blocks.includes(Block.Lava))
+    throw new Error(
+      `${sample.id}: addressed caldera has no generated core lava`,
+    );
   return {
     sample,
-    hashes: await hashChunk(
-      generateWorldChunk(
-        context,
-        sample.cx,
-        sample.cy,
-        sample.cz,
-        sample.spacing,
-      ),
-      context.columns,
-    ),
+    hashes: await hashChunk(chunk, context.columns, context.kind),
   };
 }
 /** Sequential by design: one chunk's temporary buffers at a time in every runtime. */
@@ -379,7 +432,7 @@ export function compareGoldenRecords(
       failures.push(
         `Sample ${i} (${a.sample.id}): address/coverage contract differs`,
       );
-    for (const field of ["blocks", "haloBlocks", "density", "columns"] as const)
+    for (const field of GOLDEN_HASH_FIELDS)
       if (a.hashes[field] !== b.hashes[field])
         failures.push(
           `${a.sample.id}.${field}: expected ${a.hashes[field]}, received ${b.hashes[field]}`,

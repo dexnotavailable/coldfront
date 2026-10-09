@@ -35,6 +35,67 @@ describe("full-width bitwise greedy port", () => {
     light[haloIndex(1, 1, 0)] = 0x7000;
     expect(meshChunk(blocks, light).quads).toBeGreaterThan(clean.quads);
   });
+  it("merges only equal exact feature identities along both greedy axes", () => {
+    const blocks = new Uint16Array(HALO_VOLUME),
+      lights = new Uint16Array(HALO_VOLUME).fill(0xf000),
+      ids = new Uint32Array(HALO_VOLUME);
+    for (let x = 0; x < 2; x++)
+      for (let z = 0; z < 2; z++) {
+        blocks[haloIndex(x, 0, z)] = Block.Stone;
+        ids[haloIndex(x, 0, z)] = 0xfedcba98;
+      }
+    expect(meshChunk(blocks, lights, ids).quads).toBe(6);
+    ids[haloIndex(1, 0, 0)] = 0xfedcba99;
+    ids[haloIndex(0, 0, 1)] = 0x02000001;
+    const mesh = meshChunk(blocks, lights, ids);
+    expect(mesh.quads).toBeGreaterThan(6);
+    const part = mesh.parts[0];
+    if (!part) throw new Error("Missing opaque part");
+    const seen = new Set<number>();
+    for (let q = 0; q < part.featureIdParts.length; q += 8) {
+      const id =
+        ((part.featureIdParts[q] as number) |
+          ((part.featureIdParts[q + 1] as number) << 16)) >>>
+        0;
+      seen.add(id);
+      for (let k = 0; k < 4; k++) {
+        expect(part.featureIdParts[q + k * 2]).toBe(id & 0xffff);
+        expect(part.featureIdParts[q + k * 2 + 1]).toBe(id >>> 16);
+      }
+    }
+    expect(seen).toEqual(new Set([0xfedcba98, 0xfedcba99, 0x02000001]));
+    expect(() => meshChunk(blocks, lights, new Uint32Array(32768))).toThrow(
+      "halo",
+    );
+  });
+  it("carries identities on culled skirts and defaults legacy meshes to zero", () => {
+    const blocks = new Uint16Array(HALO_VOLUME).fill(Block.Stone),
+      lights = new Uint16Array(HALO_VOLUME),
+      ids = new Uint32Array(HALO_VOLUME).fill(0xffffffff);
+    const skirts = meshChunk(blocks, lights, ids).skirts;
+    expect(skirts.featureIdParts.length).toBe(
+      (skirts.positions.length / 3) * 2,
+    );
+    expect(skirts.featureIdParts.every((half) => half === 65535)).toBe(true);
+    const legacy = meshChunk(blocks, lights);
+    expect(legacy.skirts.featureIdParts.every((half) => half === 0)).toBe(true);
+  });
+  it("keeps water at part 3 and appends opaque lava at part 4", () => {
+    const blocks = new Uint16Array(HALO_VOLUME);
+    blocks[haloIndex(4, 4, 4)] = Block.Water;
+    blocks[haloIndex(8, 4, 4)] = Block.Lava;
+    const mesh = meshChunk(blocks, new Uint16Array(HALO_VOLUME));
+    expect(mesh.parts).toHaveLength(5);
+    expect(mesh.parts[3]?.indices.length).toBe(36);
+    expect(mesh.parts[4]?.indices.length).toBe(36);
+    expect(mesh.parts[0]?.indices.length).toBe(0);
+    expect(mesh.parts[3]?.surfaces[0]).toBe(Block.Water);
+    expect(mesh.parts[4]?.surfaces[0]).toBe(Block.Lava);
+    blocks[haloIndex(9, 4, 4)] = Block.Lava;
+    expect(
+      meshChunk(blocks, new Uint16Array(HALO_VOLUME)).parts[4]?.indices.length,
+    ).toBe(36);
+  });
   it("emits outward triangles on all six normals", () => {
     const blocks = new Uint16Array(HALO_VOLUME);
     blocks[haloIndex(3, 2, 1)] = Block.Stone;

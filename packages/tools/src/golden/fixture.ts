@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { contentHash, sourceFiles } from "../build/metadata.js";
 import {
   currentGoldenContract,
+  GOLDEN_HASH_FIELDS,
   type GoldenCase,
   type GoldenFixture,
   goldenCases,
@@ -56,12 +57,21 @@ export function validateFixture(
       throw new Error(
         `Golden sample set differs at ${i}; review the dataset before updating`,
       );
-    for (const field of ["blocks", "haloBlocks", "density", "columns"] as const)
+    for (const field of GOLDEN_HASH_FIELDS) {
+      if (
+        (field === "featureIds" || field === "featureT") &&
+        row.sample.world === "test"
+      ) {
+        if (row.hashes?.[field] !== undefined)
+          throw new Error(`Test golden must omit ${field}`);
+        continue;
+      }
       if (
         typeof row.hashes?.[field] !== "string" ||
-        !/^[a-f0-9]{64}$/.test(row.hashes[field])
+        !/^[a-f0-9]{64}$/.test(row.hashes[field] as string)
       )
         throw new Error(`Invalid SHA-256: ${row.sample.id}.${field}`);
+    }
   }
   if (
     !fixture.provenance ||

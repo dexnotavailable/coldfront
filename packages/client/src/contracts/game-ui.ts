@@ -6,6 +6,14 @@ import type {
   WorldIdentity,
   WorldKind,
 } from "../../../shared/src/world/types.js";
+import type { TerrainViewMode } from "../engine/terrain-material.js";
+import type { PostcardId } from "../game/postcard.js";
+
+export type { TerrainViewMode } from "../engine/terrain-material.js";
+export interface PostcardPresentation {
+  readonly id: PostcardId;
+  readonly name: string;
+}
 
 export type {
   BoundsXZ,
@@ -81,6 +89,7 @@ export interface BlockPresentation {
   readonly icon: string;
 }
 export interface ToolState {
+  readonly viewMode: TerrainViewMode;
   readonly timeHours: number;
   readonly clockRuns: boolean;
   readonly fog: boolean;
@@ -119,6 +128,8 @@ export interface GameSnapshot {
   readonly loadProgress: number;
   readonly seed: number;
   readonly mode: "overhead" | "postcard";
+  readonly postcards: readonly PostcardPresentation[];
+  readonly activePostcardId: PostcardId | null;
   readonly worldPaused: boolean;
   readonly tools: ToolState;
   readonly hotbar: Readonly<{
@@ -137,7 +148,10 @@ export type InputScope =
   | "modal"
   | "blocking-screen"
   | "inactive";
-export type ToolBoolean = Exclude<keyof ToolState, "timeHours" | "flySpeed">;
+export type ToolBoolean = Exclude<
+  keyof ToolState,
+  "timeHours" | "flySpeed" | "viewMode"
+>;
 export type GameCommand =
   | {
       readonly type: "start";
@@ -148,6 +162,7 @@ export type GameCommand =
   | { readonly type: "pause"; readonly paused: boolean }
   | { readonly type: "input-scope"; readonly scope: InputScope }
   | { readonly type: "set-time"; readonly hours: number }
+  | { readonly type: "set-view"; readonly value: TerrainViewMode }
   | {
       readonly type: "set-tool";
       readonly key: ToolBoolean;
@@ -192,6 +207,10 @@ export interface GamePort {
   inspectMap(request: MapPointRequest): MapPoint | null;
   /** Resolves only after safe destination readiness and atomic body/camera commit. */
   teleport(request: TeleportRequest): Promise<TeleportResult>;
+  goToPostcard(request: {
+    sessionId: number;
+    id: PostcardId;
+  }): Promise<TeleportResult>;
   cancelTeleport(sessionId: number): void;
   capturePng(): Promise<Blob>;
   dispose(): Promise<void>;

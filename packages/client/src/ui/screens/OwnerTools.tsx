@@ -9,6 +9,7 @@ import {
   Field,
   Modal,
   Panel,
+  Segmented,
   Select,
   Slider,
   Slot,
@@ -59,6 +60,32 @@ export function ToolsPanel({
               releaseFocus
             />
           )}
+          {ui.game.value.lifecycle === "ready" &&
+            ui.game.value.mode === "overhead" &&
+            !ui.travelPending.value &&
+            !!ui.game.value.postcards.length && (
+              <Select
+                id="tools.postcard"
+                value={
+                  ui.game.value.activePostcardId ??
+                  ui.game.value.postcards[0]!.id
+                }
+                options={ui.game.value.postcards.map((camera) => ({
+                  value: camera.id,
+                  label:
+                    camera.id === "TEST-1"
+                      ? {
+                          kind: "catalogue" as const,
+                          id: "title.world.test" as const,
+                        }
+                      : { kind: "content" as const, name: camera.name },
+                }))}
+                onChange={(id) => {
+                  void ui.goToPostcard(id);
+                }}
+                releaseFocus
+              />
+            )}
           <Slider
             id="tools.time"
             value={state.timeHours}
@@ -69,6 +96,22 @@ export function ToolsPanel({
             checked={state.clockRuns}
             onChange={(value) => ui.toggleTool("clockRuns", value)}
           />
+          {ui.game.value.lifecycle === "ready" && (
+            <Segmented
+              id="tools.view"
+              ids={["view.normal", "view.clay", "view.features"]}
+              selected={`view.${state.viewMode}`}
+              onChange={(id) =>
+                ui.setView(
+                  id === "view.clay"
+                    ? "clay"
+                    : id === "view.features"
+                      ? "features"
+                      : "normal",
+                )
+              }
+            />
+          )}
           <Toggle
             id="tools.fog"
             checked={state.fog}

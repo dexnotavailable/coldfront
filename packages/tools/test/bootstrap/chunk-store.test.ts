@@ -4,6 +4,10 @@ import type {
   Address,
   ChunkResult,
 } from "../../../client/src/engine/worker-protocol.js";
+import { Block } from "../../../shared/src/blocks/registry.js";
+import { meshChunk } from "../../../shared/src/meshing/greedy.js";
+import { HALO_VOLUME } from "../../../shared/src/world/constants.js";
+import { haloIndex } from "../../../shared/src/world/coordinates.js";
 import type { WorldContext } from "../../../shared/src/world/types.js";
 import { createWorldContext } from "../../../shared/src/world/world-context.js";
 import {
@@ -11,7 +15,13 @@ import {
   sampleTestVoxel,
 } from "../../../shared/src/worldgen/test-world.js";
 
-const fixture = vi.hoisted(() => ({ jobs: [] as Address[], fail: false }));
+const fixture = vi.hoisted(() => ({
+  jobs: [] as Address[],
+  fail: false,
+  hold: false,
+  releases: [] as (() => void)[],
+  staleWorld: false,
+}));
 vi.mock("../../../client/src/engine/worker-pool.js", () => ({
   TerrainWorkers: class {
     ready = Promise.resolve();
@@ -21,9 +31,13 @@ vi.mock("../../../client/src/engine/worker-pool.js", () => ({
     async request(address: Address, revision: number) {
       fixture.jobs.push(address);
       if (fixture.fail) throw new Error("worker generation failure");
+      if (fixture.hold)
+        await new Promise<void>((resolve) => fixture.releases.push(resolve));
       return {
         type: "chunk",
-        world: this.world,
+        world: fixture.staleWorld
+          ? { ...this.world, id: this.world.id - 1 }
+          : this.world,
         id: fixture.jobs.length,
         address,
         revision,
@@ -46,8 +60,138 @@ const world: WorldSession = {
 beforeEach(() => {
   fixture.jobs.length = 0;
   fixture.fail = false;
+  fixture.hold = false;
+  fixture.staleWorld = false;
+  fixture.releases.length = 0;
 });
 describe("conservative streaming and real mesh readiness", () => {
+  it("reports shared cache counts once and every retained prepared reference without guessed heap bytes", () => {
+    const stats = {
+      geometryCells: 3,
+      geometryCellLimit: 256,
+      placementCells: 5,
+      placementCellLimit: 256,
+      cachedInstances: 7,
+      preparedInstanceReferences: 0,
+    };
+    const context = {
+      featureCacheStats: () => ({ ...stats }),
+      prepareArea: () => ({
+        createColumn: () => new Float64Array(8),
+        sampleColumn: (_x: number, _z: number, out: Float64Array) => out,
+        sampleVoxel: (
+          _x: number,
+          _y: number,
+          _z: number,
+          out: { block: number },
+        ) => {
+          out.block = Block.Air;
+          return out;
+        },
+        featureCacheStats: () => ({ ...stats, preparedInstanceReferences: 2 }),
+      }),
+    } as unknown as WorldContext;
+    const store = new ChunkStore(world, context, null, []);
+    for (let tile = 0; tile < 65; tile++) {
+      store.get(tile * 32, 0, 0);
+      store.get(tile * 32 + 1, 0, 0);
+    }
+    expect(store.featureCacheStats).toEqual({
+      ...stats,
+      preparedInstanceReferences: 130,
+    });
+    // The point columns still retain the first area after its map entry leaves
+    // the 64-area LRU. Count its references; don't multiply the shared field.
+    expect(store.memoryBytes).toBe(130 * 8 * 8);
+    store.dispose();
+  });
+  it("covers caldera floors and tall crowns without filling the empty band up to a flying camera", async () => {
+    const context = {
+      conservativeBounds: (_bounds: unknown, out: object) =>
+        Object.assign(out, {
+          minSurfaceY: -78,
+          maxSurfaceY: 52,
+          maxSolidY: 198,
+          maxFluidY: -32,
+        }),
+    } as unknown as WorldContext;
+    const store = new ChunkStore(world, context, null, []);
+    const requested = await store.requestView(0.5, 900, 0.5, 1);
+    const levels = requested
+      .filter((a) => a.cx === 0 && a.cz === 0)
+      .map((a) => a.cy);
+    for (const level of [-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 27, 28, 29])
+      expect(levels).toContain(level);
+    expect(levels).not.toContain(15);
+    expect(levels).toHaveLength(13);
+    store.dispose();
+  });
+  it("invalidates the complete incoming-sky window and keeps the next lower chunk intact", async () => {
+    const store = new ChunkStore(world, {} as WorldContext, null, []);
+    const addresses = [0, 1, 2, 3, 4, 5].map((cy) => ({ cx: 0, cy, cz: 0 }));
+    await Promise.all(addresses.map((address) => store.request(address)));
+    store.edit({ x: 0, y: 128, z: 0, block: Block.Stone });
+    await store.settled();
+    expect(store.chunks.get("0,0,0")?.revision).toBe(0);
+    for (const cy of [1, 2, 3, 4, 5])
+      expect(store.chunks.get(`0,${cy},0`)?.revision).toBe(1);
+    expect(store.hasView(addresses)).toBe(true);
+    store.dispose();
+  });
+  it("rejects an in-flight old revision and refills the edited chunk before it is ready", async () => {
+    fixture.hold = true;
+    const store = new ChunkStore(world, {} as WorldContext, null, []),
+      address = { cx: 0, cy: 0, cz: 0 };
+    const first = store.request(address);
+    store.edit({ x: 31, y: 0, z: 0, block: Block.Lava });
+    fixture.releases.shift()?.();
+    await first;
+    expect(store.hasView([address])).toBe(false);
+    expect(store.uploads).toHaveLength(0);
+    expect(fixture.releases).toHaveLength(1);
+    fixture.releases.shift()?.();
+    await store.settled();
+    expect(store.hasView([address])).toBe(true);
+    expect(store.uploads).toHaveLength(1);
+    expect(store.uploads[0]?.revision).toBe(1);
+    store.dispose();
+  });
+  it("rejects another world session and counts the new mesh buffers exactly", async () => {
+    const store = new ChunkStore(world, {} as WorldContext, null, []),
+      address = { cx: 0, cy: 0, cz: 0 };
+    fixture.staleWorld = true;
+    await store.request(address);
+    expect(store.hasView([address])).toBe(false);
+    fixture.staleWorld = false;
+    await store.request(address);
+    const result = store.chunks.get("0,0,0")?.result;
+    if (!result) throw new Error("Missing fresh result");
+    const blocks = new Uint16Array(HALO_VOLUME),
+      ids = new Uint32Array(HALO_VOLUME);
+    blocks[haloIndex(0, 0, 0)] = Block.Lava;
+    ids[haloIndex(0, 0, 0)] = 0xffffffff;
+    const mesh = meshChunk(blocks, new Uint16Array(HALO_VOLUME), ids);
+    const stored = store.chunks.get("0,0,0");
+    if (!stored) throw new Error("Missing stored chunk");
+    stored.result = { ...result, mesh };
+    const expected =
+      result.blocks.byteLength +
+      result.light.byteLength +
+      [...mesh.parts, mesh.skirts].reduce(
+        (sum, p) =>
+          sum +
+          p.positions.byteLength +
+          p.normals.byteLength +
+          p.expansions.byteLength +
+          p.packedPositions.byteLength +
+          p.surfaces.byteLength +
+          p.featureIdParts.byteLength +
+          p.indices.byteLength,
+        0,
+      );
+    expect(store.memoryBytes).toBe(expected);
+    store.dispose();
+  });
   it("keeps exact test-world point queries across negative chunk boundaries with prepared feature caches", () => {
     const context = createWorldContext({ kind: "test", seed: 1 });
     const store = new ChunkStore(world, context, null, []),

@@ -1,4 +1,10 @@
+import {
+  type GenerationVariant,
+  generationKey,
+  generationVariant,
+} from "../../../shared/src/world/generation-variant.js";
 import { SURFACE_REGIONS } from "../../../shared/src/world/regions.js";
+import type { WorldIdentity } from "../../../shared/src/world/types.js";
 import { WORLDGEN_VERSION } from "../../../shared/src/worldgen/version.js";
 import type { PostcardId, WorldPostcard } from "../game/postcard.js";
 import { appRoute } from "./host.js";
@@ -50,41 +56,65 @@ export function validatePostcardSelection(
   id: string,
   seed: number,
   sourceHash: string,
+  variant: GenerationVariant = "production",
 ): PostcardSelection {
   if (!/^[a-f0-9]{64}$/.test(sourceHash))
     throw new Error("Missing postcard source identity");
   if (id === "TEST-1") {
+    if (variant !== "production")
+      throw new Error("Primitive generation requires a main world");
     const camera = validatePostcard(value, seed);
     const initial: WorldPostcard = {
       ...camera,
       identity: {
         kind: "test",
         seed,
-        generation: `${WORLDGEN_VERSION}:${sourceHash}`,
+        generation: generationKey(WORLDGEN_VERSION, sourceHash, variant),
       },
     };
     return { initial, cameras: [initial] };
   }
-  const ids = new Set(SURFACE_REGIONS.map((region) => `P12-${region.id}`));
+  const hell = id === "HELL-1" || id === "HELL-2";
+  const ids = new Set(
+    hell
+      ? ["HELL-1", "HELL-2"]
+      : SURFACE_REGIONS.map((region) => `P12-${region.id}`),
+  );
+  if (variant !== "production" && variant !== "primitive")
+    throw new Error("Unknown generation variant");
+  if (!hell && variant !== "production")
+    throw new Error("No primitive first-pass postcards");
   if (!ids.has(id)) throw new Error(`Postcard ${id} is unavailable`);
+  const key = hell
+    ? variant === "primitive"
+      ? "phase13Primitive"
+      : "phase13"
+    : "phase12";
   const manifest = (
-    value as {
-      phase12?: {
+    value as Record<
+      string,
+      {
         schema?: unknown;
         worldKind?: unknown;
         seed?: unknown;
         worldgenVersion?: unknown;
         sourceHash?: unknown;
+        resolverHash?: unknown;
+        variant?: unknown;
         cameras?: unknown;
-      };
-    } | null
-  )?.phase12;
+      }
+    > | null
+  )?.[key];
   if (
     manifest?.schema !== 1 ||
     manifest.worldKind !== "main" ||
     manifest.seed !== seed ||
     manifest.worldgenVersion !== WORLDGEN_VERSION ||
     manifest.sourceHash !== sourceHash ||
+    (hell &&
+      (manifest.variant !== variant ||
+        typeof manifest.resolverHash !== "string" ||
+        !/^[a-f0-9]{64}$/.test(manifest.resolverHash))) ||
     !Array.isArray(manifest.cameras)
   )
     throw new Error("Main postcard manifest is missing or stale");
@@ -96,6 +126,13 @@ export function validatePostcardSelection(
       region?: string;
       kind?: string;
       ungraded?: boolean;
+      validatedByResolverHash?: unknown;
+      targetFeature?: {
+        kind?: unknown;
+        featureIds?: unknown;
+        calderaId?: unknown;
+        bounds?: Record<string, unknown>;
+      };
       validation?: { passed?: unknown };
     };
     const point = (p: StoredPostcard["position"] | undefined) =>
@@ -105,10 +142,16 @@ export function validatePostcardSelection(
       typeof camera.id !== "string" ||
       !ids.has(camera.id) ||
       seen.has(camera.id) ||
-      camera.id !== `P12-${camera.region}` ||
+      (hell
+        ? camera.region !== "hellscape"
+        : camera.id !== `P12-${camera.region}`) ||
       camera.seed !== seed ||
       (camera.kind !== "eye-level" && camera.kind !== "aerial") ||
-      camera.ungraded !== true ||
+      (hell
+        ? camera.kind !== "eye-level" ||
+          camera.validatedByResolverHash !== manifest.resolverHash ||
+          !validHellTarget(camera.id, camera.targetFeature)
+        : camera.ungraded !== true) ||
       camera.validation?.passed !== true ||
       !point(camera.position) ||
       !point(camera.target) ||
@@ -140,7 +183,7 @@ export function validatePostcardSelection(
       identity: {
         kind: "main",
         seed,
-        generation: `${WORLDGEN_VERSION}:${sourceHash}`,
+        generation: generationKey(WORLDGEN_VERSION, sourceHash, variant),
       },
       position: { ...position },
       target: { ...target },
@@ -172,9 +215,92 @@ export async function loadPostcard(
     id,
     seed,
     sourceHash,
+    query.get("primitive") === "1" ? "primitive" : "production",
   );
   const kind = query.get("world");
   if (kind !== null && kind !== selection.initial.identity.kind)
     throw new Error("Postcard world selection mismatch");
   return selection;
+}
+
+function validHellTarget(id: string, value: unknown): boolean {
+  const target = value as {
+    kind?: unknown;
+    featureIds?: unknown;
+    calderaId?: unknown;
+    bounds?: Record<string, unknown>;
+  } | null;
+  if (!target?.bounds) return false;
+  const b = target.bounds;
+  if (
+    ![b.minX, b.minY, b.minZ, b.maxX, b.maxY, b.maxZ].every(
+      (n) => typeof n === "number" && Number.isFinite(n),
+    ) ||
+    Number(b.minX) > Number(b.maxX) ||
+    Number(b.minY) > Number(b.maxY) ||
+    Number(b.minZ) > Number(b.maxZ)
+  )
+    return false;
+  const validId = (n: unknown) =>
+    typeof n === "number" && Number.isInteger(n) && n > 0 && n <= 0xffffffff;
+  return id === "HELL-1"
+    ? target.kind === "thorn-cluster" &&
+        Array.isArray(target.featureIds) &&
+        target.featureIds.length > 0 &&
+        target.featureIds.every(validId) &&
+        new Set(target.featureIds).size === target.featureIds.length
+    : target.kind === "caldera" && validId(target.calderaId);
+}
+
+/** Missing/stale catalogues expose no controls; automatic capture still fails loudly. */
+export async function loadPostcardCatalogue(
+  identity: WorldIdentity,
+  base: string,
+  sourceHash: string,
+): Promise<readonly WorldPostcard[]> {
+  const variant = generationVariant(identity);
+  if (
+    identity.generation !== generationKey(WORLDGEN_VERSION, sourceHash, variant)
+  )
+    return [];
+  try {
+    const response = await fetch(
+      appRoute(
+        base,
+        `postcards/cameras/seed-${identity.seed}.json`,
+        location.origin,
+      ),
+    );
+    if (!response.ok) return [];
+    const data: unknown = await response.json();
+    const ids =
+      identity.kind === "test"
+        ? ["TEST-1"]
+        : [
+            ...(variant === "production"
+              ? SURFACE_REGIONS.map((region) => `P12-${region.id}`)
+              : []),
+            "HELL-1",
+            "HELL-2",
+          ];
+    const cameras: WorldPostcard[] = [];
+    for (const id of ids) {
+      try {
+        cameras.push(
+          validatePostcardSelection(
+            data,
+            id,
+            identity.seed,
+            sourceHash,
+            variant,
+          ).initial,
+        );
+      } catch {
+        /* Unavailable or stale camera: no invented replacement view. */
+      }
+    }
+    return cameras;
+  } catch {
+    return [];
+  }
 }

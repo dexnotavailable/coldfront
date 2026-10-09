@@ -1,11 +1,11 @@
 {
-  "schema": 1,
-  "sampleSetVersion": 2,
-  "worldgenVersion": 3,
-  "encoding": "sha256; uint16-le; ieee754-binary64-le; signed-zero-preserved; NaN-rejected",
+  "schema": 2,
+  "sampleSetVersion": 3,
+  "worldgenVersion": 4,
+  "encoding": "sha256; uint16-le; uint32-le; ieee754-binary64-le; signed-zero-preserved; NaN-rejected; main-feature-pair-halo-aligned",
   "provenance": {
-    "sourceHash": "7354acd9e0cae67c7c090a83893581cbc8369cc4016fa7e5bef39eb021ebaaa3",
-    "sourceCommit": "0bec7b0ddf8aff1700dc9eb6c9aa347edb11e7e5",
+    "sourceHash": "454a0436090ef50bb3e496c8858ad743643915c3ef7e7cc1ab4ca42ea131e6dc",
+    "sourceCommit": "13c5e6a9f60b30ef7a6ff7a6c91ed7de2daf669a",
     "nodeVersion": "v24.18.0"
   },
   "records": [
@@ -2876,7 +2876,9 @@
         "blocks": "f06cec15733e427db706dfef7589dd58eefb894513c109748684da01374cbc6f",
         "haloBlocks": "942a8f1055fc5a782f4a2fcdbec998ae911b4ecfad50c9aeab9a66c4e549f578",
         "density": "8db2858db3b5c6de8ef1a01813e798f4769440718dbc1ca24b8b1861d9cd3a49",
-        "columns": "f6c5493a00e3174da92df00a2b79df0f0ce1b67510434e666cb59f253f1aba0f"
+        "columns": "f6c5493a00e3174da92df00a2b79df0f0ce1b67510434e666cb59f253f1aba0f",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -2896,7 +2898,9 @@
         "blocks": "67788ebc570d4e88ebc46f97f2bbd3fe7f36983918de9a4a5d7c47f7df36be05",
         "haloBlocks": "433fa3f3b988e72bd5cf8cf5cd7f0c60394c02e9c399b160e76c80ce69fc1cf1",
         "density": "55a831c579e56cb50014bc1c0980b294c65163fbf0b45a83d137025b2c72bca5",
-        "columns": "822f88b3febd2b7657b59679cb14044a7201b5d9c7aadf4ce3e324d5edb83020"
+        "columns": "822f88b3febd2b7657b59679cb14044a7201b5d9c7aadf4ce3e324d5edb83020",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -2916,7 +2920,9 @@
         "blocks": "41b187a89b7287818c699347ff028c49b8f00ee3e2c0c480c74d59feeb6fe3b8",
         "haloBlocks": "fc94f0a6d122d12636a9de2ee589ae1c69511efad190170aa9a5434317fa5745",
         "density": "bc102fca2cc830dc4b6d012289105f886f51050eeff246218245789b74e43647",
-        "columns": "4e29bc363eb594250c3cef902a80df032b75d7fa6eccd4adaaa3f362da5adfa5"
+        "columns": "4e29bc363eb594250c3cef902a80df032b75d7fa6eccd4adaaa3f362da5adfa5",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -2936,7 +2942,9 @@
         "blocks": "9326baaaa733ad74863742dc801bdfa9abc54ae2946ff95e81c018b6fbedd9d3",
         "haloBlocks": "a2a0533eaf949a00f7f79a2f615f330712e7ca084f6b97008124ba6bc1ae1810",
         "density": "83c583f121da1c8e7a5db685c9dad150f6a8aa32837e9ea3d88ac2cb93ee1763",
-        "columns": "92aa80b915592562acdf3c03472b0b5144925eaf23bc44509cb93d54c87c2f52"
+        "columns": "92aa80b915592562acdf3c03472b0b5144925eaf23bc44509cb93d54c87c2f52",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -2956,7 +2964,9 @@
         "blocks": "9c64ee76caeceb21e48d21078172248c46b73b0a3fa7230fbec6dea8fcc04f7e",
         "haloBlocks": "808add2dd7b789e4e4605efa4495f54134270b50d6bc7d2bcd236312c18237e6",
         "density": "402622e16e3563ef021b1c1ae3086c0f0810bd6508d8b265408007488a760f0f",
-        "columns": "69895cf298ceb0e93fa10a7b05483d225043ff7230710bb4fbab5836426360da"
+        "columns": "69895cf298ceb0e93fa10a7b05483d225043ff7230710bb4fbab5836426360da",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -2976,7 +2986,9 @@
         "blocks": "05625cd6d7d948a790204cf54af3f99ba035535218cc832043916a0b7cf6568a",
         "haloBlocks": "37172dfcfbecd651e8ddb7fc895fd5f8b0341d356b0ccbecde3be6fa08ed337b",
         "density": "2795009a645f93173611b07e6baecc34d3e17675d11b3971b0bf28b81b86264f",
-        "columns": "6552db590e08d3f5bf1e8657c99bb7b95982b629e876038e65766d1b501ca0d7"
+        "columns": "6552db590e08d3f5bf1e8657c99bb7b95982b629e876038e65766d1b501ca0d7",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -2996,7 +3008,9 @@
         "blocks": "e617bbe4079aff4756c13039c2e4106ed084bcfbc8a2791a747ce3280c81e569",
         "haloBlocks": "1a2946acab3483c7badc3bcccc8def644d7b507a7badc19fbf6445cff0daf2a1",
         "density": "cb2910f7a968e80b935b43d1f460bb97a292995ce6c4b9fc17661c7b34bb4645",
-        "columns": "9ef8582cff179232fb706abc4d8a58dfb9ee36eb1711ee91a93aec8a27adc622"
+        "columns": "9ef8582cff179232fb706abc4d8a58dfb9ee36eb1711ee91a93aec8a27adc622",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3016,7 +3030,9 @@
         "blocks": "ddd91e4f11b3565d7e873a15a517e5bce32844990da367298052f5c578b3c064",
         "haloBlocks": "68cc4aa4799bbe0366497059bef27fceeb9e20574afdeacc22c49ac55b7f7f5e",
         "density": "f25ba6dee8dfaa94a5324e5afa580525a06d1f3101997a101382a6f7b420408a",
-        "columns": "f1925dc041be38005516ecfe774ec3d05f35a78d01693434738af4781a501454"
+        "columns": "f1925dc041be38005516ecfe774ec3d05f35a78d01693434738af4781a501454",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3036,7 +3052,9 @@
         "blocks": "ddab774ff3b361a872828eb873f2a37086548f6a39af752d11c628e17b93b2f4",
         "haloBlocks": "d8feefe7ef7d81313fb778a4c86dd65efa86c007a92abaf73adcb49f0e35d5a3",
         "density": "d0411d57e5eecebab1c206f4334ff0778ba7c6c98246431dafbb3a9e84f46cb0",
-        "columns": "7d3b9c8f190c2717af1ff7f8ce73a25e7508bff571683e6645ef286c7b5214b4"
+        "columns": "7d3b9c8f190c2717af1ff7f8ce73a25e7508bff571683e6645ef286c7b5214b4",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3053,10 +3071,12 @@
         "coverage": "dominant-region-terrain-air-or-water-interface"
       },
       "hashes": {
-        "blocks": "7a5eeb802572f0ba47185366050a714a5bf11e6063d386749546753123729319",
-        "haloBlocks": "67a1257089eb7eed59ec2953675e437ac00a5d577f6fd2351d30cc05a081ee71",
-        "density": "bae289cef4016e4ec276b1fba2bfa4e1b79c29f7ddbd47849a18f68d158e2607",
-        "columns": "a3b706496310a039d114a27056c6c35e83d6d2e269506f586b2019301c2b3e7c"
+        "blocks": "0067c915e24374d23408aaf84a3be58bc1822fdcbb0482fa58b2ce9528de0bf6",
+        "haloBlocks": "d8c65057ee97de818d999420506c6f19c1ad8b474495188d89b151e8f7e16cb4",
+        "density": "7535b81668f4d0e9dc4a707da1b5d700c1ae70a754e6d732373177688147552a",
+        "columns": "a3b706496310a039d114a27056c6c35e83d6d2e269506f586b2019301c2b3e7c",
+        "featureIds": "9d7a181cde255a409bfb44b20df662fb178dede602b84273358b96c5244ed149",
+        "featureT": "d6b03e5ca6b361fcf1cbb1465781787c754dcd33c4a6db80869ddc229c8a5b21"
       }
     },
     {
@@ -3076,7 +3096,9 @@
         "blocks": "39b3913ec4b7f0fc7f2deaf63cb34e15dfa0e619a7353c9e5bbefbbf30c052ae",
         "haloBlocks": "10014b7933eed837a7740decafbe7f5bae70e227122cc8765102921bfc9fc69c",
         "density": "b439262a46194970a8d171dfa36836a1c14dcdcead8cf212034053be27245e4f",
-        "columns": "c6f9d5ad9fd6b06155b71b9f10cb573f3cbc81afd0bb0778bd07d8ea37dc98cb"
+        "columns": "c6f9d5ad9fd6b06155b71b9f10cb573f3cbc81afd0bb0778bd07d8ea37dc98cb",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3096,7 +3118,9 @@
         "blocks": "794626334dcb044ed27a5d9fcbb1a745bb5595a4dce3fc9d39af017c3723fe49",
         "haloBlocks": "d49386238a6e861fe57fe3ed05dbba78b75bf102e3e0d38fe040a194fd8f9517",
         "density": "1f13a29ac00206d8cb5044f833680eff4ca31812fd400c59b2f7a6913addae15",
-        "columns": "aad9f767960cb77c8d694008e91ca786c46e5718bdb213bea7c9e77bcac71faa"
+        "columns": "aad9f767960cb77c8d694008e91ca786c46e5718bdb213bea7c9e77bcac71faa",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3116,7 +3140,9 @@
         "blocks": "f552a10f59cb7f16a6dc35ecf9f38c2dd90a8c016b4db66503e55d7baec38109",
         "haloBlocks": "e13bd521ecc19287d0da513f1c2fccee5f263d2be66c0289c0024d72fe44cf12",
         "density": "a722a5c60718be3f4e1321d1673d8813ddc9b0496aeb8c339529147a8fc9b918",
-        "columns": "8f4c5dbfa2ff170c0e94617cbdcab7b034889e7193a235ca4277ebcea682e2a0"
+        "columns": "8f4c5dbfa2ff170c0e94617cbdcab7b034889e7193a235ca4277ebcea682e2a0",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3136,7 +3162,9 @@
         "blocks": "c3dd57ac127a0143e02b0125f5e9115c138a32d9c0fa107aaf9669d90d2fac86",
         "haloBlocks": "a06f1a29ff21b3f83339838d7e66af3059e832ac975ce1ad89dd29f8f0cc6659",
         "density": "b466fdee277c08ef6588c5b0ce55ce3c40a83b24ee6165a24f9925bbe1a4eac2",
-        "columns": "92b80c8881afa7ad3fcd1c2c496fdba9c853f1d156f67b7456f2728c6762fc61"
+        "columns": "92b80c8881afa7ad3fcd1c2c496fdba9c853f1d156f67b7456f2728c6762fc61",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3156,7 +3184,9 @@
         "blocks": "788a7a24c15505d7b9563cf807a87ac93a7a462e666cc0e3914154c84858656e",
         "haloBlocks": "2b4ff76e414145a41e45ea657e2f66ef44e3798528dd3996531df6a1bd9c3574",
         "density": "64be8fc2c2d3a44f775db7c1fe59562449802665ccff52ccb62663ebd0f92373",
-        "columns": "d9b52fb466a3f76405a2cad572607e5b39ae4036bc5d9938723717bfcfe91653"
+        "columns": "d9b52fb466a3f76405a2cad572607e5b39ae4036bc5d9938723717bfcfe91653",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3176,7 +3206,9 @@
         "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
         "haloBlocks": "4f81ca3cfecda83303af8494315ac6922e13d0b62ae1199070b29bad691cd277",
         "density": "43749189bb3319fca614b31a82a801e53889a0e7683947f4606bbb9068b04b76",
-        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3196,7 +3228,9 @@
         "blocks": "35a24966842e2c4436dc8a42d2f9ae40cae06270b643bfc3efed8938b347ec98",
         "haloBlocks": "8af04b19389d34df72cb29fbd590318735a5110de0203a6233dd2aaffc657aab",
         "density": "be3641d94aaf4b70b59fab052fb492d26743356b4a73cedb758c05ca758dfcef",
-        "columns": "a1305571d940e65d2864486408e87b603e849420436b0d25d002c295345b5b7d"
+        "columns": "a1305571d940e65d2864486408e87b603e849420436b0d25d002c295345b5b7d",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3216,7 +3250,9 @@
         "blocks": "8276863932f1192d95bd813e236ca2944e9e463828672246614a49ec0cc1f94e",
         "haloBlocks": "97ba342a13d4b93b1cd36c363f8b4d777662421e424d43a5a073a0963f98babc",
         "density": "4cd6f61c3990a052722d47ff43f16fd36975cdfb0f58b79501852fa608bb4ad6",
-        "columns": "a49068ed33030675fe6eb26abaaa04518830e187bc4f167ecbbecc7009ee5bf4"
+        "columns": "a49068ed33030675fe6eb26abaaa04518830e187bc4f167ecbbecc7009ee5bf4",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3236,7 +3272,9 @@
         "blocks": "96cc3078a94cea9461d75df97069234267c0a2dc6012ccbfd669bd46f6c38606",
         "haloBlocks": "17167e3e12fa1f2b0eedd32be5f0cfd0b09c85a22e8fa6b1c2d3b7e8ca3300dc",
         "density": "14a952132a83ed5a03a0d9da2d898f9d8b29f4546472cb5a9fa00556cebc0154",
-        "columns": "1a4cd38610d64fe3ff162731692558fd510d9d215355184ac4f0c2b3cb5be28b"
+        "columns": "1a4cd38610d64fe3ff162731692558fd510d9d215355184ac4f0c2b3cb5be28b",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3256,7 +3294,9 @@
         "blocks": "32d30d514c2ccc5023b254eefbb1a2579ea80e9ed88eb8687274f88a10652667",
         "haloBlocks": "161eb29bffb4264cd61ee66510e6cd909c0261c2da096161aa421d9a3b8cba02",
         "density": "1d4a4eaa452c6d128480f4ce29a2ffbf91015214ef07883c011bb6d8bb1c4534",
-        "columns": "c5134c7e59c9904590b83b9a307fdee855a6bc0a745dbf2d7795e6b42c16b0c9"
+        "columns": "c5134c7e59c9904590b83b9a307fdee855a6bc0a745dbf2d7795e6b42c16b0c9",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3276,7 +3316,9 @@
         "blocks": "f9825dbe9499a60b828ff886a36656bf6c5964c16460d437c671e6b1feeebc5f",
         "haloBlocks": "9861263c27cf11718f5dcd1f46dd61091ae17c5610b9ca17bf967b518b7c8398",
         "density": "1d46531b2de3522a4ec952cf3bc809388ec9b1436d78364f8362050d62460cd4",
-        "columns": "566f530963325853d4e2d63d647996d68341f9a320f230705a23231baefecb72"
+        "columns": "566f530963325853d4e2d63d647996d68341f9a320f230705a23231baefecb72",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3296,7 +3338,9 @@
         "blocks": "061f08c4f3a72de99970e4a2621115ad16d04bbe9d0eb9b0015fd2ade36feef2",
         "haloBlocks": "8af39524ee71903cfc7de79b518aa411c2683cbf0af2f98efc019c43ee1d4c82",
         "density": "88177de6873f1aeebfc217fb359e15835ca04dcf5bcb2e0cd0f316563042c25d",
-        "columns": "70ca719ff388044d878030790ed380e0043cd480aae0aa4cf179c62a4e66363a"
+        "columns": "70ca719ff388044d878030790ed380e0043cd480aae0aa4cf179c62a4e66363a",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3316,7 +3360,9 @@
         "blocks": "a50633d11484daf0adb594ec0ddcd01e591c7596632bf2c02bf16eb45d0238f5",
         "haloBlocks": "832f715fd78f0ea203798e8cb11e628eb27ab635a3b6485fb00961d0388b11e7",
         "density": "c0dbdfe9a5f7887e567745b8f907627c5c8b701990db6ab15fda78461c6b4a7e",
-        "columns": "b418fa592a4b960c2613a163c2f73c371a400381afc6ef7faeb5a47916a6049a"
+        "columns": "b418fa592a4b960c2613a163c2f73c371a400381afc6ef7faeb5a47916a6049a",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3336,7 +3382,9 @@
         "blocks": "6ff0ed964209bd9c1e861c8b88f526c78227189b106152d78ce7405368aae23e",
         "haloBlocks": "21bff60b66ae30332d7e3108055c9579dd1a535e381a053917e22fa3d168ac17",
         "density": "d4264dbffd25fa8d880e0b3d6b9ceab9e583a9e9a865f46ee3504985236a09e1",
-        "columns": "9d69c3bd5ff3b6fd6ced20257c878c6b7fafab6ac18bb3167781fe624efa0097"
+        "columns": "9d69c3bd5ff3b6fd6ced20257c878c6b7fafab6ac18bb3167781fe624efa0097",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3356,7 +3404,9 @@
         "blocks": "328de4cf3080aeec2621449144540e1fc2456d38f3847bf0bad2f2c8c18370c3",
         "haloBlocks": "9321e29782ca93e672a827a75a9e6b10410d560e9863eb5bacb13de7b12913a1",
         "density": "cfa606727089e3cb76282c9abb4dd8544f963487792d200cb5f65b7f406b9873",
-        "columns": "ba8e2f7cbc564168c15663b5490e47064d11c221bac736a1dd25804a2049cc6d"
+        "columns": "ba8e2f7cbc564168c15663b5490e47064d11c221bac736a1dd25804a2049cc6d",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3373,10 +3423,12 @@
         "coverage": "dominant-region-terrain-air-or-water-interface"
       },
       "hashes": {
-        "blocks": "3c966194662f54b209a7f1962555bc91c5c2666f4968831e958a239af6acf03f",
-        "haloBlocks": "b76174352686d9809cc362b3796bcc0073327b060c52e62d02595c357cdd0fad",
-        "density": "b6dd5d1cbf4f950d1e5502d42f2da965a2a450a26220652bf804b640fffca03c",
-        "columns": "fcaff7a1635071531a958ba6adddff4c028d23b314bb09a24779037ea6e6837d"
+        "blocks": "5f7ee8353979e46b1790a9ec9634a225efd80c14f628f5f18b7182fa3fceb276",
+        "haloBlocks": "984540add491d8d4ee09a1fe4d8389bb39aa21142b18f2ef877457f18ad6a859",
+        "density": "d821a78de95036d92af4b2075c2636567ba365358db7c333decc4fa50470cacc",
+        "columns": "fcaff7a1635071531a958ba6adddff4c028d23b314bb09a24779037ea6e6837d",
+        "featureIds": "341ae5c18b98fc9f71bbe8a572b819cbbc068f6394ff6ddce1efb69a963ede15",
+        "featureT": "2b134492170a0adc943a57ba7d986e128386ef42f5ac5e80ae0bdacde10ee470"
       }
     },
     {
@@ -3396,7 +3448,9 @@
         "blocks": "c03a32948ed82c474bc41c7ad4623bff33e9898116254eb07ee74e757e887fd7",
         "haloBlocks": "94b402e569a8f9de17802b0b19ecad09dc9c29c723bee12aac5621bf5eca0908",
         "density": "161d006fc319e1574579e1ac75d70b6c21c148fdf16a76666ce375911901739c",
-        "columns": "ac3ddd4e8d481a8eaa94ecabc576a4fb61c6d5575a8796f5893dbcf2696092fa"
+        "columns": "ac3ddd4e8d481a8eaa94ecabc576a4fb61c6d5575a8796f5893dbcf2696092fa",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3416,7 +3470,9 @@
         "blocks": "80e386072b1a6755554b65443294777cae6d97652bdb11c418b85ba3a4c547e3",
         "haloBlocks": "c806163fa096a00f73e8a2859596df9269b219678dda1fe75f2f2e6423239cae",
         "density": "731f50bfe8b681ad648879c7900096554c061d679f4cb3bd6608913df94bb587",
-        "columns": "6489ea260b651b33605781999d56fa6aa58699b05fc69e503787afd0ff001d69"
+        "columns": "6489ea260b651b33605781999d56fa6aa58699b05fc69e503787afd0ff001d69",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3436,7 +3492,9 @@
         "blocks": "c8283fe13a2818e8b670671a16c324ba022a4639062eb5dda894f03d958ec437",
         "haloBlocks": "c469f0ce593997acbc9f317132bc70ca65338ce85e8a5ba020d3b8bf2870b179",
         "density": "ebe3b057ce108f53d1fa98f021fb6fdff8729fd90de36a8109be4d75b9d31fae",
-        "columns": "3b3a27d7ea8361ed3f4b8857d916f1f01f7219fe0ff74ab269e881ce64c700e2"
+        "columns": "3b3a27d7ea8361ed3f4b8857d916f1f01f7219fe0ff74ab269e881ce64c700e2",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3456,7 +3514,9 @@
         "blocks": "76d742cf6e6f4904be77f0d5982bd91a4d619611adde570e00e420daecb90e02",
         "haloBlocks": "547924a0f36aa7a12b0a105d3dec5c4fdef153b1a68982b75564095e2c8309ca",
         "density": "2de32ec91b367aba3c5318cae78effbe8e58381cad700d84b155e95cfc7cb742",
-        "columns": "230661850cb306c1e095d5727ac1178c36e9946d4e0d33b1cf6a89354ea9b610"
+        "columns": "230661850cb306c1e095d5727ac1178c36e9946d4e0d33b1cf6a89354ea9b610",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3476,7 +3536,9 @@
         "blocks": "a9cd756720a4e69477026a74828bbcc1cb07daecf7f216483216c008b83b48da",
         "haloBlocks": "3761c8b7ed0d4b83be4d2df3019af9819bb2398df1d430476b3b45a6a90d0a5f",
         "density": "935cbd1aaa1de57da2012ce747af07be89aec5238a3b4caaaaf60d29adf72d0d",
-        "columns": "4a6ca9eb301e22f6f2c42f77b7dbf933e5c11c56d117a2e6fab8c976fc0c9571"
+        "columns": "4a6ca9eb301e22f6f2c42f77b7dbf933e5c11c56d117a2e6fab8c976fc0c9571",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3496,7 +3558,9 @@
         "blocks": "c1585103169e8377531d8c10f723b787879339e2c3488872d80f24b7ebb70f41",
         "haloBlocks": "4c46bec298589305dbc0b81171a28ad649dd551be7429d4509e0caec71e7f535",
         "density": "da60bd56fbd86ff912366e7a02b112e9fe6f14f63dfff2c54667f000d1b99fe9",
-        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3515,7 +3579,9 @@
         "blocks": "e1b5fb8d33c775efd1f28c0d6b026915ba4763fa71db33ad175139c874baad8a",
         "haloBlocks": "3dca90a523d8b237799905e9b708633436554a18f359340bd557c1bab9435c56",
         "density": "6ce3c17a70597ac8de6396d27ad828f89f6f95f90c25f30d33d5471a4f70d03f",
-        "columns": "5ad5b1c18e7eb035bc3fe87462471c314ae1b4725730e92b57b56e2a7f543160"
+        "columns": "5ad5b1c18e7eb035bc3fe87462471c314ae1b4725730e92b57b56e2a7f543160",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3534,7 +3600,9 @@
         "blocks": "e6c70e6989ff6a225bdf95a46a3b18b75f6fa9cad578a261b3eac9959dcd37d9",
         "haloBlocks": "69b6dd29be696f5275e6ff8a6f67e2fbb9e3155f0b06522595a64fe59efb5ed4",
         "density": "e5fa6e97c994ccb7011a457ef493347bb17290ff8dd3612aee1b85730639bdf5",
-        "columns": "2f2108ed6031aad025c355a69edb772e675b0bb717eb461e30472cdca08ade7e"
+        "columns": "2f2108ed6031aad025c355a69edb772e675b0bb717eb461e30472cdca08ade7e",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3550,10 +3618,12 @@
         "coverage": "warped-ring-transition"
       },
       "hashes": {
-        "blocks": "d8437d414e738ea197ecdd569ebcf0d19aa21c1403e3da6dae62fd339df28694",
-        "haloBlocks": "f9ceb94c88561685d90d2e7a0b70da445657907fe04754553f806318d3c6f2e1",
+        "blocks": "4f9d60a75eb87fcc704fb35eeff1bedbf0402848dd1e5d9eb4a12c98f962d54b",
+        "haloBlocks": "173df8db943a1b05031dc5b703f9c2a553ab64d29d0660b2e55d53530bed9575",
         "density": "997df0be0c867941a100bde59ee98bde34c92df4f7e251526743fd58d0c4362c",
-        "columns": "f898767de04fa24957b4b74ca35fcd81066805eb639b87d89aa86d8d97a3906c"
+        "columns": "f898767de04fa24957b4b74ca35fcd81066805eb639b87d89aa86d8d97a3906c",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3569,10 +3639,12 @@
         "coverage": "warped-ring-transition"
       },
       "hashes": {
-        "blocks": "b20e6b294555fb31c28470f704787346a4c637e9b1285f1889919cbc29de56dd",
-        "haloBlocks": "719f9270c26fb54bcc7712f018647ae76d09a2ee3e394a9174f4f76631728d14",
+        "blocks": "8cc0eba4c1ecea079043cd677e75bbf2a2938888ef506adcad75b28fb392414f",
+        "haloBlocks": "8c1d95bd02b9b1a9da451c3ea37808d9e1accc1f5cc433f689b9cf33520f1d59",
         "density": "4c643914eeaa99f69e0b06459fae10f2665f1fd7d6c721888d11852be7f939a7",
-        "columns": "832fa34945074e004e98e3264526ba945288e0326ab8c2d3719d565b7b724220"
+        "columns": "832fa34945074e004e98e3264526ba945288e0326ab8c2d3719d565b7b724220",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3588,10 +3660,12 @@
         "coverage": "warped-ring-transition"
       },
       "hashes": {
-        "blocks": "cf3c02824f863ecd9449d7b4137a8b604bfc253ada6e5363d8b39176775cf3cc",
-        "haloBlocks": "d41635a9773e676b9961ff14aa1c69e5dab04925af3e83150271b49b196dc592",
-        "density": "ec641b5a836a12eadb81c9bacdfb7d0687fbe164d8cba9089bf26f2b5e1f80f2",
-        "columns": "c8655e72222348de5bb312e4e72a58c528ddbe889346891b72a2ed84f6d361cb"
+        "blocks": "5bad4bdec05539bcb7dfc77afb620d0a0d3cdd78540ce974eba3aacc5fa686d5",
+        "haloBlocks": "5499d631188d36f6a04362c3fb9a79a397bcf18b282fee280b69a5cef87a2d7c",
+        "density": "e3e3bec6fcf20fbda40e214bbf390c229b993b014b66e679d50847c5b18d3abc",
+        "columns": "364be2fef394ae586df30cd0d1e11c37dc31d9e45bf09bded86e20a8b740a682",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3607,10 +3681,12 @@
         "coverage": "warped-ring-transition"
       },
       "hashes": {
-        "blocks": "41697e4eb79f58f0c3940665c31fc918540b8592351cf8d7a399c2da8805ed10",
-        "haloBlocks": "7c88a002c145f4f5b9e4268a9f6729b2d986740c6f2dacfbed10c23fbd36c3d4",
-        "density": "753d5f4577139d73d8841e55a215f6947a7b4fd804768480b2b2868012d8ccb6",
-        "columns": "2a111c600db22007bd101c32bcb0e2513a497175ca9d980c827103c930632cc9"
+        "blocks": "ebea497ebaf1c8affbf7f9601a0f8da5af04425669b1e4a62983952ac370becd",
+        "haloBlocks": "96b3e8dc0fd705c096d98341b6ff78de82d4665b7718354ee8c2bde7f3fb30c5",
+        "density": "3f4ac1d6b9fbb49b97db105049b471651f1539a095afad93edb9dfca83853c01",
+        "columns": "d89009675a309fb88ea7c1a9d7c4bf09176b2efc93f0cbb13c7c6b2b64e13303",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3629,7 +3705,9 @@
         "blocks": "7a15e2af0ae0c0b6ec842aa18a0cd0ea2539d7849a23624a6a17cc36a046cfcb",
         "haloBlocks": "7631ff40a08d0271ef697cd55b8ba8a3acc133b85d00b2ebf421dba51eb4e4cb",
         "density": "d5a0ec515d4c06c018c0349384e8ce0c02e6796a0c278ec97fd4009f1064a47d",
-        "columns": "cb4dc0002ca9789ab714dd0f3c50ea72c6406e9f43a956a611ef895a461460be"
+        "columns": "cb4dc0002ca9789ab714dd0f3c50ea72c6406e9f43a956a611ef895a461460be",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3648,7 +3726,9 @@
         "blocks": "d82b4c8a74fc89facd931c2beea35a98a5b94469f057b5a2bb45f0808a2530c2",
         "haloBlocks": "9f77e8117d3a776a20c1b6111577a80e0f62f2129037c4d41d3e541bdf4be38a",
         "density": "f126dd925bd90876224f6ac8230dd902ab6bc3197a27ce2762441d7fe09d1007",
-        "columns": "4264180c8db3643999720e3f500dfeab3ceb6e810600ec542abf008e862ac41a"
+        "columns": "4264180c8db3643999720e3f500dfeab3ceb6e810600ec542abf008e862ac41a",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3667,7 +3747,9 @@
         "blocks": "5ffca6cd007a585540e85b86a445631bb0cf524775d1f55160ce5839eca779d4",
         "haloBlocks": "6447a0ee46ed9efe4be3003719f697d56ec434397d01cba3825f7d64a5ef59b2",
         "density": "9eedb4c3ec6ddbb16ec6a5f8a4aa8a0b9beebd2d76c13dacb58829ba88a8e5a9",
-        "columns": "fe3c03232c6bb4559d7521c9f87ebfb69295c39d530568db89cc5c39e9f73e59"
+        "columns": "fe3c03232c6bb4559d7521c9f87ebfb69295c39d530568db89cc5c39e9f73e59",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3686,7 +3768,9 @@
         "blocks": "9fcb566ab49ed9615e21e2578a0ae534c391698c59960fadb629194369b09075",
         "haloBlocks": "6fff9e80a84bc7a0a7d4de205dae7a82d1b3b6fc5e0f5673224f3c3f21e4221c",
         "density": "83e879387f1e96d7d869104c7da5630cb863181a3b1234b77c1cc864e1755231",
-        "columns": "cb343565546a6f5e3e8770564601402b856adefa42f332d6d0522f4d7f65adad"
+        "columns": "cb343565546a6f5e3e8770564601402b856adefa42f332d6d0522f4d7f65adad",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3705,7 +3789,9 @@
         "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
         "haloBlocks": "1be1bc2d76e8aa1d484d128c0570e854bdbb895e2a787a8f12581b1d379abb22",
         "density": "baa08deb73c70ef2650e6476ddea553b60e8e5f5858811c1c91ea3ed9de8132a",
-        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3724,7 +3810,9 @@
         "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
         "haloBlocks": "58b3e20d6297a0cbf0d5cb498f2fab9be747a3de4f2f79b72eb24f9fad86e604",
         "density": "7feebf2dffb63be20ffb636bc95f5568e9885f46f2d7e0855c19f38ab722712f",
-        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3743,7 +3831,9 @@
         "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
         "haloBlocks": "8b5f5d80da99621cac7b33aea6c2dc8d11ab5dd309cbcfc30d6828ae8fd2a80f",
         "density": "6f52f56f4bfd347ce8f97023464a1b8c0e28d448554163d3e3608d7e5d3ec75f",
-        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3762,7 +3852,9 @@
         "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
         "haloBlocks": "7d89a9c836573a00821644cf3c27e0854c55dd4f2d5573b5f4c8f34e03128b6e",
         "density": "782e7ca7eb8be1bb410ade6d95bbb309f53c35db449b113c6b1269adf739878f",
-        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3781,7 +3873,9 @@
         "blocks": "0b1bc4208dd7f3a8249804514cb01d457207656dd6acb695c816cfb3e2898e17",
         "haloBlocks": "67f15edbfe2bb0df5c7ce3ae8f7089d716eccccb5fd221e74e624f2ae9914827",
         "density": "c18f3b1b443540958524f0567fd1778f3b91fb0e7a6bb9005ea06b01397a4cea",
-        "columns": "09bb65794c034f5eba9946309ed58b85f442c917a7ce95fcffabe2b249a8a3a7"
+        "columns": "09bb65794c034f5eba9946309ed58b85f442c917a7ce95fcffabe2b249a8a3a7",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3800,7 +3894,9 @@
         "blocks": "4f76e9188b6063650654fde6caa90189ee08262522be6f9e08cc0d75a7b4dc72",
         "haloBlocks": "21a236e48ac56faa68f52af1a0665d679dd12fbf32b4b15427fe2405a67b28cd",
         "density": "ac0701446691605092a29077606e1f91632028d57445fc4e9117698564f19669",
-        "columns": "09bb65794c034f5eba9946309ed58b85f442c917a7ce95fcffabe2b249a8a3a7"
+        "columns": "09bb65794c034f5eba9946309ed58b85f442c917a7ce95fcffabe2b249a8a3a7",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3819,7 +3915,9 @@
         "blocks": "4f76e9188b6063650654fde6caa90189ee08262522be6f9e08cc0d75a7b4dc72",
         "haloBlocks": "8d98320d427ca0dafd223ec85ee9f82027a2daa9fe04b499c81acb8b392a0753",
         "density": "3c0d38992f8a87db738eaa7ce5188d7dc9994a5cd597dcfc18d6a064585a6f1b",
-        "columns": "09bb65794c034f5eba9946309ed58b85f442c917a7ce95fcffabe2b249a8a3a7"
+        "columns": "09bb65794c034f5eba9946309ed58b85f442c917a7ce95fcffabe2b249a8a3a7",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3838,7 +3936,9 @@
         "blocks": "de2f256064a0af797747c2b97505dc0b9f3df0de4f489eac731c23ae9ca9cc31",
         "haloBlocks": "9736d8dd61f2488c3dfc458e674c95b61b1194c527dcf63ec29a0f0e95c6aaf6",
         "density": "d6fbc36722579b8b4c93a560716e629f250c92a809727860a3fa153892c3be25",
-        "columns": "09bb65794c034f5eba9946309ed58b85f442c917a7ce95fcffabe2b249a8a3a7"
+        "columns": "09bb65794c034f5eba9946309ed58b85f442c917a7ce95fcffabe2b249a8a3a7",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3858,7 +3958,9 @@
         "blocks": "19440f4b60024339abc7757ab4918b2d9c8e792e11052063b4755f00a4909c08",
         "haloBlocks": "c6d3d09c320d71169ee5e6832d117c93baf7bee882539ff222e1c32eac19d722",
         "density": "7cd74895789c51ac58176eb375b2e483bd424949a9d88cec0e17b223b749cf43",
-        "columns": "e0e76b7ed5620e722d05c7f1330bfc2bb26b7ab3a13794f14725f3d900588594"
+        "columns": "e0e76b7ed5620e722d05c7f1330bfc2bb26b7ab3a13794f14725f3d900588594",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3878,7 +3980,9 @@
         "blocks": "53c8df434c06478ff849712a8862f2c8234eaa81e841e35cca24987feeb143df",
         "haloBlocks": "c182b5ac713754615bceb7286cc68dc28788cfe4afa51a15fce85e271474dcc9",
         "density": "55d76dd6e9faa51e4066aac68bf6bd9f992de17a1c534044bc36d6e3a798e738",
-        "columns": "96e77729fd1cb4cea00d0e64da48ab9b6b5ff30365bd165354c9d4e62f092289"
+        "columns": "96e77729fd1cb4cea00d0e64da48ab9b6b5ff30365bd165354c9d4e62f092289",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3898,7 +4002,9 @@
         "blocks": "f71f0376c0e12c790f4889937bff24b6fc2868e9d76e7dde5f8cca8435795bff",
         "haloBlocks": "d26b3ff67465801859c1494da57954b4960be301bdbca650dc4f699c353e0f51",
         "density": "bb2ed89b6ff00e10e67ddab7253b555108edda241689cbc722c57a07f2507f6f",
-        "columns": "c3865e88d94bbac3e9eb74a088108f264f38a8962d87d40ce584e6d07e18e70b"
+        "columns": "c3865e88d94bbac3e9eb74a088108f264f38a8962d87d40ce584e6d07e18e70b",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3918,7 +4024,9 @@
         "blocks": "6b68ca3453938fd024050fbca9e07571d6e2742778b717d24994055269778f90",
         "haloBlocks": "871a709d66a9cc4790b675cae9b16093398f34cb4abfa98c558633316f954712",
         "density": "121bf986ab68dd31f1d59b37549619da7ecd1bc8605da5c4cd11c464df11dccb",
-        "columns": "8ea4306bac8c609641516756f13214aacdb4a3f54690e0b514660312e14b3bb5"
+        "columns": "8ea4306bac8c609641516756f13214aacdb4a3f54690e0b514660312e14b3bb5",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3938,7 +4046,9 @@
         "blocks": "a3ec3bcabc58f65ef1028ffc8de1b42278de1fdaf889148748744ae177eea29b",
         "haloBlocks": "1c4c350f7ba7a76b690bdf5ff7f209a3b7a672b47a68b8761e30981f2cfb325a",
         "density": "5b880fcb961cee683719f4f6791eb4f3e8c6caf6d24bc69d5eb76489154562d2",
-        "columns": "c1578fa4e1114526dcd08d41275f3aab8e1559b69cde72f12fab6cd9c02b7fd9"
+        "columns": "c1578fa4e1114526dcd08d41275f3aab8e1559b69cde72f12fab6cd9c02b7fd9",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3958,7 +4068,9 @@
         "blocks": "6a04d279eb663ec4363b75b0d427a930b9764e206b558a528ab216322d3fb06a",
         "haloBlocks": "0d6393a4654c4bf42d344f71c2aa77d2f1c496fe0a30de004686fe688a38ff6d",
         "density": "9cdadd33e4e4d98e5d3227b42b95d48c811a1d5adc3e129cdf3e3932e71a4e00",
-        "columns": "919dc817ce7b0823f1c3e561d462c9708f90556ed558482627489a0858e53770"
+        "columns": "919dc817ce7b0823f1c3e561d462c9708f90556ed558482627489a0858e53770",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3978,7 +4090,9 @@
         "blocks": "c881b257e11aeaa874e51e98f3727ad9e45876bb43dbac40ed10da144553976d",
         "haloBlocks": "3fc0ce72c028fdd9365ace2c896c0f2f73956d6e839fdf87d709591fcf493b39",
         "density": "4de064678e4e5d89f597e1799376f9ada49c9e64d2229480de7a313d173331b0",
-        "columns": "448519c5498462c769b3a30fb36d40de2d6d5c2154a640a0f7813a50469366af"
+        "columns": "448519c5498462c769b3a30fb36d40de2d6d5c2154a640a0f7813a50469366af",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -3998,7 +4112,9 @@
         "blocks": "d4add7790ae9d9e37b636690e88d817dd11fe02b43022f853dcb89ab8345c221",
         "haloBlocks": "65990d7ab7ab406fec1ad5a7ff1156a80812b1af1ae2356ffb83344272984825",
         "density": "ccc665f87fb10a87c414f77d6d3d475093d8b2277a6dfbda19c1f42daf29037a",
-        "columns": "bfa8a525f2eae458c545180cf769ecf3c60c89078436a5c975ea9703b9c5fcea"
+        "columns": "bfa8a525f2eae458c545180cf769ecf3c60c89078436a5c975ea9703b9c5fcea",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4018,7 +4134,9 @@
         "blocks": "c03b0a9c6af7e52f66e60ae9d923a441c28e0a9e46916cc4f01de091bb752bf1",
         "haloBlocks": "2a87d1caaf6af85cf066bd1bb7322ebd13f63098a9243760479738254a2780c4",
         "density": "f5f9e01844863b608ac0d8ce8e2b68165a909ba99761f2a6c84e8ea8f8f54f41",
-        "columns": "e6fb7278bf73840921e49ba2b170757e621911efdf3008fe2edb12471dea710d"
+        "columns": "e6fb7278bf73840921e49ba2b170757e621911efdf3008fe2edb12471dea710d",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4027,18 +4145,20 @@
         "world": "main",
         "seed": 2,
         "lod": 0,
-        "cx": 183,
-        "cy": 1,
-        "cz": 175,
+        "cx": 193,
+        "cy": 0,
+        "cz": 202,
         "spacing": 1,
         "region": "hellscape",
         "coverage": "dominant-region-terrain-air-or-water-interface"
       },
       "hashes": {
-        "blocks": "3c5e5680f9654c993a913b9afd26985958e3b4bd5126850f361fd6f221e655a8",
-        "haloBlocks": "41b2cd2962c014157da3d33fd3bb66c6a7e79fce0eda48e8ed3a91b98e090a1b",
-        "density": "dce7aaf99688e3bce753de44467b2b0620f1e0848ac70396d4bede5215aab31f",
-        "columns": "f3b0fd97103ff67eec08809137b6200bdce81e7541fb2ef786fb4b3966a5514b"
+        "blocks": "92925b01e6a2607a39d9339c3aad2d937a461a3b78212162cb4b01a172d11431",
+        "haloBlocks": "d8871e782f1b984f9a5b135519707edbefd36097e58cb70265ef07b4b2bea685",
+        "density": "b9180958c87e8a6401c8f21231a563b2a7283609e3a55a1083bd3a820d822a1a",
+        "columns": "320bd1ecb32f9b5483a507c24684f6a2db95bffe11355fdd5a7931dfcccefc21",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4058,7 +4178,9 @@
         "blocks": "3f5ca000b43e7ad733caec270160e3c3e938d78f2a9219b7ee9102fca6cbd843",
         "haloBlocks": "86426fdc67edcc0b0166aae876eafc36b4f1ecedd0c48f81914f58fc8c6e9a80",
         "density": "a50499e44e52418194e4086665b8fb312ad4ce03c8395e4ad46cfb6908f9f0b6",
-        "columns": "d9aa7bc717d7c9fc476f17d720f8742381716e8b7da4d85caa345f6dd733e69f"
+        "columns": "d9aa7bc717d7c9fc476f17d720f8742381716e8b7da4d85caa345f6dd733e69f",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4078,7 +4200,9 @@
         "blocks": "afef8b128c9027cc8c29d101b059edf6e5fc8fa7372d608df29d45bc27746d39",
         "haloBlocks": "7003f2fa600bd993fd28a62d953861fb74013704835375001b96134fab8c7072",
         "density": "b4c24956041381515c8f218eb5573e94ea033dfe8265f792f9b648dcb07996c6",
-        "columns": "16fc8793928324031ad3e15217b43c01681a61123b8ce523efe49fa3247c1558"
+        "columns": "16fc8793928324031ad3e15217b43c01681a61123b8ce523efe49fa3247c1558",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4098,7 +4222,9 @@
         "blocks": "e5e0ea5a0706dba12e85f1e88af51c10354e5011ba134c85f1d96e4c741fa6e4",
         "haloBlocks": "e06e34a218ff4a5947159f9c8a1a2bbfb411e5d337c72819637d28088ff49f20",
         "density": "7cc093127d4688fd5f6b089e26e081c0da55a74a597011790d6bb9d00ee03d37",
-        "columns": "10873a8c84ce78cf08f2da9063a5761433231d114189e990d192ff0fe6c9a2ce"
+        "columns": "10873a8c84ce78cf08f2da9063a5761433231d114189e990d192ff0fe6c9a2ce",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4118,7 +4244,9 @@
         "blocks": "25b30b36de0bbd329e94d66ff2f519f75c586e4f594a08ea7104a945f156cfab",
         "haloBlocks": "cd362368f8b455497feb1389c1e6603cb6e9679de7d17bb3adac90ffe6dd0ca2",
         "density": "58a8abd104dc5d19af5dce671a3ebf18b47474a7350ecae8efce7b092f63eaf9",
-        "columns": "f98a532190ae51e2cacd2b2fe080a78f660a856908c5ab0bce6d2d25bdbbff92"
+        "columns": "f98a532190ae51e2cacd2b2fe080a78f660a856908c5ab0bce6d2d25bdbbff92",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4138,7 +4266,9 @@
         "blocks": "df7c55f3f2b1869ff2b525dd03a1159f9298c21bb1a324265715dbbf27231926",
         "haloBlocks": "9d2882c6bfd40e88779507a1ed9530079b19f277ea0812ee9d65ac0f7c6faed0",
         "density": "5dd6b821c1f8d9897c44f1a9d8da932e61348a64e2131083c69ad6bbe02fd517",
-        "columns": "ff84e999959c80a2475d14a6b630327ed5f506da858f7487fc10ae82c70d9590"
+        "columns": "ff84e999959c80a2475d14a6b630327ed5f506da858f7487fc10ae82c70d9590",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4158,7 +4288,9 @@
         "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
         "haloBlocks": "4f81ca3cfecda83303af8494315ac6922e13d0b62ae1199070b29bad691cd277",
         "density": "43749189bb3319fca614b31a82a801e53889a0e7683947f4606bbb9068b04b76",
-        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4178,7 +4310,9 @@
         "blocks": "26fb3b720c69172f59fbfb4cec213200e65092ca114cd994953ba377c55088a3",
         "haloBlocks": "e7c87024820875ad963b4700d684a1352fb814a68eac8a58bca3b8b0df4591b9",
         "density": "50d553d38d49a1a6e5787e2ddb36ade4274eb024bbbc8307bc56ebb6c052b393",
-        "columns": "51418d5a4999c4100ae99766d1c948df4b9fbaf8ba52601db335443da253ac21"
+        "columns": "51418d5a4999c4100ae99766d1c948df4b9fbaf8ba52601db335443da253ac21",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4198,7 +4332,9 @@
         "blocks": "b1627c261ff90d4d9447eaacde19fc378245230e128bee9babfe9c6721c31a20",
         "haloBlocks": "583da6766eb21dffd8f7ca5db151fda4afdf3d39592dc230569209983d85d564",
         "density": "bb6f8a2e2b33243dc50dd0cf41a526e837476860227072e9c613f9c24e833829",
-        "columns": "6af174a36d350435bc06d25ede79135158eced699a581c8ce1fbbdaf3978d95a"
+        "columns": "6af174a36d350435bc06d25ede79135158eced699a581c8ce1fbbdaf3978d95a",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4218,7 +4354,9 @@
         "blocks": "d7240de553c09c59738e20dc33dd50bc8b5cf9103f334cef076123f0f42deffa",
         "haloBlocks": "def8b8feb85bb21ab1742b2845bd99e2a6f81f7a56ec2bac998e6f86b78defa9",
         "density": "78ebbcf7004c39a47fbbe415f59c2863648e906dcbc8925149e9f4be11f278c6",
-        "columns": "384107057763d944edcd1ae31e5b292199ed13b27d24c9848cbd33ffa722e9cc"
+        "columns": "384107057763d944edcd1ae31e5b292199ed13b27d24c9848cbd33ffa722e9cc",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4238,7 +4376,9 @@
         "blocks": "b19db7d153740922b98bf7b726c341034d3a3dd902e426c52a02333d892319f4",
         "haloBlocks": "285aaa2c5c10be39bb081e7a4002aabc3b5c938020f919274a24fc8b53979d1b",
         "density": "e3b6b630b8ddc6bc0d3e33eb2131ea5b83a2f9cb364e946ffdcc8cff64ac226f",
-        "columns": "fc1f7efb4fab15c6a43a0747d1b085861d925f141e05a82aad1bda99576b5585"
+        "columns": "fc1f7efb4fab15c6a43a0747d1b085861d925f141e05a82aad1bda99576b5585",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4258,7 +4398,9 @@
         "blocks": "c842c785b6fa08d9e3bfbed9c523b6e4b3f9bf9e8dee36c86dc42fa4cb959d4c",
         "haloBlocks": "3ea069a047ac43f476919a6165937ccb1edf8d208b7d033f39f421ac9a39a4f8",
         "density": "e0951644e507a6308db8940b5c04ca41aa5ca0171cb0a6a431aa3f9706f0c5f3",
-        "columns": "b5ea1f56b1f47d14e3ba1a2426e8596fa0f8767acae41b2d55941ed05a65c1d8"
+        "columns": "b5ea1f56b1f47d14e3ba1a2426e8596fa0f8767acae41b2d55941ed05a65c1d8",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4278,7 +4420,9 @@
         "blocks": "e23e6e9e5c167ccc7495126a84efc46406cadf0f96bfb832f42a78195de5eeb7",
         "haloBlocks": "7f80de1445b6ac92d53ecbfdd530dfb61ad02a502ea8f4146aa7597d10914e24",
         "density": "97cb2b7dead558219ffa2f349822cba7f6ee6399213afd6f9863d7dc16e6378a",
-        "columns": "60a83ee88189587f0d394bfac01b7a6e5e65b511c12358d33dd2ca52482e139c"
+        "columns": "60a83ee88189587f0d394bfac01b7a6e5e65b511c12358d33dd2ca52482e139c",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4298,7 +4442,9 @@
         "blocks": "4dc9732adc4466009150a11424a1b86729b4f60d73ada799bb979c1a1bd14522",
         "haloBlocks": "725479fa8419430d8400cb11502dca5125255752e04a1cc2f8946f8dd6b36e26",
         "density": "d0a3d65b12d1f6127127812b19e6fa486d9dd3645e2a314e83f8b8ba1175cf33",
-        "columns": "39305fcf33e660117a11795355fade6bca4942841f546c9ca78c9904b2146d58"
+        "columns": "39305fcf33e660117a11795355fade6bca4942841f546c9ca78c9904b2146d58",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4318,7 +4464,9 @@
         "blocks": "f33fd77430397b264067772e90d1d8d4362de4da07c519cece9d26358f37fc7b",
         "haloBlocks": "def0329f9e7a3d7a2623edb67a176a793f64a7cc0765e241573d238a1310abcf",
         "density": "38b57fb0aceafff9ce3252a82f0c82eaf34bd67cc1c16bd5def078cab75eac3a",
-        "columns": "73edc33c0bd2f0623b04dbd158fff243e41ab0b5d5b0e15ac87787f2f10e9a6c"
+        "columns": "73edc33c0bd2f0623b04dbd158fff243e41ab0b5d5b0e15ac87787f2f10e9a6c",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4338,7 +4486,9 @@
         "blocks": "54300f12b53c1c813476c3df3e77d9c02eca87f77a6fb4b0e1ce9b979c8735cb",
         "haloBlocks": "047ebd0b81034e402438448eec9a88fdf4497e5a40f037266d053969604ea297",
         "density": "b0467880140659ba98f19bb278b6d626b68e914ea7cd81ed852910de733aef5d",
-        "columns": "2c10eddcaa4e9179dce425b5c52b4a47d0e4bd4b8b0d71e0ea74e4f58da59906"
+        "columns": "2c10eddcaa4e9179dce425b5c52b4a47d0e4bd4b8b0d71e0ea74e4f58da59906",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4347,18 +4497,20 @@
         "world": "main",
         "seed": 2,
         "lod": 1,
-        "cx": 91,
+        "cx": 96,
         "cy": 0,
-        "cz": 87,
+        "cz": 101,
         "spacing": 2,
         "region": "hellscape",
         "coverage": "dominant-region-terrain-air-or-water-interface"
       },
       "hashes": {
-        "blocks": "02992d7a54f7139b9b2440d8882650c261e89212eb0fe7d80851cfedaa9490d6",
-        "haloBlocks": "b64b1415fa983019efbc9ecc4f79e828ac70c866c176acfd3f7f68800ab4942b",
-        "density": "55d4787eb3c11f52bf0811665f11d6fe3881d5c93a2a9a7870fd7fbd0e8797eb",
-        "columns": "430cfcbc296e872cec044e36c1eccc06c275cc67e31e525fa612cd7c957c4b93"
+        "blocks": "0a7e279f6aef75269ab5fe8441f70d884397342b230cf52919cfa9140bbaf98c",
+        "haloBlocks": "b520168bf15b82d085419570a86624811d03c24bfa70305607f22f0b776f7c11",
+        "density": "f11cf8c75c075d1b7f7e133b09071627cab6a7d69c6f03d108b86d1dee1b3f06",
+        "columns": "0ab404bd0dcf840007921ad3dc86d5f928f8301f6950163daa24ec53f0600045",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4378,7 +4530,9 @@
         "blocks": "b6017b09c2d64d722bcbcf777e90884040d3e75ed441ef6cb3ab52c5db245e75",
         "haloBlocks": "6c73250ae81f8cf7b32c009165879b44b7120a23a43513c6581da090fb204eac",
         "density": "e7859aed5da3874e95ab1145a6a71975eec99782e11b6a9d95248cb5d9d862e9",
-        "columns": "04c1742d2abb77ec260ed1c1542c37f058e599660569067c266c6131be8bcc2d"
+        "columns": "04c1742d2abb77ec260ed1c1542c37f058e599660569067c266c6131be8bcc2d",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4398,7 +4552,9 @@
         "blocks": "54cb640c5d1fb04fc32bee4412a18b815fae775b94ca2aa64c016a580b88e3f4",
         "haloBlocks": "f9cb23579b648254165dc3ce38fa1527dc8a83a0fe6f2bff3c0f664ad60f9193",
         "density": "45b6c42842310d51ddc3a77db2dd9b8a31f6f60679e5a87786dc3a647d6153af",
-        "columns": "ca9b627aa5e4bf30e73d0b1fb907edfcc68f44d8feda7fcc6932ec7201465d69"
+        "columns": "ca9b627aa5e4bf30e73d0b1fb907edfcc68f44d8feda7fcc6932ec7201465d69",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4418,7 +4574,9 @@
         "blocks": "5ed6fbf7d1c631cb2465a014509c11399ac320865e132e287613bbb6b361b6f3",
         "haloBlocks": "5bde5a02dfcaaad45d8e35129ee202a2e40ff3bdaa909d88fcc5ca649789a3a7",
         "density": "14cf070eaf0bda0be594ba96405071b92c418841c7dab4934c5f71466fcf64eb",
-        "columns": "e5b39ac9da38487578c652cb6db524fa8e7abbda64e134fd71836c6dc13686d5"
+        "columns": "e5b39ac9da38487578c652cb6db524fa8e7abbda64e134fd71836c6dc13686d5",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4438,7 +4596,9 @@
         "blocks": "e6d76c2c8f9d3ab0e8e19d08a7f2863ed13aa62729e15fdf1dff1814fdcdb358",
         "haloBlocks": "01e45927a24341756dd8a6316c7cc2b61f848ac8d387a86419feae34d58076e4",
         "density": "8727df26bf5d7a9736a2a1b33cf071c4203d13bcf8464882126ca31e26b3a606",
-        "columns": "70fafb204b005bd33a13fbd214086b0ca81f22d24c0e52b94b1ab01bdbe4210d"
+        "columns": "70fafb204b005bd33a13fbd214086b0ca81f22d24c0e52b94b1ab01bdbe4210d",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4458,7 +4618,9 @@
         "blocks": "35e4975faafa7d808eca9f6ef758cf8b95e7414c51ee88c0edf26c7283e061d0",
         "haloBlocks": "1147ea3a2019d2fd39fcd5506cc72621840b83efaffe63955f0981b9ede6d59f",
         "density": "99feb47f937560c66d03b45c2f508a3248c2bcda42be08dd012de69c327505ce",
-        "columns": "6a3d6e1284aecf8818fb505e110ee9f51fbaf93d33fcdda0f2e6f8db1a94d22b"
+        "columns": "6a3d6e1284aecf8818fb505e110ee9f51fbaf93d33fcdda0f2e6f8db1a94d22b",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4478,7 +4640,9 @@
         "blocks": "c1585103169e8377531d8c10f723b787879339e2c3488872d80f24b7ebb70f41",
         "haloBlocks": "4c46bec298589305dbc0b81171a28ad649dd551be7429d4509e0caec71e7f535",
         "density": "da60bd56fbd86ff912366e7a02b112e9fe6f14f63dfff2c54667f000d1b99fe9",
-        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4497,7 +4661,9 @@
         "blocks": "7a5b7232fae30c9f478a87adb7102892844627eca070f5816cad271a59ac2618",
         "haloBlocks": "dded224b5487ab1ed3863ded5b9d3252ee9f9e2ba7be468ca99b26696736c5b4",
         "density": "7eb0748b95f01271afa792d0b4d40485d97545b1b138687b1cc586b3bf327eb1",
-        "columns": "25d5fbabd6c2dd66f14f2aee8c03b8ca6f733fda6e89f3af90d9bd5e592a55b0"
+        "columns": "25d5fbabd6c2dd66f14f2aee8c03b8ca6f733fda6e89f3af90d9bd5e592a55b0",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4516,7 +4682,9 @@
         "blocks": "a91d8724becd0b102ddce66f520bbdb03ad758aedefba7f5a43a1140ea528478",
         "haloBlocks": "001555fb934e930a47f3cd557018b0db9b098cc167daba413a75db7b2059c0ab",
         "density": "e9ba7fa9f4e49c323d8bb3ceb016ba1f382f889dffdeee72e51f146572757033",
-        "columns": "b00842c9cb44e4fefa12ac5539c4d600600a013c6eb79c1f002acc4dae37ce58"
+        "columns": "b00842c9cb44e4fefa12ac5539c4d600600a013c6eb79c1f002acc4dae37ce58",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4532,10 +4700,12 @@
         "coverage": "warped-ring-transition"
       },
       "hashes": {
-        "blocks": "db899a6d728f56858ed3013080696e54fa3a24fb6bd7f8c861ee43218cc2a7ee",
-        "haloBlocks": "5394e86be3ba87ea36590da8785bb7a524cb50e9d1e66c105fb59f5dd5dadbdf",
+        "blocks": "cbeaf966d141e5a889894eed532f7ff85922ca28c39a70f4da1687373df8b871",
+        "haloBlocks": "e448a9358107153ed78e3d7c35a7e6b3c4b4bbf52bea61eb96d57f5c7e34ff1f",
         "density": "d82ec9f5c4ad5765bd5180791ec6f31734a6934e83e9e2bda2b17e74fb08598a",
-        "columns": "9322f5e4dfa99589f6d3b4277e3a59251a0ae67c91614fc7b94bfa02df16a204"
+        "columns": "9322f5e4dfa99589f6d3b4277e3a59251a0ae67c91614fc7b94bfa02df16a204",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4551,10 +4721,12 @@
         "coverage": "warped-ring-transition"
       },
       "hashes": {
-        "blocks": "6e783b7e84d791c206ed62e6df5e4c64f38f352e4a0e64f1fea8e0cf36caa8ce",
-        "haloBlocks": "28e05f2c56a7f9c839a9e8fdd2e85bbb43b01bfe9b6a8632a1706adbe0153c0d",
+        "blocks": "98afccc1e06abeb938f944a7c15ded51e43b135a17ca0e8188c713ab8655e87b",
+        "haloBlocks": "95b42b80cbea49e0530164dde0a48f8f5aef52f4990109c2bc6d7e66c9f2dc2d",
         "density": "1c510935e76c0e1cec97fc7c1fb6c957301ba689dcd9bed867a6a13e6fa9450c",
-        "columns": "7eb6944f9c37e75d96d5b36e1e776209a764f238d15c5b3b9e3bbe9fc55561a8"
+        "columns": "7eb6944f9c37e75d96d5b36e1e776209a764f238d15c5b3b9e3bbe9fc55561a8",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4570,10 +4742,12 @@
         "coverage": "warped-ring-transition"
       },
       "hashes": {
-        "blocks": "e0f42c7c1dee56b3f4e39bd8a18054890d8fc78d3a270c3a421cec68c3cbb18b",
-        "haloBlocks": "695c049c92990f0399c84a20e2cb59df4c8fac491a5b5f57468785e7813d13f4",
+        "blocks": "50b5cc1c43fffab2d12ff33b67454886ab66e269479f25ee3546da95c61b65d0",
+        "haloBlocks": "0726c38da299ae657bf0d6099fdd6ba9f12eacd9fd0011683cfc605517720dbb",
         "density": "2a9cd9b6b7dd12c3169245d75c95cc740b7f4825e435a7b5fd9cc22f090fc662",
-        "columns": "405ef45904d53848b06070cd2a75f85349b1d8a29d93e51e2051b3cb152e8af8"
+        "columns": "405ef45904d53848b06070cd2a75f85349b1d8a29d93e51e2051b3cb152e8af8",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4589,10 +4763,12 @@
         "coverage": "warped-ring-transition"
       },
       "hashes": {
-        "blocks": "b815f2bb90c46bf52ce75c1a8b114010874d1285cd40943d3155cbcafbcfabda",
-        "haloBlocks": "542ce8668d0aee76b3a3dbc5b4fd8a281f914e563ee7556ccb5464b7601c5338",
+        "blocks": "d77a8c6ccdf693a083e218b9d2b475931c916fc08b2c78d9a47bfd5e6b76eb9f",
+        "haloBlocks": "142180889803b56189f56a17667c8b6ca86c3d8d8f752a575f9b617581c1bd2e",
         "density": "e655e64dc061078df6d8e045451ecc8bab7ce773393cee8c0f194c826c815fa4",
-        "columns": "17eaa4f94feda052e76a51d969a8396bd4a3e385066f4da1a6b954dae3b8ab34"
+        "columns": "17eaa4f94feda052e76a51d969a8396bd4a3e385066f4da1a6b954dae3b8ab34",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4611,7 +4787,9 @@
         "blocks": "8fc329b4139de20e3d6be93639ab303f87250a06b1f57586391d9abd5e72b91b",
         "haloBlocks": "ca5daeedcb8f4253de1939a83e1af34aee8884a854be32d867b9d780dfcbd047",
         "density": "290a917b16faa746b810a65c2d5e977263e013d4679e08b08447aa05a76e462f",
-        "columns": "031cd88d6df353cf4de693a9cfc91858d9be1f6e0878d6b3360b42467784d3f0"
+        "columns": "031cd88d6df353cf4de693a9cfc91858d9be1f6e0878d6b3360b42467784d3f0",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4630,7 +4808,9 @@
         "blocks": "81afd751ad3512b1a1e960d63d7d3ac866b12d5d4c69e9883d82104bee3471f1",
         "haloBlocks": "55600232a71e9994a49b14cc141284638c1f7683643f66012e8364a5e4c6e6a7",
         "density": "f6ecda3877509134ef8b3020426b1257daece8117e711061336e20aa70ed9dc0",
-        "columns": "44ada839041a509c9b2b1157aa4365a04cb3235c858dcf6f92333acb5d2d7252"
+        "columns": "44ada839041a509c9b2b1157aa4365a04cb3235c858dcf6f92333acb5d2d7252",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4649,7 +4829,9 @@
         "blocks": "679aa58b1c8ad8f6443d0899791138098aec6f850f7b949fe6d591c2af25989e",
         "haloBlocks": "68cc56285fa6d07ace6109ec5a8115906b8ae1197c9d1716fda1266a2832bfac",
         "density": "ccee3870a616613932295fe85a3faea5c79a1ab050682423a175e53999741e88",
-        "columns": "d514944b6527e48d9762b917fea5d019d8e6b67f07d7ba1510afee6bb96bd9d5"
+        "columns": "d514944b6527e48d9762b917fea5d019d8e6b67f07d7ba1510afee6bb96bd9d5",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4668,7 +4850,9 @@
         "blocks": "246cc23e60a17f4a1552b3ffea21138cff1f4a1691676b7efb5cee57e433bba8",
         "haloBlocks": "437ede3f63f30fe92918871b5ec6fa8de6b87f517cc745f0d79dde33e19f01b9",
         "density": "84a28bca53c89a3369e5a2e9b657bb5d9aa23ee144f38f7aa62dc11db6c49c09",
-        "columns": "70d6fe2e18865e83e2f55c88c97458869f34e1cf94493c931d6f4ef77981e9ff"
+        "columns": "70d6fe2e18865e83e2f55c88c97458869f34e1cf94493c931d6f4ef77981e9ff",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4687,7 +4871,9 @@
         "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
         "haloBlocks": "1be1bc2d76e8aa1d484d128c0570e854bdbb895e2a787a8f12581b1d379abb22",
         "density": "baa08deb73c70ef2650e6476ddea553b60e8e5f5858811c1c91ea3ed9de8132a",
-        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4706,7 +4892,9 @@
         "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
         "haloBlocks": "58b3e20d6297a0cbf0d5cb498f2fab9be747a3de4f2f79b72eb24f9fad86e604",
         "density": "7feebf2dffb63be20ffb636bc95f5568e9885f46f2d7e0855c19f38ab722712f",
-        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4725,7 +4913,9 @@
         "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
         "haloBlocks": "8b5f5d80da99621cac7b33aea6c2dc8d11ab5dd309cbcfc30d6828ae8fd2a80f",
         "density": "6f52f56f4bfd347ce8f97023464a1b8c0e28d448554163d3e3608d7e5d3ec75f",
-        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4744,7 +4934,9 @@
         "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
         "haloBlocks": "7d89a9c836573a00821644cf3c27e0854c55dd4f2d5573b5f4c8f34e03128b6e",
         "density": "782e7ca7eb8be1bb410ade6d95bbb309f53c35db449b113c6b1269adf739878f",
-        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4763,7 +4955,9 @@
         "blocks": "0b1bc4208dd7f3a8249804514cb01d457207656dd6acb695c816cfb3e2898e17",
         "haloBlocks": "67f15edbfe2bb0df5c7ce3ae8f7089d716eccccb5fd221e74e624f2ae9914827",
         "density": "34120b5130a4e860aff938ce9a5f6d5f973d844507ce674f684046bfcbdaeeb2",
-        "columns": "4502c980d9b49825a29d0f41f8df3617ba4864620f829ab76254e4529e207a22"
+        "columns": "4502c980d9b49825a29d0f41f8df3617ba4864620f829ab76254e4529e207a22",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4782,7 +4976,9 @@
         "blocks": "4f76e9188b6063650654fde6caa90189ee08262522be6f9e08cc0d75a7b4dc72",
         "haloBlocks": "21a236e48ac56faa68f52af1a0665d679dd12fbf32b4b15427fe2405a67b28cd",
         "density": "a5663cced073283eb6e98b75785f8855c5b26532bb387d3a5baeabf701f94799",
-        "columns": "4502c980d9b49825a29d0f41f8df3617ba4864620f829ab76254e4529e207a22"
+        "columns": "4502c980d9b49825a29d0f41f8df3617ba4864620f829ab76254e4529e207a22",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4801,7 +4997,9 @@
         "blocks": "4f76e9188b6063650654fde6caa90189ee08262522be6f9e08cc0d75a7b4dc72",
         "haloBlocks": "8d98320d427ca0dafd223ec85ee9f82027a2daa9fe04b499c81acb8b392a0753",
         "density": "2cc2e58ef2874103f40e26281d71bf3126004277c1cea7a19146e50a2b4d32f6",
-        "columns": "4502c980d9b49825a29d0f41f8df3617ba4864620f829ab76254e4529e207a22"
+        "columns": "4502c980d9b49825a29d0f41f8df3617ba4864620f829ab76254e4529e207a22",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4820,7 +5018,9 @@
         "blocks": "de2f256064a0af797747c2b97505dc0b9f3df0de4f489eac731c23ae9ca9cc31",
         "haloBlocks": "9736d8dd61f2488c3dfc458e674c95b61b1194c527dcf63ec29a0f0e95c6aaf6",
         "density": "2f9501b9e36a26645cd5875dca848e9278360504f2214bd11ee711fd5bc48bca",
-        "columns": "4502c980d9b49825a29d0f41f8df3617ba4864620f829ab76254e4529e207a22"
+        "columns": "4502c980d9b49825a29d0f41f8df3617ba4864620f829ab76254e4529e207a22",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4840,7 +5040,9 @@
         "blocks": "fcaa5ce11330f47602f16e8e5a1c32172c886b18833520ad53db2bfd77432e96",
         "haloBlocks": "d27aea0c457dee155a23172f75ad139f626eae2f23eafff005ae0965b59a2109",
         "density": "6c4493130eb6c366175455e3ff2697d59214a350626f9219151c8eb8994cb006",
-        "columns": "398dc98f67fbfd17d527c6b06875cc0cc5611b27d38fdf98097e0db264add009"
+        "columns": "398dc98f67fbfd17d527c6b06875cc0cc5611b27d38fdf98097e0db264add009",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4860,7 +5062,9 @@
         "blocks": "6ff2d2a3fe666c563fb787ae9507148d0f8ffe524ba37e5b435b64f9e29d88e2",
         "haloBlocks": "2b31ed36dd54915e30fae82126e4d057031eb42d227bf029bae9b1dab9e32c39",
         "density": "12e4993b44a11daac12e4c0c770f3f7922f5042cea61250a4b005ba8f09c34bc",
-        "columns": "2636ca9ec31339cb053e9fcb420b51d38ddf114eb8ba080186bf7ce73c7abca2"
+        "columns": "2636ca9ec31339cb053e9fcb420b51d38ddf114eb8ba080186bf7ce73c7abca2",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4880,7 +5084,9 @@
         "blocks": "1260fe0ecb3be4e96a31a5ce9cc3e536201e6b80e7ed99c9351077f895df541c",
         "haloBlocks": "b291fc3cc6db2ce4aaa7907a122b1804e8f02922e61fd159a219e48921eec6d8",
         "density": "4f4e9d60ce2dea348631a2857dc00beeee918d1163c24c8ff2f695be0563beb1",
-        "columns": "9a805d03d337059ed7bf5d590e7c0a86a3d877073d3edf9b052a36c3bd1ff44f"
+        "columns": "9a805d03d337059ed7bf5d590e7c0a86a3d877073d3edf9b052a36c3bd1ff44f",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4900,7 +5106,9 @@
         "blocks": "71a1f74c577b5ebef49392d28ae589444035bf04f4ff77db4f94b37ba1619cf0",
         "haloBlocks": "537916bf50c60d1475265e53a2ee75317932129b99a8eb91d1b96da619a570a2",
         "density": "54b9ce1e0265971125fc99047e1ab1dc4946cde957e325813c5cb863e551b89c",
-        "columns": "c32e09e7b70ab16b84b3931158967a839d85039fd48352c78010c990f06b5c30"
+        "columns": "c32e09e7b70ab16b84b3931158967a839d85039fd48352c78010c990f06b5c30",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4920,7 +5128,9 @@
         "blocks": "a93e636c71b72f4283d3aae53bc06b73efac812542e29795c76988acf64c57e2",
         "haloBlocks": "38e30cf8d6b096a0b32b807357f3a4579f8f40d6d19876506a1159cb8a9cc646",
         "density": "13c9b62dbd4d07d4656fa9ac3baf8059bfe8d66f6c3ce5bc4f7f9be91b03e4b1",
-        "columns": "9fa8a933c1e17a9220f5f7789725f50a1079f44e77a705921929b90a5cfe7484"
+        "columns": "9fa8a933c1e17a9220f5f7789725f50a1079f44e77a705921929b90a5cfe7484",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4940,7 +5150,9 @@
         "blocks": "0f99f921ce7b625f63420877164747606a05e68d25657c9a694534579ed39ea1",
         "haloBlocks": "c32264aee4f192c379fdfa60a332cab09ce2ffbc0057452807d76db369ea83e4",
         "density": "b28f9e93d083c3a39ffd384ead00684ec5bdb399a4077b72a97dadcc3f97dc23",
-        "columns": "8a7721b2e39a8f5d4d85453d54fe586ead29371487a459ee58198a003d8ddbc1"
+        "columns": "8a7721b2e39a8f5d4d85453d54fe586ead29371487a459ee58198a003d8ddbc1",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4960,7 +5172,9 @@
         "blocks": "2ab990fdd2828be3d25746768b19dd4f175e90617dc37d7442ff388e772d105d",
         "haloBlocks": "bbdbe7358497891bc9e5996d10992016156b618c45cdef2b40f75794687c807f",
         "density": "fc50b704b325f9f8feee0ace46b4fd4e08eb096673ab61a7b45fff20f8dda8fd",
-        "columns": "fc2af84fc88913ef297dd9f46a3b0c1fb1820089de822599f9ccdd643f325214"
+        "columns": "fc2af84fc88913ef297dd9f46a3b0c1fb1820089de822599f9ccdd643f325214",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -4980,7 +5194,9 @@
         "blocks": "249c9699e7c677840552c37a603ce50325dc4f55cd4b7a31e04f7b457177abf4",
         "haloBlocks": "8db08ba7e462eb1e64eceeec495031dd7c4403fde5c624f6b0229ad0cc9f2d49",
         "density": "2cb1db3bd776cec79d210d4556e3a8f96bd7adea2bccd94fdea5b37d33bce0ff",
-        "columns": "8119bc2e4148eedeb01ad7353dae8a15f27b0368887685f1a12915ee480def10"
+        "columns": "8119bc2e4148eedeb01ad7353dae8a15f27b0368887685f1a12915ee480def10",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5000,7 +5216,9 @@
         "blocks": "c080cb9195f561e7b3c6ee62ac75b3605d9e57989e405d3eb03674afab92ceb4",
         "haloBlocks": "90d5f09bb61774c9494d98284cec24b2a3b218729ce12a8e8a5e377403e785e1",
         "density": "7aee408d919ec703897310387299f398b02f6096cadecadf0afdcb44bffb77f7",
-        "columns": "7e483be2752082ece4d836daed7634a1932f1b1a0c11e95f5bfede65aa723af8"
+        "columns": "7e483be2752082ece4d836daed7634a1932f1b1a0c11e95f5bfede65aa723af8",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5009,18 +5227,20 @@
         "world": "main",
         "seed": 3,
         "lod": 0,
-        "cx": 169,
-        "cy": 0,
-        "cz": 202,
+        "cx": 179,
+        "cy": 4,
+        "cz": 183,
         "spacing": 1,
         "region": "hellscape",
         "coverage": "dominant-region-terrain-air-or-water-interface"
       },
       "hashes": {
-        "blocks": "9b724d8eb9b05839b1753135853290565e88bb213d9bb52a448bca513abba3f2",
-        "haloBlocks": "b35c1423442f430657f2cc88a8ff8b97f71e6cd2391007a5b6264afa91797c7d",
-        "density": "76f4bb30e38cd8ac69300df3def2604465b5cfdbc74e00b072678d1a75e2b82e",
-        "columns": "912feb34dfcb5a0e7e2cf8b8dfcbe337f98f63cf54f1ce7e7830156d243de73c"
+        "blocks": "2a16f609a81d1624d07d3fb8fe3d9337bb9d8a615ceb93aaa3a6d64ff5a657e3",
+        "haloBlocks": "f5b3a3e449e1674da3ebdc83e84dc7e2a578b7bf9ab2f062e45a264c1737f3d9",
+        "density": "700ed15f66e8b8b5f6bc85164c3cb18b58be3c1c3760c2204c4a3a14b357a54a",
+        "columns": "96f2f93269eabe0cf3087e7780365566e4ca1ac5ac76116b0469a583ddb6d081",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5040,7 +5260,9 @@
         "blocks": "6172b2f95b850bbe567d2e4eed6cf81d42b796ad878761927bcaaa687c4a683d",
         "haloBlocks": "cac20e7c7278ea74af8da4d45733ab9a9a6bd0ab8db8af2cb8c282c1cb67445e",
         "density": "27359125be7886357605d791c510dc11a5ab2272fc6d7c210967d7581fee139d",
-        "columns": "a41935fd4849adb03b9c413d4ce532add08352aaaac4fb99ac7409b5ecc9a7e8"
+        "columns": "a41935fd4849adb03b9c413d4ce532add08352aaaac4fb99ac7409b5ecc9a7e8",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5060,7 +5282,9 @@
         "blocks": "b0d71dd0f570e7f7b306413e86f8899688d8f12d99d3978e06b364e94c42732a",
         "haloBlocks": "e814bdf7f1eafa2a588039e13dfcbacc976b104c77cb70766efa9bab8da9b992",
         "density": "b97f143290889d1fca16c31acf392f300ae177733d8d8dcf4a9081afdc0a9a3f",
-        "columns": "0edc693a3f37807574aa2fec8c132265c0cf6d0e2c55e891bb0f1d5fe7ca2065"
+        "columns": "0edc693a3f37807574aa2fec8c132265c0cf6d0e2c55e891bb0f1d5fe7ca2065",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5080,7 +5304,9 @@
         "blocks": "225a30c1e1d5a8536bdc72f99eaba7193cb2ee73b949b5b7bb0635cd7c8bfb49",
         "haloBlocks": "815bf101e59f9ef5d467529782f22b90493788ab07be45d502addfc683c0cb82",
         "density": "95d7887bdf3db57407a6d49201ab462d4e577d45f8acb713b5518e6c3d1fd5f5",
-        "columns": "edda9457bdf9d73db32d1008af0c08a1e35d00819e7a9f0f31ec4fa47486fdbb"
+        "columns": "edda9457bdf9d73db32d1008af0c08a1e35d00819e7a9f0f31ec4fa47486fdbb",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5100,7 +5326,9 @@
         "blocks": "101f62246d849eabc74a9e086e75650bd5eff87fd3fcfbd9960bd706ce8513b0",
         "haloBlocks": "7bcb684b54016b7c26a6499fab0abf04ff522dac9737b84b257815815953aeec",
         "density": "08e63de73ec1353a16b8d6bddeb2a99c869fe2110293f40d0688b8ccd15c9a8b",
-        "columns": "efd694f5ea00ce6211a03c5abf78b577967faf134ffb1da1a7fa5ce3e6776402"
+        "columns": "efd694f5ea00ce6211a03c5abf78b577967faf134ffb1da1a7fa5ce3e6776402",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5120,7 +5348,9 @@
         "blocks": "6e8606fdf92182589810a45e6605e1a34f2b91acce2d25bc98e6180bf1dec1f6",
         "haloBlocks": "e81a37099ff29fc826b627fa503f8ff0d8d511db78dee098cb65908a4cb839d8",
         "density": "0ce8782d53dab1acb6346851f02eb26021fd5a9bdfa73484447abffcd644c840",
-        "columns": "d50ad06dbfc4a325beb07d7ad331b1fbafac6aeadbbdd341a578e306cc22d664"
+        "columns": "d50ad06dbfc4a325beb07d7ad331b1fbafac6aeadbbdd341a578e306cc22d664",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5140,7 +5370,9 @@
         "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
         "haloBlocks": "4f81ca3cfecda83303af8494315ac6922e13d0b62ae1199070b29bad691cd277",
         "density": "43749189bb3319fca614b31a82a801e53889a0e7683947f4606bbb9068b04b76",
-        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5160,7 +5392,9 @@
         "blocks": "76774b447211aa2db04d36ee5903458a6490afd86846f0195e33f43809b77384",
         "haloBlocks": "d61f8834dc157e5ac346d6f88cc82bfddd8b38c81dd83aee64c722fbd350b0d0",
         "density": "1897129773643e1e6fd87b91f4370898f764065063f889b5d232ec640ec4322b",
-        "columns": "2cf9a1949c11fef556f561a9bc454c8a967a0b45eb0e29f1d561ac8229ce3757"
+        "columns": "2cf9a1949c11fef556f561a9bc454c8a967a0b45eb0e29f1d561ac8229ce3757",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5180,7 +5414,9 @@
         "blocks": "99931e842ea961693533d2706bcd86c9dd17fb136027b810c66671bb9b7236ee",
         "haloBlocks": "409010800297f49078df0f6bc0963a33c75a18ef8b18c572656d90bd0df69d68",
         "density": "43a13d3717de23d82d3c29f08dc1433da4f7dd7d7dd8efb6456e5adff4863136",
-        "columns": "041a7a878d8e74f41c757795e3755da523ecfaa1959404892acfb72cc556875e"
+        "columns": "041a7a878d8e74f41c757795e3755da523ecfaa1959404892acfb72cc556875e",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5200,7 +5436,9 @@
         "blocks": "64f725f5c43e158419b63f31560264c0b032938aec7890ea14484eebf2adeef8",
         "haloBlocks": "3727273353b8b9886ec88e75457a8798b9768c246abb5b014c772ccbf00002a2",
         "density": "d6bf7fc643659689f1ff8dc6f34abb970382cc195e532b3b828442b74a559b48",
-        "columns": "fab3b5cfdf57d2b3f9405a94f87a5c58f909e8c28b4315812c8463342d65b1c9"
+        "columns": "fab3b5cfdf57d2b3f9405a94f87a5c58f909e8c28b4315812c8463342d65b1c9",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5220,7 +5458,9 @@
         "blocks": "029479fdc6df3756a568b36a000c78d8bbd4af6c7d73a80fe04246f63ac6051b",
         "haloBlocks": "d6146b15ee9ca0a657067a7f37a60bddc19bcde299e8ac4c839af683d5d25940",
         "density": "2f8c50c0aceed498c497eae20f7807d5452f191478524c6b2bac0a12c4fe2558",
-        "columns": "38269d746f088d846fabcf7d17a68a50ff3edf2a204ac30cc430bb7936fb575a"
+        "columns": "38269d746f088d846fabcf7d17a68a50ff3edf2a204ac30cc430bb7936fb575a",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5240,7 +5480,9 @@
         "blocks": "d87598ebcc247baa70ba6e2346ec0ddd3b9bc170d3cf32e907eef37dd6c5e867",
         "haloBlocks": "420155c9ebebf6e552c30f28e04d400397f337fc1f58065669bc5df56fb343e4",
         "density": "7320505b92b71b35b3aea3a3d1322e4152a6eadb1707571ca8b1c97e4885bfd9",
-        "columns": "a4c0adb4e2ae9d1ee017aaabae23a24582fc47689e34fe90c4931c0d766a6870"
+        "columns": "a4c0adb4e2ae9d1ee017aaabae23a24582fc47689e34fe90c4931c0d766a6870",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5260,7 +5502,9 @@
         "blocks": "304b4b8e0ea72324c403b986af1d179767f7351ebaa83fa841dbac412c933538",
         "haloBlocks": "ee6f369c56e788a401edc50d9edbe10f74f8034f93e000becd1271e8f4f17e78",
         "density": "9c80cff5d422cf3eae9a932da5d14c7bf499010863995e00eac1623cd2526769",
-        "columns": "7419c2fdc6a102c2190a4350bfd47af4eb1b056ba791c305ef135f75f08f52f4"
+        "columns": "7419c2fdc6a102c2190a4350bfd47af4eb1b056ba791c305ef135f75f08f52f4",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5280,7 +5524,9 @@
         "blocks": "27b6932b828523333143290b9a1c66f7fe4d890d07fd3b09db4adc658956736a",
         "haloBlocks": "ce7efab0f5b2df35fc4f89b92295f972e6a493437a77f82d3a06577109a4ade7",
         "density": "a45c758ddb0bcddc11e0a8df0775711df4c6d525ad42ce50c2b07bd9778ff1ea",
-        "columns": "d7003f93150023761d18d237fdb9d645fc091945c316eb57025b92c486c40c09"
+        "columns": "d7003f93150023761d18d237fdb9d645fc091945c316eb57025b92c486c40c09",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5300,7 +5546,9 @@
         "blocks": "461942f24079e6c45097e0c3c54bd0dd7ba631ec53ebd2b48fe0ca9e1921cd7f",
         "haloBlocks": "bd01837016361c1c1f053568444d37a0f94b49c02679f9cdfab2a6a9e18de8a1",
         "density": "a8331c383614766ad2f6ced4a9b2495132ec31721894bbb2073b42f6b820cedd",
-        "columns": "7a2be025d11d537d48750533d9217cd385faff5160060b238ce7b8ad17f2a226"
+        "columns": "7a2be025d11d537d48750533d9217cd385faff5160060b238ce7b8ad17f2a226",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5320,7 +5568,9 @@
         "blocks": "48626ddd148df8427a9503ea37db9f43a936545834ab37fe7281a9e87fb2138d",
         "haloBlocks": "c05b41312e2bcd4e9d37f36e092420fe71733ffdd6444bac0504885fb80aa3e8",
         "density": "ad6b7c0e48048fc888d8ffa50a7782f18df5f393dbe83a09c865d074ea997fb9",
-        "columns": "f821c842fd85005aa3772f20676519fabcf736163992b9d071b52c6e7e0ddf05"
+        "columns": "f821c842fd85005aa3772f20676519fabcf736163992b9d071b52c6e7e0ddf05",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5329,18 +5579,20 @@
         "world": "main",
         "seed": 3,
         "lod": 1,
-        "cx": 84,
-        "cy": 0,
-        "cz": 101,
+        "cx": 89,
+        "cy": 2,
+        "cz": 91,
         "spacing": 2,
         "region": "hellscape",
         "coverage": "dominant-region-terrain-air-or-water-interface"
       },
       "hashes": {
-        "blocks": "44536fec2f4b2f305cda649e2f8a422321610ecf1d8a09cfaf8880dc9a859d68",
-        "haloBlocks": "801067f09e5959b3cf549009f2627ee4618e8ad5ea2a5fe8f474dde6012668cd",
-        "density": "98cbc177673a5048930aac84f0671a710b89408bca15cd75d5395ca7e1e631bc",
-        "columns": "6cf453546bd4c504cef38eb4aec69e7a1ae15a1023dd2ed076bf77dfa7d52f5a"
+        "blocks": "f2eca878183c5ba1f58c747027e59e88a2ee578cb6f067880753c65a759f9ff6",
+        "haloBlocks": "907a325523168e1a930447f9b4c94b4844c904c0ee5102ccdc17bc1171ad828f",
+        "density": "d0b572cbb303bba94156dd1d0754bf182a02036623438fa02c605dead5a127aa",
+        "columns": "9d1e27a1b6432ed4eb620c9a06db52bd745cd55b785eccdf0a6330c5f2fcb0a4",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5360,7 +5612,9 @@
         "blocks": "c14a97573bcdf84e772a42fcd4346b931ff4c1060abc0ba2231f4a835f730657",
         "haloBlocks": "2e866f7e04cfa637483afda9268e4bf5532ef57a6d740a4e93a98fc12b03baa2",
         "density": "9e9a2e9090daaf76befa551cd63516086308b46109cfc08f30926525280f652b",
-        "columns": "2fe49019894e3ec173446e13d1db1a28c36df93fb0c59bf5d074cc40449f9443"
+        "columns": "2fe49019894e3ec173446e13d1db1a28c36df93fb0c59bf5d074cc40449f9443",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5380,7 +5634,9 @@
         "blocks": "c59af24611a6c418d8fbf54d9381f4981a0046c64986de8649ba7d8ce17f9eb7",
         "haloBlocks": "859552168ffd817ed9e499255c1234964b39f284b13aa04e61f0eb698e4ba30a",
         "density": "43040fd0938bee7a7741a233f0a0586066bb848269a158e8285bac682431d76f",
-        "columns": "9c85ea1eb525514b68bd054b25c61db780a4224f659290e14ddc277ffa763675"
+        "columns": "9c85ea1eb525514b68bd054b25c61db780a4224f659290e14ddc277ffa763675",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5400,7 +5656,9 @@
         "blocks": "938318b999902fab83b99074eb8cf6a2ef5d11b08cc62f58b53f72abcea4c05f",
         "haloBlocks": "7cf0b88494aeb394ea7d9a2b0bf9ef2667c8ef41e6751de0cece4e7e335580d2",
         "density": "2ca8d7d527c20375b42d517d49f325461e32180c90c501b7351b425e54225edc",
-        "columns": "bb4c720a49d002d45492de2433c393b46f55499c8b3b8557f80093ae3ea575df"
+        "columns": "bb4c720a49d002d45492de2433c393b46f55499c8b3b8557f80093ae3ea575df",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5420,7 +5678,9 @@
         "blocks": "ac79dc8b24f9cb76913b3820d7ddc9d4994060989ba08ed37dffe658a2abd11a",
         "haloBlocks": "27f209ed6e54f402d63f3422da0c9a35b502d7de6e646006ac5ad11fcc26a333",
         "density": "946bdfd227530aab64f75824b24bb19861c3e2a33ca125567f8b2673baf3e9cf",
-        "columns": "d7e9e846a316b96c902d4369b5f338661b01eafe7034e32746742f93b0e53ad4"
+        "columns": "d7e9e846a316b96c902d4369b5f338661b01eafe7034e32746742f93b0e53ad4",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5440,7 +5700,9 @@
         "blocks": "9011319524a066918d5381327a6edac48bf656f73181da5e5106e83dffe3f3ce",
         "haloBlocks": "99216e8113b5c3410a3cf00ecf11c4daedc9c2c7794b5cfc3538af8e1891c3e1",
         "density": "74ac88a5ce55517d4ce7d66391386d1af80b67aa94abe0bd2eb5daad8763ffe6",
-        "columns": "d709082a59d5344b8cea6804ace00cffec74cc7d078a26ddc2a5c34504229cf7"
+        "columns": "d709082a59d5344b8cea6804ace00cffec74cc7d078a26ddc2a5c34504229cf7",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5460,7 +5722,9 @@
         "blocks": "c1585103169e8377531d8c10f723b787879339e2c3488872d80f24b7ebb70f41",
         "haloBlocks": "4c46bec298589305dbc0b81171a28ad649dd551be7429d4509e0caec71e7f535",
         "density": "da60bd56fbd86ff912366e7a02b112e9fe6f14f63dfff2c54667f000d1b99fe9",
-        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5479,7 +5743,9 @@
         "blocks": "5edebd49709d11b9832361e6be163740ac2fedaba98ffdd107e42a4ec877c55a",
         "haloBlocks": "2b9047f97285dcd22ea5d36ace2f59e920ac01baf96bfe9d86280becda39d2b4",
         "density": "51eb74537b75d11bdbb69a88a1c3f9dd4b8316f2ebc56ed8dfc2878f0ebe6f51",
-        "columns": "d17f24acddf2e6718aa0ef4487bb9ff17c1b60b513ef16c91756983864e07316"
+        "columns": "d17f24acddf2e6718aa0ef4487bb9ff17c1b60b513ef16c91756983864e07316",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5498,7 +5764,9 @@
         "blocks": "3da44503e40c2de25643281abc849251211cc2d356f20370357d4da43dc1a61b",
         "haloBlocks": "9f61bd3855bfc28d6849ed013349e5594d9ca53b543563cc899b6d1cb79d5bf0",
         "density": "8bc6a98d6c55bbb29ed6bb32fc4b266820bdd9961befdb63b67c016d72c5164f",
-        "columns": "e65c32ddd52a57c7510380c616f6fe7c1c5a8d8ee666f90e3eb48a4d76db5cbf"
+        "columns": "e65c32ddd52a57c7510380c616f6fe7c1c5a8d8ee666f90e3eb48a4d76db5cbf",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5514,10 +5782,12 @@
         "coverage": "warped-ring-transition"
       },
       "hashes": {
-        "blocks": "73ab28b09e684f3a4c7a88efcb5622b4cece47d9d505a0c4a108d0fea94316ba",
-        "haloBlocks": "6b13bd0fcc19b308fff86f89082fb1d4408a44fe8b24abb0927a8613d7f38609",
-        "density": "92650d6162adc8088176cfc3a1589d34aa4ceab03bceae4290a0b9fd79a87436",
-        "columns": "5957e1668a04051f25fcc10c32a49bf81ee07de958ce401b9b58f98036abba91"
+        "blocks": "0e48eb256185736b024b8a3762cf2174e3efc514d4a6b82504bf7cfdb9f950bc",
+        "haloBlocks": "543063643146bbfda71517d346d71f18907c63f6b68b1e7b7fae4a13a82b5938",
+        "density": "574fa3243c3bde9702b834b8ac441272214a121bde6e9acd5f5ab78512d622e9",
+        "columns": "5f121f20f0871d480b16310f74bb41fcd34d395527ac84681ee49d7adeeed5cf",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5533,10 +5803,12 @@
         "coverage": "warped-ring-transition"
       },
       "hashes": {
-        "blocks": "3b709941489391d496290df91bb18e1ecd82a4bf7a30fda5bffa63d1677f336b",
-        "haloBlocks": "482444ba711af8d864b5c497594660db1961e7633058df23750ee312c9b2161b",
-        "density": "bc7c753f0bbf0b391e75284517cae0033bbfe5447f2ad052e4d0888de7e93ed4",
-        "columns": "325122a74ff68b48adc79542374627d877b38bd526bb50dc3a5913a593d30fb3"
+        "blocks": "d33083f60c61fef8bb5a21ad5c8323a97ed5cb6b2db7a1b1aae21bc9f99c89d3",
+        "haloBlocks": "4b824f2bb4fccc68735d38138df426c2a3e9e2168bc77a2df94350d912e48941",
+        "density": "2c6963890e961ea93c1e64b9a0a59b90ceb78d3936e47c6a86fe7fa5f3bbb653",
+        "columns": "8be9e5907f6a9bf51b48e506bf563a81c45c8c090e03f7a1ed0474fec33849a9",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5552,10 +5824,12 @@
         "coverage": "warped-ring-transition"
       },
       "hashes": {
-        "blocks": "cb92493867df81c52a0cdb08ab00c7e974cb08867f67e52ce5ab6c8206b6aa23",
-        "haloBlocks": "8cbe345468ff06227bd29d052259866e418d03c69f1539c2dae99bf36db92656",
-        "density": "0c9b1515e98b58f734362b580be93ffd28d825c712fc1d8210bef3a9694d4fd5",
-        "columns": "48c0b659a362d823a923208c9625ab99272accf23a9518faa66a2231a2bf9c57"
+        "blocks": "c30266aaa9d74e7c1ca76ddab5dcfbe47ee7b59d34c750ffd3025ca8533a439c",
+        "haloBlocks": "8a4d9d8aafbf19cb3424ad2246421d71c3f82647099cbe3814b36922933c6bf4",
+        "density": "8aece1bb6e43d976ccc82cc8d554181dbbacea98493c0a87a78781262564dba2",
+        "columns": "11a9bd0d8b739f0d50e09f294a2ad60a4e7cb07957fa14926aa43094d79a522e",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5571,10 +5845,12 @@
         "coverage": "warped-ring-transition"
       },
       "hashes": {
-        "blocks": "661f2b570b31f0f8f04de6a227c99aa4910fa07877b2b7dc6d1a634f789a7504",
-        "haloBlocks": "ed4750a448416fbea2c09a15f9f4d8db4d2ede84d8c6741817028c124d60a97f",
-        "density": "83f10840d76b3a7d1028513f93f6c7dc789cf38a5f085a328942acfaedf5bf78",
-        "columns": "8cde48fb48536dff2c95906a30a2b839d95c8c5b3c687e79981d19cccf530a02"
+        "blocks": "b5586c3ee5f790cb79687698af09e6b90f395ec377ac6816106826a307e92e4a",
+        "haloBlocks": "e4ad11b552dff6026e6e0d457c8577890d4af0784383909cc061f4c5e32fd7d6",
+        "density": "e4211ca58121091199cc41189b535903a2040d3dc0dff941074e28632bd917c1",
+        "columns": "eac05a556048ba7ee3a416f0fd3bb1c81235d60e6b86c6bae34e2e4a430196bb",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5593,7 +5869,9 @@
         "blocks": "924248c9d075884cae23ef03ec03bd1e8170cabaaf1c2261fea75aec11546323",
         "haloBlocks": "4b69ebad421ce5ea0d5334f056788ff761b79dd62ea25795a5584cc4eeae02c2",
         "density": "9c1c17aba93d1bef2fb6a2897eb810a9a18a1e9167708c6764c78153c3584058",
-        "columns": "ef692c028cbf5dcd5a802e488a48567106504983598fcc3c313fd769e6a16dc8"
+        "columns": "ef692c028cbf5dcd5a802e488a48567106504983598fcc3c313fd769e6a16dc8",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5612,7 +5890,9 @@
         "blocks": "c57654e6ad3aceced8d0a8e864f87959e07ed4f434eaab06db898d64f8afcc58",
         "haloBlocks": "bf16fa4dc5b367873eb5841c00da44f07e6e6010efae7488304a3b23d1d289fc",
         "density": "9fb8fe4112499a2e7f204513c75801d2c2a156af1ce82c29552a3f4ca0415534",
-        "columns": "a065ff2c8ab158534cd16a0e25087aa97e89a1ade31a0601c19eb209a56540bd"
+        "columns": "a065ff2c8ab158534cd16a0e25087aa97e89a1ade31a0601c19eb209a56540bd",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5631,7 +5911,9 @@
         "blocks": "84536281d516fb5ea838554e32766abebf68c3c04e08c466d07bc3a99afcd5ac",
         "haloBlocks": "a52cb77f68d0536d12cb28f967b9663a21b66225edd0fef95a5feaf30bf265c0",
         "density": "71a2a12143afd6a026588dc65753065f2c6938f9fd694426eec9e80b0fc8f7db",
-        "columns": "f499a0e8ee34663edc2d6f820e2e82c53978a7ee48063d33c75580056626d9f1"
+        "columns": "f499a0e8ee34663edc2d6f820e2e82c53978a7ee48063d33c75580056626d9f1",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5650,7 +5932,9 @@
         "blocks": "f1621b5932b86cfb25a0c044f2b49162757fa68ee6a3fde02c28f7a9d3d74869",
         "haloBlocks": "6597855288205acd723df0f4c9a6089da755421a580e76d2d11dd43cd7a5d677",
         "density": "63dad929bed13f598c1a7ff4c1007cd6e6b310cc4940c0463728f7d19564b21f",
-        "columns": "752d4ac9d59749298ef362b0e6086e2d1fe690276870ee2d99a7fae0db75fda5"
+        "columns": "752d4ac9d59749298ef362b0e6086e2d1fe690276870ee2d99a7fae0db75fda5",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5669,7 +5953,9 @@
         "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
         "haloBlocks": "1be1bc2d76e8aa1d484d128c0570e854bdbb895e2a787a8f12581b1d379abb22",
         "density": "baa08deb73c70ef2650e6476ddea553b60e8e5f5858811c1c91ea3ed9de8132a",
-        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5688,7 +5974,9 @@
         "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
         "haloBlocks": "58b3e20d6297a0cbf0d5cb498f2fab9be747a3de4f2f79b72eb24f9fad86e604",
         "density": "7feebf2dffb63be20ffb636bc95f5568e9885f46f2d7e0855c19f38ab722712f",
-        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5707,7 +5995,9 @@
         "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
         "haloBlocks": "8b5f5d80da99621cac7b33aea6c2dc8d11ab5dd309cbcfc30d6828ae8fd2a80f",
         "density": "6f52f56f4bfd347ce8f97023464a1b8c0e28d448554163d3e3608d7e5d3ec75f",
-        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5726,7 +6016,9 @@
         "blocks": "f37ae1bcbfbbb7410f4aefa091310ac030ce7fa34bce3adff6ece0a500ad4c08",
         "haloBlocks": "7d89a9c836573a00821644cf3c27e0854c55dd4f2d5573b5f4c8f34e03128b6e",
         "density": "782e7ca7eb8be1bb410ade6d95bbb309f53c35db449b113c6b1269adf739878f",
-        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae"
+        "columns": "a30ffb6da93dc06d07cd5595f7d32c75d97892c90a351d9274a279aa7e88baae",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5745,7 +6037,9 @@
         "blocks": "0b1bc4208dd7f3a8249804514cb01d457207656dd6acb695c816cfb3e2898e17",
         "haloBlocks": "67f15edbfe2bb0df5c7ce3ae8f7089d716eccccb5fd221e74e624f2ae9914827",
         "density": "eaa376e6a9b069675b289a739392b06fb1d0f5d26469b5ba7ca133925f9fd180",
-        "columns": "1531b361a57693c719e4021153d62d97edd4da3ab9bc53083996d41558b62871"
+        "columns": "1531b361a57693c719e4021153d62d97edd4da3ab9bc53083996d41558b62871",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5764,7 +6058,9 @@
         "blocks": "4f76e9188b6063650654fde6caa90189ee08262522be6f9e08cc0d75a7b4dc72",
         "haloBlocks": "21a236e48ac56faa68f52af1a0665d679dd12fbf32b4b15427fe2405a67b28cd",
         "density": "8f58695c0a008b46acb6f48390c30b494e5303d4f1a42583346018aa4bb841a8",
-        "columns": "1531b361a57693c719e4021153d62d97edd4da3ab9bc53083996d41558b62871"
+        "columns": "1531b361a57693c719e4021153d62d97edd4da3ab9bc53083996d41558b62871",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5783,7 +6079,9 @@
         "blocks": "4f76e9188b6063650654fde6caa90189ee08262522be6f9e08cc0d75a7b4dc72",
         "haloBlocks": "8d98320d427ca0dafd223ec85ee9f82027a2daa9fe04b499c81acb8b392a0753",
         "density": "22b6673023f13d08cbf8d0634e2d129627b3ed11c024d26f83766023f4ebd245",
-        "columns": "1531b361a57693c719e4021153d62d97edd4da3ab9bc53083996d41558b62871"
+        "columns": "1531b361a57693c719e4021153d62d97edd4da3ab9bc53083996d41558b62871",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     },
     {
@@ -5802,7 +6100,975 @@
         "blocks": "de2f256064a0af797747c2b97505dc0b9f3df0de4f489eac731c23ae9ca9cc31",
         "haloBlocks": "9736d8dd61f2488c3dfc458e674c95b61b1194c527dcf63ec29a0f0e95c6aaf6",
         "density": "48b0725b8b00f60c69ab5cbca5b0cd0a7987dbcadb85ed61372a3d43e7e7989b",
-        "columns": "1531b361a57693c719e4021153d62d97edd4da3ab9bc53083996d41558b62871"
+        "columns": "1531b361a57693c719e4021153d62d97edd4da3ab9bc53083996d41558b62871",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s1-lod0-thorn-root",
+        "world": "main",
+        "seed": 1,
+        "region": "hellscape",
+        "cx": 183,
+        "cy": 1,
+        "cz": 172,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "thorn-root",
+        "targetFeatureId": 10264149
+      },
+      "hashes": {
+        "blocks": "49a628f7678016ddc1ebca637997cd7d8b981d9137aee737603d6dcbb862fd62",
+        "haloBlocks": "a66779883595303fbef3502d8da80efb0445670dfb5e9cf472c69eaa10e52a27",
+        "density": "e1be17fa573c85e619f98bdb248613d42f493e2f7c70e688448af3d53ac6bdf3",
+        "columns": "028b3a048ba598247318e757a65b6201a962a28daca97ecd102ba0acfb986a2c",
+        "featureIds": "9aa11cbb87428a7f9c27350388a9baeade7388d0c92edee55c11355ee6d62acb",
+        "featureT": "7cea65196346a24ccf55b12c55c9595a96ec37977df50c83835182be6029a157"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s1-lod0-thorn-mid",
+        "world": "main",
+        "seed": 1,
+        "region": "hellscape",
+        "cx": 184,
+        "cy": 2,
+        "cz": 172,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "thorn-mid",
+        "targetFeatureId": 10264149
+      },
+      "hashes": {
+        "blocks": "4529a015c5cf3d33c01e1048d5395c7441cb79774724d6c29fbe022f8069e891",
+        "haloBlocks": "47ed2142c7387ed35898db0b1277c4b72069a34e3fdce5c006e09f8b5e83d8a8",
+        "density": "966d947ffaf3ce259ee7f68c4e45d39f229c27ab07f5c4a71fb7743df714655a",
+        "columns": "c91b52a3f764814508797de09b0ce8a122169bae47fa971eda9b490ec51a6edd",
+        "featureIds": "5890a54f04189eb291842e6eb66dd6603dc5ff659036568f183e8cc1aa139106",
+        "featureT": "80f9d43a11b1a98c73daa2158ef061ab6bcf135d8d3f33b6a1b7d4be62005728"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s1-lod0-thorn-branch",
+        "world": "main",
+        "seed": 1,
+        "region": "hellscape",
+        "cx": 177,
+        "cy": 1,
+        "cz": 169,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "thorn-branch",
+        "targetFeatureId": 10198282
+      },
+      "hashes": {
+        "blocks": "673f2a4dc616fdf71504f47a82c4f441d8e4131f2d2c6ff3e4714c8c0faaa685",
+        "haloBlocks": "fdf8a5b10756f107ebf3f69bc3d84a9b5b8339d10c5cd44d208b87a4a3d926f0",
+        "density": "36233bd3c897087abf8d6058954c45e567dba8ad3e2871bce3a59ae0ac47140d",
+        "columns": "f5084120569d13cf95cf406967fde5851af7e63da4db37aaad7d21e7bb157af0",
+        "featureIds": "5fa27e71efe0fea6e5e37395f0254c5e50d453028aee311c7b6f074a4a47c45b",
+        "featureT": "e009e2de895fedbeffd22de3398d0569ebf6b88837ffd390684bbe7ed133989a"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s1-lod0-thorn-boundary-left",
+        "world": "main",
+        "seed": 1,
+        "region": "hellscape",
+        "cx": 183,
+        "cy": 1,
+        "cz": 172,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "thorn-boundary-left",
+        "targetFeatureId": 10264149
+      },
+      "hashes": {
+        "blocks": "49a628f7678016ddc1ebca637997cd7d8b981d9137aee737603d6dcbb862fd62",
+        "haloBlocks": "a66779883595303fbef3502d8da80efb0445670dfb5e9cf472c69eaa10e52a27",
+        "density": "e1be17fa573c85e619f98bdb248613d42f493e2f7c70e688448af3d53ac6bdf3",
+        "columns": "028b3a048ba598247318e757a65b6201a962a28daca97ecd102ba0acfb986a2c",
+        "featureIds": "9aa11cbb87428a7f9c27350388a9baeade7388d0c92edee55c11355ee6d62acb",
+        "featureT": "7cea65196346a24ccf55b12c55c9595a96ec37977df50c83835182be6029a157"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s1-lod0-thorn-boundary-right",
+        "world": "main",
+        "seed": 1,
+        "region": "hellscape",
+        "cx": 184,
+        "cy": 1,
+        "cz": 172,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "thorn-boundary-right",
+        "targetFeatureId": 10264149
+      },
+      "hashes": {
+        "blocks": "0366499cce0c00f47b05de9431fe79bf6edd7d458c84c443f92d9a8f9e8b3b7f",
+        "haloBlocks": "69c8dccf20867cdc964a2eeda73cc044245e58656fa7899b290aa831e90b27bc",
+        "density": "3646fd710d15f3d09763d0038b643beabcff7cea4a279c87cbba84208f8f12af",
+        "columns": "c91b52a3f764814508797de09b0ce8a122169bae47fa971eda9b490ec51a6edd",
+        "featureIds": "bcafe0abe292a4784e33a8a4953b053b2101951eae93a77489fee1bd1f49302a",
+        "featureT": "e43bb4958ea12e35122e60b16116c2bd505be99dcce88b6d1e6ac84e55114bb8"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s1-lod1-thorn-root",
+        "world": "main",
+        "seed": 1,
+        "region": "hellscape",
+        "cx": 91,
+        "cy": 0,
+        "cz": 86,
+        "lod": 1,
+        "spacing": 2,
+        "coverage": "thorn-root",
+        "targetFeatureId": 10264149
+      },
+      "hashes": {
+        "blocks": "f38a983bffaf3f035e953dfd68c049fa508119d181b35fa91cb27776a519610e",
+        "haloBlocks": "4df4a4906aa19e402c6f5405bd638a90ac5ae645c60d729840b44e82eb5d0456",
+        "density": "857b8a989ebcdbf5380ceba7be4fe24dc4fc7ce531e397bc5b4bb0d4a97f2f65",
+        "columns": "9b6cc84ed8c507f73e71b59461b99e8106caab9c563eb49472a67e79c5aa3c16",
+        "featureIds": "21eeb492db6c5ea4ea5d56fa61af12d7d815094d24c0a32358fc9cece251e007",
+        "featureT": "df02a0213e4b666e9b3d7d5ada2c7748a573677a2dd2bcf78c8d1c0208d57c33"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s1-lod1-thorn-mid",
+        "world": "main",
+        "seed": 1,
+        "region": "hellscape",
+        "cx": 92,
+        "cy": 1,
+        "cz": 86,
+        "lod": 1,
+        "spacing": 2,
+        "coverage": "thorn-mid",
+        "targetFeatureId": 10264149
+      },
+      "hashes": {
+        "blocks": "b24aa28ac4b534066b7a10d567803d4594e7384be1034b06ec6438be0dfa8121",
+        "haloBlocks": "654589ac3e7842bb89917bcbf17987a0ca338ce6ac34bd78f956a1c57c3807bf",
+        "density": "743b5cf2b35520665bc498a9e8d49787f24856b458b3b2cfc9b8cde46dea86b5",
+        "columns": "913b1e79058030ae08107c7d140381e86e9822dad088446bc2b3609197f14e52",
+        "featureIds": "685f9cbb8dd93f9620c579042eaf72f99ada258afb15a842b219e2bc080a235d",
+        "featureT": "caa4b5f2733dc1e09aad18d83c46f7b085ca00e089333745ef97c2aead80f727"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s1-lod1-thorn-branch",
+        "world": "main",
+        "seed": 1,
+        "region": "hellscape",
+        "cx": 88,
+        "cy": 0,
+        "cz": 84,
+        "lod": 1,
+        "spacing": 2,
+        "coverage": "thorn-branch",
+        "targetFeatureId": 10198282
+      },
+      "hashes": {
+        "blocks": "1b48b92ad1037de61a024bfb0e0a50da09e2264f8038f2705db02d94dd1e5f99",
+        "haloBlocks": "758ca6e83682c2eca51748608e8d3e4687c34038a699cd6d2b0fd00a071e7fa9",
+        "density": "2772b25efbd7817e9dc445ba45442b6e66e48d72271e47f69ed6f515c7f0ad85",
+        "columns": "e636cea8ee612c781761f530afe6c055c723b5a71d001a5e2af199033c8ff17b",
+        "featureIds": "2b8796e70ba75ff0e3df31da413b688312fc3b79ea5ad6e5b81675bdffd9b98d",
+        "featureT": "ae6f9e32ac0cb42ab07ea15bfd61896591dd974f1c44ca4dd165cb38228c0f95"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s1-lod1-thorn-boundary-left",
+        "world": "main",
+        "seed": 1,
+        "region": "hellscape",
+        "cx": 91,
+        "cy": 0,
+        "cz": 86,
+        "lod": 1,
+        "spacing": 2,
+        "coverage": "thorn-boundary-left",
+        "targetFeatureId": 10264149
+      },
+      "hashes": {
+        "blocks": "f38a983bffaf3f035e953dfd68c049fa508119d181b35fa91cb27776a519610e",
+        "haloBlocks": "4df4a4906aa19e402c6f5405bd638a90ac5ae645c60d729840b44e82eb5d0456",
+        "density": "857b8a989ebcdbf5380ceba7be4fe24dc4fc7ce531e397bc5b4bb0d4a97f2f65",
+        "columns": "9b6cc84ed8c507f73e71b59461b99e8106caab9c563eb49472a67e79c5aa3c16",
+        "featureIds": "21eeb492db6c5ea4ea5d56fa61af12d7d815094d24c0a32358fc9cece251e007",
+        "featureT": "df02a0213e4b666e9b3d7d5ada2c7748a573677a2dd2bcf78c8d1c0208d57c33"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s1-lod1-thorn-boundary-right",
+        "world": "main",
+        "seed": 1,
+        "region": "hellscape",
+        "cx": 92,
+        "cy": 0,
+        "cz": 86,
+        "lod": 1,
+        "spacing": 2,
+        "coverage": "thorn-boundary-right",
+        "targetFeatureId": 10264149
+      },
+      "hashes": {
+        "blocks": "88cbe41ea6d025b645c688daa3da3d4e20e7b697c98553d802a768c6648cba42",
+        "haloBlocks": "29afb1637721e5aeec2a9bbb0a5feeab89fc5aeb8564db38a172067d0f54a47e",
+        "density": "5307655f8f6f055b1a83c394339f4d41dce9ecea6a5914e87d01a1ef101e376a",
+        "columns": "913b1e79058030ae08107c7d140381e86e9822dad088446bc2b3609197f14e52",
+        "featureIds": "de0e344aa39821eeb68e31e2996e6707b864c551bf2e3e07737ba672ab39e3da",
+        "featureT": "5513a481e53e9d5ba013e9a31a6c270956b027e0aef63b5eea8fc82dfba105a1"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s1-lod0-caldera-lava",
+        "world": "main",
+        "seed": 1,
+        "region": "hellscape",
+        "cx": 94,
+        "cy": 1,
+        "cz": 305,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "caldera-lava",
+        "targetCalderaId": 1
+      },
+      "hashes": {
+        "blocks": "6233cd344562baefa905fa6e78cf15a6ad9a84f923971fcd61ea6eb93f1e3cd9",
+        "haloBlocks": "d1cf8e5ab790fabbe15cc904ccfbeb9b313198a953702775e0192a8156081b4e",
+        "density": "c3e23215003ffa6020e822dd45cabb59656c5678b20ff75cf2b6c792f53705c5",
+        "columns": "29220d2646ff397ac93810b69bf85fde3e4df81c4dd8ab9974f41818cd7a65bb",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s1-lod0-caldera-rim",
+        "world": "main",
+        "seed": 1,
+        "region": "hellscape",
+        "cx": 102,
+        "cy": 2,
+        "cz": 305,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "caldera-rim",
+        "targetCalderaId": 1
+      },
+      "hashes": {
+        "blocks": "e06a0b4fe3d035d57319bab58c842c69fd4d394927f40c23228ad571a58790ab",
+        "haloBlocks": "413598bcd7ef887e1eec1d6a9bbddf4312c28db069793877086a320e1290120b",
+        "density": "6eca552c5897d04a5bd9b7b6168db4d4c2edb196e6e4c23ba1a01ddf4dfa1ad3",
+        "columns": "5085924bf4f7ad8ad2ac79ab65c4159697369d4a88a8d1538da649bdaef74076",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s1-lod1-caldera-lava",
+        "world": "main",
+        "seed": 1,
+        "region": "hellscape",
+        "cx": 47,
+        "cy": 0,
+        "cz": 152,
+        "lod": 1,
+        "spacing": 2,
+        "coverage": "caldera-lava",
+        "targetCalderaId": 1
+      },
+      "hashes": {
+        "blocks": "a6cef53944ab5c75147f9d19e509a03e5541fa2ab58b18de9728081ca0eea299",
+        "haloBlocks": "ef33553b4ca2089ff9aae78fe323bfb3088a87cbe3410f3d3e629c4fe18a8b86",
+        "density": "b1b5375d9649305ca897f4b16e825be52a445c40bcec7f24bac3c1aff899c38e",
+        "columns": "0dbf8fa9378c35ada28ec1a0d367d12e101298f95e183a3714ebf628abafe0a9",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s1-lod1-caldera-rim",
+        "world": "main",
+        "seed": 1,
+        "region": "hellscape",
+        "cx": 51,
+        "cy": 1,
+        "cz": 152,
+        "lod": 1,
+        "spacing": 2,
+        "coverage": "caldera-rim",
+        "targetCalderaId": 1
+      },
+      "hashes": {
+        "blocks": "b3a3086e1595c4ce191adc97fd754f4da3df5e2e3c3a8e332e52d86ec53fb7d2",
+        "haloBlocks": "f9a3b382abb49e91776c0044b68dd69b50b3bdb1602ea44fe2d64b01b669628f",
+        "density": "0ce505074c20cafa1e21eaadadc60689ee52e64a5a8e71fdcb64105bcd94915b",
+        "columns": "ee9dc53dd04828401c2445e95c1ed3855b174cd69ddb6b44e9edd6617ba99773",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s2-lod0-thorn-root",
+        "world": "main",
+        "seed": 2,
+        "region": "hellscape",
+        "cx": 206,
+        "cy": 0,
+        "cz": 191,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "thorn-root",
+        "targetFeatureId": 10461984
+      },
+      "hashes": {
+        "blocks": "6be288a579f09000dfbe2809a6a1a9105dabffe674893a25453d93074713f996",
+        "haloBlocks": "0ca03a3d42b64b8fe3075149ce4e710e1749fa7afe4be05e4ddf6ff93588d3b5",
+        "density": "d0ba145b84d5311aae388cbd983b9d44f27ddbba1c2c18c64e1ba8335c892e27",
+        "columns": "0d08aee0da36de91c18a95599d04626a419b056a1c94699711f37e1db327e144",
+        "featureIds": "ec641213251a8a4420b1885c56f1e11804a25809bd2945239c081fb59fe77760",
+        "featureT": "9f03c1b3e0b23b0839ca14ae418134391d3d77721ffa7d07196fa00278d1b296"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s2-lod0-thorn-mid",
+        "world": "main",
+        "seed": 2,
+        "region": "hellscape",
+        "cx": 205,
+        "cy": 1,
+        "cz": 191,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "thorn-mid",
+        "targetFeatureId": 10461984
+      },
+      "hashes": {
+        "blocks": "34f6fbd744439ee2d007b5c141b4316b68f7b7cbc94f7158bae3ae3b06425e46",
+        "haloBlocks": "476a686034f8a81c8b7468729b4ff868b0b1b765a21a0a20b7b0eef4a7634522",
+        "density": "dd6706369a925eaab560fcdf505b3bcc72028cc0c02cd8ec478b67f9eea4afb9",
+        "columns": "32eed1b7560b56d704ecac01ba7fa99ac41f77907edea6fc5f19c43c9a3b7cc2",
+        "featureIds": "b3d250cee495184ee0adafbfe8a35d11ec04d57facb82f489fb4858f2154f13d",
+        "featureT": "7a9c0af4c03d37cf5212c445740f8ac45c9c4d084316345924e915cefb0feea3"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s2-lod0-thorn-branch",
+        "world": "main",
+        "seed": 2,
+        "region": "hellscape",
+        "cx": 188,
+        "cy": 1,
+        "cz": 190,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "thorn-branch",
+        "targetFeatureId": 10460996
+      },
+      "hashes": {
+        "blocks": "4f5cdb5aa1059d5f4a8245c0d170db34dd2b6711013985d711cde450fe5b099e",
+        "haloBlocks": "a06515634d5b93aa3b7b4d45e0254d61949c2daec819b5a0e8a531115a288328",
+        "density": "a003ac50dc0814c88986fac73a10beee93fdc03c123f8eeae1f8d71b4961c93b",
+        "columns": "79c7028e8434355ad9d85497b2fcf358e14abfb7c4a1e2060996a42a013d3184",
+        "featureIds": "80e0987bc6f45f6afbc6e61574e8f73e9c142aa16ce32901650deff3a1709833",
+        "featureT": "47572b15471121b2c586493c6b1f57d873d1c17495a00649af05de498786a8c5"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s2-lod0-thorn-boundary-left",
+        "world": "main",
+        "seed": 2,
+        "region": "hellscape",
+        "cx": 205,
+        "cy": 1,
+        "cz": 191,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "thorn-boundary-left",
+        "targetFeatureId": 10461984
+      },
+      "hashes": {
+        "blocks": "34f6fbd744439ee2d007b5c141b4316b68f7b7cbc94f7158bae3ae3b06425e46",
+        "haloBlocks": "476a686034f8a81c8b7468729b4ff868b0b1b765a21a0a20b7b0eef4a7634522",
+        "density": "dd6706369a925eaab560fcdf505b3bcc72028cc0c02cd8ec478b67f9eea4afb9",
+        "columns": "32eed1b7560b56d704ecac01ba7fa99ac41f77907edea6fc5f19c43c9a3b7cc2",
+        "featureIds": "b3d250cee495184ee0adafbfe8a35d11ec04d57facb82f489fb4858f2154f13d",
+        "featureT": "7a9c0af4c03d37cf5212c445740f8ac45c9c4d084316345924e915cefb0feea3"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s2-lod0-thorn-boundary-right",
+        "world": "main",
+        "seed": 2,
+        "region": "hellscape",
+        "cx": 206,
+        "cy": 1,
+        "cz": 191,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "thorn-boundary-right",
+        "targetFeatureId": 10461984
+      },
+      "hashes": {
+        "blocks": "ee9d9b293eae7f4c203527e60b1326053881bee92ddf5b916aeff6f0642e495f",
+        "haloBlocks": "b1613f10c8b3affc6d3c40a961994f0c3aeae1355cca30ed88d224dd08d59578",
+        "density": "5f5380aebce011eee2028887fe7f198220455121dfa1daa798a39d7145b64d49",
+        "columns": "0d08aee0da36de91c18a95599d04626a419b056a1c94699711f37e1db327e144",
+        "featureIds": "3504d2a3773029a44787a071937c2cf1cb45d5a483ee04fe7225ba7a2f6c1c6c",
+        "featureT": "b5edbb4b270a388b9036fd553102c0edf8b17f74b0fd50644ea2f2a88611e191"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s2-lod1-thorn-root",
+        "world": "main",
+        "seed": 2,
+        "region": "hellscape",
+        "cx": 103,
+        "cy": 0,
+        "cz": 95,
+        "lod": 1,
+        "spacing": 2,
+        "coverage": "thorn-root",
+        "targetFeatureId": 10461984
+      },
+      "hashes": {
+        "blocks": "e2000535810dc3531d60cc3d229d20fc7b095ff386ab9847deefbaa058d59035",
+        "haloBlocks": "9dd010753c97ff42832c6e8bf9769e133fb329f4d9fc19fba34c93145d613148",
+        "density": "156d7fc90af5655d2500bd752a88029a49f55e5873452aca7c854dc971e90402",
+        "columns": "56b359ad54ec1338f13c19f18ec065dc5c26db26d9fdd111731fc9fd4c0a2e05",
+        "featureIds": "213aec99a6a8d763e15f3dd1a15a0fe192d5f38d17e9a1aa0a788b0a5b8a197d",
+        "featureT": "1059417763510c9b324c25cfc2220874454d7ecb10e662d87aa38d193cb7080b"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s2-lod1-thorn-mid",
+        "world": "main",
+        "seed": 2,
+        "region": "hellscape",
+        "cx": 102,
+        "cy": 0,
+        "cz": 95,
+        "lod": 1,
+        "spacing": 2,
+        "coverage": "thorn-mid",
+        "targetFeatureId": 10461984
+      },
+      "hashes": {
+        "blocks": "d857fca5c60e12ee8e2049e0cb1bcbe9c1a7f8cae9c7d4f5bd627d3670517635",
+        "haloBlocks": "ec46c531916ff70d4393adfe17c6265e8cc92a0906c3218c87771bd45b07ecb9",
+        "density": "72c5e6de968cb928cc2c4fe3eeba262d36e7119c1fc399051972d6c0cb414845",
+        "columns": "162b9ead991542412c0a88f456fd26a9fb12d995a3bed6c6026a9fbe8d36b609",
+        "featureIds": "5d8d8433b889d111bb80debf5b92a84ef5d0ef43f1a59c62005fd3c9722a7b37",
+        "featureT": "def1c4f67741c9a52b14e46fd22c16d460506c538a3a1a76831769ca92dd05f0"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s2-lod1-thorn-branch",
+        "world": "main",
+        "seed": 2,
+        "region": "hellscape",
+        "cx": 94,
+        "cy": 0,
+        "cz": 95,
+        "lod": 1,
+        "spacing": 2,
+        "coverage": "thorn-branch",
+        "targetFeatureId": 10460996
+      },
+      "hashes": {
+        "blocks": "38a7cdfe3d286f3a58d5a442b276f7869ee2aad6e0a433845ef0f54dba623387",
+        "haloBlocks": "56be3eb41ffdf673d0832d66711088eb3a4325906295657947b8c8edc03a8966",
+        "density": "bdce94abc8b9b9f8b2d5b2c5b364054989c12066c64785ac818100e048adc0f1",
+        "columns": "39593fe04d8562ef61fa6ca8fb24d4b01ab9047ba8e97a793cfa1c6ed564ef17",
+        "featureIds": "ca7ca10cf6b11ca04417d35dd0f2f01ce2b2b0f51a18602643a5821dc08ed890",
+        "featureT": "7683fff8acf493ec4ed8b0342a17939500da70eef36b8253398730f62bbd41ee"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s2-lod1-thorn-boundary-left",
+        "world": "main",
+        "seed": 2,
+        "region": "hellscape",
+        "cx": 102,
+        "cy": 0,
+        "cz": 95,
+        "lod": 1,
+        "spacing": 2,
+        "coverage": "thorn-boundary-left",
+        "targetFeatureId": 10461984
+      },
+      "hashes": {
+        "blocks": "d857fca5c60e12ee8e2049e0cb1bcbe9c1a7f8cae9c7d4f5bd627d3670517635",
+        "haloBlocks": "ec46c531916ff70d4393adfe17c6265e8cc92a0906c3218c87771bd45b07ecb9",
+        "density": "72c5e6de968cb928cc2c4fe3eeba262d36e7119c1fc399051972d6c0cb414845",
+        "columns": "162b9ead991542412c0a88f456fd26a9fb12d995a3bed6c6026a9fbe8d36b609",
+        "featureIds": "5d8d8433b889d111bb80debf5b92a84ef5d0ef43f1a59c62005fd3c9722a7b37",
+        "featureT": "def1c4f67741c9a52b14e46fd22c16d460506c538a3a1a76831769ca92dd05f0"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s2-lod1-thorn-boundary-right",
+        "world": "main",
+        "seed": 2,
+        "region": "hellscape",
+        "cx": 103,
+        "cy": 0,
+        "cz": 95,
+        "lod": 1,
+        "spacing": 2,
+        "coverage": "thorn-boundary-right",
+        "targetFeatureId": 10461984
+      },
+      "hashes": {
+        "blocks": "e2000535810dc3531d60cc3d229d20fc7b095ff386ab9847deefbaa058d59035",
+        "haloBlocks": "9dd010753c97ff42832c6e8bf9769e133fb329f4d9fc19fba34c93145d613148",
+        "density": "156d7fc90af5655d2500bd752a88029a49f55e5873452aca7c854dc971e90402",
+        "columns": "56b359ad54ec1338f13c19f18ec065dc5c26db26d9fdd111731fc9fd4c0a2e05",
+        "featureIds": "213aec99a6a8d763e15f3dd1a15a0fe192d5f38d17e9a1aa0a788b0a5b8a197d",
+        "featureT": "1059417763510c9b324c25cfc2220874454d7ecb10e662d87aa38d193cb7080b"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s2-lod0-caldera-lava",
+        "world": "main",
+        "seed": 2,
+        "region": "hellscape",
+        "cx": 65,
+        "cy": 1,
+        "cz": 272,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "caldera-lava",
+        "targetCalderaId": 1
+      },
+      "hashes": {
+        "blocks": "d8e31ec6e8ce0078555995d531963e0c8d51acd30fe9dfe7125239511cffe5ba",
+        "haloBlocks": "3b439dcf58fea42e11fa13ac21e634289d424d4d46f7ae471461d1522271f4d6",
+        "density": "ea328406365b3ec041ef0a3c82607cfdf144e69892fc5c2faf147c17f63d71fb",
+        "columns": "8cdba98f584814ee592c823cb5fa512cda43715a33cb05fbafe9906be835d3dc",
+        "featureIds": "d431a8e7bb329e74408c2ea6affc8dc789f3b336223cb24b92cf38705a960920",
+        "featureT": "246b9a7051ee385c3e8100b90675741f33d0213cf3c4d67f42f101c16fc78ad9"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s2-lod0-caldera-rim",
+        "world": "main",
+        "seed": 2,
+        "region": "hellscape",
+        "cx": 72,
+        "cy": 4,
+        "cz": 272,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "caldera-rim",
+        "targetCalderaId": 1
+      },
+      "hashes": {
+        "blocks": "f1075bc22a078a6c2dc91838260d50209e13f467fae1fa154bae1e7acde52971",
+        "haloBlocks": "fd3c49a98ce66b7bd3884d11fa24682243d62821a1626f57a6f00adf808e8353",
+        "density": "ffd766c2e65bd53e37d4e3a147318933e42bdf7401ce22ca1152d433791c1b62",
+        "columns": "43529f0ed0f37044cfced71109a064c9a77608296c81ad11aa5c60b92a408c41",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s2-lod1-caldera-lava",
+        "world": "main",
+        "seed": 2,
+        "region": "hellscape",
+        "cx": 32,
+        "cy": 0,
+        "cz": 136,
+        "lod": 1,
+        "spacing": 2,
+        "coverage": "caldera-lava",
+        "targetCalderaId": 1
+      },
+      "hashes": {
+        "blocks": "e4c48c64ae438d0aa5a245ff39285e2d7546ba817c2d543fc08e0cbba842677e",
+        "haloBlocks": "68344f7f0efb92442e3f2b707bf247722c3b513907f9746d2d6917ca3e8e8bdf",
+        "density": "67315b99ca0ece15a7510c8f5ec99b20826fed2614ed2bed1d54fd5901bdb643",
+        "columns": "2d5aa8d17369d2476e8f979c6cbc71c0046c9fdd34c5daf5af61fe066cd4c616",
+        "featureIds": "9dc4a104b4d39218466fb779971ddbd62ebb67a5a41098c1b57a254c8eec08e8",
+        "featureT": "880de9d1e5c0ac3b2a1882116b41877d6c8d66ed6e4563689fe2165f1c3e1bfe"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s2-lod1-caldera-rim",
+        "world": "main",
+        "seed": 2,
+        "region": "hellscape",
+        "cx": 36,
+        "cy": 2,
+        "cz": 136,
+        "lod": 1,
+        "spacing": 2,
+        "coverage": "caldera-rim",
+        "targetCalderaId": 1
+      },
+      "hashes": {
+        "blocks": "348558a92c89a82a337fe3877bd3815018a626715d5b6a555942decd2b938561",
+        "haloBlocks": "d9bb745045fec7871718b357e292d4fb71851336ff3013aebe00a9eb29e14eb7",
+        "density": "4a955f36aa4f708005f76b74716e0d92cc3fbcfa83bcbb1513c48cf99a1ce92c",
+        "columns": "abd3ecf6d7b8ca29fbd0644359381e58ba3f0cd59b6f19a355edbd936685610e",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s3-lod0-thorn-root",
+        "world": "main",
+        "seed": 3,
+        "region": "hellscape",
+        "cx": 183,
+        "cy": 1,
+        "cz": 187,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "thorn-root",
+        "targetFeatureId": 10460680
+      },
+      "hashes": {
+        "blocks": "d344e7e39bc891a89ff95b8b027bd8c9a39e97ae6080d6e0e142c95350ecb83d",
+        "haloBlocks": "0836b29eb5d690b9eda6d337dd2142cad555180a4888f95bbe176f21dda514a0",
+        "density": "3b8ec919c7027655e1850feeb261b71c86038cbbe8ea5c152b7ab94ce6823fdf",
+        "columns": "cfcf77c0acac8e62bcbb36009c36d787de7e877e273d402f7f2cf69782480337",
+        "featureIds": "1e1a232a30c5c7a7b7f516b95c80a33733e32bf7b3d55ea8e45152d1b13181c5",
+        "featureT": "0c6747c556b8a0747c48d59f6d47b7638fad23e5a6e61752871dbeff27d6831b"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s3-lod0-thorn-mid",
+        "world": "main",
+        "seed": 3,
+        "region": "hellscape",
+        "cx": 184,
+        "cy": 2,
+        "cz": 187,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "thorn-mid",
+        "targetFeatureId": 10460680
+      },
+      "hashes": {
+        "blocks": "fc925bfff2a6af95631a7097fea50d97a7f2b778c92897833ae29f7fa3ef29ec",
+        "haloBlocks": "ab7715aec36cc8b0c4ee4044083805f01f0e30526aa8422d5ca073f41cfc373a",
+        "density": "25ddd44a0f09092ae5859033175131f1574daa4a21a563f8c4a0db27e33da261",
+        "columns": "37ecda2ec1d1221165e9d438a20e900f3694f841648ea65f84d352ade126703b",
+        "featureIds": "081482e40389f651278a963228670f4dbee904e789c51281a71a89af428290e1",
+        "featureT": "5ed5772ee48fcdf3f8abac4965e841bacdb634fa2fab197f214d837f6474c101"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s3-lod0-thorn-branch",
+        "world": "main",
+        "seed": 3,
+        "region": "hellscape",
+        "cx": 177,
+        "cy": 0,
+        "cz": 172,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "thorn-branch",
+        "targetFeatureId": 10263833
+      },
+      "hashes": {
+        "blocks": "9d5f5695fe8aaa81b98f4d24ec6bd5e90fb8e776b7ed9543dc1a57cd76ba502d",
+        "haloBlocks": "c4a928402a7fab261253d85afbd0072cc55237c7512a6224177bf11e90033e84",
+        "density": "5fc3b7952c718d77bb99441c9863dc6312290100d4c93a1a13143c3ac3f77925",
+        "columns": "d8785bd2e75a2b70368049859d67bbe44688878281eba0583cf7ca0c01933d72",
+        "featureIds": "41fe98e1c28825800c61c7ebd8e3ae9c49acb7b53a25a9563398dfc1edf02af2",
+        "featureT": "cb746df8d7a39136566a72c80e4b30d25462cd6f145d5ed6fc41dbcb90a42821"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s3-lod0-thorn-boundary-left",
+        "world": "main",
+        "seed": 3,
+        "region": "hellscape",
+        "cx": 183,
+        "cy": 1,
+        "cz": 187,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "thorn-boundary-left",
+        "targetFeatureId": 10460680
+      },
+      "hashes": {
+        "blocks": "d344e7e39bc891a89ff95b8b027bd8c9a39e97ae6080d6e0e142c95350ecb83d",
+        "haloBlocks": "0836b29eb5d690b9eda6d337dd2142cad555180a4888f95bbe176f21dda514a0",
+        "density": "3b8ec919c7027655e1850feeb261b71c86038cbbe8ea5c152b7ab94ce6823fdf",
+        "columns": "cfcf77c0acac8e62bcbb36009c36d787de7e877e273d402f7f2cf69782480337",
+        "featureIds": "1e1a232a30c5c7a7b7f516b95c80a33733e32bf7b3d55ea8e45152d1b13181c5",
+        "featureT": "0c6747c556b8a0747c48d59f6d47b7638fad23e5a6e61752871dbeff27d6831b"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s3-lod0-thorn-boundary-right",
+        "world": "main",
+        "seed": 3,
+        "region": "hellscape",
+        "cx": 184,
+        "cy": 1,
+        "cz": 187,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "thorn-boundary-right",
+        "targetFeatureId": 10460680
+      },
+      "hashes": {
+        "blocks": "69237ae12f38f3dce7a7b2d4ca064189fd3f567d49b7392e6a3dac5a92b7ad16",
+        "haloBlocks": "542ae2a9ba044bc63075287071359fdc206821c02c1142720670e5b0f5683745",
+        "density": "358571e58c01ae7295d9b86612a5783d3e1c599bd93e3327f8d25b1e0556e157",
+        "columns": "37ecda2ec1d1221165e9d438a20e900f3694f841648ea65f84d352ade126703b",
+        "featureIds": "5d83d0eaab8274011c1f32f8ab61e2914678449bcaa0ca89657dea310400cb33",
+        "featureT": "60a9b9073ae0362c5ef807b0ec3e25f3bc41795f9febd06bf89d1cb5e4cb356f"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s3-lod1-thorn-root",
+        "world": "main",
+        "seed": 3,
+        "region": "hellscape",
+        "cx": 91,
+        "cy": 0,
+        "cz": 93,
+        "lod": 1,
+        "spacing": 2,
+        "coverage": "thorn-root",
+        "targetFeatureId": 10460680
+      },
+      "hashes": {
+        "blocks": "d7b5750794d8ef1db8a5f6b91a2fe2e6aad5505c916d18c071d1b5c3d5f622e3",
+        "haloBlocks": "c7edc6a360e243666d1376452786d8379fab00ea728b88ef48c9ae7b4623d1ac",
+        "density": "0c210e1f634497d2df474d6fe3f91a32bdcb6270fe0b45a6d9ce3b929d18b29a",
+        "columns": "e890756afe1c1ac0ac9e0beb3d5d337c0fd01b46af2c492cc4adf1259865ee06",
+        "featureIds": "4af28b19560e4461f4f0d14916921332736fb2ac2feb5a2dfcd97d36bf1988f7",
+        "featureT": "5cfc25def3754f83684be6c1e35554b299262be04176636e2fdf0dc04ebf48ba"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s3-lod1-thorn-mid",
+        "world": "main",
+        "seed": 3,
+        "region": "hellscape",
+        "cx": 92,
+        "cy": 1,
+        "cz": 93,
+        "lod": 1,
+        "spacing": 2,
+        "coverage": "thorn-mid",
+        "targetFeatureId": 10460680
+      },
+      "hashes": {
+        "blocks": "d857788d04b789d89139a16693d137bb3e512d31063c669309613905d18bcc72",
+        "haloBlocks": "6f3a516080ea0b932177b46c5a652c02919e36eb3cd9dc6c31c575127685157c",
+        "density": "01e6e7ae783fe880b6973e11eb84727d2ce580bd3ac42507c9662f478a3589ae",
+        "columns": "3daa476b483e3816ea0089866f1fceecbfcfb57c801a5cb0ac6ddc5f24e09eba",
+        "featureIds": "1b17c425b0b9ceb444fd036a22c32e37ecb65d76d8a52738f9c75a1b5afdd212",
+        "featureT": "0f4c0012034e5095fef8a3aa1516f99b7defd3740825ee5f89e037baaa2fec15"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s3-lod1-thorn-branch",
+        "world": "main",
+        "seed": 3,
+        "region": "hellscape",
+        "cx": 88,
+        "cy": 0,
+        "cz": 86,
+        "lod": 1,
+        "spacing": 2,
+        "coverage": "thorn-branch",
+        "targetFeatureId": 10263833
+      },
+      "hashes": {
+        "blocks": "a0ec09622283614a533ea04cf0e01cc206eaa4b9bed02e37e643a46577bb8650",
+        "haloBlocks": "b238c37d91dd69d30157f67513fe692e9218e0f47560207aa5baf2c92d13647f",
+        "density": "80feb8484b9c3c0076f265bcabf2f292424594943e760dfc0233548d214619c8",
+        "columns": "3e56e51261e75677e06326664d8a6c042232ca06f74872bf8bc505aa330a296a",
+        "featureIds": "6b4b831f3c06ff2d286d0b0a70aec227315a4ad2df100f3c9c7904a264ad10ce",
+        "featureT": "66ae38e9e131af5c7bbcb11aec9ff2b2a21fe886b17edf564da7cc037c821d35"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s3-lod1-thorn-boundary-left",
+        "world": "main",
+        "seed": 3,
+        "region": "hellscape",
+        "cx": 91,
+        "cy": 0,
+        "cz": 93,
+        "lod": 1,
+        "spacing": 2,
+        "coverage": "thorn-boundary-left",
+        "targetFeatureId": 10460680
+      },
+      "hashes": {
+        "blocks": "d7b5750794d8ef1db8a5f6b91a2fe2e6aad5505c916d18c071d1b5c3d5f622e3",
+        "haloBlocks": "c7edc6a360e243666d1376452786d8379fab00ea728b88ef48c9ae7b4623d1ac",
+        "density": "0c210e1f634497d2df474d6fe3f91a32bdcb6270fe0b45a6d9ce3b929d18b29a",
+        "columns": "e890756afe1c1ac0ac9e0beb3d5d337c0fd01b46af2c492cc4adf1259865ee06",
+        "featureIds": "4af28b19560e4461f4f0d14916921332736fb2ac2feb5a2dfcd97d36bf1988f7",
+        "featureT": "5cfc25def3754f83684be6c1e35554b299262be04176636e2fdf0dc04ebf48ba"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s3-lod1-thorn-boundary-right",
+        "world": "main",
+        "seed": 3,
+        "region": "hellscape",
+        "cx": 92,
+        "cy": 0,
+        "cz": 93,
+        "lod": 1,
+        "spacing": 2,
+        "coverage": "thorn-boundary-right",
+        "targetFeatureId": 10460680
+      },
+      "hashes": {
+        "blocks": "b2305cbec8a1c46ee1fe4b1a376ae10f53a2da0c28b115f67c6f41fda1eb84fd",
+        "haloBlocks": "00841e27d65640d67c22dd939b5da7a0384a882d34da22de89c70567d54b9251",
+        "density": "fe7c03c825876ea719124ca9f5cb0bac3dc936c2cc0994192e15a5a0f6db8296",
+        "columns": "3daa476b483e3816ea0089866f1fceecbfcfb57c801a5cb0ac6ddc5f24e09eba",
+        "featureIds": "b84df75f3f3c5cfe47760cfc0336a3923d21c0b6fc4a3a99f93fc442b549b09e",
+        "featureT": "17f12015bc0dd9ef1d3c28dc754bb179a43e4ea28aa7dd81f70deb4520bff801"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s3-lod0-caldera-lava",
+        "world": "main",
+        "seed": 3,
+        "region": "hellscape",
+        "cx": 96,
+        "cy": 1,
+        "cz": 253,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "caldera-lava",
+        "targetCalderaId": 1
+      },
+      "hashes": {
+        "blocks": "f35a5b6d71a45c6918e73122ab50fdb684445e6b657dfdf9368380ed3b0e5942",
+        "haloBlocks": "e4bb34f6ec2929506c8c40346300b04266adf825cb5dc83d2094a77f7c8daff6",
+        "density": "8aecf65a5824fa57cb34527e3badc1406cdd58778069e9615c416f6fffe94630",
+        "columns": "bb31f8a03aac76cbaa712dfb0fb1f44ef91c889acf9fba2f589263f7d70c2c43",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s3-lod0-caldera-rim",
+        "world": "main",
+        "seed": 3,
+        "region": "hellscape",
+        "cx": 108,
+        "cy": 3,
+        "cz": 253,
+        "lod": 0,
+        "spacing": 1,
+        "coverage": "caldera-rim",
+        "targetCalderaId": 1
+      },
+      "hashes": {
+        "blocks": "a407b778888e9e0519d023f9f119f839627f54e837d0c6319aa9bec9decd6693",
+        "haloBlocks": "300a5a8d12348440fab883f8ad6f3acf1cffe82c43ebace77cda4070f6e5348b",
+        "density": "532e48467740d3373489d3debe5042e6b586a6841bc248ad24d806ee09202896",
+        "columns": "81fdfb25b98bf89c31326342fbdb67f06bd51ec7b35961cff3d2ee0959077541",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s3-lod1-caldera-lava",
+        "world": "main",
+        "seed": 3,
+        "region": "hellscape",
+        "cx": 48,
+        "cy": 0,
+        "cz": 126,
+        "lod": 1,
+        "spacing": 2,
+        "coverage": "caldera-lava",
+        "targetCalderaId": 1
+      },
+      "hashes": {
+        "blocks": "25f7b33e64e7ea4d7e1ffa96fba00b9191453139ab3b75661091022f439d7e84",
+        "haloBlocks": "c583c1f301148090f61e93bb42b713cc30411d380be778dd611c2d74ab22ccf1",
+        "density": "5aa55035e21b3d32db803e0e86e8899dd9e78adc8bc09c827f40eb5d098ee37c",
+        "columns": "c954086304fefa4485a12954eea4e518fe6d59a9e77c0ce07929685255bf5151",
+        "featureIds": "8315f7240a2dd7321b56f50ad529478d79e851587e23cf1b72b069394d1ed3d6",
+        "featureT": "f52ec930e8c1b6eb4dbdf4d47818d2588767c5367263f5fe0b6ae4104151f514"
+      }
+    },
+    {
+      "sample": {
+        "id": "ibara-s3-lod1-caldera-rim",
+        "world": "main",
+        "seed": 3,
+        "region": "hellscape",
+        "cx": 54,
+        "cy": 1,
+        "cz": 126,
+        "lod": 1,
+        "spacing": 2,
+        "coverage": "caldera-rim",
+        "targetCalderaId": 1
+      },
+      "hashes": {
+        "blocks": "072cc3700ceaa43b58f9b80a3a2e35ca57d2b7ab10baaa6fa6420f8188e50f35",
+        "haloBlocks": "d0e602d73386e5c598d8b4ac24ea0afcb240de68ec07ae974c3bf1e78262921e",
+        "density": "e0b258850a61a26a2c59f02f86ad868bf7d94c031688ccd9ade912cb78ecd131",
+        "columns": "25752b1cd5d222256ecf2cbc83d091b12b854f476d66c187e5a3bb7728c2b213",
+        "featureIds": "c6f0ab7e265f879699669b1a2256d12033141b458b2f72171c6cf27c4cf0388f",
+        "featureT": "6bf6b2a2802dea2c1f0353e96a2da3ffe3220f99a5925533178c5cdaf76f3af0"
       }
     }
   ]

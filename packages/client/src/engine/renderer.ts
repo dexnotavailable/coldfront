@@ -15,12 +15,14 @@ import {
   DepthTexture,
   EdgesGeometry,
   FogExp2,
+  Frustum,
   Group,
   HalfFloatType,
   HemisphereLight,
   LineBasicMaterial,
   LineSegments,
   type Material,
+  Matrix4,
   Mesh,
   MeshBasicMaterial,
   NoToneMapping,
@@ -43,7 +45,14 @@ import type { BlockHit, Point } from "../game/raycast.js";
 import { Avatar } from "./avatar.js";
 import { CutCap } from "./cut-cap.js";
 import { BlockEffects } from "./effects.js";
-import { createTerrainMaterials, waterDepthRange } from "./terrain-material.js";
+import { IbaraEffects, ventAnchors } from "./ibara-effects.js";
+import {
+  createTerrainMaterials,
+  TERRAIN_BLOOM_THRESHOLD,
+  TERRAIN_VIEW_MODES,
+  type TerrainViewMode,
+  waterDepthRange,
+} from "./terrain-material.js";
 import { type ChunkResult, chunkKey } from "./worker-protocol.js";
 
 export interface WorldColors {
@@ -60,7 +69,7 @@ interface RenderChunk {
   readonly border: LineSegments;
   readonly geometries: BufferGeometry[];
   readonly gpuBytes: number;
-  readonly hasFluid: boolean;
+  readonly fluid: Mesh | null;
 }
 function geometry(part: MeshPart): BufferGeometry {
   const g = new BufferGeometry();
@@ -72,6 +81,11 @@ function geometry(part: MeshPart): BufferGeometry {
     new BufferAttribute(part.packedPositions, 1),
   );
   g.setAttribute("aSurface", new BufferAttribute(part.surfaces, 3));
+  // Uint16 values use the float-input path; each half is exactly representable.
+  g.setAttribute(
+    "aFeatureIdParts",
+    new BufferAttribute(part.featureIdParts, 2, false),
+  );
   g.setIndex(new BufferAttribute(part.indices, 1));
   g.computeBoundingBox();
   g.computeBoundingSphere();
@@ -87,8 +101,11 @@ export class WorldRenderer {
   readonly effects = new BlockEffects();
   readonly rayPoint = new Vector3();
   private readonly chunks = new Map<string, RenderChunk>();
+  private readonly waterFrustum = new Frustum();
+  private readonly waterViewProjection = new Matrix4();
   private readonly clip = new Plane(new Vector3(0, -1, 0), 100000);
   private readonly terrain = createTerrainMaterials(this.clip);
+  readonly ibaraEffects = new IbaraEffects(this.clip);
   private readonly waterDepthTarget = new WebGLRenderTarget(1, 1, {
     depthBuffer: true,
     stencilBuffer: false,
@@ -100,6 +117,7 @@ export class WorldRenderer {
   private readonly skyDay = { value: 1 };
   private readonly fog = new FogExp2(0xaab5b4, 0.004);
   private readonly composer: EffectComposer;
+  private readonly bloom: BloomEffect;
   private readonly depthMaterial = new MeshBasicMaterial({
     colorWrite: false,
     clippingPlanes: [this.clip],
@@ -113,7 +131,9 @@ export class WorldRenderer {
   private readonly resizeObserver: ResizeObserver;
   private hud = true;
   private postcard = false;
+  private viewMode: TerrainViewMode = "normal";
   private ready = false;
+  private shadowMapInvalid = false;
   private cut = Infinity;
   private worldId = 0;
   contextLost = false;
@@ -188,6 +208,7 @@ export class WorldRenderer {
     this.depthScene.add(this.avatar.depth);
     this.marks.add(this.avatar.silhouette);
     this.scene.add(this.effects.particles, this.effects.pop);
+    this.scene.add(this.ibaraEffects.flames, this.ibaraEffects.embers);
     this.marks.add(this.effects.ghost);
     this.outline = new LineSegments(
       new EdgesGeometry(new BoxGeometry(1.006, 1.006, 1.006)),
@@ -206,10 +227,11 @@ export class WorldRenderer {
     this.composer.addPass(new RenderPass(this.scene, this.camera));
     const bloom = new BloomEffect({
       intensity: 0.2,
-      luminanceThreshold: 8,
+      luminanceThreshold: TERRAIN_BLOOM_THRESHOLD,
       luminanceSmoothing: 0.05,
       mipmapBlur: true,
     });
+    this.bloom = bloom;
     this.composer.addPass(
       new EffectPass(
         this.camera,
@@ -235,6 +257,9 @@ export class WorldRenderer {
   private restored = (): void => {
     this.contextLost = false;
     this.ready = false;
+    // The target object survives context loss, but its GPU depth does not.
+    this.shadowMapInvalid = true;
+    this.renderer.shadowMap.needsUpdate = true;
     this.onRestored();
   };
   resize(): void {
@@ -262,7 +287,8 @@ export class WorldRenderer {
     const group = new Group(),
       depth = new Group(),
       geometries: BufferGeometry[] = [];
-    let bytes = 0;
+    let bytes = 0,
+      fluid: Mesh | null = null;
     group.position.set(
       result.address.cx * 32,
       result.address.cy * 32,
@@ -279,13 +305,21 @@ export class WorldRenderer {
         part.expansions.byteLength +
         part.packedPositions.byteLength +
         part.surfaces.byteLength +
+        part.featureIdParts.byteLength +
         part.indices.byteLength;
       const mesh = new Mesh(g, this.terrain.materials[index]);
-      mesh.castShadow = index < 2;
+      mesh.castShadow = index < 2 || index === 4;
       mesh.receiveShadow = true;
       group.add(mesh);
-      if (index < 2) depth.add(new Mesh(g, this.depthMaterial));
+      if (index === 3) fluid = mesh;
+      if (index < 2 || index === 4) depth.add(new Mesh(g, this.depthMaterial));
     });
+    const opaque = result.mesh.parts[0];
+    this.ibaraEffects.register(
+      key,
+      result.world.id,
+      opaque ? ventAnchors(opaque, group.position) : [],
+    );
     const region = new Color().setRGB(
       result.regionColor[0] / 255,
       result.regionColor[1] / 255,
@@ -325,7 +359,7 @@ export class WorldRenderer {
       border,
       geometries,
       gpuBytes: bytes + 32768,
-      hasFluid: (result.mesh.parts[3]?.indices.length ?? 0) > 0,
+      fluid,
     });
     group.visible = depth.visible = result.world.id === this.worldId;
     cap.mesh.visible &&= result.world.id === this.worldId;
@@ -342,9 +376,11 @@ export class WorldRenderer {
     (c.depthCap.material as Material).dispose();
     c.border.geometry.dispose();
     this.chunks.delete(key);
+    this.ibaraEffects.remove(key);
   }
   setWorld(worldId: number): void {
     this.worldId = worldId;
+    this.ibaraEffects?.setWorld(worldId);
     for (const chunk of this.chunks.values()) {
       const active = chunk.worldId === worldId;
       chunk.group.visible = chunk.depth.visible = active;
@@ -368,6 +404,7 @@ export class WorldRenderer {
     const oldWorld = this.worldId,
       oldPosition = this.camera.position.clone(),
       oldQuaternion = this.camera.quaternion.clone(),
+      oldOrigin = this.terrain.uniforms.origin.value.clone(),
       oldWaterDepthReady = this.terrain.uniforms.waterDepthReady.value;
     const target = new WebGLRenderTarget(128, 72, {
       depthBuffer: true,
@@ -385,6 +422,16 @@ export class WorldRenderer {
       this.terrain.uniforms.waterDepthReady.value = 0;
       this.setWorld(worldId);
       this.setView(position, focus);
+      this.terrain.uniforms.origin.value.set(
+        Math.floor(position.x / 1024) * 1024,
+        0,
+        Math.floor(position.z / 1024) * 1024,
+      );
+      this.ibaraEffects?.update(
+        this.terrain.uniforms.display.value,
+        this.cut,
+        this.camera.position,
+      );
       for (const chunk of this.chunks.values())
         if (chunk.worldId === worldId)
           for (const group of [chunk.group, chunk.depth])
@@ -416,7 +463,13 @@ export class WorldRenderer {
       this.sky.position.copy(oldPosition);
       this.camera.quaternion.copy(oldQuaternion);
       this.camera.updateMatrixWorld();
+      this.terrain.uniforms.origin.value.copy(oldOrigin);
       this.setWorld(oldWorld);
+      this.ibaraEffects?.update(
+        this.terrain.uniforms.display.value,
+        this.cut,
+        this.camera.position,
+      );
     }
   }
   setView(position: Point, focus: Point): void {
@@ -471,8 +524,11 @@ export class WorldRenderer {
     this.avatar.depth.visible = !this.postcard;
     this.avatar.silhouette.visible = this.hud && !this.postcard && occluded;
     this.effects.update(displayMs, cut, this.camera.position);
-    this.effects.particles.visible = !this.postcard;
-    this.effects.pop.visible &&= !this.postcard;
+    this.effects.particles.visible =
+      !this.postcard && this.viewMode === "normal";
+    this.effects.pop.visible &&= !this.postcard && this.viewMode === "normal";
+    this.ibaraEffects.setMode(this.viewMode, this.postcard);
+    this.ibaraEffects.update(displayMs, cut, this.camera.position);
     this.terrain.uniforms.pop.value
       .copy(this.effects.pop.position)
       .addScalar(-0.5);
@@ -490,6 +546,12 @@ export class WorldRenderer {
     for (const m of this.terrain.materials) m.wireframe = tools.wireframe;
     this.fog.density = tools.fog ? 0.004 : 0;
     this.sun.shadow.intensity = tools.shadows ? 1 : 0;
+    // Keep the shadowed shader variant. Its depth sampler needs a valid map even
+    // at zero intensity, so initialize once before suspending disabled updates.
+    // Re-enabling must refresh after any intervening camera/world/cut changes.
+    this.renderer.shadowMap.autoUpdate = tools.shadows;
+    this.renderer.shadowMap.needsUpdate =
+      tools.shadows || this.shadowMapInvalid || this.sun.shadow.map === null;
     this.setTime(tools.timeHours);
   }
   private setSkyUniform(name: string, value: number | Vector3): void {
@@ -526,8 +588,19 @@ export class WorldRenderer {
   setHud(visible: boolean): void {
     this.hud = visible;
   }
+  setViewMode(mode: TerrainViewMode): void {
+    this.viewMode = mode;
+    this.terrain.uniforms.viewMode.value = TERRAIN_VIEW_MODES[mode];
+    this.bloom.intensity = mode === "normal" ? 0.2 : 0;
+    this.ibaraEffects.setMode(mode, this.postcard);
+    if (mode !== "normal") {
+      this.effects.particles.visible = this.effects.pop.visible = false;
+      this.terrain.uniforms.popActive.value = 0;
+    }
+  }
   setPostcard(active: boolean): void {
     this.postcard = active;
+    this.ibaraEffects?.setMode(this.viewMode ?? "normal", active);
     this.camera.fov = active ? 70 : 40;
     this.camera.updateProjectionMatrix();
     this.resize();
@@ -536,15 +609,43 @@ export class WorldRenderer {
     const saved: { object: { visible: boolean }; visible: boolean }[] = [];
     const sample = [...this.chunks.values()].find((c) => c.geometries.length)
       ?.geometries[0];
-    const variants = sample
-      ? this.terrain.materials.map((material) => new Mesh(sample, material))
-      : [];
+    // Compile even when an empty destination has no sample geometry. Both
+    // shadow-receiving and unshadowed variants use the production attribute ABI.
+    const fallback = sample ? null : new BoxGeometry(1, 1, 1);
+    if (fallback) {
+      const count = fallback.getAttribute("position").count;
+      fallback.setAttribute(
+        "aPackedPosition",
+        new BufferAttribute(new Float32Array(count), 1),
+      );
+      fallback.setAttribute(
+        "aSurface",
+        new BufferAttribute(new Float32Array(count * 3), 3),
+      );
+      fallback.setAttribute(
+        "aExpand",
+        new BufferAttribute(new Int8Array(count * 3), 3),
+      );
+      fallback.setAttribute(
+        "aFeatureIdParts",
+        new BufferAttribute(new Uint16Array(count * 2), 2, false),
+      );
+    }
+    const variants = this.terrain.materials.flatMap((material) =>
+      [false, true].map((shadows) => {
+        const mesh = new Mesh(sample ?? (fallback as BufferGeometry), material);
+        mesh.receiveShadow = mesh.castShadow = shadows;
+        return mesh;
+      }),
+    );
     this.scene.add(...variants);
     for (const object of [
       this.effects.pop,
       this.effects.ghost,
       this.avatar.silhouette,
       this.outline,
+      this.ibaraEffects.flames,
+      this.ibaraEffects.embers,
       ...[...this.chunks.values()].flatMap((c) => [c.cap.mesh, c.depthCap]),
     ]) {
       saved.push({ object, visible: object.visible });
@@ -558,6 +659,7 @@ export class WorldRenderer {
     } finally {
       for (const s of saved) s.object.visible = s.visible;
       this.scene.remove(...variants);
+      fallback?.dispose();
     }
   }
   render(): void {
@@ -565,30 +667,56 @@ export class WorldRenderer {
     this.renderer.info.reset();
     this.prepareWaterDepth();
     this.composer.render(0);
-    if (!this.postcard && this.hud) {
+    this.shadowMapInvalid = false;
+    if (
+      !this.postcard &&
+      this.hud &&
+      this.marks.children.some((mark) => mark.visible)
+    ) {
       // EffectPass ends on the default framebuffer. Rebuild only depth with the
       // same loaded near geometry/caps; the unlit marks then test that depth.
       // No screen-space AO/outline filter or private framebuffer access.
       this.renderer.setRenderTarget(null);
-      this.renderer.autoClear = false;
-      this.renderer.clearDepth();
-      this.renderer.render(this.depthScene, this.camera);
-      this.renderer.render(this.marks, this.camera);
-      this.renderer.autoClear = true;
+      const oldAutoClear = this.renderer.autoClear;
+      try {
+        this.renderer.autoClear = false;
+        this.renderer.clearDepth();
+        this.renderer.render(this.depthScene, this.camera);
+        this.renderer.render(this.marks, this.camera);
+      } finally {
+        this.renderer.autoClear = oldAutoClear;
+      }
     }
   }
   private prepareWaterDepth(): void {
     this.terrain.uniforms.waterDepthReady.value = 0;
+    // Match Three's conservative sphere culling. Uploaded groups have not
+    // necessarily reached their first render, so refresh their world matrices.
+    if (this.camera.parent === null && this.camera.matrixWorldAutoUpdate)
+      this.camera.updateMatrixWorld();
+    this.waterFrustum.setFromProjectionMatrix(
+      this.waterViewProjection.multiplyMatrices(
+        this.camera.projectionMatrix,
+        this.camera.matrixWorldInverse,
+      ),
+      this.camera.coordinateSystem,
+      this.camera.reversedDepth,
+    );
     let hasFluid = false;
-    for (const chunk of this.chunks.values())
+    for (const chunk of this.chunks.values()) {
+      const fluid = chunk.fluid;
       if (
         chunk.worldId === this.worldId &&
         chunk.group.visible &&
-        chunk.hasFluid
+        fluid?.visible
       ) {
-        hasFluid = true;
-        break;
+        fluid.updateWorldMatrix(true, false);
+        if (!fluid.frustumCulled || this.waterFrustum.intersectsObject(fluid)) {
+          hasFluid = true;
+          break;
+        }
       }
+    }
     if (!hasFluid) return;
     const oldTarget = this.renderer.getRenderTarget(),
       oldAutoClear = this.renderer.autoClear;
@@ -602,7 +730,7 @@ export class WorldRenderer {
     try {
       this.renderer.autoClear = true;
       this.renderer.setRenderTarget(this.waterDepthTarget);
-      // Only opaque/cutout geometry is present here; it cannot sample the water
+      // Only opaque/cutout/lava geometry is present; it cannot sample the water
       // texture attached to this framebuffer. Cleared depth1 represents sky.
       this.renderer.render(this.depthScene, this.camera);
     } finally {
@@ -614,6 +742,7 @@ export class WorldRenderer {
   get statistics(): { draws: number; triangles: number; memory: number } {
     let memory = this.terrain.texture.image.data?.byteLength ?? 0;
     memory += this.waterDepthTarget.width * this.waterDepthTarget.height * 8;
+    memory += this.ibaraEffects.statistics.memory;
     for (const c of this.chunks.values()) memory += c.gpuBytes;
     return {
       draws: this.renderer.info.render.calls,
@@ -640,6 +769,7 @@ export class WorldRenderer {
       this.removeWorld(chunk.worldId);
     this.avatar.dispose();
     this.effects.dispose();
+    this.ibaraEffects?.dispose();
     this.outline.geometry.dispose();
     (this.outline.material as Material).dispose();
     this.depthMaterial.dispose();

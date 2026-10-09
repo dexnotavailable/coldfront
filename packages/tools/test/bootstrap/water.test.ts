@@ -1,8 +1,12 @@
 import {
+  BoxGeometry,
   BufferGeometry,
   DepthTexture,
+  Frustum,
   Group,
   LineBasicMaterial,
+  Matrix4,
+  Mesh,
   MeshBasicMaterial,
   PerspectiveCamera,
   Plane,
@@ -97,9 +101,12 @@ function fixture() {
     setSize: vi.fn(),
     dispose: vi.fn(),
   };
-  const chunks = new Map([
-    ["water", { worldId: 1, hasFluid: true, group: new Group() }],
-  ]);
+  const fluid = new Mesh(new BoxGeometry(2, 2, 2), terrain.materials[3]),
+    group = new Group();
+  fluid.position.z = -5;
+  group.add(fluid);
+  scene.add(group);
+  const chunks = new Map([["water", { worldId: 1, fluid, group }]]);
   const renderer = Object.assign(
     Object.create(WorldRenderer.prototype) as object,
     {
@@ -111,6 +118,8 @@ function fixture() {
       chunks,
       terrain,
       waterDepthTarget,
+      waterFrustum: new Frustum(),
+      waterViewProjection: new Matrix4(),
       worldId: 1,
       cut: Infinity,
       ready: true,
@@ -134,6 +143,7 @@ function fixture() {
   ) as unknown as WorldRenderer;
   const dispose = () => {
     chunks.clear();
+    fluid.geometry.dispose();
     renderer.dispose();
     sourceTarget.dispose();
   };
@@ -147,6 +157,8 @@ function fixture() {
     scene,
     depthScene,
     chunks,
+    fluid,
+    group,
     calls,
     state,
     driver,
@@ -275,6 +287,89 @@ describe("water transmission and opaque depth ownership", () => {
           autoClear: false,
         },
       ]);
+    } finally {
+      f.dispose();
+    }
+  });
+  it("refreshes uploaded descendant transforms before testing water, and restores depth when it enters the view", () => {
+    const f = fixture();
+    try {
+      f.group.position.x = 1000;
+      // No scene draw/updateMatrixWorld has happened for this uploaded group.
+      f.renderer.render();
+      expect(f.calls.map((call) => call.scene)).toEqual(["composer"]);
+      expect(f.terrain.uniforms.waterDepthReady.value).toBe(0);
+      f.calls.length = 0;
+      f.group.position.x = 0;
+      f.renderer.render();
+      expect(f.calls.map((call) => call.scene)).toEqual([
+        f.depthScene,
+        "composer",
+      ]);
+      expect(f.terrain.uniforms.waterDepthReady.value).toBe(1);
+      f.calls.length = 0;
+      f.group.position.z = 20;
+      f.renderer.render();
+      expect(f.calls.map((call) => call.scene)).toEqual(["composer"]);
+      expect(f.terrain.uniforms.waterDepthReady.value).toBe(0);
+    } finally {
+      f.dispose();
+    }
+  });
+  it("uses the current camera pose and projection, including postcard view changes", () => {
+    const f = fixture();
+    try {
+      f.camera.position.x = 1000;
+      f.renderer.render();
+      expect(f.terrain.uniforms.waterDepthReady.value).toBe(0);
+      f.camera.position.x = 0;
+      f.renderer.render();
+      expect(f.terrain.uniforms.waterDepthReady.value).toBe(1);
+      f.renderer.setView(new Vector3(), { x: 0, y: 0, z: 5 });
+      f.renderer.render();
+      expect(f.terrain.uniforms.waterDepthReady.value).toBe(0);
+      f.renderer.setView(new Vector3(), { x: 0, y: 0, z: -5 });
+      f.group.position.x = 6;
+      vi.stubGlobal("devicePixelRatio", 1);
+      f.renderer.setPostcard(false);
+      f.renderer.render();
+      expect(f.terrain.uniforms.waterDepthReady.value).toBe(0);
+      f.renderer.setPostcard(true);
+      f.renderer.render();
+      expect(f.terrain.uniforms.waterDepthReady.value).toBe(1);
+    } finally {
+      f.dispose();
+    }
+  });
+  it("retains edge-intersecting water and the explicit culling override", () => {
+    const f = fixture();
+    try {
+      // Centre lies beyond the right edge at z=-5; its sphere still intersects.
+      f.group.position.x = 7;
+      f.renderer.render();
+      expect(f.terrain.uniforms.waterDepthReady.value).toBe(1);
+      f.group.position.x = 1000;
+      f.renderer.render();
+      expect(f.terrain.uniforms.waterDepthReady.value).toBe(0);
+      f.fluid.frustumCulled = false;
+      f.renderer.render();
+      expect(f.terrain.uniforms.waterDepthReady.value).toBe(1);
+    } finally {
+      f.dispose();
+    }
+  });
+  it("ignores hidden fluid and inactive worlds without leaving the previous depth ready", () => {
+    const f = fixture();
+    try {
+      f.renderer.render();
+      expect(f.terrain.uniforms.waterDepthReady.value).toBe(1);
+      f.fluid.visible = false;
+      f.renderer.render();
+      expect(f.terrain.uniforms.waterDepthReady.value).toBe(0);
+      f.fluid.visible = true;
+      for (const chunk of f.chunks.values()) chunk.worldId = 2;
+      f.renderer.render();
+      expect(f.terrain.uniforms.waterDepthReady.value).toBe(0);
     } finally {
       f.dispose();
     }

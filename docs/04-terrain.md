@@ -238,6 +238,12 @@ d = T · g  +  K(x, y, z)  +  micro(x, y, z)
 - **Structure fitting.** Under structure massing (the Keep, ruins, the Buried City) add density, and above it remove density, with a falloff, so buildings sit into the ground (Minecraft's "beardifier" idea).
 - **Crumb cleanup (LOD0).** After carving, flood-fill solids. Remove components under 64 voxels that **don't touch the chunk's outermost voxel layer**, except where the region allows floating features.
 
+  Use six face neighbours and the canonical 32³ world owner of each unit cell, including negative coordinates. Classify against the unmodified field; only a completed, closed component below 64 may be removed. Keep components that reach the boundary, an eligible floating-feature owner, or 64 solids. Cache eviction must not change the answer.
+
+  The shared spacing-1 sampler applies this mask to point and prepared queries, core voxels and every halo entry, including the eight upper layers. Collision, camera rays and lighting therefore see the same cleanup; chunk-buffer-only deletion is insufficient. Removed cells have negative density and zero feature ID/t, followed by legitimate owned-fluid refill. User edits remain outside cleanup. TEST and spacings above 1 retain their existing generators.
+
+  This policy introduces unit-cell density discontinuities and conservatively retains boundary-touching crumbs; report those limits rather than claiming a smooth or globally crumb-free field. Conservative upper bounds may overestimate after deletion. The present shortcut through proven solid ground relies on monotonic ground plus additive features: subtractive caves must replace or disable that proof.
+
 ---
 
 ## 8. Stage D: features (the SDF system)

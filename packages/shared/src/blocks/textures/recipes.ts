@@ -16,7 +16,13 @@ export interface TextureRecipe {
     | "brick"
     | "glass"
     | "ore"
-    | "snow";
+    | "snow"
+    | "obsidian"
+    | "ember"
+    | "brimstone"
+    | "sulphur"
+    | "lava"
+    | "vent";
 }
 /** IDs 0..9 match the accepted seed; 10+ are append-only proposals for integration. */
 export const TEXTURE_RECIPES: readonly TextureRecipe[] = [
@@ -130,6 +136,43 @@ export const TEXTURE_RECIPES: readonly TextureRecipe[] = [
     kind: "wood",
   },
   { id: 31, key: "bricks", name: "Bricks", rgb: [140, 83, 66], kind: "brick" },
+  { id: 32, key: "bark", name: "Bark wood", rgb: [92, 75, 51], kind: "wood" },
+  {
+    id: 33,
+    key: "obsidian",
+    name: "Obsidian",
+    rgb: [24, 26, 33],
+    kind: "obsidian",
+  },
+  {
+    id: 34,
+    key: "ember_crust",
+    name: "Ember crust",
+    rgb: [36, 26, 28],
+    kind: "ember",
+  },
+  {
+    id: 35,
+    key: "brimstone_crust",
+    name: "Brimstone crust",
+    rgb: [188, 179, 126],
+    kind: "brimstone",
+  },
+  {
+    id: 36,
+    key: "sulphur_crust",
+    name: "Sulphur crust",
+    rgb: [185, 159, 42],
+    kind: "sulphur",
+  },
+  { id: 37, key: "lava", name: "Lava", rgb: [48, 31, 28], kind: "lava" },
+  {
+    id: 38,
+    key: "vent_mouth",
+    name: "Vent mouth",
+    rgb: [31, 26, 28],
+    kind: "vent",
+  },
 ];
 export const TEXTURE_SIZE = 16;
 export const LAYERS_PER_BLOCK = 6;
@@ -140,19 +183,21 @@ export interface TextureArrayData {
   readonly layers: number;
   readonly averages: Uint8Array;
 }
-/** Three side variants and three top variants per ID: 192 layers, below WebGL2's 256 floor. */
+/** Three side variants and three top variants per ID: 234 layers, below WebGL2's 256 floor. */
 export function generateTextureArray(): TextureArrayData {
   const layers = TEXTURE_RECIPES.length * LAYERS_PER_BLOCK;
   const data = new Uint8Array(layers * TEXTURE_SIZE * TEXTURE_SIZE * 4);
   const averages = new Uint8Array(TEXTURE_RECIPES.length * 3);
   for (const recipe of TEXTURE_RECIPES) {
+    // The accepted Bark dependency reuses Log's exact side pixels on every face.
+    const textureSeed = recipe.key === "bark" ? 7 : recipe.id;
     const totals = [0, 0, 0];
     for (let face = 0; face < 2; face++)
       for (let variant = 0; variant < 3; variant++) {
         const layer = recipe.id * LAYERS_PER_BLOCK + face * 3 + variant;
         for (let y = 0; y < TEXTURE_SIZE; y++)
           for (let x = 0; x < TEXTURE_SIZE; x++) {
-            const hash = hash4(0x35ab9183, recipe.id, variant, x + 31 * y);
+            const hash = hash4(0x35ab9183, textureSeed, variant, x + 31 * y);
             let grain = ((hash & 255) / 255 - 0.5) * 15;
             let r = recipe.rgb[0],
               g = recipe.rgb[1],
@@ -161,7 +206,7 @@ export function generateTextureArray(): TextureArrayData {
             const coarse =
               ((hash4(
                 17,
-                recipe.id,
+                textureSeed,
                 Math.floor(x / 3),
                 Math.floor(y / 3) + variant * 17,
               ) &
@@ -188,7 +233,7 @@ export function generateTextureArray(): TextureArrayData {
                   : x % 13 === 0 && y % 5 < 4
                     ? -8
                     : 0
-                : face === 0
+                : face === 0 || recipe.key === "bark"
                   ? (x + Math.floor(y / 5)) % 4 === 0
                     ? -23
                     : 5
@@ -223,6 +268,48 @@ export function generateTextureArray(): TextureArrayData {
             if (recipe.kind === "glass") {
               grain = x === 0 || y === 0 ? 12 : grain * 0.2;
               if (recipe.id === 17) alpha = 95;
+            }
+            if (recipe.kind === "obsidian") {
+              // Broad, quiet glassy facets. Gloss is light-dependent in the renderer.
+              grain = grain * 0.24 + coarse * 0.35;
+              const facet = (x + Math.floor(y / 3) + variant * 5) % 13;
+              if (facet === 0) grain -= 5;
+              else if (facet === 1) grain += 6;
+            }
+            if (recipe.kind === "brimstone" || recipe.kind === "sulphur") {
+              grain = grain * 0.65 + coarse * 1.5;
+              // Powdery deposits interrupted by dark pinholes, never emissive.
+              if ((hash & 63) < 4) grain -= 30;
+            }
+            if (
+              recipe.kind === "ember" ||
+              recipe.kind === "lava" ||
+              recipe.kind === "vent"
+            ) {
+              // Connected dark-red seams in a cool crust, with sparse hotter knots.
+              // RGB red excess marks hot pixels for P6; alpha stays fully opaque.
+              const seam = (x + Math.floor(y / 3) + variant * 5) % 11;
+              const cross = (y + Math.floor(x / 4) + variant * 3) % 13;
+              const hot = seam === 0 || (cross === 0 && seam < 5);
+              const lavaEdge = recipe.kind === "lava" && seam === 1;
+              grain = grain * 0.55 + coarse * 0.6;
+              if (hot || lavaEdge) {
+                const knot = hot && (hash & 7) < 2;
+                if (recipe.kind === "ember") {
+                  r = knot ? 158 : 127;
+                  g = knot ? 42 : 31;
+                  b = knot ? 24 : 22;
+                } else if (recipe.kind === "lava") {
+                  r = knot ? 245 : 204;
+                  g = knot ? 132 : 71;
+                  b = knot ? 39 : 24;
+                } else {
+                  r = knot ? 220 : 165;
+                  g = knot ? 83 : 44;
+                  b = knot ? 27 : 22;
+                }
+                grain *= 0.4;
+              }
             }
             const i = (layer * 256 + y * 16 + x) * 4;
             data[i] = Math.max(0, Math.min(255, Math.round(r + grain)));
