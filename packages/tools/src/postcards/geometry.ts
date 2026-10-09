@@ -55,10 +55,22 @@ export interface HellCameraValidation extends CameraValidation {
     readonly bodyId: number;
   }[];
 }
+export interface CameraFirstHit {
+  readonly px: number;
+  readonly py: number;
+  readonly x: number;
+  readonly y: number;
+  readonly z: number;
+  readonly block: number;
+  readonly featureId: number;
+  readonly distance: number;
+}
 interface TargetInspection {
   readonly target: HellTarget;
   readonly caldera?: IbaraCalderaData;
   lava(x: number, z: number): Readonly<LavaSample>;
+  /** Tools-only observation of the SAME first hits used by the original gates. */
+  onHit?(hit: CameraFirstHit): void;
 }
 const normalize = (p: Point): Point => {
   const d = Math.hypot(p.x, p.y, p.z);
@@ -88,6 +100,20 @@ export function cameraFrame(camera: MainCameraCandidate) {
   });
   const sunYaw = Math.atan2(sun.x, -sun.z);
   return {
+    project: (point: Point) => {
+      const x = point.x - camera.position.x,
+        y = point.y - camera.position.y,
+        z = point.z - camera.position.z,
+        depth = x * direction.x + y * direction.y + z * direction.z;
+      return {
+        pixelsPerMetre: 360 / (depth * tangent),
+        x:
+          640 +
+          (360 * (x * right.x + y * right.y + z * right.z)) / (depth * tangent),
+        y: 360 - (360 * (x * up.x + y * up.y + z * up.z)) / (depth * tangent),
+        depth,
+      };
+    },
     horizonFraction: 0.5 + Math.tan(Math.asin(direction.y)) / (2 * tangent),
     sunOffsetDegrees:
       (Math.abs(Math.atan2(Math.sin(sunYaw - yaw), Math.cos(sunYaw - yaw))) *
@@ -229,6 +255,16 @@ export function inspectMainCamera(
       }
       if (block === Block.Air) sky++;
       else {
+        targetInspection?.onHit?.({
+          px,
+          py,
+          x: hitX,
+          y: hitY,
+          z: hitZ,
+          block,
+          featureId,
+          distance,
+        });
         if (block === Block.Water) water++;
         if (BLOCK_REGISTRY[block]?.solid) highest = Math.max(highest, hitY);
         if (targetInspection) {

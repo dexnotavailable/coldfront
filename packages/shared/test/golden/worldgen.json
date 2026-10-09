@@ -4,9 +4,9 @@
   "worldgenVersion": 4,
   "encoding": "sha256; uint16-le; uint32-le; ieee754-binary64-le; signed-zero-preserved; NaN-rejected; main-feature-pair-halo-aligned",
   "provenance": {
-    "sourceHash": "454a0436090ef50bb3e496c8858ad743643915c3ef7e7cc1ab4ca42ea131e6dc",
-    "sourceCommit": "13c5e6a9f60b30ef7a6ff7a6c91ed7de2daf669a",
-    "nodeVersion": "v24.18.0"
+    "sourceHash": "9aff9da3aecbc794cf0fd005ebc945ad72b33674a2c2dd8718f575ed17cce41b",
+    "sourceCommit": "0199b9ae68b56e2753bb63d8fc1fc3db73e2ffe6",
+    "nodeVersion": "v22.23.3"
   },
   "records": [
     {
@@ -6236,11 +6236,11 @@
       },
       "hashes": {
         "blocks": "f38a983bffaf3f035e953dfd68c049fa508119d181b35fa91cb27776a519610e",
-        "haloBlocks": "4df4a4906aa19e402c6f5405bd638a90ac5ae645c60d729840b44e82eb5d0456",
-        "density": "857b8a989ebcdbf5380ceba7be4fe24dc4fc7ce531e397bc5b4bb0d4a97f2f65",
+        "haloBlocks": "393c7c784586e1dc817741ca208d15a7d02f05c5f0c9411ddf093cf61e86b24a",
+        "density": "17950d9a256c72f5958e0ba3ba4b6b6f87bd5c62dbcf874d3f2b04fe1008fbcd",
         "columns": "9b6cc84ed8c507f73e71b59461b99e8106caab9c563eb49472a67e79c5aa3c16",
-        "featureIds": "21eeb492db6c5ea4ea5d56fa61af12d7d815094d24c0a32358fc9cece251e007",
-        "featureT": "df02a0213e4b666e9b3d7d5ada2c7748a573677a2dd2bcf78c8d1c0208d57c33"
+        "featureIds": "ef0ff5eaf052c15e1aadf76f2147994bd02797fc03c92360ef3d5913be30f373",
+        "featureT": "43c2fdb665769d5a1a92701f57590c3af89e2d4379ac6353d0d49922f90aaf99"
       }
     },
     {
@@ -6283,7 +6283,7 @@
       "hashes": {
         "blocks": "1b48b92ad1037de61a024bfb0e0a50da09e2264f8038f2705db02d94dd1e5f99",
         "haloBlocks": "758ca6e83682c2eca51748608e8d3e4687c34038a699cd6d2b0fd00a071e7fa9",
-        "density": "2772b25efbd7817e9dc445ba45442b6e66e48d72271e47f69ed6f515c7f0ad85",
+        "density": "507c46a381c8d0fb3078aa9eb3df98441270bb26a9f57fa3a7a8d993bd7c3114",
         "columns": "e636cea8ee612c781761f530afe6c055c723b5a71d001a5e2af199033c8ff17b",
         "featureIds": "2b8796e70ba75ff0e3df31da413b688312fc3b79ea5ad6e5b81675bdffd9b98d",
         "featureT": "ae6f9e32ac0cb42ab07ea15bfd61896591dd974f1c44ca4dd165cb38228c0f95"
@@ -6305,11 +6305,11 @@
       },
       "hashes": {
         "blocks": "f38a983bffaf3f035e953dfd68c049fa508119d181b35fa91cb27776a519610e",
-        "haloBlocks": "4df4a4906aa19e402c6f5405bd638a90ac5ae645c60d729840b44e82eb5d0456",
-        "density": "857b8a989ebcdbf5380ceba7be4fe24dc4fc7ce531e397bc5b4bb0d4a97f2f65",
+        "haloBlocks": "393c7c784586e1dc817741ca208d15a7d02f05c5f0c9411ddf093cf61e86b24a",
+        "density": "17950d9a256c72f5958e0ba3ba4b6b6f87bd5c62dbcf874d3f2b04fe1008fbcd",
         "columns": "9b6cc84ed8c507f73e71b59461b99e8106caab9c563eb49472a67e79c5aa3c16",
-        "featureIds": "21eeb492db6c5ea4ea5d56fa61af12d7d815094d24c0a32358fc9cece251e007",
-        "featureT": "df02a0213e4b666e9b3d7d5ada2c7748a573677a2dd2bcf78c8d1c0208d57c33"
+        "featureIds": "ef0ff5eaf052c15e1aadf76f2147994bd02797fc03c92360ef3d5913be30f373",
+        "featureT": "43c2fdb665769d5a1a92701f57590c3af89e2d4379ac6353d0d49922f90aaf99"
       }
     },
     {

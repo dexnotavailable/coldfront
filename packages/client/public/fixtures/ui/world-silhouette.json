@@ -47,7 +47,7 @@
   "loaded": 148,
   "queued": 0,
   "ready": true,
-  "displayTimeMs": 449.99000000000024,
+  "displayTimeMs": 450,
   "editCount": 15,
   "lastAction": null,
   "lastEdit": {
@@ -56,7 +56,7 @@
     "z": 1,
     "block": 2
   },
-  "worldTimeSeconds": 1200.549985,
+  "worldTimeSeconds": 1200.5332999999998,
   "rendered": {
     "outline": false,
     "silhouette": true,

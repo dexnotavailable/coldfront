@@ -49,7 +49,9 @@ export function postcardResolverHash(
       "query.ts",
       "geometry.ts",
       "main-resolve.ts",
-      ...(phase === "1.3" ? ["hell-resolve.ts"] : []),
+      ...(phase === "1.3"
+        ? ["hell-resolve.ts", "hell-readability.ts", "hell-primitive-camera.ts"]
+        : []),
     ].map((name) => join(root, "packages/tools/src/postcards", name)),
   );
 }

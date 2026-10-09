@@ -34,6 +34,70 @@ function draw(id: number, salt: number): number {
 function add(a: Vec3, x: number, y: number, z: number): Vec3 {
   return [a[0] + x, a[1] + y, a[2] + z];
 }
+/** Maximum distance of the ORIGINAL cubic from its endpoint chord. Projected
+ * controls inside the chord make line and segment distance identical. Squared
+ * distance is 9*t^2*(1-t)^2*(a+b*t+c*t^2); its interior extrema solve a cubic.
+ * Its quadratic turning points bracket every root, then 48 bisections bound
+ * each parameter interval by 2^-48. No samples, flags or handle-size proxy. */
+function originalExcursion(curve: CubicBezier): number {
+  const start = curve[0],
+    end = curve[3];
+  const dx = end[0] - start[0],
+    dy = end[1] - start[1],
+    dz = end[2] - start[2];
+  const squared = dx * dx + dy * dy + dz * dz;
+  if (!(squared > 0)) return Infinity;
+  const perpendicular: Vec3[] = [];
+  for (const point of [curve[1], curve[2]]) {
+    const x = point[0] - start[0],
+      y = point[1] - start[1],
+      z = point[2] - start[2];
+    const t = (x * dx + y * dy + z * dz) / squared;
+    if (t < 0 || t > 1) return Infinity;
+    perpendicular.push([x - t * dx, y - t * dy, z - t * dz]);
+  }
+  const first = perpendicular[0] as Vec3,
+    last = perpendicular[1] as Vec3;
+  const x = last[0] - first[0],
+    y = last[1] - first[1],
+    z = last[2] - first[2];
+  const a = first[0] * first[0] + first[1] * first[1] + first[2] * first[2];
+  const b = 2 * (first[0] * x + first[1] * y + first[2] * z);
+  const c = x * x + y * y + z * z;
+  const g0 = 2 * a,
+    g1 = 3 * b - 4 * a,
+    g2 = 4 * c - 5 * b,
+    g3 = -6 * c;
+  const value = (t: number): number => ((g3 * t + g2) * t + g1) * t + g0;
+  const boundaries = [0, 1];
+  if (c > 0) {
+    const discriminant = 4 * g2 * g2 - 12 * g3 * g1;
+    if (discriminant > 0)
+      for (const sign of [-1, 1]) {
+        const t = (-2 * g2 + sign * Math.sqrt(discriminant)) / (6 * g3);
+        if (t > 0 && t < 1) boundaries.push(t);
+      }
+  }
+  boundaries.sort((a, b) => a - b);
+  let maximum = 0;
+  for (let i = 1; i < boundaries.length; i++) {
+    let low = Number(boundaries[i - 1]),
+      high = Number(boundaries[i]);
+    const positive = value(low) > 0;
+    const highPositive = value(high) > 0;
+    if (positive === highPositive) continue;
+    for (let step = 0; step < 48; step++) {
+      const t = (low + high) * 0.5;
+      const middlePositive = value(t) > 0;
+      if (middlePositive === positive) low = t;
+      else high = t;
+    }
+    const t = (low + high) * 0.5,
+      u = 1 - t;
+    maximum = Math.max(maximum, 9 * t * t * u * u * (a + b * t + c * t * t));
+  }
+  return Math.sqrt(maximum);
+}
 /** Exact de Casteljau subdivision: give the tight terminal hook its own adaptive interval. */
 function splitHook(curve: CubicBezier, t: number): readonly CubicBezier[] {
   const mix = (a: Vec3, b: Vec3): Vec3 => [
@@ -256,6 +320,56 @@ function mainCurves(
     );
   const c1 = point(0.25, side),
     c2 = point(0.7, p.sCurve ? -side : side * 0.8);
+  if (p.sCurve && !p.hooked && !p.landmark && p.baseRadius < 4) {
+    const excursion = originalExcursion([start, c1, c2, point(1, side * 0.25)]);
+    if (excursion < 1) {
+      // Full repair for the documented sub-0.5m invisible detail range; blend
+      // continuously back to the exact old controls by a one-voxel excursion.
+      // Keep the operand as +/- intermediate sideways excursion from the
+      // original axial cubic plus linear root-to-tip drift. The final lobe
+      // settles with zero added lateral tangent, preserving a tapered tip.
+      const t = Math.max(0, (excursion - 0.5) * 2);
+      const blend = 1 - t * t * (3 - 2 * t);
+      // Interval lengths a, 2a, sqrt(2)*a make both first and second
+      // derivatives agree at the extrema. The lower lobe retains its rise;
+      // the longer terminal interval spreads the return into the tip.
+      const a = 1 / (3 + Math.sqrt(2));
+      const partition = (curve: CubicBezier): readonly CubicBezier[] => {
+        const first = splitHook(curve, a);
+        const last = splitHook(first[1] as CubicBezier, (2 * a) / (1 - a));
+        return [first[0] as CubicBezier, ...last];
+      };
+      const original = partition([start, c1, c2, point(1, side * 0.25)]);
+      const baseline = partition([
+        start,
+        point(0.25, side / 12),
+        point(0.7, side / 6),
+        point(1, side * 0.25),
+      ]);
+      const offsets = [
+        [0, 0.5, 1, 1],
+        [1, 1, -1, -1],
+        [-1, -1, 0, 0],
+      ] as const;
+      return original.map((curve, i): CubicBezier => {
+        const mixed = (j: number): Vec3 => {
+          const old = curve[j] as Vec3;
+          const target = add(
+            (baseline[i] as CubicBezier)[j] as Vec3,
+            -dz * side * Number(offsets[i]?.[j]),
+            0,
+            dx * side * Number(offsets[i]?.[j]),
+          );
+          return [
+            old[0] + blend * (target[0] - old[0]),
+            old[1],
+            old[2] + blend * (target[2] - old[2]),
+          ];
+        };
+        return [mixed(0), mixed(1), mixed(2), mixed(3)];
+      });
+    }
+  }
   if (!p.hooked) return [[start, c1, c2, point(1, side * 0.25)]];
   const end = point(1, side * 0.25);
   const hookOutside = add(

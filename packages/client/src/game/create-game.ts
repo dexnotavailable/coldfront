@@ -880,6 +880,8 @@ class GameRuntime implements GamePort {
         null,
         Block.Stone,
         false,
+        candidate,
+        true,
       );
       this.renderer.prepareView(
         world.id,
@@ -908,6 +910,7 @@ class GameRuntime implements GamePort {
         null,
         Block.Stone,
         false,
+        candidate,
       );
       this.renderer.render();
       this.renderer.render();
@@ -1263,6 +1266,7 @@ class GameRuntime implements GamePort {
       this.ghost,
       this.slots[this.selected] ?? Block.Stone,
       this.occluded,
+      this.store ?? undefined,
     );
   }
   private recordEdit(edit: VoxelEdit): void {
@@ -1365,7 +1369,7 @@ class GameRuntime implements GamePort {
           return;
         this.postcardView = null;
         this.postcardReport = null;
-        this.renderer.setView(this.camera.position, this.camera.focus);
+        this.renderer.setView(this.camera.position, this.camera.focus, true);
         this.updatePicture(1);
         this.renderer.prepareView(
           world?.id ?? 0,
@@ -1592,6 +1596,8 @@ class GameRuntime implements GamePort {
         null,
         this.slots[this.selected] ?? Block.Stone,
         false,
+        store,
+        true,
       );
       try {
         renderer.prepareView(world.id, camera.position, camera.focus);
@@ -1613,6 +1619,7 @@ class GameRuntime implements GamePort {
       renderer.setView(
         glide ? fromPosition : camera.position,
         glide ? fromFocus : camera.focus,
+        !glide,
       );
       renderer.update(
         body,
@@ -1625,6 +1632,7 @@ class GameRuntime implements GamePort {
         null,
         this.slots[this.selected] ?? Block.Stone,
         false,
+        store,
       );
       renderer.render();
       this.body = body;
@@ -1784,10 +1792,12 @@ class GameRuntime implements GamePort {
           null,
           this.slots[this.selected] ?? Block.Stone,
           false,
+          store,
+          true,
         );
         renderer.prepareView(world.id, view.position, view.target);
         if (!current()) return;
-        renderer.setView(view.position, view.target);
+        renderer.setView(view.position, view.target, true);
         // Offscreen preparation restores source-camera effect/origin state.
         // Refresh it at the final eye before either draw or atomic publication.
         renderer.update(
@@ -1801,6 +1811,7 @@ class GameRuntime implements GamePort {
           null,
           this.slots[this.selected] ?? Block.Stone,
           false,
+          store,
         );
         renderer.render();
         renderer.render();
@@ -1910,7 +1921,7 @@ class GameRuntime implements GamePort {
         if (!prepared || !current())
           throw new Error("Postcard preparation cancelled");
         const renderStarted = performance.now();
-        renderer.setView(view.position, view.target);
+        renderer.setView(view.position, view.target, true);
         this.target = this.ghost = null;
         this.occluded = false;
         this.updatePicture(1);

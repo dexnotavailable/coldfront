@@ -30,6 +30,7 @@ import { WORLDGEN_VERSION } from "../../../shared/src/worldgen/version.js";
 import { createLavaSample } from "../../../shared/src/worldplan/lava.js";
 import { postcardResolverHash, sourceFingerprints } from "../build/metadata.js";
 import {
+  type CameraFirstHit,
   cameraFrame,
   cameraPoseRejections,
   type HellCameraValidation,
@@ -37,6 +38,15 @@ import {
   inspectHellCamera,
   type MainCameraCandidate,
 } from "./geometry.js";
+import {
+  PRIMITIVE_CAMERA_BUDGET,
+  type PrimitiveCameraObservation,
+  primitiveCameraRefinements,
+} from "./hell-primitive-camera.js";
+import {
+  type HellReadability,
+  inspectHellReadability,
+} from "./hell-readability.js";
 import { loadPlan, type MainCameraManifest } from "./main-resolve.js";
 import { type CameraQuery, cameraQuery, walkableEye } from "./query.js";
 
@@ -50,6 +60,7 @@ export interface ResolvedHellCamera extends MainCameraCandidate {
   readonly targetFeature: HellTarget;
   readonly validation: HellCameraValidation;
   readonly score: number;
+  readonly readability?: HellReadability;
   readonly validatedByResolverHash: string;
   readonly comparison?: {
     readonly productionView: "matched" | "diverged" | "unavailable";
@@ -78,11 +89,69 @@ export interface FissureWitness {
 export interface ForestRoot {
   readonly id: number;
   readonly x: number;
+  readonly y?: number;
   readonly z: number;
   readonly height: number;
   readonly radius: number;
 }
 type RootDisc = Readonly<{ x: number; z: number; radius: number }>;
+/** Proposal preference only: exact built contours and occlusion are checked
+ * later. Nominal height is deliberately not accepted as geometry evidence. */
+export function forestFramingScore(
+  view: MainCameraCandidate,
+  roots: readonly ForestRoot[],
+): number {
+  const project = cameraFrame(view).project;
+  let score = 0,
+    largestArea = 0,
+    largestComplete = false;
+  const sizes = new Set<number>();
+  for (const root of roots) {
+    const bottom = project({
+        x: root.x,
+        y: root.y ?? view.position.y - 1.62,
+        z: root.z,
+      }),
+      top = project({
+        x: root.x,
+        y: (root.y ?? view.position.y - 1.62) + root.height,
+        z: root.z,
+      });
+    if (bottom.depth <= 5 || bottom.x < -160 || bottom.x > 1440) continue;
+    const height = Math.abs(top.y - bottom.y),
+      width = 2 * root.radius * bottom.pixelsPerMetre;
+    const area = Math.min(720, height) * Math.min(1280, width);
+    const complete =
+      top.y >= 24 &&
+      bottom.y <= 696 &&
+      bottom.x - width / 2 >= 24 &&
+      bottom.x + width / 2 <= 1256;
+    if (area > largestArea) {
+      largestArea = area;
+      largestComplete = complete;
+    }
+    if (complete && height >= 72) {
+      score += Math.min(3, height / 90) * Math.min(1, width / 20);
+      sizes.add(root.height < 30 ? 0 : root.height < 60 ? 1 : 2);
+    }
+  }
+  return score + sizes.size * 4 + (largestComplete ? 12 : -20);
+}
+/** Production HELL-1 alone has this extra objective. A retained camera must
+ * acquire fresh readability evidence; an old geometric pass is insufficient. */
+export function hellSelectionPassed(
+  id: HellPostcardId,
+  variant: GenerationVariant,
+  validation: HellCameraValidation,
+  readability?: HellReadability,
+): boolean {
+  return (
+    validation.passed &&
+    (id !== "HELL-1" ||
+      variant !== "production" ||
+      readability?.passed === true)
+  );
+}
 interface ForestCandidate {
   readonly view: MainCameraCandidate;
   readonly targetFeature: HellTarget;
@@ -181,6 +250,7 @@ export function forestSceneCandidates(
   rootsFor: (disc: RootDisc) => readonly ForestRoot[],
   targetFor: (disc: RootDisc, fissureId: number) => HellTarget,
   record: (event: Attempt) => void,
+  formAware = false,
 ): ForestCandidate[] {
   const groups = new Map<
     number,
@@ -278,23 +348,26 @@ export function forestSceneCandidates(
               reject("sparse-local-forest");
               continue;
             }
-            const score = tall.reduce((sum, root) => {
-              const dx = root.x - x,
-                dz = root.z - z,
-                distance = Math.hypot(dx, dz),
-                facing =
-                  (dx * Math.sin(yaw) + dz * Math.cos(yaw)) /
-                  Math.max(distance, 1);
-              return (
-                sum +
-                (facing > 0.3
-                  ? Math.min(
-                      0.5,
-                      (root.radius * root.height) / (distance * distance + 64),
-                    )
-                  : 0)
-              );
-            }, 0);
+            const score = formAware
+              ? forestFramingScore(view, tall)
+              : tall.reduce((sum, root) => {
+                  const dx = root.x - x,
+                    dz = root.z - z,
+                    distance = Math.hypot(dx, dz),
+                    facing =
+                      (dx * Math.sin(yaw) + dz * Math.cos(yaw)) /
+                      Math.max(distance, 1);
+                  return (
+                    sum +
+                    (facing > 0.3
+                      ? Math.min(
+                          0.5,
+                          (root.radius * root.height) /
+                            (distance * distance + 64),
+                        )
+                      : 0)
+                  );
+                }, 0);
             record({
               ...identity,
               status: "eligible-for-full-grid",
@@ -537,6 +610,7 @@ export async function resolveHellCameras(
   };
   const features =
     variant === "production" ? createMainIbaraField(field) : null;
+  const instanceCache = new Map<number, ThornInstance>();
   const primitive = (bounds: XZBounds): HellTarget => {
     const batch = createPrimitiveIbaraBatch(environment, bounds, 1);
     return {
@@ -572,7 +646,10 @@ export async function resolveHellCameras(
                 thorn.parameters.base[2] - disc.z,
               ) <= disc.radius,
           )
-          .map((thorn) => ({ id: thorn.parameters.id, bounds: thorn.bounds }))
+          .map((thorn) => {
+            instanceCache.set(thorn.parameters.id, thorn);
+            return { id: thorn.parameters.id, bounds: thorn.bounds };
+          })
       : createPrimitiveIbaraBatch(environment, bounds, 1)
           .instances.filter(
             (cone) =>
@@ -608,6 +685,7 @@ export async function resolveHellCameras(
             roots.push({
               id: p.id,
               x: p.base[0],
+              y: p.base[1],
               z: p.base[2],
               height: p.height,
               radius: p.baseRadius,
@@ -675,17 +753,49 @@ export async function resolveHellCameras(
           targetFeature.kind === "caldera"
             ? plan.ibara.calderas.find((c) => c.id === targetFeature.calderaId)
             : undefined;
+        const needsReadability = id === "HELL-1" && variant === "production";
+        const hits: CameraFirstHit[] = [];
         const validation = inspectHellCamera(view, query, {
           target: targetFeature,
           lava,
           ...(caldera ? { caldera } : {}),
+          ...(needsReadability
+            ? { onHit: (hit: CameraFirstHit) => hits.push(hit) }
+            : {}),
         });
+        let readability: HellReadability | undefined;
+        if (
+          needsReadability &&
+          validation.passed &&
+          features &&
+          targetFeature.kind === "thorn-cluster"
+        ) {
+          // Reconstruct source-bound instances for retained cameras too. No saved
+          // score or family flag can certify a camera against the new objective.
+          if (
+            targetFeature.featureIds.some(
+              (featureId) => !instanceCache.has(featureId),
+            )
+          )
+            for (const thorn of features.collect(targetFeature.bounds, 1))
+              instanceCache.set(thorn.parameters.id, thorn);
+          readability = inspectHellReadability(
+            view,
+            targetFeature.featureIds.flatMap((featureId) => {
+              const thorn = instanceCache.get(featureId);
+              return thorn ? [thorn] : [];
+            }),
+            hits,
+            query,
+          );
+        }
         record({
           stage: "validation-complete",
           id,
           view,
           targetFeature,
           validation,
+          ...(readability ? { readability } : {}),
         });
         return {
           ...view,
@@ -696,8 +806,14 @@ export async function resolveHellCameras(
           ungraded: true,
           targetFeature,
           validation,
+          ...(readability ? { readability } : {}),
           score:
-            (validation.passed ? 100 : 0) +
+            (hellSelectionPassed(id, variant, validation, readability)
+              ? needsReadability
+                ? 1000
+                : 100
+              : 0) +
+            (readability?.score ?? 0) +
             validation.targetFraction * 20 +
             validation.lavaFraction * 5 -
             Math.abs(validation.skyFraction - 0.38) * 10,
@@ -741,7 +857,15 @@ export async function resolveHellCameras(
         const previous = cameras.get(id);
         if (previous) {
           const checked = inspect(previous, previous.targetFeature);
-          if (checked.validation.passed) best = checked;
+          if (
+            hellSelectionPassed(
+              id,
+              variant,
+              checked.validation,
+              checked.readability,
+            )
+          )
+            best = checked;
         }
       }
       const reused = Boolean(best);
@@ -762,6 +886,7 @@ export async function resolveHellCameras(
               rootsFor,
               forestTarget,
               record,
+              variant === "production",
             ),
           );
         } else {
@@ -794,15 +919,76 @@ export async function resolveHellCameras(
         console.log(
           `Resolving ${id}/${variant}:${candidates.length} preflight survivors; attempts:${attemptsPath}`,
         );
-        for (const { view, targetFeature: target } of candidates) {
+        const primitiveForest = id === "HELL-1" && variant === "primitive";
+        const observations: PrimitiveCameraObservation[] = [];
+        const coarse = primitiveForest
+          ? candidates.slice(0, PRIMITIVE_CAMERA_BUDGET.coarse)
+          : candidates;
+        for (const { view, targetFeature: target } of coarse) {
           const checked = inspect(view, target);
+          observations.push({
+            view,
+            targetFeature: target,
+            validation: checked.validation,
+          });
           inspected++;
           if (!best || checked.score > best.score) best = checked;
         }
+        if (primitiveForest) {
+          const refinements = best?.validation.passed
+            ? []
+            : primitiveCameraRefinements(observations);
+          const budget =
+            PRIMITIVE_CAMERA_BUDGET.coarse +
+            PRIMITIVE_CAMERA_BUDGET.refinements;
+          let traced = 0,
+            fallback = 0;
+          for (const refinement of refinements) {
+            if (inspected >= budget) break;
+            const reasons = cameraPoseRejections(refinement.view, query);
+            record({
+              stage: "primitive-refinement-preflight",
+              id,
+              ...refinement,
+              status: reasons.length ? "rejected" : "eligible-for-full-grid",
+              reasons,
+            });
+            if (reasons.length) continue;
+            const checked = inspect(refinement.view, refinement.targetFeature);
+            inspected++;
+            traced++;
+            if (!best || checked.score > best.score) best = checked;
+          }
+          // When there are too few near misses, or a turn fails preflight,
+          // spend unused slots on the remaining original coarse proposals.
+          // This is still one shared budget, never fifty PLUS refinement.
+          for (const { view, targetFeature } of candidates.slice(
+            coarse.length,
+          )) {
+            if (inspected >= budget || best?.validation.passed) break;
+            const checked = inspect(view, targetFeature);
+            inspected++;
+            fallback++;
+            if (!best || checked.score > best.score) best = checked;
+          }
+          record({
+            stage: "primitive-refinement-summary",
+            id,
+            coarseCandidates: coarse.length,
+            proposedRefinements: refinements.length,
+            tracedRefinements: traced,
+            fallbackCoarseCandidates: fallback,
+            fullGridCandidates: inspected,
+            fullGridBudget: budget,
+          });
+        }
       }
-      if (!best?.validation.passed)
+      if (
+        !best ||
+        !hellSelectionPassed(id, variant, best.validation, best.readability)
+      )
         throw new Error(
-          `No ${id}/${variant} camera passed geometry; attempts:${attemptsPath}: ${JSON.stringify(best)}`,
+          `No ${id}/${variant} camera passed geometry and selection; attempts:${attemptsPath}: ${JSON.stringify(best)}`,
         );
       cameras.set(id, best);
       entries.push({

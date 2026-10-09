@@ -5,11 +5,11 @@
       "id": "outline-ghost",
       "rows": ["hud.outline", "hud.ghost"],
       "image": "fixtures/ui/world-outline-ghost.jpg",
-      "imageSha256": "f992e44bd29c709f76b56e78085c9c3d2ab44b40fdf2a63190e7bdd491c4db8e",
+      "imageSha256": "26b0c9ed461f5d510876067743fbd282fb9524866419f7c5144f0ee7d6026e8f",
       "telemetry": "fixtures/ui/world-outline-ghost.json",
-      "telemetrySha256": "cb2c284a0476b53498aca8fa32ea16e9165464e74ebef638c34919f31b2e9f26",
+      "telemetrySha256": "008e5ab54a4831860c2d4b5d178a3750e7e8b7c7c96210a5199fd3236f8471ed",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "775347b92a50f707fde5bedd5d551689c30c598ab8b5d87f97818a08dab4e715",
+      "runReceiptSha256": "a5fab7a8be2ff1bf4bedc3a61308903144b5aafde1ea7d8680d9284e738a5b80",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -40,6 +40,10 @@
           "sha256": "91b046d290e39381d7e6140637f02a2bf950f4fa5801303603bc062823b5c4e5"
         },
         {
+          "path": "packages/client/src/engine/ibara-atmosphere.ts",
+          "sha256": "9d39c75f5da27231a81e534df1e8c9a1b9cceb03abbf9fc7082ad7b6d2cb46b6"
+        },
+        {
           "path": "packages/client/src/engine/ibara-effects.ts",
           "sha256": "e7eae28b2b3c92aad81ceb50a875880c3f9334162cc9c7ac5db6f583fb4ef2e1"
         },
@@ -65,7 +69,7 @@
         },
         {
           "path": "packages/client/src/engine/renderer.ts",
-          "sha256": "12fc5cc42d298512759270ca32ecba8fdb32de4842e0175901d3e99deb4447dc"
+          "sha256": "ea85d6b9dfaa735eb597e031f302fb1b211456f47676dfb57bad01fae21e2f76"
         },
         {
           "path": "packages/client/src/engine/terrain-material.ts",
@@ -101,7 +105,7 @@
         },
         {
           "path": "packages/client/src/game/create-game.ts",
-          "sha256": "55aa3cd2c73774e45448a05fda8b90037d774092cc37be4b30bff0f82b43e1af"
+          "sha256": "f3985d5af9b0b8da6a8d0c5d1adaa68185152b72b31380fa99779b7315a357e0"
         },
         {
           "path": "packages/client/src/game/destination.ts",
@@ -161,7 +165,7 @@
         },
         {
           "path": "packages/shared/src/features/ibara/shape.ts",
-          "sha256": "76968b71cb00d6718a678eed4b8e9a63149c9608067392b076a36e002b721382"
+          "sha256": "277ac86587567d4a05a79aa24d06157ec2f982b534fb750c742986640fd42f59"
         },
         {
           "path": "packages/shared/src/features/ibara/types.ts",
@@ -358,19 +362,15 @@
         {
           "path": "packages/shared/src/worldplan/water.ts",
           "sha256": "f4fec8ded17103e8c46f6c9633f0cfdae93dcc23df1978d1e31e8bce98a677f4"
-        },
-        {
-          "path": "packages/tools/src/browser-tests/hud-proof.ts",
-          "sha256": "6eaeda24f3c771d68538e28ef2d0f43c77a134f92a760c348ac8d2ad95bb4438"
         }
       ],
       "encoding": {
         "sourceFormat": "png",
-        "sourceImage": "out/engine/hud-repair/outline-ghost.png",
-        "sourceImageSha256": "7421390c09499dd62a5c26d88cc320ab227f0d195d3a5d33526c0ec81a14d338",
+        "format": "jpeg",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
-        "format": "jpeg",
+        "sourceImage": "out/engine/hud-repair/outline-ghost.png",
+        "sourceImageSha256": "c0b74601395e9c10c5d77378c59c9a14ca90e8078185d512649678de58fd7f1e",
         "quality": 85,
         "width": 1280,
         "height": 720,
@@ -381,11 +381,11 @@
       "id": "silhouette",
       "rows": ["hud.silhouette"],
       "image": "fixtures/ui/world-silhouette.jpg",
-      "imageSha256": "dff2a878802ae55027d778884b6dd0b94b3a21945da39e1af6afc148fddbcb16",
+      "imageSha256": "4df87d0fca3d4a72b8f9beefc9014e37f6464c1e49f1b29d1af767c73b7a5d64",
       "telemetry": "fixtures/ui/world-silhouette.json",
-      "telemetrySha256": "cffd00b93e884f6bd5e7a50f685af3a5112c7d9a8371b9fea74f3b9001271c5c",
+      "telemetrySha256": "32f69610cd1b8ba530650d8277491a24aa5172238f9b0890b33a90d925f93a56",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "775347b92a50f707fde5bedd5d551689c30c598ab8b5d87f97818a08dab4e715",
+      "runReceiptSha256": "a5fab7a8be2ff1bf4bedc3a61308903144b5aafde1ea7d8680d9284e738a5b80",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -416,6 +416,10 @@
           "sha256": "91b046d290e39381d7e6140637f02a2bf950f4fa5801303603bc062823b5c4e5"
         },
         {
+          "path": "packages/client/src/engine/ibara-atmosphere.ts",
+          "sha256": "9d39c75f5da27231a81e534df1e8c9a1b9cceb03abbf9fc7082ad7b6d2cb46b6"
+        },
+        {
           "path": "packages/client/src/engine/ibara-effects.ts",
           "sha256": "e7eae28b2b3c92aad81ceb50a875880c3f9334162cc9c7ac5db6f583fb4ef2e1"
         },
@@ -441,7 +445,7 @@
         },
         {
           "path": "packages/client/src/engine/renderer.ts",
-          "sha256": "12fc5cc42d298512759270ca32ecba8fdb32de4842e0175901d3e99deb4447dc"
+          "sha256": "ea85d6b9dfaa735eb597e031f302fb1b211456f47676dfb57bad01fae21e2f76"
         },
         {
           "path": "packages/client/src/engine/terrain-material.ts",
@@ -477,7 +481,7 @@
         },
         {
           "path": "packages/client/src/game/create-game.ts",
-          "sha256": "55aa3cd2c73774e45448a05fda8b90037d774092cc37be4b30bff0f82b43e1af"
+          "sha256": "f3985d5af9b0b8da6a8d0c5d1adaa68185152b72b31380fa99779b7315a357e0"
         },
         {
           "path": "packages/client/src/game/destination.ts",
@@ -537,7 +541,7 @@
         },
         {
           "path": "packages/shared/src/features/ibara/shape.ts",
-          "sha256": "76968b71cb00d6718a678eed4b8e9a63149c9608067392b076a36e002b721382"
+          "sha256": "277ac86587567d4a05a79aa24d06157ec2f982b534fb750c742986640fd42f59"
         },
         {
           "path": "packages/shared/src/features/ibara/types.ts",
@@ -734,19 +738,15 @@
         {
           "path": "packages/shared/src/worldplan/water.ts",
           "sha256": "f4fec8ded17103e8c46f6c9633f0cfdae93dcc23df1978d1e31e8bce98a677f4"
-        },
-        {
-          "path": "packages/tools/src/browser-tests/hud-proof.ts",
-          "sha256": "6eaeda24f3c771d68538e28ef2d0f43c77a134f92a760c348ac8d2ad95bb4438"
         }
       ],
       "encoding": {
         "sourceFormat": "png",
-        "sourceImage": "out/engine/hud-repair/silhouette.png",
-        "sourceImageSha256": "04718c16dc857c15d5fa865051efebf0cd75158fabfff9c7a8a88a765df3551d",
+        "format": "jpeg",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
-        "format": "jpeg",
+        "sourceImage": "out/engine/hud-repair/silhouette.png",
+        "sourceImageSha256": "6ad1c54a364dcae4a1f4ac52fab350296dfdd2f19734905269a56886253075ad",
         "quality": 85,
         "width": 1280,
         "height": 720,
