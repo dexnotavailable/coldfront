@@ -1,5 +1,18 @@
 # Third-party notices
 
+## Original deterministic SDF toolkit
+
+`packages/shared/src/sdf/{ops,polygon,primitives,spine,types}.ts` is original
+COLDFRONT implementation, adopted byte-for-byte from the local Ibara pass02b
+study. It re-derives analytic distance functions, polynomial smooth operations,
+Bezier subdivision and arc-length sampling, and the double-reflection frame
+construction described by Wang et al. (2008), as specified in
+`docs/04-terrain.md` section 8.2. No external source implementation was acquired
+or copied for this adoption. This entry records provenance, not a third-party
+licence grant. The five frozen SHA-256 values are in
+`docs/plans/phase-1-3.md`; feature-specific revisions must not silently change
+this shared dependency used by both Ibara and the separate giant-tree study.
+
 ## FastNoiseLite (MIT)
 
 Ported gradient tables and OpenSimplex2 lattice/hash kernels:

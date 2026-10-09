@@ -1,6 +1,6 @@
 # Phase 1.3 — Terrain toolkit and Ibara
 
-Integration plan prepared by the Astra design route and reviewed by the coordinator. Phase 1.2 remains active; this is preparation, not an implementation or completion claim. Exact TypeScript contracts are frozen in P0 before assigning implementation packages.
+Integration plan prepared by the Astra design route and reviewed by the coordinator. Phase 1.2 content/runtime acceptance is recorded at 9b212a4 (published runtime 18a975d); the coordinator confirmed PR #5 merged as 1a28c2a after clean Node 22 and CI checks. P0 below freezes shared dependencies and contracts only. It does not implement or accept phase 1.3 terrain.
 
 Document and then implement the complete phase 1.3 after phase 1.2 closure: production Ibara terrain, feature toolkit, lava, materials, lighting, diagnostics and catalogue controls, accepted through three-seed numeric evidence and blind HELL-1/HELL-2 reviews.
 
@@ -30,6 +30,7 @@ Owned paths:
 - `packages/shared/src/sdf/spine.ts`
 - `packages/shared/src/sdf/types.ts`
 - `packages/shared/test/sdf.test.ts`
+- `packages/shared/test/phase13-contracts.test.ts`
 - `packages/shared/src/world/types.ts`
 - `packages/shared/src/worldgen/chunk.ts`
 - `packages/shared/src/index.ts`
@@ -41,6 +42,222 @@ Acceptance:
 - Existing callers remain valid with default spacing 1; test-world eight-lane columns and original four generated buffers remain unchanged.
 - Document original SDF derivation and preserve existing MIT notices; no external code acquisition is needed.
 - No WORLDGEN_VERSION bump for this planning/dependency-only step.
+
+#### Frozen P0 contracts (2026-10-09)
+
+The declarations in `world/types.ts` and `worldgen/chunk.ts` are the type owner.
+The following future functions belong to their named packages; they are **not**
+P0 runtime implementations. P1/P2/P3 import shared contracts and own disjoint
+files. They must not edit this plan, the SDF files or another package's files.
+
+**Adoption and version boundary.** All five SDF sources are copied unchanged
+from `D:/Dex/Temp/coldfront-asset-ibara`, matched to its
+`out/ibara/pass02b/candidate.json`. The matching study test is also copied
+unchanged. No Ibara feature source is adopted until P1. Keep these hashes:
+
+| File under `packages/shared/` | SHA-256 |
+|---|---|
+| `src/sdf/ops.ts` | `9d4c3b24ebeada590e2d5ac357ae4da6d0deee94fb48237e1d8720f040a6385e` |
+| `src/sdf/polygon.ts` | `557dbd6a17e4acc7e79e2794acb775e391959ff3f56b23b5e9e8dbf947df0cb0` |
+| `src/sdf/primitives.ts` | `405cfaddb4af4454f52dddb6a07ef508d586041b37d4ec15f9c8c28aa674081a` |
+| `src/sdf/spine.ts` | `5f6ca60ed57ad4d0fa14d2080e0bfbb4a9e93c358087dd4ec6137f87c77fbc03` |
+| `src/sdf/types.ts` | `b3e59495a8170b37d1a19df47c1b8d222d8f8903d82e68f5fba15c65c0027340` |
+| `test/sdf.test.ts` | `aba64a0f4a820ff8305f174b58f16c34b90272a2f73fb5ea3721a8311bac2b26` |
+
+Source fingerprints already include SDF sources. P0 therefore changes the
+source identity despite preserving generated buffers; **do not publish P0 as a
+standalone generation-2 release**. P4 integrates actual generation-3 output,
+adds the feature directory to fingerprints and coordinates schema/identity.
+
+**Samples and chunks.** `VoxelSample` gains optional `featureId?: number` and
+`featureT?: number`. P4's main sampler writes both on every call: exact uint32 ID
+and normalized arc length in binary64; ordinary terrain, air, fluids and edits
+get `(0,0)`. Reusing a scratch sample must never retain a previous thorn's ID/t.
+An absent pair is interpreted as `(0,0)` for legacy/test callers. The direct
+test-world sampler and its eight column lanes stay unchanged. The package-root
+legacy `VoxelSample` remains the test type; `WorldVoxelSample` explicitly exports
+the common type without changing that existing name.
+
+`VoxelChunk.featureIds?: Uint32Array` and `featureT?: Float64Array` are a pair.
+P4 main assembly allocates both with `HALO_VOLUME = 34*41*34 = 47396` entries,
+using `haloIndex(x,y,z)` for x/z -1..32 and y -1..39. These are not core-only
+arrays. Existing blocks, haloBlocks, density and columns are unchanged. The
+test generator omits both new arrays. Generation, cached values and material
+selection retain binary64 t; no feature t is needed on the GPU after material
+selection. No P0 generator starts allocating these arrays.
+
+**Spacing.** The optional declaration is
+`prepareArea(bounds: XZBounds, spacing?: number): WorldAreaSampler`, default 1.
+P0 deliberately does not forward or implement the parameter in existing
+contexts. P4 validates finite positive spacing, forwards it from
+`generateWorldChunk`, uses it in feature collection and sampling, and includes
+it in cache identity. Test terrain keeps its existing arbitrary positive
+spacing behavior. Ibara production supports 1..64 m (including non-powers of
+two); P1 must reject unsupported spacing explicitly, not silently clamp.
+Context convenience queries mean spacing 1; a coarse comparison must use two
+prepared areas with the same spacing. Bounds include the maximum declared
+thickening. Size filtering precedes geometry construction: landmarks retained,
+thicken only for h >= 2s by at most min(0.5s,0.3h), drop under h < 2s.
+
+**P1 geometry/material boundary.** Preserve the study's existing exported
+functions and argument order (`createIbaraField`, `compareThorns`,
+`createIbaraBatch`, `instantiateThorn`). `IbaraEnvironment` stays:
+
+```ts
+interface IbaraEnvironment {
+  readonly seed: number;
+  surfaceAt(x: number, z: number): number; // final volcanic ground, before thorns
+  weightAt(x: number, z: number): number; // actual blended hellscape weight
+  lavaAt?(x: number, z: number, out: Float64Array): Float64Array;
+}
+```
+
+`lavaAt` overwrites three lanes `[distanceMetres,outwardUnitX,outwardUnitZ]`;
+no source writes `[Infinity,0,0]`. It describes nearest actual hot ownership,
+including when the queried point is dry, and never fills fluid. Resolve equal
+distances by source-kind order caldera/channel/fissure, then owner ID, then
+segment index. At zero distance use the deterministic source normal (or `[0,0]`
+if undefined, allowing P1's existing hashed fallback).
+
+P1 adds `broken: boolean` to `IbaraSample`, resets it on clear, and copies it
+with the winning sample. Its material fields structurally satisfy
+`IbaraMaterialSample` in shared world types, so P3 can compile without P1's
+implementation. The winning parent supplies core/crust/broken; branches,
+debris and rubble inherit its ID while keeping their distinct `kind` and t.
+The existing sample's `distance` and `fillet` remain geometry-owned.
+
+P1 adds `parametersForCell(cellX: number, cellZ: number, landmark?: boolean):
+readonly ThornParameters[]` to `IbaraField`. Default landmark=false. It returns
+the final placement-accepted parameters before curve construction, in canonical
+order and without instantiating spines. `cell`, `landmarks` and `collect` derive
+from those same parameters; P7 tiles cell enumeration, never repeats placement
+formulas. P1 may expose additional census counters inside its own module when
+needed, but they must distinguish candidate rejection from geometry failure.
+
+**P2 plan and ground boundary.** `IbaraPlanData`, `IbaraRoutingData`,
+`IbaraCalderaData`, `IbaraLavaChannelData` and `IbaraVentData` are concrete shared
+data declarations. Plans contain records, typed arrays and numbers only.
+Channel points have stride 5 `[x,z,bed,level,halfWidth]` in source-to-sink order;
+channel ID and zero-based segment index identify each segment. Local drainage
+uses a separate 64 m grid and never writes global water arrays. Caldera/channel/
+vent arrays are ascending ID order. Bounds cover excavation and maximum rise,
+including displacement, fillets, levees and lava levels. Fissures/plates/dunes
+remain seed-and-world-position analytic data; runtime indexes are rebuilt on
+hydration, not serialized caches.
+
+P2 exports these signatures from its owned files:
+
+```ts
+// worldplan/ibara.ts; baseField is pre-Ibara, avoiding recursive plan building
+buildIbaraPlan(basePlan: WorldPlanData, baseField: MainField): IbaraPlanData;
+// worldgen/main/ibara-ground.ts
+interface IbaraGround {
+  height(x: number, z: number): number;
+  sample(x: number, y: number, z: number, out: IbaraGroundSample): IbaraGroundSample;
+  lavaQuery(x: number, z: number, out: LavaSample): LavaSample;
+  lavaAt(x: number, z: number, out: Float64Array): Float64Array;
+  conservativeBounds(bounds: XZBounds, out: WorldBounds): WorldBounds;
+}
+createIbaraGround(baseField: MainField, plan: IbaraPlanData): IbaraGround;
+```
+
+`sample` returns the complete pre-thorn volcanic ground density (positive
+inside), surfaceY and a shared `IbaraGroundTag`. It is not a density delta.
+It preserves base-field behavior where hellscape weight is zero. `lavaQuery`
+returns a local owner only; every call clears dry results to bodyId=0,
+kind/source=`none`, bed/level=-Infinity. Wet results identify a caldera, channel
+or fissure with finite bed < level. P4 fills only negative-density samples with
+bed < y <= level inside that owner's wet footprint. Proximity alone cannot
+fill lava. WaterSample, waterQuery, waterBodies and global basinIds stay
+water-only. Fissure owner IDs derive from signed world cells, never query order.
+
+P4 adds required `ibara: IbaraPlanData` to main `WorldPlanData` and advances the
+outer schema to 2 together with validators, checksums, hydration and buffer
+transport. P0 leaves the existing schema-1 builder/hydrator untouched. Validate
+array lengths, finite geometry, positive radii/widths, unique IDs, channel
+caldera references, downstream levels and receiver/order invariants before
+use. Clone all new arrays for the non-shared route; the SharedArrayBuffer route
+must account for them without transferring/detaching the plan owner's buffers.
+
+**P3 material boundary.** P3 exports these pure functions from
+`worldgen/main/ibara-material.ts`, using shared types only:
+
+```ts
+ibaraGroundMaterial(tag: IbaraGroundTag, baseBlock: number): number;
+ibaraMaterial(x: number, y: number, z: number, baseBlock: number,
+  feature: IbaraMaterialSample): number;
+```
+
+The first maps tags (`base` preserves baseBlock); the second preserves baseBlock
+for featureId=0/kind=`none`, otherwise uses the already sampled dominant
+feature. Only intact primary thorns with t > 0.85 receive tip crust; broken
+owners, branches, debris and rubble do not accidentally acquire parent-tip
+crust. P1 reports these distinctions; P3 must not re-derive geometry or use a
+cache lookup to identify material. Grounded ash/scree rules belong here.
+
+Preserve IDs 0..31 and the first 192 texture layers. Bark=32 is reserved for the
+narrow tree dependency; then Obsidian=33, EmberCrust=34, BrimstoneCrust=35,
+SulphurCrust=36, Lava=37, VentMouth=38. Reuse Basalt=18/Ash=29. P3 adds required
+`emission: readonly [number,number,number]` (integer RGB nibbles 0..15),
+`emissionStrength: number` (finite nonnegative HDR render multiplier),
+`gloss: number` (0..1), and `fluidKind: "none" | "water" | "lava"` to each
+BlockDefinition. Defaults are `[0,0,0]`, 0, 0 and `none`; existing Water gets
+`water`. Lava is renderType=`fluid`, fluidKind=`lava`, solid=false, opaque=true,
+lightFiltering=15; its draw is visually opaque while occupancy remains fluid.
+Exact source colours/intensities are P3 authored data, not timed animation.
+
+**P5/P6 CPU, worker and GPU layout.** Preserve light packing:
+`(sky<<12)|(red<<8)|(green<<4)|blue`. An emitter's source word has zero sky;
+top skylight replacement is `(source & 0x0fff) | (sky << 12)`. Removal/placement
+updates actual source arrays before incremental relighting, including opaque
+emitters. Rendered emission and RGB light propagation are separate quantities.
+
+P5 changes the mesher signature to
+`meshChunk(blocks: Uint16Array, lights: Uint16Array, featureIds?: Uint32Array):
+ChunkMesh`, with all inputs halo-indexed and absent IDs meaning zero.
+Merge keys add the exact uint32 ID to existing block/AO/light keys, including
+skirts. `MeshPart` adds required `featureIdParts: Uint16Array`, two values per
+vertex `[id & 0xffff, id >>> 16]`. All vertices of a face carry the same ID.
+Keep `surfaces` unchanged: Float32 triples `[block,AO,packedLight]`. Other mesh
+buffers keep existing formats. CPU ID 0 means no feature; current Ibara IDs
+remain unchanged below 2^25. Reserve bits 25..31 for future families;
+family 1 (`0x02000000`) owns volcanic shapes, with disjoint local caldera,
+channel, vent and fissure IDs allocated by P2. Local lava body IDs and global
+feature IDs must never be confused with water body IDs.
+
+P6 binds `featureIdParts` as itemSize=2, normalized=false, float-input
+attributes. Each half is exactly representable in float32. Pass the pair flat
+to the fragment shader and reconstruct with highp uint arithmetic
+`uint(lo) | (uint(hi) << 16u)` if a full ID is needed. Never combine into one
+float32 ID or interpolate IDs; include both halves in feature-colour hashing.
+Feature 0 uses neutral terrain colour. P5 adds the new buffer to mesh transfer
+lists and memory accounting; transfer newly owned output buffers only, never
+retained generation/cache/plan arrays. P4/P5 zero feature metadata when edits
+replace generated blocks and invalidate overlapping halo/cached mesh data.
+
+Mesh parts remain 0 opaque, 1 cutout, 2 translucent, 3 water; append 4 lava.
+P6 material index 4 is opaque emissive fluid with depthWrite=true and
+transparent=false, while water retains its phase-1.2 depth-aware material.
+Lava's static emitted RGB light comes from registry sources; moving crust
+cracks/flame/embers use the display clock and never alter source light values.
+
+P6 exports `TerrainViewMode = "normal" | "clay" | "features"` from
+terrain-material.ts and adds `WorldRenderer.setViewMode(mode: TerrainViewMode):
+void`. `TerrainUniforms.viewMode` is `IUniform<number>` (normal=0, clay=1,
+features=2). `createTerrainMaterials` retains its existing return shape and
+appends material 4. P8 routes controls through this method. All modes use the
+same geometry, clipping and origin; clay retains sun/AO, features is flat
+identity colour, and both suppress decorative emission/effects. Normal mode
+uses existing HalfFloat/bloom/ACES machinery with source-only bloom.
+
+P0 verification in `D:/Dex/Temp/coldfront-phase13-contracts` at base 9b212a4:
+64 tests pass across `sdf.test.ts`, `phase13-contracts.test.ts` and
+`forbidden-tokens.test.ts`; six preserved test-world records cover seeds 1..3,
+negative coordinates and both existing LODs. Shared source/test, client and
+tools TypeScript checks pass; scoped Biome and `git diff --check` pass.
+Clone/split-ID fixtures verify the declared transport representation, not a
+future worker/renderer implementation. No full suite, regional census,
+benchmark, render or standalone deployment was run for P0.
 
 ### P1-ibara-feature-author
 
@@ -285,7 +502,7 @@ Acceptance:
 
 ## Risks and open implementation work
 
-- Phase 1.2 is still active. Current dirty renderer, chunk-store, game, bootstrap and postcard files contain valuable transition/capture fixes; a plan based only on 058775e would overwrite them.
+- Phase 1.2 is merged. Its renderer, chunk-store, game, bootstrap and postcard transition/capture fixes are present in the 9b212a4 source baseline; adopting files from the older 058775e study wholesale would overwrite them.
 - The accepted study is not regional proof. Its review records small members reading as blunt posts, provisional materials, a regular gateway-like arch silhouette and planar root ledges. It proves no full three-seed coverage, chunk/halo seams, production LOD behaviour, traversal or HELL scores.
 - The capped-hook repair only probes five landmark cells per seed on flat ground. Actual volcanic landing heights can expose further curve failures; dropping failed instances or increasing segment/error limits would invalidate acceptance.
 - Current createIbaraBatch certifies exterior rejection but deliberately evaluates interiors exactly for identity/t. This is correctness-conscious, not proof that the narrow band meets dense-region budgets; measure before changing it.
@@ -297,7 +514,7 @@ Acceptance:
 - Bark dependency metadata was inspected, not its source patch. Root must reconcile its narrow changes against canonical IDs/textures before the material author appends IDs 33–38.
 - Current golden hashes cover only blocks, haloBlocks, density and columns; current postcards do not accept phase 1.3; terrain-report has no script and atlas rejects features. These are actual implementation gaps, not completed tooling.
 - Full-region spacing rejection, region masks, terrain-dependent arches and lava-driven lean can alter accepted population statistics. Study probabilities cannot substitute for measured accepted-instance distributions.
-- No implementation, render, test run, install, repository mutation or external action was performed here. This is an inspected implementation plan, not phase completion evidence.
+- The original planning pass performed no implementation or verification runs. P0 adds only the frozen SDF dependency, additive declarations and focused contract tests. Later package and phase acceptance remains outstanding.
 
 ## Coordinator acceptance notes
 

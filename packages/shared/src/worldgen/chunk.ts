@@ -38,6 +38,13 @@ export interface VoxelChunk {
   readonly haloBlocks: Uint16Array;
   /** Float64 solid density at the same halo indices; water density stays negative. */
   readonly density: Float64Array;
+  /** Optional phase 1.3 pair, each HALO_VOLUME entries indexed by haloIndex.
+   * Main generation supplies both in P4. IDs are exact uint32; 0 is no feature.
+   * Legacy/test generation omits both; consumers interpret absence as zero. */
+  readonly featureIds?: Uint32Array;
+  /** Normalized dominant spine arc length, binary64; 0 for no feature.
+   * Matches featureIds/density/haloBlocks, NOT the shorter core blocks array. */
+  readonly featureT?: Float64Array;
   /** Float64 interleaved column data: Column.Stride * ((x+1)+34*(z+1)). */
   readonly columns: Float64Array;
 }

@@ -5,11 +5,11 @@
       "id": "outline-ghost",
       "rows": ["hud.outline", "hud.ghost"],
       "image": "fixtures/ui/world-outline-ghost.jpg",
-      "imageSha256": "17f67316991bf7b859b41938e09fab1fbfefd7cf03f2ec9722e2a57ba2df4a00",
+      "imageSha256": "c2c9122beaa46a2397d2cd8a28599496da87a94c8b35cb8dae1ca675f7208847",
       "telemetry": "fixtures/ui/world-outline-ghost.json",
-      "telemetrySha256": "e84e8bca220c16dbd85b04fb2f66fc3ed1f4577961493d89a1ab61399f6ef2fb",
+      "telemetrySha256": "228f94c760d99a7ae81de572cbbd35ed4512e9154b4a6bda4aa1314f700110e4",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "e1aa8d50ba527b0f49569aa9d3c6cacfee16228e0ca09390179fc4619d9f32e5",
+      "runReceiptSha256": "1ba7187b000fb7130589226ab63e32d3722d3e0771aed97d540770887ec73075",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -137,7 +137,7 @@
         },
         {
           "path": "packages/shared/src/index.ts",
-          "sha256": "0e81ce38ea9d9709651138d3d6d283e40392de9b8b86162f91bafc450317b8b2"
+          "sha256": "81594a9dbfcde83992f8cbb8cc7bc18c96d2c157a4ca4b8d8b872e54f7300e57"
         },
         {
           "path": "packages/shared/src/lighting/flood.ts",
@@ -192,6 +192,26 @@
           "sha256": "392db67b3d46dfb753863f7d8ed743f6d9909378c145f0628c0042cae245fc9d"
         },
         {
+          "path": "packages/shared/src/sdf/ops.ts",
+          "sha256": "9d4c3b24ebeada590e2d5ac357ae4da6d0deee94fb48237e1d8720f040a6385e"
+        },
+        {
+          "path": "packages/shared/src/sdf/polygon.ts",
+          "sha256": "557dbd6a17e4acc7e79e2794acb775e391959ff3f56b23b5e9e8dbf947df0cb0"
+        },
+        {
+          "path": "packages/shared/src/sdf/primitives.ts",
+          "sha256": "405cfaddb4af4454f52dddb6a07ef508d586041b37d4ec15f9c8c28aa674081a"
+        },
+        {
+          "path": "packages/shared/src/sdf/spine.ts",
+          "sha256": "5f6ca60ed57ad4d0fa14d2080e0bfbb4a9e93c358087dd4ec6137f87c77fbc03"
+        },
+        {
+          "path": "packages/shared/src/sdf/types.ts",
+          "sha256": "b3e59495a8170b37d1a19df47c1b8d222d8f8903d82e68f5fba15c65c0027340"
+        },
+        {
           "path": "packages/shared/src/world/constants.ts",
           "sha256": "973ee99721efdf211ed69934b9cbad7b13bb0ef1d4c8e5ebfa73748cbea31869"
         },
@@ -205,7 +225,7 @@
         },
         {
           "path": "packages/shared/src/world/types.ts",
-          "sha256": "5cfe20828f7b97263a740c8db383c4387d5fde47847d00989d7d4c765d1cd8b1"
+          "sha256": "6129fc5bf4fcac05804880dea211d24bd8228646896baafc2f7b0b7e3214d535"
         },
         {
           "path": "packages/shared/src/world/world-context.ts",
@@ -213,7 +233,7 @@
         },
         {
           "path": "packages/shared/src/worldgen/chunk.ts",
-          "sha256": "9d1326bdf38ba2af4f639597d09c11ae08fe0a482e623e890da34aaa2f728c09"
+          "sha256": "f55a51f5d9f3fb81723f863a7a1f0bb5b3cf931447c34d09675753b8ab1e2234"
         },
         {
           "path": "packages/shared/src/worldgen/main/chunk.ts",
@@ -283,7 +303,7 @@
       "encoding": {
         "sourceFormat": "png",
         "sourceImage": "out/engine/hud-repair/outline-ghost.png",
-        "sourceImageSha256": "d2753ca4054b30cdd1d89499903931055da57a13ef40b16f4ac21321ff8c9fcf",
+        "sourceImageSha256": "91ece8bb7f8544495c7abbad625d33599624b422a14b6e5d4a30cd9a14ed8805",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
         "format": "jpeg",
@@ -299,9 +319,9 @@
       "image": "fixtures/ui/world-silhouette.jpg",
       "imageSha256": "b6970f1d7692cccc009b1f6805ee29b45d5cacec06daa1ce47ba1313b92e0303",
       "telemetry": "fixtures/ui/world-silhouette.json",
-      "telemetrySha256": "351cd33ed2db63371e25c212da2a85b02a374de6cfd908dee21dd612db02d55a",
+      "telemetrySha256": "de2a355b582185662ec459cdf19cf9fdcaae619d7368206d4d7f8828a5f8863b",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "e1aa8d50ba527b0f49569aa9d3c6cacfee16228e0ca09390179fc4619d9f32e5",
+      "runReceiptSha256": "1ba7187b000fb7130589226ab63e32d3722d3e0771aed97d540770887ec73075",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -429,7 +449,7 @@
         },
         {
           "path": "packages/shared/src/index.ts",
-          "sha256": "0e81ce38ea9d9709651138d3d6d283e40392de9b8b86162f91bafc450317b8b2"
+          "sha256": "81594a9dbfcde83992f8cbb8cc7bc18c96d2c157a4ca4b8d8b872e54f7300e57"
         },
         {
           "path": "packages/shared/src/lighting/flood.ts",
@@ -484,6 +504,26 @@
           "sha256": "392db67b3d46dfb753863f7d8ed743f6d9909378c145f0628c0042cae245fc9d"
         },
         {
+          "path": "packages/shared/src/sdf/ops.ts",
+          "sha256": "9d4c3b24ebeada590e2d5ac357ae4da6d0deee94fb48237e1d8720f040a6385e"
+        },
+        {
+          "path": "packages/shared/src/sdf/polygon.ts",
+          "sha256": "557dbd6a17e4acc7e79e2794acb775e391959ff3f56b23b5e9e8dbf947df0cb0"
+        },
+        {
+          "path": "packages/shared/src/sdf/primitives.ts",
+          "sha256": "405cfaddb4af4454f52dddb6a07ef508d586041b37d4ec15f9c8c28aa674081a"
+        },
+        {
+          "path": "packages/shared/src/sdf/spine.ts",
+          "sha256": "5f6ca60ed57ad4d0fa14d2080e0bfbb4a9e93c358087dd4ec6137f87c77fbc03"
+        },
+        {
+          "path": "packages/shared/src/sdf/types.ts",
+          "sha256": "b3e59495a8170b37d1a19df47c1b8d222d8f8903d82e68f5fba15c65c0027340"
+        },
+        {
           "path": "packages/shared/src/world/constants.ts",
           "sha256": "973ee99721efdf211ed69934b9cbad7b13bb0ef1d4c8e5ebfa73748cbea31869"
         },
@@ -497,7 +537,7 @@
         },
         {
           "path": "packages/shared/src/world/types.ts",
-          "sha256": "5cfe20828f7b97263a740c8db383c4387d5fde47847d00989d7d4c765d1cd8b1"
+          "sha256": "6129fc5bf4fcac05804880dea211d24bd8228646896baafc2f7b0b7e3214d535"
         },
         {
           "path": "packages/shared/src/world/world-context.ts",
@@ -505,7 +545,7 @@
         },
         {
           "path": "packages/shared/src/worldgen/chunk.ts",
-          "sha256": "9d1326bdf38ba2af4f639597d09c11ae08fe0a482e623e890da34aaa2f728c09"
+          "sha256": "f55a51f5d9f3fb81723f863a7a1f0bb5b3cf931447c34d09675753b8ab1e2234"
         },
         {
           "path": "packages/shared/src/worldgen/main/chunk.ts",

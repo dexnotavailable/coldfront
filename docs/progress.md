@@ -21,7 +21,9 @@
 | 1.10 Polish + performance | ☐ | |
 
 ## Current session
-**9 October 2026 · Codex · `codex/phase-1-2-postcards`**
+**9 October 2026 · Codex · `codex/phase-1-3-ibara`**
+
+**Phase 1.3 start:** phase 1.2 merged as `1a28c2a` after both release and final-documentation CI passed. P0's five unchanged SDF modules and additive feature/lava/plan contracts are integrated; all 322 tests, check and build pass, with refreshed source-bound HUD captures opened by the coordinator. Generation output and version remain unchanged. The new dependency fingerprint will not be deployed by itself: live remains `18a975d` until actual generation-3 terrain is ready. Next are three disjoint Astra authors for thorn features, volcanic terrain/lava, and materials; the [frozen contracts](plans/phase-1-3.md) define their boundaries. Full regional distributions, terrain placement, lighting and HELL acceptance are still ahead.
 
 The published phase 1.2 increment makes Kaldmark explorable: the full WorldPlan, first-pass surface terrain and owned water, main/test selection, real map, region travel and discovery cards. The [phase plan](plans/phase-1-2.md) defines the shared context and world/session boundaries. Decisions 102–108 cover missing Frost content, separate world identity, first-entry memory, map/water travel and readable discovery text. Release `5a9f26b` and final documentation revision `a99de83` passed the clean Node 22.23.3/npm 10.9.8 install/build and CI, including 300 actual golden chunks in each of Chromium, Firefox and WebKit. PR #4 merged as `058775e`; the live runtime remains `5a9f26b`. Public HTTP200, exact version/build identity, entry assets and COOP/COEP headers pass. Public gameplay remains unverified after the earlier browser-action rejection.
 

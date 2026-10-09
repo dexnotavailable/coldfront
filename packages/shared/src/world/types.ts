@@ -1,5 +1,7 @@
-/** Phase 1.2 public world contracts. Imports: world/types.ts, world/regions.ts,
+/** Public world contracts. Imports: world/types.ts, world/regions.ts,
  * world/world-context.ts and worldplan/index.ts. No runtime stand-ins. */
+import type { Aabb } from "../sdf/types.js";
+
 export type WorldKind = "main" | "test";
 export type SurfaceRegionId =
   | "plains"
@@ -68,11 +70,122 @@ export interface VoxelSample {
   density: number;
   block: number;
   fluid: number;
+  /** Exact unsigned 32-bit identity; 0 means no dominant solid feature.
+   * Optional for legacy/test callers. P4 main samplers overwrite both fields on
+   * EVERY call, including explicit zeroes on air, fluids and ordinary terrain. */
+  featureId?: number;
+  /** Normalized arc length [0,1] of the dominant feature; 0 when featureId is 0.
+   * Retain binary64 precision through generation and material selection. */
+  featureT?: number;
 }
+/** Water-only ownership. Lava must never enter waterQuery or basinIds. */
 export interface WaterSample {
   bodyId: number;
   kind: "none" | "water";
   level: number;
+}
+/** Explicit local lava ownership, independent of nearest-source flow direction.
+ * A dry result overwrites all fields: bodyId=0, kind/source="none", bed/level=-Infinity.
+ * A wet result has a nonzero bodyId, finite bed < level and a specific source.
+ * Occupancy also requires negative solid density and bed < y <= level. */
+export interface LavaSample {
+  bodyId: number;
+  kind: "none" | "lava";
+  source: "none" | "caldera" | "channel" | "fissure";
+  bed: number;
+  level: number;
+}
+/** P2 supplies tags; P3 alone maps them to block IDs. "base" preserves the
+ * existing regional material. These tags do not imply fluid occupancy. */
+export type IbaraGroundTag =
+  | "base"
+  | "basalt"
+  | "ash"
+  | "obsidian"
+  | "sulphur"
+  | "vent";
+export interface IbaraGroundSample {
+  density: number;
+  surfaceY: number;
+  tag: IbaraGroundTag;
+}
+/** Structural P1 -> P3 material input. P1's IbaraSample also carries its SDF
+ * distance/fillet. P3 does not need a geometry cache or feature lookup to shade. */
+export interface IbaraMaterialSample {
+  readonly featureId: number;
+  readonly t: number;
+  readonly core: "obsidian" | "basalt";
+  readonly crust: "none" | "ember" | "brimstone";
+  readonly kind: "none" | "thorn" | "branch" | "debris" | "rubble";
+  readonly broken: boolean;
+}
+/** Original shape parameters, not instantiated SDFs or executable closures.
+ * All positions/heights/radii are metres; bounds include displacement/fillets. */
+export interface IbaraCalderaData extends XZ {
+  readonly id: number;
+  readonly radius: number;
+  readonly baseY: number;
+  readonly floorY: number;
+  readonly rimHeight: number;
+  readonly rimWidth: number;
+  readonly lavaRadius: number;
+  readonly lavaLevel: number;
+  readonly bounds: Readonly<Aabb>;
+}
+export interface IbaraLavaChannelData {
+  readonly id: number;
+  readonly calderaId: number;
+  /** Source-to-sink vertices, stride 5: x,z,bed,level,halfWidth.
+   * At least two vertices; levels never rise downstream; bed < level.
+   * Segment indices are zero-based in this array, never global water receivers. */
+  readonly points: Float64Array;
+  readonly leveeWidth: number;
+  readonly leveeHeight: number;
+  /** Last vertex is an explicit closed basin or cooled termination. */
+  readonly sink: "basin" | "cooled";
+  readonly bounds: Readonly<Aabb>;
+}
+export interface IbaraVentData extends XZ {
+  readonly id: number;
+  readonly baseY: number;
+  readonly height: number;
+  readonly radius: number;
+  readonly mouthRadius: number;
+  readonly bounds: Readonly<Aabb>;
+}
+/** Separate Ibara-local drainage domain. x-fastest: x + width*z.
+ * All arrays have width*depth entries. Receivers use -1 for a terminal outlet;
+ * routingOrder is a permutation with every receiver before its upstream child.
+ * terrain is the original volcanic routing DEM; routingHeight is never terrain.
+ * sourceCalderaIds is 0 off sources, otherwise the corresponding caldera id. */
+export interface IbaraRoutingData {
+  readonly grid: {
+    readonly minX: number;
+    readonly minZ: number;
+    readonly spacing: 64;
+    readonly width: number;
+    readonly depth: number;
+  };
+  readonly terrain: Float64Array;
+  readonly routingHeight: Float64Array;
+  readonly receivers: Int32Array;
+  readonly routingOrder: Uint32Array;
+  readonly drainageArea: Float64Array;
+  readonly sourceCalderaIds: Uint32Array;
+}
+/** Structured-cloneable phase 1.3 payload; not attached to schema-1 WorldPlanData
+ * in P0. P4 adds it with schema/validation/transport changes in one integration.
+ * Arrays become read-only by ownership after build. No Maps, functions, SDF
+ * caches or spatial query indexes cross the plan boundary; rebuild indexes on
+ * hydration. Fissures/dunes/plates are analytic from seed and global position. */
+export interface IbaraPlanData {
+  readonly schema: 1;
+  readonly seed: number;
+  readonly bounds: XZBounds;
+  readonly calderas: readonly IbaraCalderaData[];
+  readonly channels: readonly IbaraLavaChannelData[];
+  readonly vents: readonly IbaraVentData[];
+  readonly routing: IbaraRoutingData;
 }
 export interface SurfaceWaterBody {
   readonly id: number;
@@ -212,9 +325,10 @@ export interface WorldAreaSampler {
     column?: Float64Array,
   ): SkyInput;
 }
-/** Context convenience point queries and prepared area queries are identical.
+/** Context point queries equal prepared queries at the default spacing of 1.
  * prepareArea caches deterministic features for a closed rectangle. Build it once
- * for a worker96x96 footprint and reuse in its voxel loops; do not clone it. */
+ * for a worker96x96 footprint and reuse in its voxel loops; do not clone it.
+ * Other spacings agree at equal positions under the same feature LOD policy. */
 export interface WorldContext extends WorldAreaSampler {
   readonly worldgenVersion: number;
   readonly plan: WorldPlan | null;
@@ -222,7 +336,9 @@ export interface WorldContext extends WorldAreaSampler {
   readonly spawn: Readonly<{ x: number; y: number; z: number }>;
   /** Representative XZ whose dominant region is id; no safe-y claim. Test returns null. */
   regionAnchor(id: SurfaceRegionId): XZ | null;
-  prepareArea(bounds: XZBounds): WorldAreaSampler;
+  /** Metres per sample, default 1. P0 declares this optional argument only;
+   * P4 validates/forwards it and applies feature LOD selection/thickening. */
+  prepareArea(bounds: XZBounds, spacing?: number): WorldAreaSampler;
   conservativeBounds(bounds: XZBounds, out: WorldBounds): WorldBounds;
   surfaceWeights(x: number, z: number, out: RegionWeights): RegionWeights;
   waterQuery(x: number, z: number, out: WaterSample): WaterSample;
