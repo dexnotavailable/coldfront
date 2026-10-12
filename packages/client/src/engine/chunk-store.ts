@@ -271,7 +271,7 @@ export class ChunkStore {
       );
     });
   }
-  request(address: Address, priority = 0): Promise<void> {
+  request(address: Address, priority = 0, postcard = false): Promise<void> {
     if (this.stopped || this.suspended)
       return Promise.reject(new Error("Chunk store unavailable"));
     if (
@@ -310,10 +310,16 @@ export class ChunkStore {
     stored.state = "generating";
     const revision = stored.revision;
     const promise = this.workers
-      .request(address, revision, priority, (stage) => {
-        const current = this.chunks.get(key);
-        if (current) current.state = stage;
-      })
+      .request(
+        address,
+        revision,
+        priority,
+        (stage) => {
+          const current = this.chunks.get(key);
+          if (current) current.state = stage;
+        },
+        postcard,
+      )
       .then((result) => {
         if (this.stopped) return;
         for (const key of ["generate", "light", "mesh"] as const)
@@ -345,7 +351,7 @@ export class ChunkStore {
           current &&
           current.revision !== revision
         )
-          void this.request(address, priority).catch(() => {});
+          void this.request(address, priority, postcard).catch(() => {});
       });
     this.pending.set(key, promise);
     return promise;
@@ -378,11 +384,16 @@ export class ChunkStore {
       (cx, cz) => postcardColumnVisible(view, cx, cz),
     );
   }
-  async requestPlannedView(plan: ChunkViewPlan): Promise<readonly Address[]> {
+  async requestPlannedView(
+    plan: ChunkViewPlan,
+    postcard = false,
+  ): Promise<readonly Address[]> {
     if (!sameSession(this.world, plan.world))
       throw new Error("Destination plan belongs to another world session");
     await this.workers.ready;
-    await Promise.all(plan.jobs.map((job) => this.request(job.a, job.d)));
+    await Promise.all(
+      plan.jobs.map((job) => this.request(job.a, job.d, postcard)),
+    );
     // An edit may invalidate a first result. Real revisions and uploaded state
     // remain the acceptance boundary, including for retained overlap.
     await this.settled();
@@ -397,6 +408,7 @@ export class ChunkStore {
     z: number,
     radius: number,
     includeColumn?: (cx: number, cz: number) => boolean,
+    postcard = false,
   ): Promise<readonly Address[]> {
     // Preserve rejection of invalid inputs before waiting for pool startup.
     if (
@@ -409,15 +421,20 @@ export class ChunkStore {
     await this.workers.ready;
     return this.requestPlannedView(
       this.planView(x, y, z, radius, includeColumn),
+      postcard,
     );
   }
-  requestCamera(view: PostcardView): Promise<readonly Address[]> {
+  requestCamera(
+    view: PostcardView,
+    postcard = false,
+  ): Promise<readonly Address[]> {
     return this.requestView(
       view.position.x,
       Math.max(-1535, Math.min(1023, view.position.y)),
       view.position.z,
       view.radius,
       (cx, cz) => postcardColumnVisible(view, cx, cz),
+      postcard,
     );
   }
   retain(addresses: readonly Address[]): string[] {

@@ -16,6 +16,7 @@ interface Job {
   address: Address;
   revision: number;
   priority: number;
+  postcard: boolean;
   resolve: (result: ChunkResult) => void;
   reject: (error: Error) => void;
   progress: (stage: WorkerStage) => void;
@@ -27,6 +28,7 @@ interface Lane {
   cacheBytes: number;
   stage: WorkerStage;
   ready: boolean;
+  batch: { cx: number; cy: number; cz: number; remaining: number } | null;
   acknowledge(): void;
 }
 export function workerCount(concurrency: number): number {
@@ -99,6 +101,7 @@ export class TerrainWorkers {
         cacheBytes: 0,
         stage: "generating",
         ready: false,
+        batch: null,
         acknowledge,
       };
       this.lanes.push(lane);
@@ -168,6 +171,7 @@ export class TerrainWorkers {
     revision: number,
     priority: number,
     progress: (stage: WorkerStage) => void,
+    postcard = false,
   ): Promise<ChunkResult> {
     if (this.stopped) return Promise.reject(this.stopped);
     return new Promise((resolve, reject) => {
@@ -177,6 +181,7 @@ export class TerrainWorkers {
         address,
         revision,
         priority,
+        postcard,
         resolve,
         reject,
         progress,
@@ -186,9 +191,37 @@ export class TerrainWorkers {
     });
   }
   private dispatch(lane: Lane): void {
-    if (this.stopped || !lane.ready || lane.current || lane.jobs.length === 0)
+    if (this.stopped || !lane.ready || lane.current) return;
+    if (lane.jobs.length === 0) {
+      lane.batch = null;
       return;
-    const job = lane.jobs.shift() as Job;
+    }
+    const batch = lane.batch;
+    // Only already-pending postcard work may bypass the priority head. Keep
+    // ordinary requests and urgent revisions on their existing priority path.
+    const index =
+      batch &&
+      batch.remaining > 0 &&
+      lane.jobs.every((job) => job.postcard && job.priority >= 0)
+        ? lane.jobs.findIndex(
+            (job) =>
+              Math.floor(job.address.cx / 2) === batch.cx &&
+              job.address.cy === batch.cy &&
+              Math.floor(job.address.cz / 2) === batch.cz,
+          )
+        : -1;
+    const job = lane.jobs.splice(index < 0 ? 0 : index, 1)[0] as Job;
+    if (index >= 0 && batch) batch.remaining--;
+    else
+      lane.batch =
+        job.postcard && job.priority >= 0
+          ? {
+              cx: Math.floor(job.address.cx / 2),
+              cy: job.address.cy,
+              cz: Math.floor(job.address.cz / 2),
+              remaining: 3,
+            }
+          : null;
     lane.current = job;
     lane.worker.postMessage({
       type: "chunk",
@@ -260,6 +293,7 @@ export class TerrainWorkers {
       lane.worker.terminate();
       lane.current?.reject(error);
       lane.current = null;
+      lane.batch = null;
       for (const job of lane.jobs) job.reject(error);
       lane.jobs.length = 0;
     }

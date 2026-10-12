@@ -17,6 +17,7 @@ const probe = vi.hoisted(() => ({
   identities: [] as WorldIdentity[],
   modes: [] as string[],
   views: [] as unknown[],
+  scheduling: [] as boolean[],
   edits: [] as VoxelEdit[],
   hold: null as Promise<void> | null,
   uploaded: true,
@@ -114,11 +115,20 @@ vi.mock("../../../client/src/engine/chunk-store.js", () => ({
     lightAt() {
       return 0;
     }
-    async requestView() {
+    async requestView(
+      _x?: number,
+      _y?: number,
+      _z?: number,
+      _radius?: number,
+      _includeColumn?: unknown,
+      postcard = false,
+    ) {
+      probe.scheduling.push(postcard);
       await probe.hold;
       return [];
     }
-    async requestCamera(view: WorldPostcard) {
+    async requestCamera(view: WorldPostcard, postcard = false) {
+      probe.scheduling.push(postcard);
       probe.views.push(view);
       await probe.hold;
       return [];
@@ -261,6 +271,7 @@ beforeEach(() => {
     probe.views.length =
     probe.modes.length =
     probe.edits.length =
+    probe.scheduling.length =
       0;
   probe.hold = null;
   probe.uploaded = true;
@@ -276,6 +287,24 @@ afterEach(async () => {
   vi.unstubAllGlobals();
 });
 describe("P8 runtime transaction boundary (GPU and jobs mocked)", () => {
+  it("tags only postcard preparation while ordinary world startup keeps priority scheduling", async () => {
+    const game = await boot();
+    expect(probe.scheduling.length).toBeGreaterThan(0);
+    expect(probe.scheduling.every((value) => value === false)).toBe(true);
+    probe.scheduling.length = 0;
+    const world = game.port.read().world;
+    if (!world) throw new Error("Missing loaded fixture world");
+    await game.port.goToPostcard({ sessionId: world.id, id: "HELL-1" });
+    // Body readiness keeps ordinary priority; the full postcard view opts in.
+    expect(probe.scheduling).toEqual([false, true]);
+    game.port.apply({ type: "postcard", active: false });
+    await game.ready();
+    probe.scheduling.length = 0;
+    game.port.apply({ type: "start", seed: 2, worldKind: "main" });
+    await game.ready();
+    expect(probe.scheduling.length).toBeGreaterThan(0);
+    expect(probe.scheduling.every((value) => value === false)).toBe(true);
+  });
   it("draws real destination flame selection after restoring offscreen source state", async () => {
     const eye = { x: 6200, y: 1.62, z: 6100 };
     const game = await boot({

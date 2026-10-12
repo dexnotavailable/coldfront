@@ -105,6 +105,105 @@ function disk(cx: number, cz: number, radius: number): Address[] {
 }
 
 describe("terrain worker locality and scheduling", () => {
+  it.each([false, true])(
+    "replays the measured24-key window order with postcard=%s",
+    async (postcard) => {
+      // Fixed source91 observed-worker6 windows; expected alternative comes from
+      // the separately executed exact-buffer A/B, not this scheduler's algorithm.
+      const rows = [
+        [1, 177, 0, 169],
+        [2, 176, 0, 169],
+        [3, 177, 0, 168],
+        [6, 176, 0, 168],
+        [9, 177, 1, 169],
+        [13, 176, 1, 169],
+        [15, 177, 1, 168],
+        [22, 176, 1, 168],
+        [50, 177, 2, 169],
+        [52, 176, 2, 169],
+        [53, 177, 2, 168],
+        [55, 177, 0, 172],
+        [60, 176, 2, 168],
+        [62, 176, 0, 172],
+        [69, 177, -1, 172],
+        [70, 177, 1, 172],
+        [74, 176, -1, 172],
+        [75, 176, 1, 172],
+        [96, 177, 0, 173],
+        [99, 176, 0, 173],
+        [106, 177, -1, 173],
+        [107, 177, 1, 173],
+        [114, 176, -1, 173],
+        [115, 176, 1, 173],
+      ] as const;
+      const { pool, workers, dispatched } = harness(1, false);
+      const promises = rows.map(([revision, cx, cy, cz], priority) =>
+        pool.request({ cx, cy, cz }, revision, priority, () => {}, postcard),
+      );
+      workers[0]?.reply({ type: "ready", world });
+      while (pool.queued) workers[0]?.complete();
+      expect(dispatched.map((row) => row.revision)).toEqual(
+        postcard
+          ? [
+              1, 2, 3, 6, 9, 13, 15, 22, 50, 52, 53, 60, 55, 62, 96, 99, 69, 74,
+              106, 114, 70, 75, 107, 115,
+            ]
+          : rows.map((row) => row[0]),
+      );
+      expect((await Promise.all(promises)).map((row) => row.blocks[0])).toEqual(
+        rows.map((row) => row[0]),
+      );
+      pool.dispose();
+    },
+  );
+
+  it("returns to the priority head after four and never waits for a complete group", async () => {
+    const { pool, workers, dispatched } = harness(1);
+    const a = { cx: -2, cy: 1, cz: -2 },
+      b = { cx: 2, cy: 1, cz: 0 };
+    const addresses = [
+      a,
+      b,
+      { cx: -1, cy: 1, cz: -2 },
+      { cx: -2, cy: 1, cz: -1 },
+      { cx: -1, cy: 1, cz: -1 },
+      a,
+      { cx: -2, cy: 2, cz: -2 },
+    ];
+    const promises = addresses.map((address, i) =>
+      pool.request(address, i, i, () => {}, true),
+    );
+    while (pool.queued) workers[0]?.complete();
+    expect(dispatched.map((row) => row.id)).toEqual([1, 3, 4, 5, 2, 6, 7]);
+    expect(await Promise.all(promises)).toHaveLength(7);
+    const later = pool.request(a, 99, 0, () => {}, true);
+    expect(workers[0]?.current?.revision).toBe(99);
+    workers[0]?.complete();
+    await later;
+    pool.dispose();
+  });
+
+  it.each([false, true])(
+    "preserves ordinary and urgent pending priority while postcard batch is active (urgent=%s)",
+    async (urgent) => {
+      const { pool, workers, dispatched } = harness(1);
+      const a = { cx: 0, cy: 0, cz: 0 },
+        b = { cx: 2, cy: 0, cz: 0 };
+      const promises = [
+        pool.request(a, 1, 0, () => {}, true),
+        pool.request(b, 2, 1, () => {}, true),
+        pool.request({ ...a, cx: 1 }, 3, 2, () => {}, true),
+        pool.request({ ...b, cy: 1 }, 4, urgent ? -1 : 3, () => {}, false),
+      ];
+      expect(dispatched.map((row) => row.id)).toEqual([1]);
+      while (pool.queued) workers[0]?.complete();
+      expect(dispatched.map((row) => row.id)).toEqual(
+        urgent ? [1, 4, 2, 3] : [1, 2, 3, 4],
+      );
+      await Promise.all(promises);
+      pool.dispose();
+    },
+  );
   it("prefers one owner for every level and four neighboring columns, including negative cells, without an idle-tail steal", () => {
     for (let count = 1; count <= 6; count++) {
       const { pool, owner, workers } = harness(count);
@@ -215,67 +314,85 @@ describe("terrain worker locality and scheduling", () => {
     pool.dispose();
   });
 
-  it("broadcasts edits and rejects both active and queued requests on disposal", async () => {
-    const { pool, workers } = harness(6);
-    const active = pool.request({ cx: 0, cy: 0, cz: 0 }, 1, 0, () => {});
-    const queued = pool.request({ cx: 1, cy: 0, cz: 1 }, 1, 0, () => {});
-    const settled = Promise.allSettled([active, queued]);
-    const edit = { x: 31, y: 0, z: 31, block: 0 };
-    pool.edit(edit);
-    for (const worker of workers)
-      expect(worker.sent.at(-1)).toEqual({ type: "edit", world, edit });
-    expect(pool.queued).toBe(2);
-    pool.dispose();
-    expect(workers.every((worker) => worker.terminated)).toBe(true);
-    expect(pool.queued).toBe(0);
-    const results = await settled;
-    expect(results.every((entry) => entry.status === "rejected")).toBe(true);
-    await expect(
-      pool.request({ cx: 2, cy: 0, cz: 2 }, 0, 0, () => {}),
-    ).rejects.toThrow("Worker pool disposed");
-  });
+  it.each([false, true])(
+    "broadcasts edits and rejects both active and queued requests on disposal (postcard=%s)",
+    async (postcard) => {
+      const { pool, workers } = harness(6);
+      const active = pool.request(
+        { cx: 0, cy: 0, cz: 0 },
+        1,
+        0,
+        () => {},
+        postcard,
+      );
+      const queued = pool.request(
+        { cx: 1, cy: 0, cz: 1 },
+        1,
+        0,
+        () => {},
+        postcard,
+      );
+      const settled = Promise.allSettled([active, queued]);
+      const edit = { x: 31, y: 0, z: 31, block: 0 };
+      pool.edit(edit);
+      for (const worker of workers)
+        expect(worker.sent.at(-1)).toEqual({ type: "edit", world, edit });
+      expect(pool.queued).toBe(2);
+      pool.dispose();
+      expect(workers.every((worker) => worker.terminated)).toBe(true);
+      expect(pool.queued).toBe(0);
+      const results = await settled;
+      expect(results.every((entry) => entry.status === "rejected")).toBe(true);
+      await expect(
+        pool.request({ cx: 2, cy: 0, cz: 2 }, 0, 0, () => {}),
+      ).rejects.toThrow("Worker pool disposed");
+    },
+  );
 
-  it("fills idle capacity only after a completion and all ready acknowledgements, then drains without duplicate or lost jobs", async () => {
-    const { pool, workers, dispatched } = harness(6, false);
-    const addresses = Array.from({ length: 24 }, (_, i) => ({
-      cx: 0,
-      cy: i - 12,
-      cz: 0,
-    }));
-    const promises = addresses.map((address, i) =>
-      pool.request(address, i + 1, i, () => {}),
-    );
-    workers[0]?.reply({ type: "ready", world });
-    expect(dispatched.map((request) => request.id)).toEqual([1]);
-    workers[0]?.complete();
-    expect(dispatched.map((request) => request.id)).toEqual([1, 2]);
-    for (const worker of workers.slice(1))
-      worker.reply({ type: "ready", world });
-    // Ready/enqueue do not fragment the initial same-column batch.
-    expect(dispatched).toHaveLength(2);
-    workers[0]?.complete();
-    expect(workers.every((worker) => worker.current)).toBe(true);
-    expect(dispatched.map((request) => request.id)).toEqual([
-      1, 2, 3, 4, 5, 6, 7, 8,
-    ]);
-    while (pool.queued > 0)
-      for (const worker of [...workers].reverse()) {
-        if (!worker.current) continue;
-        worker.complete();
-        const active = workers.filter((lane) => lane.current).length;
-        if (pool.queued > active) expect(active).toBe(workers.length);
-      }
-    const results = await Promise.all(promises);
-    expect(dispatched).toHaveLength(addresses.length);
-    expect(new Set(dispatched.map((request) => request.id)).size).toBe(
-      addresses.length,
-    );
-    expect(results.map((value) => value.address)).toEqual(addresses);
-    expect(results.map((value) => value.blocks[0])).toEqual(
-      addresses.map((_, i) => i + 1),
-    );
-    pool.dispose();
-  });
+  it.each([false, true])(
+    "fills idle capacity only after a completion and all ready acknowledgements, then drains without duplicate or lost jobs (postcard=%s)",
+    async (postcard) => {
+      const { pool, workers, dispatched } = harness(6, false);
+      const addresses = Array.from({ length: 24 }, (_, i) => ({
+        cx: 0,
+        cy: i - 12,
+        cz: 0,
+      }));
+      const promises = addresses.map((address, i) =>
+        pool.request(address, i + 1, i, () => {}, postcard),
+      );
+      workers[0]?.reply({ type: "ready", world });
+      expect(dispatched.map((request) => request.id)).toEqual([1]);
+      workers[0]?.complete();
+      expect(dispatched.map((request) => request.id)).toEqual([1, 2]);
+      for (const worker of workers.slice(1))
+        worker.reply({ type: "ready", world });
+      // Ready/enqueue do not fragment the initial same-column batch.
+      expect(dispatched).toHaveLength(2);
+      workers[0]?.complete();
+      expect(workers.every((worker) => worker.current)).toBe(true);
+      expect(dispatched.map((request) => request.id)).toEqual([
+        1, 2, 3, 4, 5, 6, 7, 8,
+      ]);
+      while (pool.queued > 0)
+        for (const worker of [...workers].reverse()) {
+          if (!worker.current) continue;
+          worker.complete();
+          const active = workers.filter((lane) => lane.current).length;
+          if (pool.queued > active) expect(active).toBe(workers.length);
+        }
+      const results = await Promise.all(promises);
+      expect(dispatched).toHaveLength(addresses.length);
+      expect(new Set(dispatched.map((request) => request.id)).size).toBe(
+        addresses.length,
+      );
+      expect(results.map((value) => value.address)).toEqual(addresses);
+      expect(results.map((value) => value.blocks[0])).toEqual(
+        addresses.map((_, i) => i + 1),
+      );
+      pool.dispose();
+    },
+  );
 
   it("selects the best pending donor head by priority and id without moving in-flight jobs", async () => {
     const { pool, workers, dispatched } = harness(4);
@@ -307,52 +424,61 @@ describe("terrain worker locality and scheduling", () => {
     pool.dispose();
   });
 
-  it("keeps borrowed callbacks and session/error boundaries, then rejects borrowed and pending work on disposal", async () => {
-    const { pool, workers } = harness(3);
-    const progress: string[] = [];
-    const address = { cx: 0, cy: 0, cz: 0 };
-    const promises = Array.from({ length: 8 }, (_, i) =>
-      pool.request(address, i, i, (stage) => progress.push(`${i}:${stage}`)),
-    );
-    const settled = Promise.allSettled(promises);
-    workers[0]?.complete();
-    const borrower = workers[1];
-    if (!borrower?.current) throw new Error("Missing borrowed job");
-    const borrowed = borrower.current;
-    expect(borrowed.id).toBe(3);
-    const lighting = {
-      type: "progress",
-      world,
-      id: borrowed.id,
-      stage: "lighting",
-    } as const;
-    workers[0]?.reply(lighting); // It no longer owns this job.
-    borrower.reply({ ...lighting, world: { ...world, id: 6 } });
-    expect(progress).toEqual([]);
-    borrower.reply(lighting);
-    expect(progress).toEqual(["2:lighting"]);
-    borrower.reply({ ...result(borrowed), world: { ...world, id: 6 } });
-    expect(borrower.current).toBe(borrowed);
-    borrower.fail("borrowed job failed");
-    expect(borrower.current?.id).toBe(5);
-    expect(workers.every((worker) => !worker.terminated)).toBe(true);
-    const edit = { x: 31, y: 2, z: 31, block: 0 };
-    pool.edit(edit);
-    for (const worker of workers)
-      expect(worker.sent.at(-1)).toEqual({ type: "edit", world, edit });
-    pool.dispose();
-    const results = await settled;
-    expect(results[0]?.status).toBe("fulfilled");
-    expect(results[2]).toMatchObject({
-      status: "rejected",
-      reason: new Error("borrowed job failed"),
-    });
-    for (const i of [1, 3, 4, 5, 6, 7])
-      expect(results[i]).toMatchObject({
+  it.each([false, true])(
+    "keeps borrowed callbacks and session/error boundaries, then rejects borrowed and pending work on disposal (postcard=%s)",
+    async (postcard) => {
+      const { pool, workers } = harness(3);
+      const progress: string[] = [];
+      const address = { cx: 0, cy: 0, cz: 0 };
+      const promises = Array.from({ length: 8 }, (_, i) =>
+        pool.request(
+          address,
+          i,
+          i,
+          (stage) => progress.push(`${i}:${stage}`),
+          postcard,
+        ),
+      );
+      const settled = Promise.allSettled(promises);
+      workers[0]?.complete();
+      const borrower = workers[1];
+      if (!borrower?.current) throw new Error("Missing borrowed job");
+      const borrowed = borrower.current;
+      expect(borrowed.id).toBe(3);
+      const lighting = {
+        type: "progress",
+        world,
+        id: borrowed.id,
+        stage: "lighting",
+      } as const;
+      workers[0]?.reply(lighting); // It no longer owns this job.
+      borrower.reply({ ...lighting, world: { ...world, id: 6 } });
+      expect(progress).toEqual([]);
+      borrower.reply(lighting);
+      expect(progress).toEqual(["2:lighting"]);
+      borrower.reply({ ...result(borrowed), world: { ...world, id: 6 } });
+      expect(borrower.current).toBe(borrowed);
+      borrower.fail("borrowed job failed");
+      expect(borrower.current?.id).toBe(5);
+      expect(workers.every((worker) => !worker.terminated)).toBe(true);
+      const edit = { x: 31, y: 2, z: 31, block: 0 };
+      pool.edit(edit);
+      for (const worker of workers)
+        expect(worker.sent.at(-1)).toEqual({ type: "edit", world, edit });
+      pool.dispose();
+      const results = await settled;
+      expect(results[0]?.status).toBe("fulfilled");
+      expect(results[2]).toMatchObject({
         status: "rejected",
-        reason: new Error("Worker pool disposed"),
+        reason: new Error("borrowed job failed"),
       });
-    expect(pool.queued).toBe(0);
-    expect(workers.every((worker) => worker.terminated)).toBe(true);
-  });
+      for (const i of [1, 3, 4, 5, 6, 7])
+        expect(results[i]).toMatchObject({
+          status: "rejected",
+          reason: new Error("Worker pool disposed"),
+        });
+      expect(pool.queued).toBe(0);
+      expect(workers.every((worker) => worker.terminated)).toBe(true);
+    },
+  );
 });

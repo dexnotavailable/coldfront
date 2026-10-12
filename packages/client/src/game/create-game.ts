@@ -689,15 +689,17 @@ class GameRuntime implements GamePort {
       failure: unknown,
       upload = 0;
     const request = plan
-      ? store.requestPlannedView(plan)
+      ? store.requestPlannedView(plan, true)
       : testView
         ? store.requestView(
             view.target.x,
             view.target.y,
             view.target.z,
             view.radius,
+            undefined,
+            true,
           )
-        : store.requestCamera(view);
+        : store.requestCamera(view, true);
     const pending = request.then(
       (addresses) => {
         complete = true;

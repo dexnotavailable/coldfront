@@ -5,11 +5,11 @@
       "id": "outline-ghost",
       "rows": ["hud.outline", "hud.ghost"],
       "image": "fixtures/ui/world-outline-ghost.jpg",
-      "imageSha256": "f339b426547f7530276e577a49ac69231e6a8093faaa0988fa3215643d6388d3",
+      "imageSha256": "61d5db4914684db01b56578ddff0fbc2020aeb1cb77b57bd4eb5b7dd53094b34",
       "telemetry": "fixtures/ui/world-outline-ghost.json",
-      "telemetrySha256": "767260a427e5f55333acaa269c3c607ec86faca21f7cf47b9123617a9355bb59",
+      "telemetrySha256": "4644067ba547736700330ee99792e6762fafd821153828460b63b74d6522deb9",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "f71b2e5c9d4e67ecccf1c5331a45c42cd1ba2aeca85d91504f4ba15daaf71162",
+      "runReceiptSha256": "ef35b4d75a1955ba6a84df50198f010accf42783dc7719e55ccfaf3a5c661a82",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -29,7 +29,7 @@
         },
         {
           "path": "packages/client/src/engine/chunk-store.ts",
-          "sha256": "2c9881ec9329beb9fdd393e8eabe1a58c811ed1d7844b0bf3738987616583f0f"
+          "sha256": "37e767e8fa1d35ae59d8537a7fbf6f01931382dddc878c9acbe669e1aad439ed"
         },
         {
           "path": "packages/client/src/engine/cut-cap.ts",
@@ -81,7 +81,7 @@
         },
         {
           "path": "packages/client/src/engine/worker-pool.ts",
-          "sha256": "f46e6f07ccfd8070085afa46597f28c05f251fad456a7505874132e6db6b682e"
+          "sha256": "204d52009d5280ae3c13197d46891933650ff32d8c598c758c76b0a1a07e20f5"
         },
         {
           "path": "packages/client/src/engine/worker-protocol.ts",
@@ -105,7 +105,7 @@
         },
         {
           "path": "packages/client/src/game/create-game.ts",
-          "sha256": "c8be2cc4c9253b03d165a623cec7119eeca6de54b25d3d871df37a8cb944a50a"
+          "sha256": "4d0d6c05b40b5ed1cae86c35f0ac36577ab3d7292a1cc5a7ef75502f89fc5b49"
         },
         {
           "path": "packages/client/src/game/destination.ts",
@@ -370,7 +370,7 @@
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
         "sourceImage": "out/engine/hud-repair/outline-ghost.png",
-        "sourceImageSha256": "e295af97d748d8aec36bc4d47a99c1c6be15e757a8f60df2c4056b02db00c2c8",
+        "sourceImageSha256": "95c5859335d9bdd787a44b70051bd6a0a2dc477de314978b56bf4d58cbe65f16",
         "quality": 85,
         "width": 1280,
         "height": 720,
@@ -381,11 +381,11 @@
       "id": "silhouette",
       "rows": ["hud.silhouette"],
       "image": "fixtures/ui/world-silhouette.jpg",
-      "imageSha256": "1180e117c01953ab23f520bf0b8933f68bd1c20bab90e2e2e6b22bbf47bc5abb",
+      "imageSha256": "89116132349497fe0caac8d36678fb0509ac8e4a70a9ecefae3e7f9fcbd812bf",
       "telemetry": "fixtures/ui/world-silhouette.json",
-      "telemetrySha256": "cc7a2549c80b1e3994493725872b6ffb01b8782a5000fc4d6b82c9d9733b8778",
+      "telemetrySha256": "45dd3ae4be8ea6e5040fc918cb880a2f50df6bceebacd613239356cb383e8bb1",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "f71b2e5c9d4e67ecccf1c5331a45c42cd1ba2aeca85d91504f4ba15daaf71162",
+      "runReceiptSha256": "ef35b4d75a1955ba6a84df50198f010accf42783dc7719e55ccfaf3a5c661a82",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -405,7 +405,7 @@
         },
         {
           "path": "packages/client/src/engine/chunk-store.ts",
-          "sha256": "2c9881ec9329beb9fdd393e8eabe1a58c811ed1d7844b0bf3738987616583f0f"
+          "sha256": "37e767e8fa1d35ae59d8537a7fbf6f01931382dddc878c9acbe669e1aad439ed"
         },
         {
           "path": "packages/client/src/engine/cut-cap.ts",
@@ -457,7 +457,7 @@
         },
         {
           "path": "packages/client/src/engine/worker-pool.ts",
-          "sha256": "f46e6f07ccfd8070085afa46597f28c05f251fad456a7505874132e6db6b682e"
+          "sha256": "204d52009d5280ae3c13197d46891933650ff32d8c598c758c76b0a1a07e20f5"
         },
         {
           "path": "packages/client/src/engine/worker-protocol.ts",
@@ -481,7 +481,7 @@
         },
         {
           "path": "packages/client/src/game/create-game.ts",
-          "sha256": "c8be2cc4c9253b03d165a623cec7119eeca6de54b25d3d871df37a8cb944a50a"
+          "sha256": "4d0d6c05b40b5ed1cae86c35f0ac36577ab3d7292a1cc5a7ef75502f89fc5b49"
         },
         {
           "path": "packages/client/src/game/destination.ts",
@@ -746,7 +746,7 @@
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
         "sourceImage": "out/engine/hud-repair/silhouette.png",
-        "sourceImageSha256": "74dac29066bb2cdbd609025918e44f551732a7cf5c191d30ae74608cb1d680e5",
+        "sourceImageSha256": "b2f3e417dd46fada00d1fd0834dfecdddaca35239f50571c8de28ce8028f6aca",
         "quality": 85,
         "width": 1280,
         "height": 720,

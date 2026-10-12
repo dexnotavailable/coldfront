@@ -17,6 +17,7 @@ import {
 
 const fixture = vi.hoisted(() => ({
   jobs: [] as Address[],
+  scheduling: [] as { revision: number; priority: number; postcard: boolean }[],
   fail: false,
   hold: false,
   releases: [] as (() => void)[],
@@ -28,8 +29,15 @@ vi.mock("../../../client/src/engine/worker-pool.js", () => ({
     queued = 0;
     memoryBytes = 0;
     constructor(readonly world: WorldSession) {}
-    async request(address: Address, revision: number) {
+    async request(
+      address: Address,
+      revision: number,
+      priority: number,
+      _progress: unknown,
+      postcard = false,
+    ) {
       fixture.jobs.push(address);
+      fixture.scheduling.push({ revision, priority, postcard });
       if (fixture.fail) throw new Error("worker generation failure");
       if (fixture.hold)
         await new Promise<void>((resolve) => fixture.releases.push(resolve));
@@ -62,12 +70,56 @@ const world: WorldSession = {
 };
 beforeEach(() => {
   fixture.jobs.length = 0;
+  fixture.scheduling.length = 0;
   fixture.fail = false;
   fixture.hold = false;
   fixture.staleWorld = false;
   fixture.releases.length = 0;
 });
 describe("conservative streaming and real mesh readiness", () => {
+  it("opts planned work in without changing operands and leaves later ordinary work untagged", async () => {
+    const store = new ChunkStore(world, {} as WorldContext, null, []);
+    const a = { cx: 0, cy: 0, cz: 0 },
+      b = { cx: 1, cy: 0, cz: 0 };
+    const plan = {
+      world,
+      addresses: [a, b],
+      jobs: [
+        { a, d: 3 },
+        { a: b, d: 7 },
+      ],
+    };
+    await store.requestPlannedView(plan, true);
+    expect(fixture.jobs).toEqual([a, b]);
+    expect(fixture.scheduling).toEqual([
+      { revision: 0, priority: 3, postcard: true },
+      { revision: 0, priority: 7, postcard: true },
+    ]);
+    await store.request({ cx: 2, cy: 0, cz: 0 }, 1);
+    expect(fixture.scheduling.at(-1)).toEqual({
+      revision: 0,
+      priority: 1,
+      postcard: false,
+    });
+    store.dispose();
+  });
+
+  it("coalesces overlapping planned postcard work and preserves completed reuse", async () => {
+    const store = new ChunkStore(world, {} as WorldContext, null, []),
+      a = { cx: 0, cy: 0, cz: 0 };
+    fixture.hold = true;
+    const plan = { world, addresses: [a], jobs: [{ a, d: 4 }] };
+    const first = store.requestPlannedView(plan, true),
+      second = store.requestPlannedView(plan, true);
+    await Promise.resolve();
+    expect(fixture.jobs).toEqual([a]);
+    fixture.releases.shift()?.();
+    await Promise.all([first, second]);
+    await store.requestPlannedView(plan, true);
+    expect(fixture.jobs).toEqual([a]);
+    expect(store.hasView([a])).toBe(true);
+    store.dispose();
+  });
   it("retains only valid uploaded destination overlap and requests missing chunks once with unchanged output", async () => {
     const context = {
       conservativeBounds: (_bounds: unknown, out: object) =>
@@ -301,24 +353,31 @@ describe("conservative streaming and real mesh readiness", () => {
     expect(store.hasView(addresses)).toBe(true);
     store.dispose();
   });
-  it("rejects an in-flight old revision and refills the edited chunk before it is ready", async () => {
-    fixture.hold = true;
-    const store = new ChunkStore(world, {} as WorldContext, null, []),
-      address = { cx: 0, cy: 0, cz: 0 };
-    const first = store.request(address);
-    store.edit({ x: 31, y: 0, z: 0, block: Block.Lava });
-    fixture.releases.shift()?.();
-    await first;
-    expect(store.hasView([address])).toBe(false);
-    expect(store.uploads).toHaveLength(0);
-    expect(fixture.releases).toHaveLength(1);
-    fixture.releases.shift()?.();
-    await store.settled();
-    expect(store.hasView([address])).toBe(true);
-    expect(store.uploads).toHaveLength(1);
-    expect(store.uploads[0]?.revision).toBe(1);
-    store.dispose();
-  });
+  it.each([false, true])(
+    "rejects an in-flight old revision and refills the edited chunk before it is ready (postcard=%s)",
+    async (postcard) => {
+      fixture.hold = true;
+      const store = new ChunkStore(world, {} as WorldContext, null, []),
+        address = { cx: 0, cy: 0, cz: 0 };
+      const first = store.request(address, 0, postcard);
+      store.edit({ x: 31, y: 0, z: 0, block: Block.Lava });
+      fixture.releases.shift()?.();
+      await first;
+      expect(store.hasView([address])).toBe(false);
+      expect(store.uploads).toHaveLength(0);
+      expect(fixture.releases).toHaveLength(1);
+      fixture.releases.shift()?.();
+      await store.settled();
+      expect(store.hasView([address])).toBe(true);
+      expect(store.uploads).toHaveLength(1);
+      expect(store.uploads[0]?.revision).toBe(1);
+      expect(fixture.scheduling).toEqual([
+        { revision: 0, priority: 0, postcard },
+        { revision: 1, priority: 0, postcard },
+      ]);
+      store.dispose();
+    },
+  );
   it("rejects another world session and counts the new mesh buffers exactly", async () => {
     const store = new ChunkStore(world, {} as WorldContext, null, []),
       address = { cx: 0, cy: 0, cz: 0 };
