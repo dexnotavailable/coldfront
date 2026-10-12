@@ -2,7 +2,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Block } from "../../../shared/src/blocks/registry.js";
 import type { GenerationVariant } from "../../../shared/src/world/generation-variant.js";
 import { WORLDGEN_VERSION } from "../../../shared/src/worldgen/version.js";
-import type { HellCameraValidation } from "../../src/postcards/geometry.js";
+import type {
+  CameraFirstHit,
+  HellCameraValidation,
+} from "../../src/postcards/geometry.js";
+import type { FramingObservation } from "../../src/postcards/hell-framing-camera.js";
 import type { HellReadability } from "../../src/postcards/hell-readability.js";
 import {
   type HellPostcardId,
@@ -22,6 +26,9 @@ const state = vi.hoisted(() => ({
   readability: {} as HellReadability,
   refinementCount: 18,
   validation: {} as HellCameraValidation,
+  hits: [] as CameraFirstHit[],
+  framingObservations: [] as readonly FramingObservation[],
+  framingTargetFactory: false,
 }));
 const bounds = { minX: -20, maxX: 20, minZ: -20, maxZ: 20, minY: 0, maxY: 100 };
 const roots = [1, 2, 3].map((id) => ({
@@ -112,10 +119,17 @@ vi.mock("../../src/postcards/query.js", () => ({
 vi.mock("../../src/postcards/geometry.js", async (importOriginal) => ({
   ...(await importOriginal<typeof import("../../src/postcards/geometry.js")>()),
   cameraPoseRejections: () => [],
-  inspectHellCamera: () => ({
-    ...state.validation,
-    passed: ++state.inspections === state.passAt || state.passAlways,
-  }),
+  inspectHellCamera: (
+    _view: unknown,
+    _query: unknown,
+    inspection: { onHit?: (hit: CameraFirstHit) => void },
+  ) => {
+    for (const hit of state.hits) inspection.onHit?.({ ...hit });
+    return {
+      ...state.validation,
+      passed: ++state.inspections === state.passAt || state.passAlways,
+    };
+  },
 }));
 vi.mock("../../src/postcards/hell-visible-instances.js", () => ({
   createVisibleThornResolver: () => () => ({ instances: [], receipt: {} }),
@@ -126,8 +140,18 @@ vi.mock("../../src/postcards/hell-readability.js", () => ({
 vi.mock("../../src/postcards/hell-framing-camera.js", () => ({
   FOREST_CAMERA_PITCHES: [-5, 0, 4.25],
   PRODUCTION_CAMERA_BUDGET: { coarse: 32, refinements: 18 },
-  productionFramingCandidates: (observations: unknown[]) =>
-    Array.from({ length: state.refinementCount }, () => observations[0]),
+  productionFramingCandidates: (
+    observations: readonly FramingObservation[],
+    _instance: unknown,
+    _ground: unknown,
+    _preflight: unknown,
+    _record: unknown,
+    targetFor: unknown,
+  ) => {
+    state.framingObservations = observations;
+    state.framingTargetFactory = typeof targetFor === "function";
+    return Array.from({ length: state.refinementCount }, () => observations[0]);
+  },
 }));
 vi.mock("../../src/postcards/hell-primitive-camera.js", () => ({
   PRIMITIVE_CAMERA_BUDGET: { coarse: 32, refinements: 18 },
@@ -200,6 +224,9 @@ beforeEach(() => {
     rayBudgetExhausted: false,
   };
   state.refinementCount = 18;
+  state.hits = [];
+  state.framingObservations = [];
+  state.framingTargetFactory = false;
   state.validation = {
     eyeClear: true,
     walkable: true,
@@ -376,6 +403,7 @@ describe("HELL resolution total full-grid inspection budget", () => {
     "variant",
     "pose",
     "target",
+    "observed-point",
     "budget",
     "missing",
   ] as const)(
@@ -392,7 +420,10 @@ describe("HELL resolution total full-grid inspection budget", () => {
             fullGridCandidates: number;
           };
           position: { x: number };
-          targetFeature: { fissureId?: number };
+          targetFeature: {
+            fissureId?: number;
+            observedFissurePoint?: { x: number; y: number; z: number };
+          };
         }[];
       };
       const camera = manifest.cameras[0];
@@ -405,6 +436,8 @@ describe("HELL resolution total full-grid inspection budget", () => {
       else if (change === "variant") search.variant = "primitive";
       else if (change === "pose") camera.position.x += 1;
       else if (change === "target") camera.targetFeature.fissureId = 9;
+      else if (change === "observed-point")
+        camera.targetFeature.observedFissurePoint = { x: 0.5, y: -0.5, z: 1.5 };
       else if (change === "budget") search.fullGridCandidates = 51;
       else delete camera.completedSearch;
       state.inspections = 0;
@@ -449,6 +482,41 @@ describe("HELL resolution total full-grid inspection budget", () => {
       ungraded: true,
       validation: { passed: true },
     });
+  });
+  it("feeds confirmed coarse lava hits into bank pairing without extending the50-grid ledger", async () => {
+    unclearComposition();
+    state.hits = [
+      {
+        px: 31,
+        py: 24,
+        x: 0.2,
+        y: -0.2,
+        z: 1.2,
+        block: Block.Lava,
+        featureId: 0,
+        distance: 8,
+      },
+    ];
+    const result = await resolve();
+    const expected = [{ fissureId: 7, x: 0.5, y: -0.5, z: 1.5 }];
+    expect(state.inspections).toBe(50);
+    expect(state.framingObservations).toHaveLength(32);
+    expect(
+      state.framingObservations.every(
+        (o) => JSON.stringify(o.lavaWitnesses) === JSON.stringify(expected),
+      ),
+    ).toBe(true);
+    expect(state.framingTargetFactory).toBe(true);
+    expect(result.cameras[0]?.lavaWitnesses).toEqual(expected);
+    state.inspections = 0;
+    const primitive = await resolveHellCameras(
+      1,
+      "/synthetic-camera-budget",
+      ["HELL-1"],
+      "primitive",
+    );
+    expect(state.inspections).toBe(1);
+    expect(primitive.cameras[0]).not.toHaveProperty("lavaWitnesses");
   });
   it("retains HELL-2 search evidence only for the exact resolver while geometry reuse stays cheap", async () => {
     state.passAlways = true;

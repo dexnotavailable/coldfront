@@ -221,6 +221,14 @@ The agent appends to lists 2 and 3 and never blocks work waiting for answers.
 
 ---
 
+**2026-10-12 · Keep slow capture evidence distinct from performance acceptance.**
+
+| # | Decision | Why | To reverse |
+|---|---|---|---|
+| 116 | **A bounded diagnostic capture may continue to 300 seconds after recording the original 180-second timing failure.** The standard capture test keeps its deadline and failed receipt. The diagnostic waits for the entire unchanged chunk set and records timing flags/stages; no partial world is photographed. Images remain ungraded until normal visual review | The selected 1,306-chunk cold view still times out after 1,120 completions, with no application error. Section 15 explicitly defers performance budgets to phase 1.10, so repeatedly discarding the unfinished capture prevents the quality work those budgets must preserve. A separate bounded profiling/image run can expose the bottleneck without claiming that the 60-second target or 180-second operational test passed | 04 §14.3; out-only diagnostic harness and receipts. No change to production rendering, ordinary play, standard test deadlines, camera safety/content, primitive calibration or mandatory HELL scores. Keep the original failed run and report the slow capture as a known performance issue |
+
+---
+
 ## 3. Parking lot
 
 - Seasonal modifiers ("the Long Winter": a season with twice the winter)

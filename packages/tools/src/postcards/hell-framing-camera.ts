@@ -27,19 +27,30 @@ export const PRODUCTION_CAMERA_BUDGET = Object.freeze({
  * forests. Aerial vista composition retains its separate horizon band. */
 export const FOREST_CAMERA_PITCHES = Object.freeze([-5, 0, 4.25] as const);
 type Event = Readonly<Record<string, unknown>>;
+/** A voxel-centre lava first hit whose current owner was confirmed as a fissure. */
+export interface FramingLavaWitness {
+  readonly fissureId: number;
+  readonly x: number;
+  readonly y: number;
+  readonly z: number;
+}
 export interface FramingObservation {
   readonly view: MainCameraCandidate;
   readonly targetFeature: HellTarget;
   readonly validation: HellCameraValidation;
   readonly readability?: HellReadability;
+  readonly lavaWitnesses?: readonly FramingLavaWitness[];
 }
 export interface FramingRefinement {
   readonly view: MainCameraCandidate;
   readonly targetFeature: HellTarget;
   readonly parent: number;
   readonly dominantId: number;
-  readonly objective: "dominant-framing" | "hook-body";
+  readonly objective: "dominant-framing" | "hook-lava-pair";
   readonly focusId: number;
+  readonly lavaWitness?: FramingLavaWitness;
+  readonly certifiedOrigin: boolean;
+  readonly certifiedPose: boolean;
   readonly retreat: number;
   readonly lateral: number;
   readonly yawDeltaDegrees: number;
@@ -48,40 +59,45 @@ export interface FramingRefinement {
   readonly framingMarginPixels: number;
   readonly score: number;
 }
-function hookStances(thorn: ThornInstance) {
+function bankStances(
+  thorn: ThornInstance,
+  view: MainCameraCandidate,
+  witness: FramingLavaWitness,
+) {
   const spine = thorn.sweeps[0]?.spine;
   if (!spine) throw new Error("Missing hook spine");
-  const at = (t: number) => sampleSpine(spine, t, createSpineSample());
-  const a = at(0.6),
-    b = at(0.8),
-    c = at(0.92),
-    d = at(1),
-    focus = at(0.55);
-  const ux = b.x - a.x,
-    uy = b.y - a.y,
-    uz = b.z - a.z,
-    vx = d.x - c.x,
-    vy = d.y - c.y,
-    vz = d.z - c.z;
-  const nx = uy * vz - uz * vy,
-    nz = ux * vy - uy * vx;
-  const fallback = Math.hypot(nx, nz) < 1e-8;
-  const angle = Math.atan2(
-    fallback ? thorn.parameters.flowX : nz,
-    fallback ? -thorn.parameters.flowZ : nx,
-  );
+  const body = sampleSpine(spine, 0.55, createSpineSample());
+  // Preserve the exact observed eye/wet-point pair. Nearby offsets stay on its
+  // dry side; every changed pose still receives the complete preflight.
+  const dx = view.position.x - witness.x,
+    dz = view.position.z - witness.z,
+    distance = Math.hypot(dx, dz);
+  const angle =
+    distance > 1e-8
+      ? Math.atan2(dz, dx)
+      : Math.atan2(
+          view.position.z - view.target.z,
+          view.position.x - view.target.x,
+        );
+  const awayX = Math.cos(angle),
+    awayZ = Math.sin(angle);
   return {
-    focus,
-    fallback,
-    stances: [1.5, 2, 3].flatMap((factor) =>
-      Array.from({ length: 5 }, (_, bearing) => {
-        const radius = Math.max(24, thorn.parameters.height * factor),
-          azimuth = angle + (bearing * 2 * Math.PI) / 5;
+    focus: { x: (body.x + witness.x) * 0.5, z: (body.z + witness.z) * 0.5 },
+    stances: [0, 2, 4].flatMap((retreat) =>
+      [-4, -2, 0, 2, 4].map((lateral) => {
+        const certifiedOrigin = retreat === 0 && lateral === 0;
         return {
-          x: Math.floor(focus.x + Math.cos(azimuth) * radius) + 0.5,
-          z: Math.floor(focus.z + Math.sin(azimuth) * radius) + 0.5,
-          retreat: 0,
-          lateral: 0,
+          x: certifiedOrigin
+            ? view.position.x
+            : Math.floor(view.position.x + awayX * retreat - awayZ * lateral) +
+              0.5,
+          z: certifiedOrigin
+            ? view.position.z
+            : Math.floor(view.position.z + awayZ * retreat + awayX * lateral) +
+              0.5,
+          retreat,
+          lateral,
+          certifiedOrigin,
         };
       }),
     ),
@@ -157,6 +173,11 @@ export function productionFramingCandidates(
     targetFeature: HellTarget,
   ) => FramingPreflightResult,
   record: (event: Event) => void = () => {},
+  targetFor?: (
+    disc: Readonly<{ x: number; z: number; radius: number }>,
+    fissureId: number,
+    witness: FramingLavaWitness,
+  ) => HellTarget,
 ): FramingRefinement[] {
   const cropped = observations
     .flatMap((observation, parent) => {
@@ -190,8 +211,8 @@ export function productionFramingCandidates(
     .sort(
       (a, b) => a.framing.overflow - b.framing.overflow || a.parent - b.parent,
     );
-  // An intact hook can be hidden even when the largest parent already fits.
-  // Reuse only instances resolved by the observed grid; never scan new cells.
+  // Pair only current source-bound hooks with actually observed owned lava.
+  // A shape flag, named target or projected wet point is not a first-hit witness.
   const hookKeys = new Set<string>();
   const hooks = observations
     .flatMap((observation, parent) => {
@@ -200,7 +221,8 @@ export function productionFramingCandidates(
         !observation.readability ||
         observation.readability.passed ||
         observation.readability.families.hooked.length ||
-        observation.targetFeature.kind !== "thorn-cluster"
+        observation.targetFeature.kind !== "thorn-cluster" ||
+        !targetFor
       )
         return [];
       return observation.readability.parents.flatMap(({ id, cells }) => {
@@ -211,24 +233,53 @@ export function productionFramingCandidates(
           thorn.parameters.arch
         )
           return [];
-        return [
-          {
-            observation,
-            parent,
-            thorn,
-            cells,
-            framing: framingEnvelope(observation.view, thorn),
-            objective: "hook-body" as const,
-          },
-        ];
+        const contour = thornContour(observation.view, thorn),
+          framing = framingEnvelope(observation.view, thorn),
+          frame = cameraFrame(observation.view);
+        return (observation.lavaWitnesses ?? [])
+          .filter(
+            (witness) =>
+              Math.hypot(
+                witness.x - thorn.parameters.base[0],
+                witness.z - thorn.parameters.base[2],
+              ) <= 144,
+          )
+          .map((lavaWitness) => {
+            const wet = frame.project(lavaWitness),
+              margin = Math.min(wet.x, 1280 - wet.x, wet.y, 720 - wet.y);
+            const pairScore =
+              (contour.complete ? 20 : 0) +
+              (Number.isFinite(contour.hookPixels)
+                ? Math.min(80, contour.hookPixels) * 2
+                : 0) +
+              (Number.isFinite(contour.heightPixels)
+                ? Math.min(12, contour.heightPixels / 30)
+                : 0) +
+              (wet.depth > 0 && margin >= 0 ? Math.min(60, margin) / 6 : -100);
+            return {
+              observation,
+              parent,
+              thorn,
+              cells,
+              framing,
+              objective: "hook-lava-pair" as const,
+              lavaWitness,
+              pairScore,
+            };
+          });
       });
     })
     .sort(
       (a, b) =>
+        b.pairScore - a.pairScore ||
         (b.observation.readability?.score ?? 0) -
           (a.observation.readability?.score ?? 0) ||
         b.cells - a.cells ||
         a.thorn.parameters.id - b.thorn.parameters.id ||
+        a.lavaWitness.fissureId - b.lavaWitness.fissureId ||
+        a.lavaWitness.x - b.lavaWitness.x ||
+        a.lavaWitness.z - b.lavaWitness.z ||
+        a.lavaWitness.y - b.lavaWitness.y ||
         (proposalKey(a.observation.view, a.observation.targetFeature) <
         proposalKey(b.observation.view, b.observation.targetFeature)
           ? -1
@@ -237,8 +288,9 @@ export function productionFramingCandidates(
             ? 1
             : 0),
     )
-    .filter(({ observation, thorn }) => {
-      const key = `${thorn.parameters.id}|${JSON.stringify(observation.targetFeature)}`;
+    .filter(({ thorn, lavaWitness, observation }) => {
+      const p = observation.view.position;
+      const key = `${thorn.parameters.id}|${lavaWitness.fissureId}|${lavaWitness.x},${lavaWitness.y},${lavaWitness.z}|${p.x},${p.y},${p.z}`;
       if (hookKeys.has(key)) return false;
       hookKeys.add(key);
       return true;
@@ -247,11 +299,12 @@ export function productionFramingCandidates(
   const ranked = [...hooks, ...cropped];
   const eyes = new Set<string>();
   const parents = ranked
-    .filter(({ observation, objective, thorn }) => {
+    .filter((choice) => {
+      const { observation, objective, thorn } = choice;
       const p = observation.view.position,
         key =
-          objective === "hook-body"
-            ? `hook:${thorn.parameters.id}|${JSON.stringify(observation.targetFeature)}`
+          objective === "hook-lava-pair"
+            ? `hook:${thorn.parameters.id}|${choice.lavaWitness.fissureId}|${choice.lavaWitness.x},${choice.lavaWitness.y},${choice.lavaWitness.z}|${p.x},${p.y},${p.z}`
             : `${p.x},${p.y},${p.z}`;
       if (eyes.has(key)) return false;
       eyes.add(key);
@@ -270,28 +323,72 @@ export function productionFramingCandidates(
   let proposals = 0,
     groundQueries = 0,
     eligible = 0;
-  for (const { observation, parent, thorn, framing, objective } of parents) {
-    const { view, targetFeature } = observation,
+  for (const choice of parents) {
+    const { observation, parent, thorn, framing, objective } = choice;
+    const { view } = observation,
       p = view.position;
+    const lavaWitness =
+      objective === "hook-lava-pair" ? choice.lavaWitness : undefined;
+    const targetFeature =
+      lavaWitness && targetFor
+        ? targetFor(
+            { x: lavaWitness.x, z: lavaWitness.z, radius: 144 },
+            lavaWitness.fissureId,
+            lavaWitness,
+          )
+        : observation.targetFeature;
+    if (
+      lavaWitness &&
+      (targetFeature.kind !== "thorn-cluster" ||
+        targetFeature.fissureId !== lavaWitness.fissureId ||
+        targetFeature.rootDisc?.x !== lavaWitness.x ||
+        targetFeature.rootDisc?.z !== lavaWitness.z ||
+        targetFeature.rootDisc?.radius !== 144 ||
+        targetFeature.observedFissurePoint?.x !== lavaWitness.x ||
+        targetFeature.observedFissurePoint?.y !== lavaWitness.y ||
+        targetFeature.observedFissurePoint?.z !== lavaWitness.z ||
+        !targetFeature.featureIds.includes(thorn.parameters.id))
+    ) {
+      record({
+        stage: "production-framing-target-rejected",
+        parent,
+        focusId: thorn.parameters.id,
+        lavaWitness,
+        reason: "pair-target-does-not-match-observed-owner-and-hook",
+      });
+      continue;
+    }
     const originalDx = view.target.x - p.x,
       originalDz = view.target.z - p.z,
       originalDistance = Math.hypot(originalDx, originalDz),
       fx = originalDx / originalDistance,
       fz = originalDz / originalDistance;
-    const orbit = objective === "hook-body" ? hookStances(thorn) : undefined;
+    const bank = lavaWitness
+      ? bankStances(thorn, view, lavaWitness)
+      : undefined;
     const standingPoints =
-      orbit?.stances ??
+      bank?.stances ??
       [0, 2, 4, 8, 12].flatMap((retreat) =>
         [-2, 0, 2].map((lateral) => ({
           retreat,
           lateral,
           x: Math.floor(p.x - fx * retreat - fz * lateral) + 0.5,
           z: Math.floor(p.z - fz * retreat + fx * lateral) + 0.5,
+          certifiedOrigin: false,
         })),
       );
     const dominantId =
       observation.readability?.dominantId ?? thorn.parameters.id;
     const pitches = FOREST_CAMERA_PITCHES;
+    const sourcePitch =
+      (Math.atan2(p.y - view.target.y, originalDistance) * 180) / Math.PI;
+    const originPitch = pitches.reduce(
+      (best, value) =>
+        Math.abs(value - sourcePitch) < Math.abs(best - sourcePitch)
+          ? value
+          : best,
+      pitches[0],
+    );
     const related = (observation.readability?.parents ?? []).flatMap(
       ({ id }) => {
         const instance = instanceFor(id);
@@ -305,35 +402,59 @@ export function productionFramingCandidates(
       dominantId,
       objective,
       focusId: thorn.parameters.id,
-      ...(orbit ? { hookBasisFallback: orbit.fallback } : {}),
+      ...(lavaWitness ? { lavaWitness, targetFeature } : {}),
+      ...(objective === "hook-lava-pair"
+        ? { pairProjectionScore: choice.pairScore }
+        : {}),
       originalOverflowPixels: framing.overflow,
       view,
     });
-    for (const { retreat, lateral, x, z } of standingPoints) {
-      const ground = groundHeight(x, z);
-      groundQueries++;
-      if (!Number.isFinite(ground)) continue;
-      const y = Math.ceil(ground - 0.5) + 1.62;
-      const dx = orbit ? orbit.focus.x - x : originalDx,
-        dz = orbit ? orbit.focus.z - z : originalDz,
+    for (const { retreat, lateral, x, z, certifiedOrigin } of standingPoints) {
+      let y = p.y;
+      if (!certifiedOrigin) {
+        const ground = groundHeight(x, z);
+        groundQueries++;
+        if (!Number.isFinite(ground)) continue;
+        y = Math.ceil(ground - 0.5) + 1.62;
+      }
+      const dx = bank ? bank.focus.x - x : originalDx,
+        dz = bank ? bank.focus.z - z : originalDz,
         distance = Math.hypot(dx, dz);
       for (const yawDeltaDegrees of [-12, -6, 0, 6, 12])
         for (const pitchDegrees of pitches) {
           proposals++;
+          const certifiedPose =
+            certifiedOrigin &&
+            yawDeltaDegrees === 0 &&
+            pitchDegrees === originPitch;
           const angle = (yawDeltaDegrees * Math.PI) / 180,
             cos = Math.cos(angle),
             sin = Math.sin(angle);
           const candidate: MainCameraCandidate = {
             ...view,
-            position: { x, y, z },
-            target: {
-              x: x + dx * cos + dz * sin,
-              y: y - Math.tan((pitchDegrees * Math.PI) / 180) * distance,
-              z: z + dz * cos - dx * sin,
-            },
+            position: certifiedPose ? view.position : { x, y, z },
+            target: certifiedPose
+              ? view.target
+              : {
+                  x: x + dx * cos + dz * sin,
+                  y: y - Math.tan((pitchDegrees * Math.PI) / 180) * distance,
+                  z: z + dz * cos - dx * sin,
+                },
           };
           const key = proposalKey(candidate, targetFeature);
-          if (used.has(key)) continue;
+          if (used.has(key)) {
+            if (certifiedPose)
+              record({
+                stage: "production-framing-certified-origin",
+                parent,
+                focusId: thorn.parameters.id,
+                lavaWitness,
+                status: "already-observed",
+                view: candidate,
+                targetFeature,
+              });
+            continue;
+          }
           used.add(key);
           const frame = cameraFrame(candidate);
           if (
@@ -345,14 +466,30 @@ export function productionFramingCandidates(
           )
             continue;
           const primary = framingEnvelope(candidate, thorn);
-          if (!primary.useful) continue;
-          const hook = orbit ? thornContour(candidate, thorn) : undefined;
+          // Decision115: retain the exact source pose as a diagnostic candidate
+          // even when composition proxies fail. Its current geometry AND exact
+          // witnessed lava must still pass preflight below and the final grid.
+          if (!certifiedPose && !primary.useful) continue;
+          const hook = bank ? thornContour(candidate, thorn) : undefined;
           if (
+            !certifiedPose &&
             hook &&
             (hook.hookPixels < HELL_READABILITY_LIMITS.usefulExcursion ||
               hook.hookTurnDegrees < 75)
           )
             continue;
+          if (lavaWitness && !certifiedPose) {
+            const wet = frame.project(lavaWitness);
+            if (
+              wet.depth <= 5 ||
+              wet.depth > candidate.radius ||
+              wet.x < 0 ||
+              wet.x > 1280 ||
+              wet.y < 0 ||
+              wet.y > 720
+            )
+              continue;
+          }
           eligible++;
           // Clearance and target checks run BEFORE the final per-parent cut.
           // A high-ranked blocked stance cannot hide a lower-ranked valid one.
@@ -367,10 +504,13 @@ export function productionFramingCandidates(
             dominantId,
             objective,
             focusId: thorn.parameters.id,
+            ...(lavaWitness ? { lavaWitness } : {}),
+            certifiedOrigin,
+            certifiedPose,
             retreat,
             lateral,
             yawDeltaDegrees,
-            pitchDegrees,
+            pitchDegrees: certifiedPose ? sourcePitch : pitchDegrees,
             view: candidate,
             targetFeature,
             status: checked.reasons.length
@@ -387,10 +527,12 @@ export function productionFramingCandidates(
           ).length;
           const move = Math.hypot(x - p.x, z - p.z);
           const score =
-            (hook ? Math.min(80, hook.hookPixels) * 2 : 0) +
+            (hook && Number.isFinite(hook.hookPixels)
+              ? Math.min(80, hook.hookPixels) * 2
+              : 0) +
             predictedCompleteForms * 4 +
-            Math.min(primary.margin, 60) / 10 -
-            (orbit ? 0 : move * 0.15) -
+            Math.max(-60, Math.min(primary.margin, 60)) / 10 -
+            move * 0.15 -
             Math.abs(yawDeltaDegrees) * 0.03;
           group.push({
             view: candidate,
@@ -399,10 +541,13 @@ export function productionFramingCandidates(
             dominantId,
             objective,
             focusId: thorn.parameters.id,
+            ...(lavaWitness ? { lavaWitness } : {}),
+            certifiedOrigin,
+            certifiedPose,
             retreat,
             lateral,
             yawDeltaDegrees,
-            pitchDegrees,
+            pitchDegrees: certifiedPose ? sourcePitch : pitchDegrees,
             predictedCompleteForms,
             framingMarginPixels: primary.margin,
             score,

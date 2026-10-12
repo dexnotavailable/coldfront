@@ -37,6 +37,12 @@ export type HellTarget =
       /** Local forest scene: every target thorn is rooted inside this disc. */
       readonly rootDisc?: Readonly<{ x: number; z: number; radius: number }>;
       readonly fissureId?: number;
+      /** Exact observed lava voxel centre; optional for older/analytic targets. */
+      readonly observedFissurePoint?: Readonly<{
+        x: number;
+        y: number;
+        z: number;
+      }>;
     }
   | {
       readonly kind: "caldera";

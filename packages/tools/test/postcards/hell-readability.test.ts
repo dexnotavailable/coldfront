@@ -18,10 +18,12 @@ import {
   cameraFrame,
   cameraHorizonAllowed,
   type HellCameraValidation,
+  type HellTarget,
   inspectHellCamera,
   type MainCameraCandidate,
 } from "../../src/postcards/geometry.js";
 import {
+  type FramingLavaWitness,
   type FramingObservation,
   framingEnvelope,
   PRODUCTION_CAMERA_BUDGET,
@@ -36,6 +38,8 @@ import {
   compareHellCandidates,
   forestFramingScore,
   hellSelectionPassed,
+  observedFissureWitnesses,
+  targetFissureVisible,
 } from "../../src/postcards/hell-resolve.js";
 import { createVisibleThornResolver } from "../../src/postcards/hell-visible-instances.js";
 import type { CameraQuery } from "../../src/postcards/query.js";
@@ -294,6 +298,7 @@ describe("bounded HELL-1 form selection", () => {
     const hidden: FramingObservation = {
       ...original,
       targetFeature: { ...original.targetFeature, featureIds: [41, 92] },
+      lavaWitnesses: [{ fissureId: 19, x: 20.5 + offset, y: -0.5, z: 60.5 }],
       readability: {
         ...original.readability,
         passed: false,
@@ -317,12 +322,29 @@ describe("bounded HELL-1 form selection", () => {
       dominant,
       hook,
       hidden,
+      targetFor: (
+        disc: Readonly<{ x: number; z: number; radius: number }>,
+        fissureId: number,
+        witness: FramingLavaWitness = {
+          fissureId,
+          x: disc.x,
+          y: -0.5,
+          z: disc.z,
+        },
+      ) => ({
+        kind: "thorn-cluster" as const,
+        featureIds: [41, 92],
+        bounds: dominant.bounds,
+        rootDisc: disc,
+        fissureId,
+        observedFissurePoint: { x: witness.x, y: witness.y, z: witness.z },
+      }),
       instance: (id: number) =>
         id === 92 ? hook : id === 41 ? dominant : undefined,
     };
   }
-  it("targets an intact hidden hook even when the dominant contour already fits", () => {
-    const { dominant, hook, hidden, instance } = missingHook();
+  it("pairs an intact hook with an observed lava bank instead of preserving an unrelated target", () => {
+    const { dominant, hook, hidden, instance, targetFor } = missingHook();
     expect(framingEnvelope(hidden.view, dominant).complete).toBe(true);
     let grounds = 0;
     const events: Readonly<Record<string, unknown>>[] = [];
@@ -335,18 +357,19 @@ describe("bounded HELL-1 form selection", () => {
       },
       allowPreflight,
       (e) => events.push(e),
+      targetFor,
     );
     expect(candidates.length).toBeGreaterThan(0);
     expect(candidates.length).toBeLessThanOrEqual(6);
-    expect(grounds).toBe(15);
+    expect(grounds).toBe(14);
     expect(events.at(-1)).toMatchObject({
       parents: 1,
       proposals: 225,
-      groundQueries: 15,
+      groundQueries: 14,
     });
     for (const candidate of candidates) {
       expect(candidate).toMatchObject({
-        objective: "hook-body",
+        objective: "hook-lava-pair",
         focusId: 92,
         dominantId: 41,
       });
@@ -355,9 +378,39 @@ describe("bounded HELL-1 form selection", () => {
       expect(contour.useful).toBe(true);
       expect(contour.hookPixels).toBeGreaterThanOrEqual(8);
       expect(contour.hookTurnDegrees).toBeGreaterThanOrEqual(75);
-      expect(candidate.targetFeature).toBe(hidden.targetFeature);
+      expect(candidate.targetFeature).toMatchObject({
+        kind: "thorn-cluster",
+        fissureId: 19,
+        rootDisc: { x: 20.5, z: 60.5, radius: 144 },
+        observedFissurePoint: { x: 20.5, y: -0.5, z: 60.5 },
+      });
+      expect(hidden.targetFeature).toMatchObject({ fissureId: 7 });
+      expect(candidate.lavaWitness).toEqual(hidden.lavaWitnesses?.[0]);
+      const wet = cameraFrame(candidate.view).project({
+        x: 20.5,
+        y: -0.5,
+        z: 60.5,
+      });
+      expect(wet.depth).toBeGreaterThan(5);
+      expect(wet.x).toBeGreaterThanOrEqual(0);
+      expect(wet.x).toBeLessThanOrEqual(1280);
+      expect(wet.y).toBeGreaterThanOrEqual(0);
+      expect(wet.y).toBeLessThanOrEqual(720);
+      expect(
+        Math.hypot(
+          candidate.view.position.x - hidden.view.position.x,
+          candidate.view.position.z - hidden.view.position.z,
+        ),
+      ).toBeLessThanOrEqual(7);
       expect(candidate).not.toHaveProperty("validation");
     }
+    const certified = events.filter(
+      (event) =>
+        event.stage === "production-framing-preflight" && event.certifiedPose,
+    );
+    expect(certified).toHaveLength(1);
+    expect(certified[0]?.view).toEqual(hidden.view);
+    expect(certified[0]?.status).toBe("eligible-for-full-grid");
     const blocked = productionFramingCandidates(
       [hidden],
       instance,
@@ -366,6 +419,8 @@ describe("bounded HELL-1 form selection", () => {
         ...allowPreflight(),
         reasons: ["fissure-occluded"],
       }),
+      undefined,
+      targetFor,
     );
     expect(blocked).toEqual([]);
     expect(
@@ -376,13 +431,130 @@ describe("bounded HELL-1 form selection", () => {
             ? { ...hook, parameters: { ...hook.parameters, broken: true } }
             : instance(id),
         () => {
-          throw Error("No broken hook orbit");
+          throw Error("No broken hook pair");
         },
         allowPreflight,
+        undefined,
+        targetFor,
       ),
     ).toEqual([]);
   });
-  it("deduplicates source hook targets independent of input order and translates the orbit", () => {
+  it("keeps the exact certified eye and heading when every nearby bank pose is blocked", () => {
+    const { hidden, instance, targetFor } = missingHook();
+    const result = productionFramingCandidates(
+      [hidden],
+      instance,
+      () => 10,
+      (candidate) => ({
+        ...allowPreflight(),
+        reasons:
+          JSON.stringify(candidate) === JSON.stringify(hidden.view)
+            ? []
+            : ["body-or-support"],
+      }),
+      undefined,
+      targetFor,
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchObject({
+      certifiedOrigin: true,
+      certifiedPose: true,
+    });
+    expect(result[0]?.view).toEqual(hidden.view);
+  });
+  it("retains distinct witnessed centres until preflight can reject one without hiding the other", () => {
+    const { hidden, instance, targetFor } = missingHook();
+    const other = { fissureId: 19, x: 21.5, y: -0.5, z: 60.5 };
+    const result = productionFramingCandidates(
+      [{ ...hidden, lavaWitnesses: [...(hidden.lavaWitnesses ?? []), other] }],
+      instance,
+      () => 0,
+      (candidate, target) => ({
+        ...allowPreflight(),
+        reasons:
+          target.kind === "thorn-cluster" &&
+          target.observedFissurePoint?.x === other.x &&
+          JSON.stringify(candidate) === JSON.stringify(hidden.view)
+            ? []
+            : ["fissure-occluded"],
+      }),
+      undefined,
+      targetFor,
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0]?.lavaWitness).toEqual(other);
+    expect(result[0]?.certifiedPose).toBe(true);
+  });
+  it("uses exact observed lava Y while old targets retain their analytic top-wet behavior", () => {
+    const base = field([]);
+    const target: HellTarget = {
+      kind: "thorn-cluster",
+      featureIds: [],
+      bounds: { minX: 0, minY: -2, minZ: 0, maxX: 20, maxY: 20, maxZ: 20 },
+      rootDisc: { x: 0.5, z: 10.5, radius: 144 },
+      fissureId: 7,
+    };
+    const observed = {
+      ...target,
+      observedFissurePoint: { x: 0.5, y: -0.5, z: 10.5 },
+    };
+    const owner = () => ({
+      kind: "lava" as const,
+      source: "fissure" as const,
+      bodyId: 7,
+      bed: -2,
+      level: 2,
+    });
+    const lower = {
+      ...base,
+      voxel: (_x: number, y: number, z: number) => ({
+        density: -1,
+        block: z >= 10 && y < 0 ? Block.Lava : Block.Air,
+        fluid: z >= 10 && y < 0 ? Block.Lava : 0,
+      }),
+    };
+    const upper = {
+      ...base,
+      voxel: (_x: number, y: number, z: number) => ({
+        density: -1,
+        block: z >= 10 && y >= 1 ? Block.Lava : Block.Air,
+        fluid: z >= 10 && y >= 1 ? Block.Lava : 0,
+      }),
+    };
+    expect(targetFissureVisible(view, observed, lower, owner)).toBe(true);
+    expect(targetFissureVisible(view, target, lower, owner)).toBe(false);
+    expect(targetFissureVisible(view, target, upper, owner)).toBe(true);
+    expect(targetFissureVisible(view, observed, upper, owner)).toBe(false);
+    expect(
+      targetFissureVisible(view, observed, lower, () => ({
+        ...owner(),
+        bodyId: 8,
+      })),
+    ).toBe(false);
+    for (const point of [
+      { x: 1.5, y: -0.5, z: 10.5 },
+      { x: 0.5, y: -0.4, z: 10.5 },
+      { x: 0.5, y: 3.5, z: 10.5 },
+      { x: 0.5, y: NaN, z: 10.5 },
+    ])
+      expect(
+        targetFissureVisible(
+          view,
+          { ...target, observedFissurePoint: point },
+          lower,
+          owner,
+        ),
+      ).toBe(false);
+    const occluded = {
+      ...lower,
+      voxel: (x: number, y: number, z: number) =>
+        z >= 5 && z < 10
+          ? { density: 1, block: Block.Ash, fluid: 0 }
+          : lower.voxel(x, y, z),
+    };
+    expect(targetFissureVisible(view, observed, occluded, owner)).toBe(false);
+  });
+  it("deduplicates observed hook/lava pairs independent of input order and translates the bank", () => {
     const first = missingHook(),
       moved = missingHook(2000);
     const same = {
@@ -398,6 +570,8 @@ describe("bounded HELL-1 form selection", () => {
         first.instance,
         () => 0,
         allowPreflight,
+        undefined,
+        first.targetFor,
       );
     expect(run([first.hidden, same]).map((p) => p.view)).toEqual(
       run([same, first.hidden]).map((p) => p.view),
@@ -408,6 +582,8 @@ describe("bounded HELL-1 form selection", () => {
         moved.instance,
         () => 0,
         allowPreflight,
+        undefined,
+        moved.targetFor,
       );
     expect(b.length).toBe(a.length);
     for (const candidate of b)
@@ -422,6 +598,144 @@ describe("bounded HELL-1 form selection", () => {
             candidate.pitchDegrees === other.pitchDegrees,
         ),
       ).toBe(true);
+  });
+  it("cannot create a hook/lava pair from a target label, distant hook, or wrong rebuilt owner", () => {
+    const { hidden, instance, targetFor } = missingHook();
+    const fail = () => {
+      throw Error("Ineligible pair must not query a standing height");
+    };
+    expect(
+      productionFramingCandidates(
+        [{ ...hidden, lavaWitnesses: [] }],
+        instance,
+        fail,
+        allowPreflight,
+        undefined,
+        targetFor,
+      ),
+    ).toEqual([]);
+    expect(
+      productionFramingCandidates(
+        [
+          {
+            ...hidden,
+            lavaWitnesses: [{ fissureId: 19, x: 2000.5, y: -0.5, z: 60.5 }],
+          },
+        ],
+        instance,
+        fail,
+        allowPreflight,
+        undefined,
+        targetFor,
+      ),
+    ).toEqual([]);
+    expect(
+      productionFramingCandidates(
+        [hidden],
+        instance,
+        fail,
+        allowPreflight,
+        undefined,
+        (disc) => targetFor(disc, 999),
+      ),
+    ).toEqual([]);
+    expect(
+      productionFramingCandidates(
+        [hidden],
+        instance,
+        fail,
+        allowPreflight,
+        undefined,
+        (disc, id) => ({ ...targetFor(disc, id), featureIds: [41] }),
+      ),
+    ).toEqual([]);
+  });
+  it("extracts only real owned lava first-hit centres and is stable with reused owner scratch", () => {
+    const prototype = hits(asset())[0];
+    if (!prototype) throw Error("Missing hit");
+    const cells = [
+      { ...prototype, x: 0.1, y: -0.4, z: 0.1, block: Block.Lava },
+      { ...prototype, x: 0.4, y: -0.2, z: 0.4, block: Block.Lava },
+      { ...prototype, x: 1.1, y: -0.4, z: 0.1, block: Block.Lava },
+      { ...prototype, x: 2.1, y: -0.4, z: 0.1, block: Block.Lava },
+      { ...prototype, x: 3.1, y: 1.2, z: 0.1, block: Block.Lava },
+      { ...prototype, x: 4.1, y: -0.4, z: 0.1, block: Block.Ash },
+    ];
+    const scratch = {
+      kind: "lava" as const,
+      source: "fissure" as "fissure" | "channel",
+      bodyId: 7,
+      bed: -1,
+      level: 0,
+    };
+    const owner = (x: number) => {
+      scratch.source = x === 2.5 ? "channel" : "fissure";
+      scratch.bodyId = x === 1.5 ? 8 : 7;
+      return scratch;
+    };
+    const expected = [
+      { fissureId: 7, x: 0.5, y: -0.5, z: 0.5 },
+      { fissureId: 8, x: 1.5, y: -0.5, z: 0.5 },
+    ];
+    expect(observedFissureWitnesses(cells, owner)).toEqual(expected);
+    expect(observedFissureWitnesses(cells.slice().reverse(), owner)).toEqual(
+      expected,
+    );
+    expect(observedFissureWitnesses([], owner)).toEqual([]);
+  });
+  it("shares the675-proposal budget across two observed bank pairs and a cropped parent", () => {
+    const fixture = missingHook(),
+      cropped = asset({ id: 7, height: 40, base: [0, 0, 60] });
+    const paired = {
+      ...fixture.hidden,
+      lavaWitnesses: [
+        ...(fixture.hidden.lavaWitnesses ?? []),
+        { fissureId: 20, x: 25.5, y: -0.5, z: 64.5 },
+      ],
+    };
+    let grounds = 0;
+    const targets: number[] = [],
+      events: Readonly<Record<string, unknown>>[] = [];
+    const result = productionFramingCandidates(
+      [paired, observation(cropped)],
+      (id) => (id === 7 ? cropped : fixture.instance(id)),
+      () => {
+        grounds++;
+        return 0;
+      },
+      (_view, target) => ({
+        ...allowPreflight(),
+        reasons:
+          target.kind === "thorn-cluster" && target.fissureId === 19
+            ? ["fissure-occluded"]
+            : [],
+      }),
+      (event) => events.push(event),
+      (disc, id) => {
+        targets.push(id);
+        return fixture.targetFor(disc, id);
+      },
+    );
+    expect(grounds).toBe(43);
+    expect(targets.slice().sort()).toEqual([19, 20]);
+    expect(events.at(-1)).toMatchObject({
+      parents: 3,
+      proposals: 675,
+      groundQueries: 43,
+    });
+    expect(result.length).toBeLessThanOrEqual(18);
+    const hooks = result.filter((p) => p.objective === "hook-lava-pair");
+    expect(hooks.length).toBeGreaterThan(0);
+    expect(hooks.every((p) => p.lavaWitness?.fissureId === 20)).toBe(true);
+    expect(
+      result
+        .filter((p) => p.objective === "dominant-framing")
+        .every(
+          (p) =>
+            p.targetFeature.kind === "thorn-cluster" &&
+            p.targetFeature.fissureId === 7,
+        ),
+    ).toBe(true);
   });
   it("ranks geometry first and family diversity before the largest-parent bonus", () => {
     const { hidden } = missingHook(),

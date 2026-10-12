@@ -1,6 +1,6 @@
 # Ibara visual checkpoint · 12 October 2026
 
-Milestone 1, phase 1.3 is still in progress. The live game remains generation 3 at [dex.place/coldfront](https://dex.place/coldfront/). Code checkpoint `233e73e` passes 702 tests, check/build, a clean Node 22 install/build, actual local production browser smoke/drive, and [CI](https://github.com/dexnotavailable/coldfront/actions/runs/38186669219).
+Milestone 1, phase 1.3 is still in progress. The live game remains generation 3 at [dex.place/coldfront](https://dex.place/coldfront/). Code checkpoint `5df496c` passes 732 tests, check/build, clean Node 22 install/build and actual local production browser smoke/drive. The later atlas-CLI checkpoint `a651072` also passes [CI](https://github.com/dexnotavailable/coldfront/actions/runs/38195781782). The generation-4 site build has now passed a native local mounted tour of all sixteen surface regions, map and Test re-entry: nineteen cases, zero application errors, all images independently reviewed.
 
 ![Ibara diagnostic view, seed 1](../postcards/m1/HELL-1-diagnostic-033-s1.jpg)
 
@@ -24,6 +24,16 @@ The automatic capture path now reuses 689 valid destination chunks. In the repea
 
 Exact measurements found no branch taper or hooked-spine defect in the two investigated thorn IDs. The large branching formation is intentionally broken; the intact hook is obscured in the original view. The next camera work aims to expose the existing shape while preserving standing-eye and safety rules. Decision 115 keeps added composition proxies as ranking diagnostics so valid ungraded images can be inspected; final content and rubric requirements remain mandatory.
 
-The benchmark's submerged sample failure is separately resolved: all 50 dense production samples now qualify with visible faces of their selected thorn, using 53 bounded attempts. Full timing measurements remain pending. The atlas and slices have been regenerated and independently reviewed; their underground colours are plans inside solid rock, not completed caves.
+The benchmark's submerged sample failure is separately resolved: all 50 dense production samples now qualify with visible faces of their selected thorn, using 53 bounded attempts. The full three-repetition benchmark now passes 2,400 regional pipelines, 960 LOD1 generations and 150 dense pipelines. Generation, lighting and meshing remain above their phase-1.10 targets; [the measured breakdown](../progress.md#bench-latest) separates those costs from FPS. The atlas and slices have been regenerated and independently reviewed; their underground colours are plans inside solid rock, not completed caves.
 
 The public tunnel was also recovered from a missing launcher using its exact verified backup and existing scheduled task. Public metadata, entry assets and isolation headers match the existing release. This HTTP recovery does not add public-browser gameplay evidence.
+
+## Complete cold diagnostic
+
+![Ibara diagnostic 050 after full cold loading](../postcards/m1/HELL-1-diagnostic-050-s1.jpg)
+
+This view takes **234.974 seconds** to capture all 1,306 chunks from a fresh world. Its original 180-second test remains failed. Decision 116 permits the separate bounded diagnostic continuation for images and profiling; it does not turn the timing result into a pass. The image and [receipt](../postcards/m1/HELL-1-diagnostic-050-s1.receipt.json) retain that boundary.
+
+A fresh blind Astra review gives **15/20 provisionally, R2 = 1**. The coordinator opened both PNG and JPEG. Scale, distribution, identity, atmosphere and visible routes read well. Complete hook and branch silhouettes remain unclear, roots need more natural debris transitions, and the largest thorn has repetitive pale edges. Primitive calibration remains open, so there is no calibrated score of record or phase acceptance.
+
+The passive trace accounts for every one of the 1,306 requests and results. Generation and lighting-volume preparation occupy 97.43% of summed worker stage time across six overlapping workers. It records 681.222 million raw misses and 21,618 cache evictions. These are loading observations, not hardware FPS. A bounded request-order experiment is the next optimization test; the unsuccessful 128-page cold-loading candidate remains isolated, with the production cache still at 96 pages.

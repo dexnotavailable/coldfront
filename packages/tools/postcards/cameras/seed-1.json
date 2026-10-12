@@ -646,7 +646,7 @@
     "seed": 1,
     "worldgenVersion": 4,
     "sourceHash": "91f1471f8154038cc5ebaef7cf8e4f79b7cb4949591e2cb9cf81f7cf3c5b3a41",
-    "resolverHash": "4fe4939ea5e28a07671fbaa24ef24fd573806b9bf1bf4ab4763e2e1f40ab2cea",
+    "resolverHash": "3be713bd6dc3597a09e5a41f3ef93bbf627e4b54e11c8eebe194ea77a93cf4f4",
     "variant": "production",
     "cameras": [
       {
@@ -1039,14 +1039,64 @@
             }
           ]
         },
+        "lavaWitnesses": [
+          {
+            "fissureId": 1088348037,
+            "x": 5669.5,
+            "y": 23.5,
+            "z": 5431.5
+          },
+          {
+            "fissureId": 1088348037,
+            "x": 5669.5,
+            "y": 23.5,
+            "z": 5432.5
+          },
+          {
+            "fissureId": 1088348037,
+            "x": 5670.5,
+            "y": 23.5,
+            "z": 5433.5
+          },
+          {
+            "fissureId": 1088348037,
+            "x": 5670.5,
+            "y": 23.5,
+            "z": 5434.5
+          },
+          {
+            "fissureId": 1088348037,
+            "x": 5670.5,
+            "y": 23.5,
+            "z": 5436.5
+          },
+          {
+            "fissureId": 1088348037,
+            "x": 5670.5,
+            "y": 23.5,
+            "z": 5438.5
+          },
+          {
+            "fissureId": 1088348037,
+            "x": 5671.5,
+            "y": 23.5,
+            "z": 5438.5
+          },
+          {
+            "fissureId": 1088348037,
+            "x": 5671.5,
+            "y": 23.5,
+            "z": 5440.5
+          }
+        ],
         "score": 1056.5638888888889,
-        "validatedByResolverHash": "4fe4939ea5e28a07671fbaa24ef24fd573806b9bf1bf4ab4763e2e1f40ab2cea",
+        "validatedByResolverHash": "3be713bd6dc3597a09e5a41f3ef93bbf627e4b54e11c8eebe194ea77a93cf4f4",
         "completedSearch": {
           "schema": 1,
           "seed": 1,
           "worldgenVersion": 4,
           "sourceHash": "91f1471f8154038cc5ebaef7cf8e4f79b7cb4949591e2cb9cf81f7cf3c5b3a41",
-          "resolverHash": "4fe4939ea5e28a07671fbaa24ef24fd573806b9bf1bf4ab4763e2e1f40ab2cea",
+          "resolverHash": "3be713bd6dc3597a09e5a41f3ef93bbf627e4b54e11c8eebe194ea77a93cf4f4",
           "variant": "production",
           "selectedViewHash": "d3fb100324cab8d7f07587c677ddb0074b05f4e58a218621a4e8731cd2d14b41",
           "fullGridCandidates": 50,

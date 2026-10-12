@@ -42,6 +42,7 @@ import {
 } from "./geometry.js";
 import {
   FOREST_CAMERA_PITCHES,
+  type FramingLavaWitness,
   type FramingObservation,
   PRODUCTION_CAMERA_BUDGET,
   productionFramingCandidates,
@@ -74,6 +75,7 @@ export interface ResolvedHellCamera extends MainCameraCandidate {
   readonly score: number;
   readonly readability?: HellReadability;
   readonly readabilitySetup?: VisibleThornLookupReceipt;
+  readonly lavaWitnesses?: readonly FramingLavaWitness[];
   readonly validatedByResolverHash: string;
   /** A completed optimization search, never a visual acceptance receipt. */
   readonly completedSearch?: {
@@ -109,11 +111,33 @@ export interface HellCameraManifest {
   readonly attemptsPath: string;
 }
 type Attempt = Readonly<Record<string, unknown>>;
-export interface FissureWitness {
-  readonly fissureId: number;
-  readonly x: number;
-  readonly y: number;
-  readonly z: number;
+export type FissureWitness = FramingLavaWitness;
+/** Actual lava first hits only; a target label or an analytic wet point alone
+ * cannot seed a bank pair. The same centre/owner test as the full-grid gate. */
+export function observedFissureWitnesses(
+  hits: readonly CameraFirstHit[],
+  lava: (x: number, z: number) => Readonly<LavaSample>,
+): readonly FramingLavaWitness[] {
+  const found = new Map<string, FramingLavaWitness>();
+  for (const hit of hits) {
+    if (hit.block !== Block.Lava) continue;
+    const x = Math.floor(hit.x) + 0.5,
+      y = Math.floor(hit.y) + 0.5,
+      z = Math.floor(hit.z) + 0.5,
+      owner = lava(x, z);
+    if (
+      owner.kind !== "lava" ||
+      owner.source !== "fissure" ||
+      y <= owner.bed ||
+      y > owner.level
+    )
+      continue;
+    const witness = { fissureId: owner.bodyId, x, y, z };
+    found.set(`${witness.fissureId}:${x}:${y}:${z}`, witness);
+  }
+  return [...found.values()].sort(
+    (a, b) => a.fissureId - b.fissureId || a.x - b.x || a.z - b.z || a.y - b.y,
+  );
 }
 export interface ForestRoot {
   readonly id: number;
@@ -345,6 +369,55 @@ function seesFissure(
     }
   }
   return false;
+}
+/** Preserve the exact observed voxel, including Y. Older analytic targets keep
+ * their original top-wet-centre behavior. Metadata is never a visibility pass. */
+export function targetFissureVisible(
+  view: MainCameraCandidate,
+  target: HellTarget,
+  query: CameraQuery,
+  lava: (x: number, z: number) => Readonly<LavaSample>,
+): boolean {
+  if (
+    target.kind !== "thorn-cluster" ||
+    !target.rootDisc ||
+    target.fissureId === undefined
+  )
+    return false;
+  const disc = target.rootDisc,
+    observed = target.observedFissurePoint;
+  if (
+    observed !== undefined &&
+    (!observed ||
+      typeof observed !== "object" ||
+      ![observed.x, observed.y, observed.z].every(
+        (value) => Number.isFinite(value) && Number.isInteger(value - 0.5),
+      ) ||
+      observed.x !== disc.x ||
+      observed.z !== disc.z)
+  )
+    return false;
+  const owner = lava(disc.x, disc.z);
+  const y = observed?.y ?? Math.floor(owner.level - 0.5) + 0.5;
+  if (
+    owner.kind !== "lava" ||
+    owner.source !== "fissure" ||
+    owner.bodyId !== target.fissureId ||
+    y <= owner.bed ||
+    y > owner.level
+  )
+    return false;
+  if (
+    observed &&
+    query.voxel(observed.x, observed.y, observed.z).block !== Block.Lava
+  )
+    return false;
+  return seesFissure(
+    view,
+    { fissureId: target.fissureId, x: disc.x, y, z: disc.z },
+    query,
+    lava,
+  );
 }
 /** A bounded local forest is rooted within144m of a verified hot fissure.
  * Cheap proposals only reject; every survivor still needs the full64x36 grid. */
@@ -723,24 +796,8 @@ export async function resolveHellCameras(
         const disc = target.rootDisc;
         if (!disc || target.fissureId === undefined)
           reasons.push("no-named-fissure-witness");
-        else {
-          const wet = lava(disc.x, disc.z),
-            y = Math.floor(wet.level - 0.5) + 0.5;
-          if (
-            wet.kind !== "lava" ||
-            wet.source !== "fissure" ||
-            wet.bodyId !== target.fissureId ||
-            y <= wet.bed ||
-            y > wet.level ||
-            !seesFissure(
-              view,
-              { fissureId: target.fissureId, x: disc.x, y, z: disc.z },
-              query,
-              lava,
-            )
-          )
-            reasons.push("fissure-occluded");
-        }
+        else if (!targetFissureVisible(view, target, query, lava))
+          reasons.push("fissure-occluded");
       }
       return reasons;
     },
@@ -926,6 +983,10 @@ export async function resolveHellCameras(
         });
         let readability: HellReadability | undefined;
         let readabilitySetup: VisibleThornLookupReceipt | undefined;
+        const lavaWitnesses =
+          needsReadability && validation.passed
+            ? observedFissureWitnesses(hits, lava)
+            : undefined;
         if (
           needsReadability &&
           validation.passed &&
@@ -954,6 +1015,7 @@ export async function resolveHellCameras(
           validation,
           ...(readability ? { readability } : {}),
           ...(readabilitySetup ? { readabilitySetup } : {}),
+          ...(lavaWitnesses ? { lavaWitnesses } : {}),
         });
         return {
           // The input can be a saved result from another resolver or variant.
@@ -974,6 +1036,7 @@ export async function resolveHellCameras(
           validation,
           ...(readability ? { readability } : {}),
           ...(readabilitySetup ? { readabilitySetup } : {}),
+          ...(lavaWitnesses ? { lavaWitnesses } : {}),
           score:
             (validation.passed ? (needsReadability ? 1000 : 100) : 0) +
             (readability?.score ?? 0) +
@@ -1119,6 +1182,9 @@ export async function resolveHellCameras(
             ...(checked.readability
               ? { readability: checked.readability }
               : {}),
+            ...(checked.lavaWitnesses
+              ? { lavaWitnesses: checked.lavaWitnesses }
+              : {}),
           });
           if (!best || compareHellCandidates(checked, best) > 0) best = checked;
         }
@@ -1133,6 +1199,19 @@ export async function resolveHellCameras(
                   ground.height,
                   framingPreflight.inspect,
                   (event) => record({ id, ...event }),
+                  (disc, fissureId, witness) => {
+                    const target = forestTarget(disc, fissureId);
+                    if (target.kind !== "thorn-cluster")
+                      throw new Error("Bank pair needs a forest target");
+                    return {
+                      ...target,
+                      observedFissurePoint: {
+                        x: witness.x,
+                        y: witness.y,
+                        z: witness.z,
+                      },
+                    };
+                  },
                 );
           let traced = 0,
             fallback = 0;

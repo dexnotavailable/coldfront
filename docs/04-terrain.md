@@ -872,6 +872,7 @@ Terrain is judged by eye. These tools make looking fast, repeatable and affordab
 **Throughput:**
 - Run all of a seed's shots in one page (teleport, evict), with a persistent browser profile, so the WorldPlan cache and compiled shaders survive between shots.
 - Log plan, gen, light, mesh and render milliseconds per shot. **Budget: ≤ 60 s per shot** in the cloud VM. Generation dominates; rendering is ~4–10 s.
+- **Diagnostic continuation (decision 116):** keep the standard capture's timing result and failure receipt. Before phase 1.10, a separately labelled diagnostic run may continue waiting for the complete unchanged chunk set up to a fixed 300-second ceiling, while recording whether the original 180-second harness deadline was missed. Capture only after every required chunk is generated, lit, meshed and uploaded; record stage timings and the miss. This produces image/profiling evidence, not a passing timing test or a performance fix. The 60-second target, geometric validation, primitive calibration and final visual bars stay unchanged.
 
 **Files:**
 - Iteration renders go to `out/postcards/<id>-s<seed>.jpg` (not committed).
