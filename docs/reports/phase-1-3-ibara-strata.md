@@ -12,13 +12,13 @@ The second version's full HELL-1 image loads all 1,306 requested chunks in **141
 
 The full HELL-2 caldera capture completes at **213.819 seconds** with all 1,624 requested chunks ready. It misses the unchanged 180-second deadline: the timeout receipt and exit code 1 remain recorded despite the subsequent complete image. Root and a fresh Astra reviewer open both originals and slightly prefer the new material: subtle bands improve layered-rock readability on the central blade and right pillar. Existing dark foreground, stepped tip and noisy lava remain; no consequential new artifact is observed. No application errors occur and browser/server cleanup completes. This single timing observation is not a shader speedup measurement.
 
-No new formal rubric score is assigned here. The primitive calibration must be captured with the changed material before a new calibrated score; earlier scores remain historical. This material increment does not resolve thorn anatomy or complete phase 1.3.
+No formal rubric score was assigned during this material A/B review. The subsequent [fresh calibration](phase-1-3-current-calibration.md) supplies the current record: HELL-1 15/20 and HELL-2 13/20, with a valid 8/20 primitive control. This material increment does not resolve thorn anatomy or complete phase 1.3.
 
 ## Release checks
 
 The integrated source passes **790 tests / 93 files**, check and build in **274.289 / 25.916 / 7.513 seconds**. UI lint reports 106 states, zero missing current rows and 23 bindings. The two new HUD captures pass root and independent review for outline, ghost and silhouette, with all 88 source and eight artifact bindings matching. Receipt: `out/phase13/recovery-gates/2026-10-12T17-40-38.604Z/result.json`.
 
-Root opens the [new 2×2 material comparison](../postcards/wip/ibara.jpg), with HELL-1 above HELL-2 and baseline left/new layers right. The 1280×720 JPEG is 126,461 bytes; the complete WIP image set is 838,242 bytes, within its 1 MB limit. All four source originals were opened before assembly. The historical tip comparison remains pinned in its own report.
+Root opens the [material A/B comparison](https://github.com/dexnotavailable/coldfront/blob/3f7e0df8335e53b81405bd2b36c168d3fa68168a/docs/postcards/wip/ibara.jpg?raw=true), with HELL-1 above HELL-2 and baseline left/new layers right. The 1280×720 JPEG is 126,461 bytes; the complete WIP image set is 838,242 bytes, within its 1 MB limit. All four source originals were opened before assembly. The historical tip comparison remains pinned in its own report.
 
 Clean physical-D Node 22 install/build passes in **13.6348735 s**, and the site build in **2.331976 s**. [CI 38286520482](https://github.com/dexnotavailable/coldfront/actions/runs/38286520482) passes, including Chromium, Firefox and WebKit determinism checks.
 
