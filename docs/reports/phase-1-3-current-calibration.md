@@ -14,7 +14,17 @@ Both production images have no zero on R1–R4. Seed 1 requires at least 16/20 a
 
 The forest has distinct scales, uneven groups and broad routes, but its dominant forms are cropped and the giant's regular ribs distract. The caldera's curved central blade and broken pillar read clearly, yet attached forks and hooked forms remain hard to distinguish. The fresh reviewer also finds conspicuous lava repetition and weak material/lighting variation. The published layers are a preferred material increment; they do not establish the full visual requirement.
 
-**Next correction:** make the generated caldera cluster's eligible branching and hooked anatomy read clearly. A source audit is examining branch spines, unions and profiles within the existing terrain §8.5 ranges. The earlier shoulder displacement and roughness-removal trials remain parked. No additional production-camera search is selected here.
+**Next correction:** make the generated caldera cluster's eligible branching and hooked anatomy read clearly across viewing angles. The first branch-direction proposal below is rejected. Further work must preserve separation between sibling branches rather than merely moving a hidden branch to another side. The earlier shoulder displacement and roughness-removal trials remain parked. No additional production-camera search is selected here.
+
+## Branch-direction trial: rejected, not integrated
+
+One isolated rule reflects branches that follow the parent's horizontal lean into the opposite hemisphere, retaining their lateral component. It leaves branch counts, roots, nominal length draws, profiles and excluded thorn types unchanged. Independent source review closes two test gaps by restoring an absolute pre-change debris/rubble hash and adding branched broken/landmark/arch controls. Three focused tests pass; seven unrelated tests are skipped by the explicit selection.
+
+The fixed two-specimen fixture completes in **30.776 s** and produces eight clay images at unchanged azimuths 45°, 135°, 225° and 315°. All raw branch cells connect to their main stems; the ordinary specimen has one component before and after (5,648/5,650 cells), and the broken control remains exactly 5,787 cells. No cleanup hides fragments. The existing broken control's actual branch arc of 0.41456h exceeds its nominal 0.4h draw bound; this discrepancy is retained and reported, while before/after lengths remain unchanged. No population-wide arc-length claim is made.
+
+Root and a fresh independent Astra reviewer open all eight originals and agree: the candidate makes a fork clearer at **45° and 225°**, but obscures the opposite fork at **135° and 315°**. Two improvements and two regressions fail the predeclared criterion. The candidate stays isolated and **must not be promoted from passing structural checks**. No full-world trial or automatic tuning is selected.
+
+Evidence: `out/phase13/branch-direction-pixel-review.md`, `branch-direction-source-review.md`, and the isolated `D:/Dex/Temp/coldfront-branch-direction-8df104f/out/branch-direction/runs/2026-10-12T18-39-30.132Z/`. Candidate generation `095d7931…` is not live. The production generator remains `023af1e…`.
 
 ## Genuine reference selection
 
