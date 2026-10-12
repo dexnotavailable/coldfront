@@ -54,6 +54,18 @@ export function postcardArguments(
   if (!Number.isInteger(seed) || seed < 0 || seed > 0xffffffff)
     throw new Error("Postcard seed must be an unsigned32-bit integer");
   const ids = parsePostcardIds(flag("--phase"), flag("--only"));
+  if (args.includes("--diagnostic-continue")) {
+    if (args.includes("--commit"))
+      throw new Error("Diagnostic continuation cannot use --commit");
+    if (args.includes("--resolve-only"))
+      throw new Error(
+        "Diagnostic continuation requires capture, not --resolve-only",
+      );
+    if (ids.length !== 1)
+      throw new Error(
+        "Diagnostic continuation requires one postcard: use --only <id>",
+      );
+  }
   const variant: GenerationVariant = args.includes("--primitive")
     ? "primitive"
     : "production";

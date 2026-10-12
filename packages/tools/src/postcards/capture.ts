@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { chromium } from "playwright";
+import { chromium, errors as playwrightErrors } from "playwright";
 import sharp from "sharp";
 import { validatePostcardSelection } from "../../../client/src/bootstrap/postcard.js";
 import type { GameSnapshot } from "../../../client/src/contracts/game-ui.js";
@@ -10,6 +10,11 @@ import type { GameTelemetry } from "../../../client/src/game/create-game.js";
 import type { PostcardId } from "../../../client/src/game/postcard.js";
 import { browserExecutable, browserTestUrl } from "../browser-tests/browser.js";
 import { sourceFiles, sourceFingerprints } from "../build/metadata.js";
+import {
+  type DiagnosticReadiness,
+  type StandardReadinessFailure,
+  waitForDiagnosticReadiness,
+} from "./capture-readiness.js";
 import { postcardOutputStem, preparePostcards } from "./prepare.js";
 
 interface Hook {
@@ -22,13 +27,15 @@ interface Hook {
 }
 const prepared = await preparePostcards(),
   base = browserTestUrl(),
-  root = process.cwd();
-const output = resolve(root, "out/postcards"),
+  root = process.cwd(),
+  diagnostic = process.argv.includes("--diagnostic-continue");
+const outputRoot = resolve(root, "out/postcards"),
   attempt = resolve(
-    output,
+    outputRoot,
     "runs",
-    `${postcardOutputStem(prepared.world, prepared.seed, prepared.variant, prepared.view, prepared.sourceHash)}-${Date.now()}`,
-  );
+    `${postcardOutputStem(prepared.world, prepared.seed, prepared.variant, prepared.view, prepared.sourceHash)}${diagnostic ? "-diagnostic" : ""}-${Date.now()}`,
+  ),
+  output = diagnostic ? attempt : outputRoot;
 await mkdir(attempt, { recursive: true });
 const hash = (bytes: Uint8Array | string): string =>
   createHash("sha256").update(bytes).digest("hex");
@@ -55,6 +62,16 @@ let browser: Awaited<
 let failure: unknown,
   build: unknown,
   browserClosed = false;
+let readiness: DiagnosticReadiness | null = null,
+  standardFailure: StandardReadinessFailure | null = null;
+const status = (): string =>
+  failure
+    ? "failed"
+    : diagnostic
+      ? standardFailure
+        ? "diagnostic-captured-after-standard-timeout"
+        : "diagnostic-captured"
+      : "passed";
 try {
   const version = await fetch(new URL("version.json", base));
   if (!version.ok) throw new Error("Served build metadata missing");
@@ -128,18 +145,60 @@ try {
   if (prepared.variant === "primitive") url.searchParams.set("primitive", "1");
   const startup = performance.now();
   await page.goto(url.href, { waitUntil: "domcontentloaded" });
-  await page.waitForFunction(
-    () => (window as unknown as { __cf?: Hook }).__cf?.ready === true,
-    undefined,
-    { timeout: 180000 },
-  );
+  if (diagnostic)
+    readiness = await waitForDiagnosticReadiness(
+      async (timeout) => {
+        await page.waitForFunction(
+          () => (window as unknown as { __cf?: Hook }).__cf?.ready === true,
+          undefined,
+          { timeout },
+        );
+      },
+      async (miss) => {
+        standardFailure = miss;
+        process.exitCode = 1;
+        await writeFile(
+          resolve(attempt, "standard-timeout.json"),
+          JSON.stringify(
+            {
+              ...miss,
+              id: prepared.ids[0],
+              seed: prepared.seed,
+              world: prepared.world,
+              phase: prepared.phase,
+              variant: prepared.variant,
+              view: prepared.view,
+              sourceHash: prepared.sourceHash,
+              build,
+              sources,
+              errors: [...errors],
+              warnings: [...warnings],
+              external: [...external],
+              resolutionReceipt: prepared.receipt,
+            },
+            null,
+            2,
+          ),
+          { flag: "wx" },
+        );
+        if (errors.length || external.length)
+          throw new Error(JSON.stringify({ errors, external }));
+      },
+      (error) => error instanceof playwrightErrors.TimeoutError,
+    );
+  else
+    await page.waitForFunction(
+      () => (window as unknown as { __cf?: Hook }).__cf?.ready === true,
+      undefined,
+      { timeout: 180000 },
+    );
   let session: number | undefined;
   const captured: { id: PostcardId; region: string; data: string }[] = [];
   for (let index = 0; index < prepared.ids.length; index++) {
     const id = prepared.ids[index] as PostcardId,
       started = index === 0 ? startup : performance.now();
     const receipt = await page.evaluate(
-      async ({ id, first }) => {
+      async ({ id, first, diagnostic }) => {
         const cf = (window as unknown as { __cf: Hook }).__cf;
         const canvas =
           document.querySelector<HTMLCanvasElement>("canvas.cf-world") ??
@@ -147,6 +206,19 @@ try {
         const gl = canvas?.getContext("webgl2");
         if (!canvas || !crossOriginIsolated || !gl || gl.isContextLost())
           throw new Error("Postcard isolation/WebGL2 preflight failed");
+        if (
+          diagnostic &&
+          (!cf.ready ||
+            cf.queued !== 0 ||
+            cf.snapshot.mode !== "postcard" ||
+            !cf.telemetry.postcard ||
+            cf.telemetry.postcard.requestedChunks < 1 ||
+            cf.telemetry.postcard.readyChunks !==
+              cf.telemetry.postcard.requestedChunks)
+        )
+          throw new Error(
+            "Diagnostic postcard is not fully ready before capture",
+          );
         const png = first
           ? await cf.renderStill(0)
           : await cf.renderPostcard(id);
@@ -184,7 +256,7 @@ try {
           canvas: { width: canvas.width, height: canvas.height },
         };
       },
-      { id, first: index === 0 },
+      { id, first: index === 0, diagnostic },
     );
     const world = receipt.snapshot.world;
     const expected = prepared.cameras.find((camera) => camera.id === id);
@@ -250,12 +322,14 @@ try {
     await writeFile(original, png);
     await writeFile(resolve(attempt, `${name}.jpg`), jpeg);
     await writeFile(image, jpeg);
-    const best = resolve(output, "_best");
-    await mkdir(best, { recursive: true });
-    try {
-      await writeFile(resolve(best, `${name}.jpg`), jpeg, { flag: "wx" });
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+    if (!diagnostic) {
+      const best = resolve(output, "_best");
+      await mkdir(best, { recursive: true });
+      try {
+        await writeFile(resolve(best, `${name}.jpg`), jpeg, { flag: "wx" });
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+      }
     }
     if (process.argv.includes("--commit")) {
       const directory = resolve(root, "docs/postcards/m1");
@@ -293,7 +367,17 @@ try {
       warnings: [...warnings],
       external: [...external],
       resolutionReceipt: prepared.receipt,
-      status: "captured",
+      status: diagnostic ? "captured-diagnostic-ungraded" : "captured",
+      ...(diagnostic
+        ? {
+            diagnostic: true,
+            readiness,
+            standardFailure,
+            standardTimingPassed: standardFailure === null,
+            performanceFixed: false,
+            acceptanceClaim: false,
+          }
+        : {}),
     };
     await writeFile(
       resolve(attempt, `${name}.receipt.json`),
@@ -398,8 +482,20 @@ try {
     resolve(attempt, "run.json"),
     JSON.stringify(
       {
-        status: failure ? "failed" : "passed",
+        status: status(),
         failure: failure ?? null,
+        ...(diagnostic
+          ? {
+              diagnostic: true,
+              readiness,
+              standardFailure,
+              standardTimingPassed:
+                readiness?.standardTimingPassed ??
+                (standardFailure ? false : null),
+              performanceFixed: false,
+              acceptanceClaim: false,
+            }
+          : {}),
         world: prepared.world,
         phase: prepared.phase,
         variant: prepared.variant,
@@ -425,7 +521,7 @@ try {
 console.log(
   JSON.stringify({
     run: resolve(attempt, "run.json"),
-    status: failure ? "failed" : "passed",
+    status: status(),
     images: results.length,
     browserClosed,
   }),
