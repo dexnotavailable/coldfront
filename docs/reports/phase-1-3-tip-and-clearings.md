@@ -1,8 +1,20 @@
 # Thorn tips and fissure clearings · 12 October 2026
 
-The selected tip correction, generation `023af1ecf3a1ec69911ef4ec537e1a8aa32d8e0e51a6748c7ca6bc4b18bcedc1`, improves a real thin-terminal defect. Source gates and native review of both repaired catalogue destinations pass; the correction awaits a clean release and publication. The separate clearing experiment passes source/population checks but fails its three paired-view tests and stays parked and unintegrated. Phase 1.3 remains incomplete.
+The selected tip correction is **live as `fbc0d967e1df7ee5d34e8d57fe9611d0d1e136ba`**, generation `023af1ecf3a1ec69911ef4ec537e1a8aa32d8e0e51a6748c7ca6bc4b18bcedc1`. It improves a real thin-terminal defect, with a wider ordinary-main body as the tradeoff. Source gates, reviewed regional destinations, clean build, local production journey, three-browser CI and public HTTP verification pass. A fresh full benchmark remains pending. The separate clearing experiment stays parked and unintegrated after its three paired-view tests fail. Phase 1.3 remains incomplete.
+
+## Verified live release
+
+Clean physical-D Node 22 install/build passes in **25.4105069 seconds**; the site build passes in **2.3263838 seconds**. The unchanged fourteen-stage journey finishes at **2026-10-12 14:25:08.319 UTC** with terminal exit 0. Root and independent Astra open all **14 new originals**. All **178 source / 326 distribution files** match their seals. Placement, breaking, movement, immediate quit/play and reload persistence, Ibara’s three view modes, HELL-1 travel/Escape and continued play after one injected malformed catalogue pass. Application errors, failed responses and external requests are zero; four ReadPixels warnings remain, and browser/server cleanup completes.
+
+Publication receipt **`03ebfb22-78f4-4b65-998e-477e40852d99`** is followed by ten verified public HTTP files with COOP `same-origin` and COEP `require-corp`. Evidence: `out/phase13/tip-release-prep/build-receipt.json`, `runs/2026-10-12T14-20-11.040Z/receipt.json`, `independent-review/review.md` and `public-readback.json`. These prove the local production journey and public bytes; public-browser gameplay remains separately unverified. [CI 38261953623](https://github.com/dexnotavailable/coldfront/actions/runs/38261953623) passes, including all three browsers (verified at 14:33 UTC). No updated full generator/lighting/meshing benchmark is claimed.
+
+The new save identity is `4:023af1ecf3a1ec69911ef4ec537e1a8aa32d8e0e51a6748c7ca6bc4b18bcedc1`; previous edits remain stored separately under earlier identities. The source-bound HUD pass remains limited to the captured outline, ghost and silhouette rows. The installed 18-entry camera file, SHA256 `bf7ec058…`, is semantically equal to the reviewed raw `3d701e69…` capture input; both repaired regional originals were opened by root and peer.
+
+[Current before/after sheet](../postcards/wip/ibara.jpg): the new 2×2 sheet has HELL-1 A/B in the top row and HELL-2 A/B below, baseline left and selected tip right. Root opened this sheet and its source originals. The [earlier lava comparison](https://github.com/dexnotavailable/coldfront/blob/f2739c16493d840040d7946f6f2eff0f623a420f/docs/postcards/wip/ibara.jpg?raw=true) remains an immutable historical reference.
 
 ## Tip comparison
+
+The ordinary intact non-arch main profile now spends at most **1.5 m below radius 0.7 m**. Full-length endpoints and the other thorn families remain unchanged; the lower profile exponent also widens the shaft and can alter branch exposure.
 
 At the same caldera-4 camera, the complete new HELL-2 image has a fuller taper and a shorter thin terminal. Root opened the original; a fresh calibrated reviewer prefers it, scoring the paired baseline 12/20 and candidate 13/20, with control 7/20. R9 improves from 0 to 1, but R2 stays 1. Root scores the candidate 14, so its record is 13. An earlier baseline panel also scored 13; these are separate panels, not a claim that the overall record rose.
 
@@ -16,9 +28,9 @@ Six fresh atlas/slice files are opened and source-checked, and their bytes match
 
 Private proof: `out/phase13/hell2-tip-world-blind/`, `hell2-tip-world-audit.md`, `hell1-tip-world-blind/`, `main-tip-forest-prep/runs/2026-10-12T12-49-10.015Z/`, `tip-integration/` and `tip-atlas-slice/`. Complete numeric receipts are in `D:/Dex/Temp/coldfront-tip-native-a731399/out/main-tip-numeric/`.
 
-## Source gates and held catalogue repairs
+## Source gates and installed catalogue repairs
 
-The source gate run at `out/phase13/recovery-gates/2026-10-12T13-26-51.357Z/result.json` records **790 tests across 93 files**, check and build, all exiting zero, in **470.454 / 66.179 / 26.897 seconds**. Actual UI lint prints 106 gallery states, zero missing current rows and 23 bindings. These gates precede the out-only camera repairs; they do not establish the repaired views' pixels, a fresh generator benchmark, a clean release or publication.
+The source gate run at `out/phase13/recovery-gates/2026-10-12T13-26-51.357Z/result.json` records **790 tests across 93 files**, check and build, all exiting zero, in **470.454 / 66.179 / 26.897 seconds**. Actual UI lint prints 106 gallery states, zero missing current rows and 23 bindings. These gates precede the camera repairs; their later native and release evidence is recorded separately. The fresh full benchmark remains pending.
 
 The initial source-bound refresh validates fourteen of sixteen P12 entries and reuses current-source passing geometry for both HELL entries. It runs sixteen fixed P12 grids, with no selector search. P12-lake fails only the sky fraction at its old pitch; keeping the same eye, heading, time and radius while changing to **10° down** passes one repair grid (sky 64.37%). P12-hellscape's old aerial bound is stale: the current solid upper bound is 204.709 m. Two above-bound aerial proposals remain failed, with 87.54% and 86.85% sky; their receipts are preserved.
 
@@ -28,7 +40,7 @@ The installed catalogue contains passing validation for all sixteen P12 and both
 
 The captured JSON has SHA256 `3d701e69…`; the installed Biome-formatted JSON has SHA256 `bf7ec058…`. Parsed content is exactly equal, and the original capture input is preserved. Native evidence is in `out/phase13/tip-camera-refresh/native-two-view/2026-10-12T14-09-32.384Z/`, with root/peer reviews alongside. After installation, 24 targeted catalogue/save tests, check and build pass in 11.666 / 45.379 / 9.549 seconds. This supplements the earlier full 790-test pass; it is not a second full-suite run. The fresh source-bound HUD review also passes its three captured canvas rows.
 
-Private proof: `out/phase13/tip-camera-refresh/runs/2026-10-12T13-37-50.349Z/receipt.json`, `repairs/2026-10-12T13-51-18.287Z/receipt.json`, and `ground-repair/2026-10-12T14-03-08.324Z/receipt.json` beneath the same refresh directory. The final held file is `candidate-seed-1-ground.json`, SHA256 `3d701e69ab0bce22d61464841ed091c74f88214037daeb17d883691424265c40`.
+Private proof: `out/phase13/tip-camera-refresh/runs/2026-10-12T13-37-50.349Z/receipt.json`, `repairs/2026-10-12T13-51-18.287Z/receipt.json`, and `ground-repair/2026-10-12T14-03-08.324Z/receipt.json` beneath the same refresh directory. The preserved raw capture file is `candidate-seed-1-ground.json`, SHA256 `3d701e69ab0bce22d61464841ed091c74f88214037daeb17d883691424265c40`.
 
 ## Clearing experiment
 
