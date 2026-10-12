@@ -1,0 +1,32 @@
+{
+  "status": "accepted-material-comparison-only",
+  "baseCommit": "233e73eb9d8cad61a9fc9f6f70e00c92a70bd279",
+  "sourceHash": "91f1471f8154038cc5ebaef7cf8e4f79b7cb4949591e2cb9cf81f7cf3c5b3a41",
+  "imageSha256": "bffab139b9aa3df5d1fa9592b0f91292b0ae4a641d23dd25e0ee649c81514d4d",
+  "originalPngSha256": "b9a95cdf76fc6f0a263992888d6fbcd8f5e75e18890bea061e88ce41c54c6cf5",
+  "camera": {
+    "x": 5561.5,
+    "y": 30.62,
+    "z": 5541.5
+  },
+  "target": {
+    "x": 5585.86523247589,
+    "y": 36.21927446565914,
+    "z": 5600.68053266401
+  },
+  "hours": 17.25,
+  "radius": 512,
+  "fov": 70,
+  "width": 1280,
+  "height": 720,
+  "requestedChunks": 1135,
+  "readyChunks": 1135,
+  "captureMs": 149775.1595,
+  "changedPixels": 18600,
+  "changedFraction": 0.0201823,
+  "changedRows": [
+    399,
+    483
+  ],
+  "visualBoundary": "Matched root-material improvement; no new full HELL grade. Upper thorns/tips/foreground fissure pixel-exact in this comparison."
+}

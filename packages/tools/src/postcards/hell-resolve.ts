@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { appendFileSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
@@ -74,6 +75,22 @@ export interface ResolvedHellCamera extends MainCameraCandidate {
   readonly readability?: HellReadability;
   readonly readabilitySetup?: VisibleThornLookupReceipt;
   readonly validatedByResolverHash: string;
+  /** A completed optimization search, never a visual acceptance receipt. */
+  readonly completedSearch?: {
+    readonly schema: 1;
+    readonly seed: number;
+    readonly worldgenVersion: number;
+    readonly sourceHash: string;
+    readonly resolverHash: string;
+    readonly variant: GenerationVariant;
+    readonly selectedViewHash: string;
+    readonly fullGridCandidates: number;
+    readonly fullGridBudget: 50;
+    readonly termination:
+      | "composition-goal"
+      | "budget"
+      | "candidates-exhausted";
+  };
   readonly comparison?: {
     readonly productionView: "matched" | "diverged" | "unavailable";
     readonly reason: string;
@@ -149,8 +166,8 @@ export function forestFramingScore(
   }
   return score + sizes.size * 4 + (largestComplete ? 12 : -20);
 }
-/** Production HELL-1 alone has this extra objective. A retained camera must
- * acquire fresh readability evidence; an old geometric pass is insufficient. */
+/** Search objective only (decision115). Geometry alone permits an UNGRADED
+ * capture after the bounded search; these diagnostics still guide refinement. */
 export function hellSelectionPassed(
   id: HellPostcardId,
   variant: GenerationVariant,
@@ -162,6 +179,83 @@ export function hellSelectionPassed(
     (id !== "HELL-1" ||
       variant !== "production" ||
       readability?.passed === true)
+  );
+}
+/** Actual family diversity precedes the largest-parent framing bonus. Geometry
+ * is always the first ordering key; scores can never rescue an unsafe pose. */
+export function compareHellCandidates(
+  a: Pick<ResolvedHellCamera, "validation" | "readability" | "score">,
+  b: Pick<ResolvedHellCamera, "validation" | "readability" | "score">,
+): number {
+  const rank = (camera: typeof a): number[] => {
+    const read = camera.readability;
+    return [
+      Number(camera.validation.passed),
+      Number(read?.passed === true),
+      read
+        ? Object.values(read.families).filter((ids) => ids.length > 0).length
+        : 0,
+      read?.sizeClasses.length ?? 0,
+      Number(read?.groundTransition === true),
+      camera.score,
+    ];
+  };
+  const left = rank(a),
+    right = rank(b);
+  for (let i = 0; i < left.length; i++) {
+    const difference = Number(left[i]) - Number(right[i]);
+    if (difference) return difference;
+  }
+  return 0;
+}
+function selectedViewHash(camera: ResolvedHellCamera): string {
+  return createHash("sha256")
+    .update(
+      JSON.stringify([
+        camera.id,
+        camera.region,
+        camera.kind,
+        camera.seed,
+        camera.position.x,
+        camera.position.y,
+        camera.position.z,
+        camera.target.x,
+        camera.target.y,
+        camera.target.z,
+        camera.hours,
+        camera.radius,
+        camera.terrainUpperBound ?? null,
+        camera.targetFeature,
+      ]),
+    )
+    .digest("hex");
+}
+function completedSearchMatches(
+  camera: ResolvedHellCamera,
+  manifest: HellCameraManifest | undefined,
+  seed: number,
+  sourceHash: string,
+  resolverHash: string,
+  variant: GenerationVariant,
+): boolean {
+  const search = camera.completedSearch;
+  return Boolean(
+    search?.schema === 1 &&
+      manifest?.resolverHash === resolverHash &&
+      camera.validatedByResolverHash === resolverHash &&
+      search.seed === seed &&
+      search.worldgenVersion === WORLDGEN_VERSION &&
+      search.sourceHash === sourceHash &&
+      search.resolverHash === resolverHash &&
+      search.variant === variant &&
+      search.fullGridBudget === 50 &&
+      Number.isInteger(search.fullGridCandidates) &&
+      search.fullGridCandidates >= 1 &&
+      search.fullGridCandidates <= 50 &&
+      ["composition-goal", "budget", "candidates-exhausted"].includes(
+        search.termination,
+      ) &&
+      search.selectedViewHash === selectedViewHash(camera),
   );
 }
 interface ForestCandidate {
@@ -795,6 +889,7 @@ export async function resolveHellCameras(
       // budget as new coarse/refined candidates. Count at the actual call site.
       const fullGridBudget = 50;
       let inspected = 0;
+      let reused = false;
       let comparison: ResolvedHellCamera["comparison"],
         best: ResolvedHellCamera | undefined;
       const inspect = (
@@ -861,7 +956,15 @@ export async function resolveHellCameras(
           ...(readabilitySetup ? { readabilitySetup } : {}),
         });
         return {
-          ...view,
+          // The input can be a saved result from another resolver or variant.
+          // Copy only pose inputs; all derived evidence below is fresh.
+          position: view.position,
+          target: view.target,
+          hours: view.hours,
+          radius: view.radius,
+          ...(view.terrainUpperBound === undefined
+            ? {}
+            : { terrainUpperBound: view.terrainUpperBound }),
           id,
           region: "hellscape",
           kind: "eye-level",
@@ -872,11 +975,7 @@ export async function resolveHellCameras(
           ...(readability ? { readability } : {}),
           ...(readabilitySetup ? { readabilitySetup } : {}),
           score:
-            (hellSelectionPassed(id, variant, validation, readability)
-              ? needsReadability
-                ? 1000
-                : 100
-              : 0) +
+            (validation.passed ? (needsReadability ? 1000 : 100) : 0) +
             (readability?.score ?? 0) +
             validation.targetFraction * 20 +
             validation.lavaFraction * 5 -
@@ -910,7 +1009,10 @@ export async function resolveHellCameras(
               ? "Production eye/target passed the actual primitive field"
               : `Production eye/target failed primitive validation: ${JSON.stringify(checked.validation)}`,
           };
-          if (checked.validation.passed) best = { ...checked, comparison };
+          if (checked.validation.passed) {
+            best = { ...checked, comparison };
+            reused = true;
+          }
         } else
           comparison = {
             productionView: "unavailable",
@@ -921,20 +1023,36 @@ export async function resolveHellCameras(
         const previous = cameras.get(id);
         if (previous) {
           const checked = inspect(previous, previous.targetFeature, "retained");
-          if (
-            hellSelectionPassed(
-              id,
+          if (checked.validation.passed) {
+            const needsSearch = id === "HELL-1" && variant === "production";
+            const searchMatches = completedSearchMatches(
+              previous,
+              old,
+              seed,
+              sourceHash,
+              resolverHash,
               variant,
-              checked.validation,
-              checked.readability,
-            )
-          )
-            best = checked;
+            );
+            reused = !needsSearch || searchMatches;
+            best = searchMatches
+              ? {
+                  ...checked,
+                  ...(previous.completedSearch
+                    ? { completedSearch: previous.completedSearch }
+                    : {}),
+                }
+              : checked;
+            record({
+              stage: "retained-search",
+              id,
+              reused,
+              completedSearchMatched: searchMatches,
+            });
+          }
         }
       }
-      const reused = Boolean(best);
       const revalidationCandidates = inspected;
-      if (!best) {
+      if (!reused) {
         const candidates: ForestCandidate[] = [];
         if (id === "HELL-1") {
           const anchor = context.regionAnchor("hellscape");
@@ -1002,7 +1120,7 @@ export async function resolveHellCameras(
               ? { readability: checked.readability }
               : {}),
           });
-          if (!best || checked.score > best.score) best = checked;
+          if (!best || compareHellCandidates(checked, best) > 0) best = checked;
         }
         if (productionForest) {
           const refinements =
@@ -1029,7 +1147,8 @@ export async function resolveHellCameras(
             });
             const checked = inspect(refinement.view, refinement.targetFeature);
             traced++;
-            if (!best || checked.score > best.score) best = checked;
+            if (!best || compareHellCandidates(checked, best) > 0)
+              best = checked;
           }
           for (const { view, targetFeature } of candidates.slice(
             coarse.length,
@@ -1047,7 +1166,8 @@ export async function resolveHellCameras(
               break;
             const checked = inspect(view, targetFeature);
             fallback++;
-            if (!best || checked.score > best.score) best = checked;
+            if (!best || compareHellCandidates(checked, best) > 0)
+              best = checked;
           }
           record({
             stage: "production-framing-summary",
@@ -1080,7 +1200,8 @@ export async function resolveHellCameras(
             if (reasons.length) continue;
             const checked = inspect(refinement.view, refinement.targetFeature);
             traced++;
-            if (!best || checked.score > best.score) best = checked;
+            if (!best || compareHellCandidates(checked, best) > 0)
+              best = checked;
           }
           // When there are too few near misses, or a turn fails preflight,
           // spend unused slots on the remaining original coarse proposals.
@@ -1091,7 +1212,8 @@ export async function resolveHellCameras(
             if (inspected >= fullGridBudget || best?.validation.passed) break;
             const checked = inspect(view, targetFeature);
             fallback++;
-            if (!best || checked.score > best.score) best = checked;
+            if (!best || compareHellCandidates(checked, best) > 0)
+              best = checked;
           }
           record({
             stage: "primitive-refinement-summary",
@@ -1113,13 +1235,44 @@ export async function resolveHellCameras(
         fullGridCandidates: inspected,
         fullGridBudget,
       });
-      if (
-        !best ||
-        !hellSelectionPassed(id, variant, best.validation, best.readability)
-      )
+      if (!best?.validation.passed)
         throw new Error(
-          `No ${id}/${variant} camera passed geometry and selection; attempts:${attemptsPath}: ${JSON.stringify(best)}`,
+          `No ${id}/${variant} camera passed geometry; attempts:${attemptsPath}: ${JSON.stringify(best)}`,
         );
+      if (!reused) {
+        best = {
+          ...best,
+          completedSearch: {
+            schema: 1,
+            seed,
+            worldgenVersion: WORLDGEN_VERSION,
+            sourceHash,
+            resolverHash,
+            variant,
+            selectedViewHash: selectedViewHash(best),
+            fullGridCandidates: inspected,
+            fullGridBudget: 50,
+            termination: hellSelectionPassed(
+              id,
+              variant,
+              best.validation,
+              best.readability,
+            )
+              ? "composition-goal"
+              : inspected === fullGridBudget
+                ? "budget"
+                : "candidates-exhausted",
+          },
+        };
+      }
+      record({
+        stage: "selected-ungraded",
+        id,
+        reused,
+        completedSearch: best.completedSearch,
+        compositionPassed: best.readability?.passed,
+        compositionReasons: best.readability?.reasons,
+      });
       cameras.set(id, best);
       entries.push({
         id,

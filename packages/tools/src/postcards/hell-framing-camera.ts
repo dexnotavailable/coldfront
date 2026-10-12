@@ -1,5 +1,9 @@
 import type { ThornInstance } from "../../../shared/src/features/ibara/types.js";
 import {
+  createSpineSample,
+  sampleSpine,
+} from "../../../shared/src/sdf/spine.js";
+import {
   cameraFrame,
   cameraHorizonAllowed,
   type HellCameraValidation,
@@ -34,6 +38,8 @@ export interface FramingRefinement {
   readonly targetFeature: HellTarget;
   readonly parent: number;
   readonly dominantId: number;
+  readonly objective: "dominant-framing" | "hook-body";
+  readonly focusId: number;
   readonly retreat: number;
   readonly lateral: number;
   readonly yawDeltaDegrees: number;
@@ -41,6 +47,45 @@ export interface FramingRefinement {
   readonly predictedCompleteForms: number;
   readonly framingMarginPixels: number;
   readonly score: number;
+}
+function hookStances(thorn: ThornInstance) {
+  const spine = thorn.sweeps[0]?.spine;
+  if (!spine) throw new Error("Missing hook spine");
+  const at = (t: number) => sampleSpine(spine, t, createSpineSample());
+  const a = at(0.6),
+    b = at(0.8),
+    c = at(0.92),
+    d = at(1),
+    focus = at(0.55);
+  const ux = b.x - a.x,
+    uy = b.y - a.y,
+    uz = b.z - a.z,
+    vx = d.x - c.x,
+    vy = d.y - c.y,
+    vz = d.z - c.z;
+  const nx = uy * vz - uz * vy,
+    nz = ux * vy - uy * vx;
+  const fallback = Math.hypot(nx, nz) < 1e-8;
+  const angle = Math.atan2(
+    fallback ? thorn.parameters.flowX : nz,
+    fallback ? -thorn.parameters.flowZ : nx,
+  );
+  return {
+    focus,
+    fallback,
+    stances: [1.5, 2, 3].flatMap((factor) =>
+      Array.from({ length: 5 }, (_, bearing) => {
+        const radius = Math.max(24, thorn.parameters.height * factor),
+          azimuth = angle + (bearing * 2 * Math.PI) / 5;
+        return {
+          x: Math.floor(focus.x + Math.cos(azimuth) * radius) + 0.5,
+          z: Math.floor(focus.z + Math.sin(azimuth) * radius) + 0.5,
+          retreat: 0,
+          lateral: 0,
+        };
+      }),
+    ),
+  };
 }
 /** Uses the same built-spine/radius envelope and margin as final readability.
  * A framing prediction never establishes actual visibility or acceptance. */
@@ -97,7 +142,7 @@ function proposalKey(
   return `${poseKey(view)}|${JSON.stringify(targetFeature)}`;
 }
 
-/** Finite local proposals around at most three measured framing near misses.
+/** Finite local proposals around at most three measured composition near misses.
  * 15 standing points x5 yaw turns x3 pitches per parent; <=675
  * projection proposals and45 proposal-ground queries total. Every eligible
  * projection receives unchanged preflight; only18 can reach full-grid testing.
@@ -113,7 +158,7 @@ export function productionFramingCandidates(
   ) => FramingPreflightResult,
   record: (event: Event) => void = () => {},
 ): FramingRefinement[] {
-  const ranked = observations
+  const cropped = observations
     .flatMap((observation, parent) => {
       const id = observation.readability?.dominantId;
       if (
@@ -132,16 +177,82 @@ export function productionFramingCandidates(
         framing.heightPixels < HELL_READABILITY_LIMITS.usefulHeight
       )
         return [];
-      return [{ observation, parent, thorn, framing }];
+      return [
+        {
+          observation,
+          parent,
+          thorn,
+          framing,
+          objective: "dominant-framing" as const,
+        },
+      ];
     })
     .sort(
       (a, b) => a.framing.overflow - b.framing.overflow || a.parent - b.parent,
     );
+  // An intact hook can be hidden even when the largest parent already fits.
+  // Reuse only instances resolved by the observed grid; never scan new cells.
+  const hookKeys = new Set<string>();
+  const hooks = observations
+    .flatMap((observation, parent) => {
+      if (
+        !observation.validation.passed ||
+        !observation.readability ||
+        observation.readability.passed ||
+        observation.readability.families.hooked.length ||
+        observation.targetFeature.kind !== "thorn-cluster"
+      )
+        return [];
+      return observation.readability.parents.flatMap(({ id, cells }) => {
+        const thorn = instanceFor(id);
+        if (
+          !thorn?.parameters.hooked ||
+          thorn.parameters.broken ||
+          thorn.parameters.arch
+        )
+          return [];
+        return [
+          {
+            observation,
+            parent,
+            thorn,
+            cells,
+            framing: framingEnvelope(observation.view, thorn),
+            objective: "hook-body" as const,
+          },
+        ];
+      });
+    })
+    .sort(
+      (a, b) =>
+        (b.observation.readability?.score ?? 0) -
+          (a.observation.readability?.score ?? 0) ||
+        b.cells - a.cells ||
+        a.thorn.parameters.id - b.thorn.parameters.id ||
+        (proposalKey(a.observation.view, a.observation.targetFeature) <
+        proposalKey(b.observation.view, b.observation.targetFeature)
+          ? -1
+          : proposalKey(a.observation.view, a.observation.targetFeature) >
+              proposalKey(b.observation.view, b.observation.targetFeature)
+            ? 1
+            : 0),
+    )
+    .filter(({ observation, thorn }) => {
+      const key = `${thorn.parameters.id}|${JSON.stringify(observation.targetFeature)}`;
+      if (hookKeys.has(key)) return false;
+      hookKeys.add(key);
+      return true;
+    })
+    .slice(0, 2);
+  const ranked = [...hooks, ...cropped];
   const eyes = new Set<string>();
   const parents = ranked
-    .filter(({ observation }) => {
+    .filter(({ observation, objective, thorn }) => {
       const p = observation.view.position,
-        key = `${p.x},${p.y},${p.z}`;
+        key =
+          objective === "hook-body"
+            ? `hook:${thorn.parameters.id}|${JSON.stringify(observation.targetFeature)}`
+            : `${p.x},${p.y},${p.z}`;
       if (eyes.has(key)) return false;
       eyes.add(key);
       return true;
@@ -159,14 +270,27 @@ export function productionFramingCandidates(
   let proposals = 0,
     groundQueries = 0,
     eligible = 0;
-  for (const { observation, parent, thorn, framing } of parents) {
+  for (const { observation, parent, thorn, framing, objective } of parents) {
     const { view, targetFeature } = observation,
       p = view.position;
-    const dx = view.target.x - p.x,
-      dz = view.target.z - p.z,
-      distance = Math.hypot(dx, dz),
-      fx = dx / distance,
-      fz = dz / distance;
+    const originalDx = view.target.x - p.x,
+      originalDz = view.target.z - p.z,
+      originalDistance = Math.hypot(originalDx, originalDz),
+      fx = originalDx / originalDistance,
+      fz = originalDz / originalDistance;
+    const orbit = objective === "hook-body" ? hookStances(thorn) : undefined;
+    const standingPoints =
+      orbit?.stances ??
+      [0, 2, 4, 8, 12].flatMap((retreat) =>
+        [-2, 0, 2].map((lateral) => ({
+          retreat,
+          lateral,
+          x: Math.floor(p.x - fx * retreat - fz * lateral) + 0.5,
+          z: Math.floor(p.z - fz * retreat + fx * lateral) + 0.5,
+        })),
+      );
+    const dominantId =
+      observation.readability?.dominantId ?? thorn.parameters.id;
     const pitches = FOREST_CAMERA_PITCHES;
     const related = (observation.readability?.parents ?? []).flatMap(
       ({ id }) => {
@@ -178,98 +302,113 @@ export function productionFramingCandidates(
     record({
       stage: "production-framing-parent",
       parent,
-      dominantId: thorn.parameters.id,
+      dominantId,
+      objective,
+      focusId: thorn.parameters.id,
+      ...(orbit ? { hookBasisFallback: orbit.fallback } : {}),
       originalOverflowPixels: framing.overflow,
       view,
     });
-    for (const retreat of [0, 2, 4, 8, 12])
-      for (const lateral of [-2, 0, 2]) {
-        const x = Math.floor(p.x - fx * retreat - fz * lateral) + 0.5,
-          z = Math.floor(p.z - fz * retreat + fx * lateral) + 0.5;
-        const ground = groundHeight(x, z);
-        groundQueries++;
-        if (!Number.isFinite(ground)) continue;
-        const y = Math.ceil(ground - 0.5) + 1.62;
-        for (const yawDeltaDegrees of [-12, -6, 0, 6, 12])
-          for (const pitchDegrees of pitches) {
-            proposals++;
-            const angle = (yawDeltaDegrees * Math.PI) / 180,
-              cos = Math.cos(angle),
-              sin = Math.sin(angle);
-            const candidate: MainCameraCandidate = {
-              ...view,
-              position: { x, y, z },
-              target: {
-                x: x + dx * cos + dz * sin,
-                y: y - Math.tan((pitchDegrees * Math.PI) / 180) * distance,
-                z: z + dz * cos - dx * sin,
-              },
-            };
-            const key = proposalKey(candidate, targetFeature);
-            if (used.has(key)) continue;
-            used.add(key);
-            const frame = cameraFrame(candidate);
-            if (
-              !cameraHorizonAllowed(candidate, frame.horizonFraction) ||
-              frame.sunOffsetDegrees < 60 ||
-              frame.sunOffsetDegrees > 150 ||
-              frame.sunElevationDegrees < 5 ||
-              frame.sunElevationDegrees > 20
-            )
-              continue;
-            const primary = framingEnvelope(candidate, thorn);
-            if (!primary.useful) continue;
-            eligible++;
-            // Clearance and target checks run BEFORE the final per-parent cut.
-            // A high-ranked blocked stance cannot hide a lower-ranked valid one.
-            const checked = preflight(candidate, targetFeature);
-            preflightEvaluated++;
-            if (checked.cachedRejected) cachedRejected++;
-            if (!checked.cachedGeometry) geometryEvaluated++;
-            if (checked.targetEvaluated) targetEvaluated++;
-            record({
-              stage: "production-framing-preflight",
-              parent,
-              dominantId: thorn.parameters.id,
-              retreat,
-              lateral,
-              yawDeltaDegrees,
-              pitchDegrees,
-              view: candidate,
-              targetFeature,
-              status: checked.reasons.length
-                ? "rejected"
-                : "eligible-for-full-grid",
-              ...checked,
-            });
-            if (checked.reasons.length) continue;
-            preflightEligible++;
-            const predictedCompleteForms = related.filter(
-              (instance) =>
-                instance.parameters.id === thorn.parameters.id ||
-                framingEnvelope(candidate, instance).useful,
-            ).length;
-            const move = Math.hypot(x - p.x, z - p.z);
-            const score =
-              predictedCompleteForms * 4 +
-              Math.min(primary.margin, 60) / 10 -
-              move * 0.15 -
-              Math.abs(yawDeltaDegrees) * 0.03;
-            group.push({
-              view: candidate,
-              targetFeature,
-              parent,
-              dominantId: thorn.parameters.id,
-              retreat,
-              lateral,
-              yawDeltaDegrees,
-              pitchDegrees,
-              predictedCompleteForms,
-              framingMarginPixels: primary.margin,
-              score,
-            });
-          }
-      }
+    for (const { retreat, lateral, x, z } of standingPoints) {
+      const ground = groundHeight(x, z);
+      groundQueries++;
+      if (!Number.isFinite(ground)) continue;
+      const y = Math.ceil(ground - 0.5) + 1.62;
+      const dx = orbit ? orbit.focus.x - x : originalDx,
+        dz = orbit ? orbit.focus.z - z : originalDz,
+        distance = Math.hypot(dx, dz);
+      for (const yawDeltaDegrees of [-12, -6, 0, 6, 12])
+        for (const pitchDegrees of pitches) {
+          proposals++;
+          const angle = (yawDeltaDegrees * Math.PI) / 180,
+            cos = Math.cos(angle),
+            sin = Math.sin(angle);
+          const candidate: MainCameraCandidate = {
+            ...view,
+            position: { x, y, z },
+            target: {
+              x: x + dx * cos + dz * sin,
+              y: y - Math.tan((pitchDegrees * Math.PI) / 180) * distance,
+              z: z + dz * cos - dx * sin,
+            },
+          };
+          const key = proposalKey(candidate, targetFeature);
+          if (used.has(key)) continue;
+          used.add(key);
+          const frame = cameraFrame(candidate);
+          if (
+            !cameraHorizonAllowed(candidate, frame.horizonFraction) ||
+            frame.sunOffsetDegrees < 60 ||
+            frame.sunOffsetDegrees > 150 ||
+            frame.sunElevationDegrees < 5 ||
+            frame.sunElevationDegrees > 20
+          )
+            continue;
+          const primary = framingEnvelope(candidate, thorn);
+          if (!primary.useful) continue;
+          const hook = orbit ? thornContour(candidate, thorn) : undefined;
+          if (
+            hook &&
+            (hook.hookPixels < HELL_READABILITY_LIMITS.usefulExcursion ||
+              hook.hookTurnDegrees < 75)
+          )
+            continue;
+          eligible++;
+          // Clearance and target checks run BEFORE the final per-parent cut.
+          // A high-ranked blocked stance cannot hide a lower-ranked valid one.
+          const checked = preflight(candidate, targetFeature);
+          preflightEvaluated++;
+          if (checked.cachedRejected) cachedRejected++;
+          if (!checked.cachedGeometry) geometryEvaluated++;
+          if (checked.targetEvaluated) targetEvaluated++;
+          record({
+            stage: "production-framing-preflight",
+            parent,
+            dominantId,
+            objective,
+            focusId: thorn.parameters.id,
+            retreat,
+            lateral,
+            yawDeltaDegrees,
+            pitchDegrees,
+            view: candidate,
+            targetFeature,
+            status: checked.reasons.length
+              ? "rejected"
+              : "eligible-for-full-grid",
+            ...checked,
+          });
+          if (checked.reasons.length) continue;
+          preflightEligible++;
+          const predictedCompleteForms = related.filter(
+            (instance) =>
+              instance.parameters.id === thorn.parameters.id ||
+              framingEnvelope(candidate, instance).useful,
+          ).length;
+          const move = Math.hypot(x - p.x, z - p.z);
+          const score =
+            (hook ? Math.min(80, hook.hookPixels) * 2 : 0) +
+            predictedCompleteForms * 4 +
+            Math.min(primary.margin, 60) / 10 -
+            (orbit ? 0 : move * 0.15) -
+            Math.abs(yawDeltaDegrees) * 0.03;
+          group.push({
+            view: candidate,
+            targetFeature,
+            parent,
+            dominantId,
+            objective,
+            focusId: thorn.parameters.id,
+            retreat,
+            lateral,
+            yawDeltaDegrees,
+            pitchDegrees,
+            predictedCompleteForms,
+            framingMarginPixels: primary.margin,
+            score,
+          });
+        }
+    }
     group.sort(
       (a, b) =>
         b.score - a.score ||

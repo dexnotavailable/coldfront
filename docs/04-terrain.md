@@ -858,6 +858,8 @@ Terrain is judged by eye. These tools make looking fast, repeatable and affordab
 
   If validation fails, re-resolve automatically and log it.
 
+**Composition diagnostics (decision 115).** Automated contour margins, largest-parent border hits and projected family-size thresholds guide camera ranking and refinement. They are not additional geometric safety conditions. After the bounded search, a geometrically valid camera may be saved and rendered as **ungraded**, retaining every failed composition diagnostic. This lets actual images determine the remaining visual work. Every Ibara content check in §8.5, primitive calibration and the strict rubric/R2 bars still apply to phase acceptance. Reuse a completed search only for the same generation and resolver inputs; never label an ungraded result as visually accepted.
+
 **Clarification (decision 114).** A +1.62 m eye with the fixed 70° field of view naturally sees its supporting ground within five metres in the lower centre of the image. Rejecting that floor systematically excludes ordinary flat ground. The rule above distinguishes the support plane from an occluding object; it does not waive eye/body safety, raise the camera, change required scene content, or reduce the rubric bars. Horizon measurements remain in every receipt for review; the vista band is not a universal eye-level constraint.
 
 **Postcard mode** (the client with `?postcard=<id>&seed=<n>`):

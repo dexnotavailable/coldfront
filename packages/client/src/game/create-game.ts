@@ -32,7 +32,7 @@ import type {
   ToolState,
   WorldSession,
 } from "../contracts/game-ui.js";
-import { ChunkStore } from "../engine/chunk-store.js";
+import { ChunkStore, type ChunkViewPlan } from "../engine/chunk-store.js";
 import { blockIcon } from "../engine/effects.js";
 import { ease, GameClocks } from "../engine/motion.js";
 import { PlanPreparation } from "../engine/prepare-plan.js";
@@ -678,6 +678,7 @@ class GameRuntime implements GamePort {
     current: () => boolean,
     progress?: (value: number) => void,
     testView = false,
+    plan?: ChunkViewPlan,
   ): Promise<{
     addresses: readonly Address[];
     upload: number;
@@ -687,14 +688,16 @@ class GameRuntime implements GamePort {
     let complete = false,
       failure: unknown,
       upload = 0;
-    const request = testView
-      ? store.requestView(
-          view.target.x,
-          view.target.y,
-          view.target.z,
-          view.radius,
-        )
-      : store.requestCamera(view);
+    const request = plan
+      ? store.requestPlannedView(plan)
+      : testView
+        ? store.requestView(
+            view.target.x,
+            view.target.y,
+            view.target.z,
+            view.radius,
+          )
+        : store.requestCamera(view);
     const pending = request.then(
       (addresses) => {
         complete = true;
@@ -1905,9 +1908,23 @@ class GameRuntime implements GamePort {
         this.publish();
         await store.settled();
         if (!current()) throw new Error("Postcard preparation cancelled");
-        // The previous image stays in the default framebuffer while its GPU
-        // chunks are released. Plan, workers, textures and programs stay alive.
-        for (const key of store.retain([])) renderer.remove(key);
+        // Plan once before eviction. Keep only current, uploaded destination
+        // overlap; source-only chunks are released before new work is queued.
+        // The previous framebuffer stays visible while the same pool prepares
+        // missing chunks. Interactive travel retains its own rollback policy.
+        const plan =
+          view.id === "TEST-1"
+            ? store.planView(
+                view.target.x,
+                view.target.y,
+                view.target.z,
+                view.radius,
+              )
+            : store.planCamera(view);
+        const retained = plan.addresses.filter((address) =>
+          store.hasView([address], true),
+        );
+        for (const key of store.retain(retained)) renderer.remove(key);
         const prepared = await this.loadPostcardChunks(
           store,
           view,
@@ -1917,6 +1934,7 @@ class GameRuntime implements GamePort {
             this.publish();
           },
           view.id === "TEST-1",
+          plan,
         );
         if (!prepared || !current())
           throw new Error("Postcard preparation cancelled");

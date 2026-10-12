@@ -3,6 +3,7 @@ import { Block } from "../../../shared/src/blocks/registry.js";
 import type { GenerationVariant } from "../../../shared/src/world/generation-variant.js";
 import { WORLDGEN_VERSION } from "../../../shared/src/worldgen/version.js";
 import type { HellCameraValidation } from "../../src/postcards/geometry.js";
+import type { HellReadability } from "../../src/postcards/hell-readability.js";
 import {
   type HellPostcardId,
   resolveHellCameras,
@@ -15,6 +16,10 @@ const state = vi.hoisted(() => ({
   events: [] as Record<string, unknown>[],
   inspections: 0,
   passAt: Infinity,
+  passAlways: false,
+  sourceHash: "a".repeat(64),
+  resolverHash: "c".repeat(64),
+  readability: {} as HellReadability,
   refinementCount: 18,
   validation: {} as HellCameraValidation,
 }));
@@ -40,11 +45,13 @@ vi.mock("node:fs", async (importOriginal) => ({
 vi.mock("node:fs/promises", () => ({
   mkdir: async () => undefined,
   readFile: async () => JSON.stringify(state.document),
-  writeFile: async () => undefined,
+  writeFile: async (_path: string, content: string) => {
+    state.document = JSON.parse(content);
+  },
 }));
 vi.mock("../../src/build/metadata.js", () => ({
-  sourceFingerprints: () => ({ cacheTag: "a".repeat(64) }),
-  postcardResolverHash: () => "c".repeat(64),
+  sourceFingerprints: () => ({ cacheTag: state.sourceHash }),
+  postcardResolverHash: () => state.resolverHash,
 }));
 vi.mock("../../src/postcards/main-resolve.js", () => ({
   loadPlan: async () => ({
@@ -107,14 +114,14 @@ vi.mock("../../src/postcards/geometry.js", async (importOriginal) => ({
   cameraPoseRejections: () => [],
   inspectHellCamera: () => ({
     ...state.validation,
-    passed: ++state.inspections === state.passAt,
+    passed: ++state.inspections === state.passAt || state.passAlways,
   }),
 }));
 vi.mock("../../src/postcards/hell-visible-instances.js", () => ({
   createVisibleThornResolver: () => () => ({ instances: [], receipt: {} }),
 }));
 vi.mock("../../src/postcards/hell-readability.js", () => ({
-  inspectHellReadability: () => ({ passed: true, score: 0 }),
+  inspectHellReadability: () => state.readability,
 }));
 vi.mock("../../src/postcards/hell-framing-camera.js", () => ({
   FOREST_CAMERA_PITCHES: [-5, 0, 4.25],
@@ -174,6 +181,24 @@ beforeEach(() => {
   state.events = [];
   state.inspections = 0;
   state.passAt = Infinity;
+  state.passAlways = false;
+  state.sourceHash = "a".repeat(64);
+  state.resolverHash = "c".repeat(64);
+  state.readability = {
+    objective: "hell1-readable-forms-v1",
+    passed: true,
+    reasons: [],
+    score: 82,
+    dominantId: 1,
+    dominantComplete: true,
+    groundTransition: true,
+    sizeClasses: [0, 1, 2],
+    families: { curved: [1], hooked: [2], branched: [3], broken: [4] },
+    parents: [],
+    visibilityRays: 4,
+    voxelQueries: 4,
+    rayBudgetExhausted: false,
+  };
   state.refinementCount = 18;
   state.validation = {
     eyeClear: true,
@@ -214,7 +239,7 @@ describe("HELL resolution total full-grid inspection budget", () => {
       storedViews(id, variant, retained, comparison);
       await expect(
         resolveHellCameras(1, "/synthetic-camera-budget", [id], variant),
-      ).rejects.toThrow("passed geometry and selection");
+      ).rejects.toThrow("passed geometry");
       expect(state.inspections).toBe(50);
       const started = state.events.filter(
         (event) => event.stage === "validation-started",
@@ -233,7 +258,7 @@ describe("HELL resolution total full-grid inspection budget", () => {
       state.refinementCount = 0;
       await expect(
         resolveHellCameras(1, "/synthetic-camera-budget", ["HELL-1"], variant),
-      ).rejects.toThrow("passed geometry and selection");
+      ).rejects.toThrow("passed geometry");
       expect(state.inspections).toBe(50);
       expect(
         state.events.find(
@@ -250,12 +275,6 @@ describe("HELL resolution total full-grid inspection budget", () => {
     },
   );
   it.each([
-    {
-      variant: "production" as const,
-      retained: true,
-      comparison: false,
-      passAt: 1,
-    },
     {
       variant: "primitive" as const,
       retained: false,
@@ -296,4 +315,170 @@ describe("HELL resolution total full-grid inspection budget", () => {
         );
     },
   );
+  function unclearComposition() {
+    state.readability = {
+      ...state.readability,
+      passed: false,
+      reasons: ["hooked-witness-unreadable"],
+      score: 72,
+      families: { ...state.readability.families, hooked: [] },
+    };
+    state.passAlways = true;
+  }
+  const resolve = () =>
+    resolveHellCameras(1, "/synthetic-camera-budget", ["HELL-1"], "production");
+  it("saves the best safe ungraded view with failed diagnostics only after its bounded search", async () => {
+    unclearComposition();
+    storedViews("HELL-1", "production", true, false);
+    const result = await resolve();
+    expect(state.inspections).toBe(50);
+    expect(
+      state.events.some(
+        (e) => e.stage === "production-framing-validation-selected",
+      ),
+    ).toBe(true);
+    expect(result.resolution.entries[0]?.reused).toBe(false);
+    expect(result.cameras[0]).toMatchObject({
+      ungraded: true,
+      validation: { passed: true },
+      readability: { passed: false, reasons: ["hooked-witness-unreadable"] },
+      completedSearch: {
+        schema: 1,
+        fullGridCandidates: 50,
+        fullGridBudget: 50,
+        termination: "budget",
+      },
+    });
+  });
+  it("reuses an exactly bound completed ungraded search after fresh geometry/readability checks", async () => {
+    unclearComposition();
+    const first = await resolve();
+    state.inspections = 0;
+    state.events = [];
+    const again = await resolve();
+    expect(state.inspections).toBe(1);
+    expect(again.resolution.entries[0]?.reused).toBe(true);
+    expect(again.cameras[0]?.completedSearch).toEqual(
+      first.cameras[0]?.completedSearch,
+    );
+    expect(again.cameras[0]?.readability?.passed).toBe(false);
+    expect(
+      state.events.some(
+        (e) => e.stage === "production-framing-validation-selected",
+      ),
+    ).toBe(false);
+  });
+  it.each([
+    "source",
+    "resolver",
+    "seed",
+    "generation",
+    "variant",
+    "pose",
+    "target",
+    "budget",
+    "missing",
+  ] as const)(
+    "does not reuse a completed search after %s evidence changes",
+    async (change) => {
+      unclearComposition();
+      await resolve();
+      const manifest = state.document.phase13 as {
+        cameras: {
+          completedSearch?: {
+            seed: number;
+            worldgenVersion: number;
+            variant: string;
+            fullGridCandidates: number;
+          };
+          position: { x: number };
+          targetFeature: { fissureId?: number };
+        }[];
+      };
+      const camera = manifest.cameras[0];
+      const search = camera?.completedSearch;
+      if (!camera || !search) throw Error("Missing completed search fixture");
+      if (change === "source") state.sourceHash = "d".repeat(64);
+      else if (change === "resolver") state.resolverHash = "e".repeat(64);
+      else if (change === "seed") search.seed = 2;
+      else if (change === "generation") search.worldgenVersion++;
+      else if (change === "variant") search.variant = "primitive";
+      else if (change === "pose") camera.position.x += 1;
+      else if (change === "target") camera.targetFeature.fissureId = 9;
+      else if (change === "budget") search.fullGridCandidates = 51;
+      else delete camera.completedSearch;
+      state.inspections = 0;
+      state.events = [];
+      const again = await resolve();
+      expect(state.inspections).toBe(50);
+      expect(again.resolution.entries[0]?.reused).toBe(false);
+      expect(
+        state.events.some(
+          (e) => e.stage === "production-framing-validation-selected",
+        ),
+      ).toBe(true);
+    },
+  );
+  it("cannot reuse completed search evidence when fresh geometry fails", async () => {
+    unclearComposition();
+    await resolve();
+    state.inspections = 0;
+    state.events = [];
+    state.passAlways = false;
+    await expect(resolve()).rejects.toThrow("passed geometry");
+    expect(state.inspections).toBe(50);
+  });
+  it("inspects primitive comparison without inheriting production composition or search evidence", async () => {
+    unclearComposition();
+    const production = await resolve();
+    expect(production.cameras[0]?.completedSearch?.variant).toBe("production");
+    expect(production.cameras[0]?.readability).toBeDefined();
+    state.inspections = 0;
+    const primitive = await resolveHellCameras(
+      1,
+      "/synthetic-camera-budget",
+      ["HELL-1"],
+      "primitive",
+    );
+    expect(state.inspections).toBe(1);
+    expect(primitive.cameras[0]?.comparison?.productionView).toBe("matched");
+    expect(primitive.cameras[0]).not.toHaveProperty("completedSearch");
+    expect(primitive.cameras[0]).not.toHaveProperty("readability");
+    expect(primitive.cameras[0]).not.toHaveProperty("readabilitySetup");
+    expect(primitive.cameras[0]).toMatchObject({
+      ungraded: true,
+      validation: { passed: true },
+    });
+  });
+  it("retains HELL-2 search evidence only for the exact resolver while geometry reuse stays cheap", async () => {
+    state.passAlways = true;
+    const resolveCaldera = () =>
+      resolveHellCameras(
+        1,
+        "/synthetic-camera-budget",
+        ["HELL-2"],
+        "production",
+      );
+    const first = await resolveCaldera();
+    expect(first.cameras[0]?.completedSearch?.resolverHash).toBe(
+      state.resolverHash,
+    );
+    state.inspections = 0;
+    const same = await resolveCaldera();
+    expect(state.inspections).toBe(1);
+    expect(same.cameras[0]?.completedSearch).toEqual(
+      first.cameras[0]?.completedSearch,
+    );
+    state.resolverHash = "e".repeat(64);
+    state.inspections = 0;
+    const changed = await resolveCaldera();
+    expect(state.inspections).toBe(1);
+    expect(changed.resolution.entries[0]?.reused).toBe(true);
+    expect(changed.cameras[0]?.validatedByResolverHash).toBe(
+      state.resolverHash,
+    );
+    expect(changed.cameras[0]).not.toHaveProperty("completedSearch");
+    expect(changed.cameras[0]).not.toHaveProperty("readability");
+    expect(changed.cameras[0]).not.toHaveProperty("readabilitySetup");
+  });
 });

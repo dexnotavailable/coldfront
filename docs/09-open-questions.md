@@ -213,6 +213,14 @@ The agent appends to lists 2 and 3 and never blocks work waiting for answers.
 
 ---
 
+**2026-10-12 · Camera ranking and image review.**
+
+| # | Decision | Why | To reverse |
+|---|---|---|---|
+| 115 | **Extra composition proxies rank/refine cameras and remain visible diagnostics; geometric validation determines whether an ungraded image can be captured.** A completed bounded search may retain its best geometrically valid view with failed contour/family diagnostics. All §8.5 content, primitive calibration, seed score bars and mandatory HELL R2 = 2 still govern phase acceptance | The actual 50-view run found 16 geometrically valid cameras but rejected every one through added proxies. View 33 had a complete visible dominant contour but six border samples still blocked it. Its actual image then received a candid provisional 13/20, R2 = 1; that is useful evidence for improvement. Exact shape measurements also show a valid hooked thorn whose curl was hidden and compressed to about five pixels by the view. Keep optimization and source-bound completed-search reuse, allow images to be inspected, and preserve the strict final visual judgment | 04 §14.3 and HELL resolver/ranking tests. Restore a hard proxy only with evidence that it expresses an actual specification requirement; retain failure receipts and never silently convert an ungraded camera into a visual pass |
+
+---
+
 ## 3. Parking lot
 
 - Seasonal modifiers ("the Long Winter": a season with twice the winter)

@@ -33,6 +33,7 @@ import {
   thornContour,
 } from "../../src/postcards/hell-readability.js";
 import {
+  compareHellCandidates,
   forestFramingScore,
   hellSelectionPassed,
 } from "../../src/postcards/hell-resolve.js";
@@ -260,6 +261,195 @@ describe("bounded HELL-1 form selection", () => {
       ),
     };
   }
+  function missingHook(offset = 0) {
+    const dominant = asset({ id: 41, height: 40, base: [offset, 0, 120] });
+    const hook = asset(
+      { id: 92, hooked: true, height: 40, base: [30 + offset, 0, 100] },
+      [
+        [
+          [30 + offset, -4, 100],
+          [30 + offset, 10, 100],
+          [34 + offset, 32, 100],
+          [42 + offset, 36, 100],
+        ],
+        [
+          [42 + offset, 36, 100],
+          [54 + offset, 40, 100],
+          [55 + offset, 29, 100],
+          [47 + offset, 26, 100],
+        ],
+      ],
+    );
+    const camera = {
+      ...view,
+      position: { ...view.position, x: view.position.x + offset },
+      target: { ...view.target, x: view.target.x + offset },
+    };
+    const original = observation(dominant, camera);
+    if (
+      !original.readability ||
+      original.targetFeature.kind !== "thorn-cluster"
+    )
+      throw Error("Missing fixture");
+    const hidden: FramingObservation = {
+      ...original,
+      targetFeature: { ...original.targetFeature, featureIds: [41, 92] },
+      readability: {
+        ...original.readability,
+        passed: false,
+        families: { ...original.readability.families, hooked: [] },
+        parents: [
+          ...original.readability.parents,
+          {
+            id: 92,
+            cells: 4,
+            fraction: 4 / 2304,
+            borderCells: 0,
+            mainVisible: false,
+            bodyVisible: false,
+            rootCells: 0,
+            adjacentGroundCells: 0,
+          },
+        ],
+      },
+    };
+    return {
+      dominant,
+      hook,
+      hidden,
+      instance: (id: number) =>
+        id === 92 ? hook : id === 41 ? dominant : undefined,
+    };
+  }
+  it("targets an intact hidden hook even when the dominant contour already fits", () => {
+    const { dominant, hook, hidden, instance } = missingHook();
+    expect(framingEnvelope(hidden.view, dominant).complete).toBe(true);
+    let grounds = 0;
+    const events: Readonly<Record<string, unknown>>[] = [];
+    const candidates = productionFramingCandidates(
+      [hidden],
+      instance,
+      () => {
+        grounds++;
+        return 0;
+      },
+      allowPreflight,
+      (e) => events.push(e),
+    );
+    expect(candidates.length).toBeGreaterThan(0);
+    expect(candidates.length).toBeLessThanOrEqual(6);
+    expect(grounds).toBe(15);
+    expect(events.at(-1)).toMatchObject({
+      parents: 1,
+      proposals: 225,
+      groundQueries: 15,
+    });
+    for (const candidate of candidates) {
+      expect(candidate).toMatchObject({
+        objective: "hook-body",
+        focusId: 92,
+        dominantId: 41,
+      });
+      expect(candidate.view.position.y).toBe(1.62);
+      const contour = thornContour(candidate.view, hook);
+      expect(contour.useful).toBe(true);
+      expect(contour.hookPixels).toBeGreaterThanOrEqual(8);
+      expect(contour.hookTurnDegrees).toBeGreaterThanOrEqual(75);
+      expect(candidate.targetFeature).toBe(hidden.targetFeature);
+      expect(candidate).not.toHaveProperty("validation");
+    }
+    const blocked = productionFramingCandidates(
+      [hidden],
+      instance,
+      () => 0,
+      () => ({
+        ...allowPreflight(),
+        reasons: ["fissure-occluded"],
+      }),
+    );
+    expect(blocked).toEqual([]);
+    expect(
+      productionFramingCandidates(
+        [hidden],
+        (id) =>
+          id === 92
+            ? { ...hook, parameters: { ...hook.parameters, broken: true } }
+            : instance(id),
+        () => {
+          throw Error("No broken hook orbit");
+        },
+        allowPreflight,
+      ),
+    ).toEqual([]);
+  });
+  it("deduplicates source hook targets independent of input order and translates the orbit", () => {
+    const first = missingHook(),
+      moved = missingHook(2000);
+    const same = {
+      ...first.hidden,
+      view: {
+        ...first.hidden.view,
+        position: { ...first.hidden.view.position, z: 4.5 },
+      },
+    };
+    const run = (observations: readonly FramingObservation[]) =>
+      productionFramingCandidates(
+        observations,
+        first.instance,
+        () => 0,
+        allowPreflight,
+      );
+    expect(run([first.hidden, same]).map((p) => p.view)).toEqual(
+      run([same, first.hidden]).map((p) => p.view),
+    );
+    const a = run([first.hidden]),
+      b = productionFramingCandidates(
+        [moved.hidden],
+        moved.instance,
+        () => 0,
+        allowPreflight,
+      );
+    expect(b.length).toBe(a.length);
+    for (const candidate of b)
+      expect(
+        a.some(
+          (other) =>
+            Math.abs(candidate.view.position.x - 2000 - other.view.position.x) <
+              1e-8 &&
+            Math.abs(candidate.view.position.z - other.view.position.z) <
+              1e-8 &&
+            candidate.yawDeltaDegrees === other.yawDeltaDegrees &&
+            candidate.pitchDegrees === other.pitchDegrees,
+        ),
+      ).toBe(true);
+  });
+  it("ranks geometry first and family diversity before the largest-parent bonus", () => {
+    const { hidden } = missingHook(),
+      read = hidden.readability;
+    if (!read) throw Error("Missing readability fixture");
+    const safe = {
+      validation: { passed: true } as HellCameraValidation,
+      readability: read,
+      score: 100,
+    };
+    expect(
+      compareHellCandidates(safe, {
+        ...safe,
+        validation: { passed: false } as HellCameraValidation,
+        score: 10000,
+      }),
+    ).toBeGreaterThan(0);
+    const moreFamilies = {
+      ...safe,
+      score: 0,
+      readability: {
+        ...read,
+        families: { curved: [1], hooked: [2], branched: [3], broken: [4] },
+      },
+    };
+    expect(compareHellCandidates(moreFamilies, safe)).toBeGreaterThan(0);
+    expect(compareHellCandidates(safe, safe)).toBe(0);
+  });
   it("automatically frames a cropped dominant within the decision114 eye-level pitch bank", () => {
     const thorn = asset({ height: 40, base: [0, 0, 60] });
     expect(framingEnvelope(view, thorn).complete).toBe(false);

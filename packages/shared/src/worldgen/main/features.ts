@@ -368,7 +368,7 @@ export function sampleMainSolid(
       ground.surfaceY - y > 4 && ground.tag !== "base" ? "base" : ground.tag;
     const material = ibaraGroundMaterial(tag, mainTerrainMaterial(y, column));
     out.block = ibara.featureSample.featureId
-      ? ibaraMaterial(x, y, z, material, ibara.featureSample)
+      ? ibaraMaterial(x, y, z, material, ibara.featureSample, ground.surfaceY)
       : ground.tag === "base" && terrainBlock !== Block.Air
         ? terrainBlock
         : material;

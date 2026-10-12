@@ -5,11 +5,11 @@
       "id": "outline-ghost",
       "rows": ["hud.outline", "hud.ghost"],
       "image": "fixtures/ui/world-outline-ghost.jpg",
-      "imageSha256": "cff5efdee077e1484ab1404ef1d8b5c09350f1ddcd390a61993c88817f3eccfb",
+      "imageSha256": "f339b426547f7530276e577a49ac69231e6a8093faaa0988fa3215643d6388d3",
       "telemetry": "fixtures/ui/world-outline-ghost.json",
-      "telemetrySha256": "e8b9bc863cd8ed7a77a7b4ab6363cab466b61b3301e0ec2f098394aa62d6e75b",
+      "telemetrySha256": "767260a427e5f55333acaa269c3c607ec86faca21f7cf47b9123617a9355bb59",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "2ef310873d507b148c0b6e346783df95e8b02722578b984d2c1b9cead3f719aa",
+      "runReceiptSha256": "f71b2e5c9d4e67ecccf1c5331a45c42cd1ba2aeca85d91504f4ba15daaf71162",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -29,7 +29,7 @@
         },
         {
           "path": "packages/client/src/engine/chunk-store.ts",
-          "sha256": "a32ac094d1311cbfcf8bd14f441218e20d4f641260163edd3d3307b02909be7e"
+          "sha256": "2c9881ec9329beb9fdd393e8eabe1a58c811ed1d7844b0bf3738987616583f0f"
         },
         {
           "path": "packages/client/src/engine/cut-cap.ts",
@@ -105,7 +105,7 @@
         },
         {
           "path": "packages/client/src/game/create-game.ts",
-          "sha256": "f3985d5af9b0b8da6a8d0c5d1adaa68185152b72b31380fa99779b7315a357e0"
+          "sha256": "c8be2cc4c9253b03d165a623cec7119eeca6de54b25d3d871df37a8cb944a50a"
         },
         {
           "path": "packages/client/src/game/destination.ts",
@@ -285,7 +285,7 @@
         },
         {
           "path": "packages/shared/src/worldgen/main/features.ts",
-          "sha256": "0e6c7698967a9800b62ce6f55c30736a3e8ce7f37b628a30d9e36baf27bbb141"
+          "sha256": "31b58f7f524ed6fdac98a7692e2ef19d0376b1c555cf76837e8367bcfa7307e7"
         },
         {
           "path": "packages/shared/src/worldgen/main/ibara-ground.ts",
@@ -293,7 +293,7 @@
         },
         {
           "path": "packages/shared/src/worldgen/main/ibara-material.ts",
-          "sha256": "cff91f41e9bffd77a739a91efdfd1d109f7ead7a3e3929e618602a98524437c1"
+          "sha256": "cebc7d7c66f55d79c18440289f8ab3a2873621e135313bd6bf5d6e05feab3b07"
         },
         {
           "path": "packages/shared/src/worldgen/main/ibara-primitive.ts",
@@ -370,7 +370,7 @@
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
         "sourceImage": "out/engine/hud-repair/outline-ghost.png",
-        "sourceImageSha256": "95ab02be832ff19a466b0cb5433d7e1a5d80714ce62efd6475aaddf151680f31",
+        "sourceImageSha256": "e295af97d748d8aec36bc4d47a99c1c6be15e757a8f60df2c4056b02db00c2c8",
         "quality": 85,
         "width": 1280,
         "height": 720,
@@ -381,11 +381,11 @@
       "id": "silhouette",
       "rows": ["hud.silhouette"],
       "image": "fixtures/ui/world-silhouette.jpg",
-      "imageSha256": "92cc76c87335fd8b82e47bb13769cd7698da3db8780f115c585f2d1e525b69f4",
+      "imageSha256": "1180e117c01953ab23f520bf0b8933f68bd1c20bab90e2e2e6b22bbf47bc5abb",
       "telemetry": "fixtures/ui/world-silhouette.json",
-      "telemetrySha256": "01f757ed1e09f16e111815252792113ff7e3f6a463902cc299f35a64d91135a0",
+      "telemetrySha256": "cc7a2549c80b1e3994493725872b6ffb01b8782a5000fc4d6b82c9d9733b8778",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "2ef310873d507b148c0b6e346783df95e8b02722578b984d2c1b9cead3f719aa",
+      "runReceiptSha256": "f71b2e5c9d4e67ecccf1c5331a45c42cd1ba2aeca85d91504f4ba15daaf71162",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -405,7 +405,7 @@
         },
         {
           "path": "packages/client/src/engine/chunk-store.ts",
-          "sha256": "a32ac094d1311cbfcf8bd14f441218e20d4f641260163edd3d3307b02909be7e"
+          "sha256": "2c9881ec9329beb9fdd393e8eabe1a58c811ed1d7844b0bf3738987616583f0f"
         },
         {
           "path": "packages/client/src/engine/cut-cap.ts",
@@ -481,7 +481,7 @@
         },
         {
           "path": "packages/client/src/game/create-game.ts",
-          "sha256": "f3985d5af9b0b8da6a8d0c5d1adaa68185152b72b31380fa99779b7315a357e0"
+          "sha256": "c8be2cc4c9253b03d165a623cec7119eeca6de54b25d3d871df37a8cb944a50a"
         },
         {
           "path": "packages/client/src/game/destination.ts",
@@ -661,7 +661,7 @@
         },
         {
           "path": "packages/shared/src/worldgen/main/features.ts",
-          "sha256": "0e6c7698967a9800b62ce6f55c30736a3e8ce7f37b628a30d9e36baf27bbb141"
+          "sha256": "31b58f7f524ed6fdac98a7692e2ef19d0376b1c555cf76837e8367bcfa7307e7"
         },
         {
           "path": "packages/shared/src/worldgen/main/ibara-ground.ts",
@@ -669,7 +669,7 @@
         },
         {
           "path": "packages/shared/src/worldgen/main/ibara-material.ts",
-          "sha256": "cff91f41e9bffd77a739a91efdfd1d109f7ead7a3e3929e618602a98524437c1"
+          "sha256": "cebc7d7c66f55d79c18440289f8ab3a2873621e135313bd6bf5d6e05feab3b07"
         },
         {
           "path": "packages/shared/src/worldgen/main/ibara-primitive.ts",
@@ -746,7 +746,7 @@
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
         "sourceImage": "out/engine/hud-repair/silhouette.png",
-        "sourceImageSha256": "06fe100a07f7b09d7ff9d47994bcc307fff35583323af402d03a7c3d040926b3",
+        "sourceImageSha256": "74dac29066bb2cdbd609025918e44f551732a7cf5c191d30ae74608cb1d680e5",
         "quality": 85,
         "width": 1280,
         "height": 720,

@@ -18,7 +18,8 @@ const thorn: IbaraMaterialSample = Object.freeze({
 const material = (
   changes: Partial<IbaraMaterialSample> = {},
   base = Block.Stone as number,
-): number => ibaraMaterial(-27.5, 92.5, -4.5, base, { ...thorn, ...changes });
+): number =>
+  ibaraMaterial(-27.5, 92.5, -4.5, base, { ...thorn, ...changes }, 0);
 
 it("maps only the authoritative ground tag, preserving base terrain and fluid ownership", () => {
   for (const base of [Block.Air, Block.Stone, Block.Water, Block.Lava])
@@ -67,22 +68,46 @@ describe.each(["obsidian", "basalt"] as const)("%s thorn", (core) => {
   });
 });
 
-it("grounds patchy ash at primary roots while scree and airborne roots keep their core", () => {
+it("grounds coherent ash patches by local surface height across roots and buried debris", () => {
   const counts = new Map<number, number>();
   for (let x = -16; x < 16; x++)
     for (let z = -16; z < 16; z++) {
-      const sample = { ...thorn, t: 0.03 };
-      const block = ibaraMaterial(x, -0.5, z, Block.Ash, sample);
+      // At this visible foot the old t<0.055 band is already underground.
+      const sample = { ...thorn, t: 0.14 };
+      const block = ibaraMaterial(x, 41.75, z, Block.Ash, sample, 40);
       counts.set(block, (counts.get(block) ?? 0) + 1);
-      expect(ibaraMaterial(x, -0.5, z, Block.Ash, sample)).toBe(block);
-      expect(ibaraMaterial(x, -0.5, z, Block.Air, sample)).toBe(Block.Obsidian);
-      for (const kind of ["branch", "debris", "rubble"] as const)
-        expect(ibaraMaterial(x, -0.5, z, Block.Ash, { ...sample, kind })).toBe(
-          Block.Obsidian,
-        );
+      expect(ibaraMaterial(x, 41.75, z, Block.Ash, sample, 40)).toBe(block);
+      // Coating is measured above this column, not world sea level or spine t.
+      expect(ibaraMaterial(x, -18.25, z, Block.Ash, sample, -20)).toBe(block);
+      expect(ibaraMaterial(x, 41.75, z, Block.Air, sample, 40)).toBe(
+        Block.Obsidian,
+      );
+      for (const kind of ["debris", "rubble"] as const)
+        expect(
+          ibaraMaterial(x, 41.75, z, Block.Ash, { ...sample, kind }, 40),
+        ).toBe(block);
       expect(
-        ibaraMaterial(x, -0.5, z, Block.Ash, { ...sample, t: 0.055 }),
+        ibaraMaterial(
+          x,
+          41.75,
+          z,
+          Block.Ash,
+          { ...sample, kind: "branch" },
+          40,
+        ),
       ).toBe(Block.Obsidian);
+      for (const kind of ["thorn", "debris", "rubble"] as const) {
+        expect(
+          ibaraMaterial(x, 40, z, Block.Ash, { ...sample, kind }, 40),
+        ).toBe(Block.Ash);
+        expect(
+          ibaraMaterial(x, 43, z, Block.Ash, { ...sample, kind, t: 0.02 }, 40),
+        ).toBe(Block.Obsidian);
+        for (const base of [Block.Basalt, Block.Obsidian, Block.SulphurCrust])
+          expect(ibaraMaterial(x, 40, z, base, { ...sample, kind }, 40)).toBe(
+            Block.Obsidian,
+          );
+      }
     }
   expect([...counts.keys()].sort((a, b) => a - b)).toEqual([
     Block.Ash,
@@ -92,23 +117,44 @@ it("grounds patchy ash at primary roots while scree and airborne roots keep thei
   expect(counts.get(Block.Ash)).toBeLessThan(640);
 });
 
+it("makes broad deposits with vertically nested edges, without voxel hash speckle", () => {
+  let transitions = 0;
+  for (let x = -20; x < 20; x++)
+    for (let z = -20; z < 20; z++) {
+      let ended = false;
+      for (const height of [0, 0.5, 1, 1.5, 2, 2.5, 3]) {
+        const block = ibaraMaterial(x, height, z, Block.Ash, thorn, 0);
+        if (block !== Block.Ash) ended = true;
+        else expect(ended).toBe(false);
+      }
+      const here = ibaraMaterial(x, 1.5, z, Block.Ash, thorn, 0);
+      transitions += Number(
+        here !== ibaraMaterial(x + 1, 1.5, z, Block.Ash, thorn, 0),
+      );
+    }
+  // A 40x40 binary speckle field would change roughly every other voxel.
+  // Five-metre deposition patches retain wide, connected material runs.
+  expect(transitions).toBeGreaterThan(20);
+  expect(transitions).toBeLessThan(400);
+});
+
 it("is query-order independent, does not mutate the sample and keeps exact uint32 identities", () => {
   const positions = [-64.5, -32.5, -0.5, 0.5, 32.5, 64.5];
   for (const featureId of [1, 16777216, 16777217, 33554431, 0xffffffff]) {
     const sample = Object.freeze({ ...thorn, featureId, t: 0.02 });
     const ascending = positions.map((x) =>
-      ibaraMaterial(x, 4, -x, Block.Ash, sample),
+      ibaraMaterial(x, 4, -x, Block.Ash, sample, 2.5),
     );
     const descending = [...positions]
       .reverse()
-      .map((x) => ibaraMaterial(x, 4, -x, Block.Ash, sample));
+      .map((x) => ibaraMaterial(x, 4, -x, Block.Ash, sample, 2.5));
     expect(descending.reverse()).toEqual(ascending);
     expect(sample).toEqual({ ...thorn, featureId, t: 0.02 });
   }
   // Adjacent IDs above float32's exact range are still different input hashes.
   const pattern = (featureId: number): number[] =>
     positions.map((x) =>
-      ibaraMaterial(x, 4, -x, Block.Ash, { ...thorn, featureId, t: 0.02 }),
+      ibaraMaterial(x, 4, -x, Block.Ash, { ...thorn, featureId, t: 0.02 }, 2.5),
     );
   expect(pattern(16777216)).not.toEqual(pattern(16777217));
 });

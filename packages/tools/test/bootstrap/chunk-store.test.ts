@@ -51,7 +51,10 @@ vi.mock("../../../client/src/engine/worker-pool.js", () => ({
   },
 }));
 
-import { ChunkStore } from "../../../client/src/engine/chunk-store.js";
+import {
+  ChunkStore,
+  planChunkView,
+} from "../../../client/src/engine/chunk-store.js";
 
 const world: WorldSession = {
   id: 1,
@@ -65,6 +68,166 @@ beforeEach(() => {
   fixture.releases.length = 0;
 });
 describe("conservative streaming and real mesh readiness", () => {
+  it("retains only valid uploaded destination overlap and requests missing chunks once with unchanged output", async () => {
+    const context = {
+      conservativeBounds: (_bounds: unknown, out: object) =>
+        Object.assign(out, {
+          minSurfaceY: 0,
+          maxSurfaceY: 0,
+          maxSolidY: 0,
+          maxFluidY: -Infinity,
+        }),
+    } as unknown as WorldContext;
+    const store = new ChunkStore(world, context, null, []),
+      pool = store.workers;
+    const first = store.planView(0.5, 1.62, 0.5, 32);
+    expect(fixture.jobs).toHaveLength(0); // Planning does not create work.
+    await store.requestPlannedView(first);
+    for (const chunk of store.chunks.values()) chunk.state = "visible";
+    store.uploads.length = 0;
+    const original = new Map(store.chunks);
+    const next = store.planView(32.5, 1.62, 0.5, 32),
+      key = (a: Address) => `${a.cx},${a.cy},${a.cz}`;
+    const retained = next.addresses.filter((a) => store.hasView([a], true));
+    const keep = new Set(retained.map(key));
+    expect(retained.length).toBeGreaterThan(0);
+    expect(retained.length).toBeLessThan(next.addresses.length);
+    const removed = store.retain(retained);
+    expect(new Set(removed)).toEqual(
+      new Set(first.addresses.map(key).filter((k) => !keep.has(k))),
+    );
+    const before = fixture.jobs.length;
+    await store.requestPlannedView(next);
+    expect(fixture.jobs.slice(before)).toEqual(
+      next.addresses.filter((a) => !keep.has(key(a))),
+    );
+    expect(store.chunks.size).toBe(next.addresses.length);
+    expect(store.workers).toBe(pool);
+    for (const address of retained) {
+      expect(store.chunks.get(key(address))).toBe(original.get(key(address)));
+      expect(store.chunks.get(key(address))?.state).toBe("visible");
+    }
+    expect(store.hasView(next.addresses, true)).toBe(false);
+    expect(store.uploads.map((r) => key(r.address))).toEqual(
+      next.addresses.filter((a) => !keep.has(key(a))).map(key),
+    );
+    for (const chunk of store.chunks.values()) chunk.state = "visible";
+    store.uploads.length = 0;
+    expect(store.hasView(next.addresses, true)).toBe(true);
+    const after = fixture.jobs.length;
+    await store.requestPlannedView(next);
+    expect(fixture.jobs).toHaveLength(after); // Identical view needs no new work.
+    const cold = new ChunkStore(world, context, null, []);
+    await cold.requestPlannedView(cold.planView(32.5, 1.62, 0.5, 32));
+    for (const address of next.addresses)
+      expect(store.chunks.get(key(address))?.result?.blocks).toEqual(
+        cold.chunks.get(key(address))?.result?.blocks,
+      );
+    store.dispose();
+    cold.dispose();
+  });
+  it("fails planning before eviction and preserves priority/bounds while dispatching that single plan", async () => {
+    const bounds = vi.fn((_bounds: unknown, out: object) =>
+      Object.assign(out, {
+        minSurfaceY: 0,
+        maxSurfaceY: 0,
+        maxSolidY: 40,
+        maxFluidY: -Infinity,
+      }),
+    );
+    const context = { conservativeBounds: bounds } as unknown as WorldContext;
+    const store = new ChunkStore(world, context, null, []);
+    await store.request({ cx: 0, cy: 0, cz: 0 });
+    const before = new Map(store.chunks);
+    expect(() => store.planView(0, 0, 0, 601)).toThrow("frame");
+    expect(store.chunks).toEqual(before);
+    const plan = store.planView(32.5, 10, 0.5, 32);
+    const count = bounds.mock.calls.length;
+    expect(plan.jobs).toEqual(planChunkView(context, [], 32.5, 10, 0.5, 32));
+    const afterPlanning = bounds.mock.calls.length;
+    await store.requestPlannedView(plan);
+    expect(bounds.mock.calls.length).toBe(afterPlanning);
+    expect(afterPlanning).toBe(count * 2);
+    const jobs = fixture.jobs.length;
+    await expect(
+      store.requestPlannedView({
+        ...plan,
+        world: {
+          ...world,
+          identity: { ...world.identity, generation: "other" },
+        },
+      }),
+    ).rejects.toThrow("another world");
+    expect(fixture.jobs).toHaveLength(jobs);
+    store.dispose();
+  });
+  it.each([
+    "revision",
+    "session",
+    "generation",
+    "address",
+    "not-uploaded",
+  ] as const)(
+    "never qualifies %s cached data as uploaded overlap",
+    async (kind) => {
+      const store = new ChunkStore(world, {} as WorldContext, null, []),
+        address = { cx: 0, cy: 0, cz: 0 };
+      await store.request(address);
+      const chunk = store.chunks.get("0,0,0");
+      if (!chunk?.result) throw new Error("Missing result");
+      chunk.state = "visible";
+      if (kind === "revision") chunk.revision++;
+      if (kind === "session")
+        chunk.result = { ...chunk.result, world: { ...world, id: 2 } };
+      if (kind === "generation")
+        chunk.result = {
+          ...chunk.result,
+          world: {
+            ...world,
+            identity: { ...world.identity, generation: "other" },
+          },
+        };
+      if (kind === "address")
+        chunk.result = { ...chunk.result, address: { cx: 1, cy: 0, cz: 0 } };
+      if (kind === "not-uploaded") chunk.state = "meshing";
+      expect(store.hasView([address], true)).toBe(false);
+      expect(store.retain([])).toEqual(["0,0,0"]);
+      expect(store.uploads).toEqual([]); // No stale queue can resurrect eviction.
+      const before = fixture.jobs.length;
+      await store.request(address);
+      expect(fixture.jobs).toHaveLength(before + 1);
+      expect(store.hasView([address])).toBe(true);
+      expect(store.hasView([address], true)).toBe(false);
+      store.dispose();
+    },
+  );
+  it("keeps retained results but rejects a destination with failed missing work", async () => {
+    const context = {
+      conservativeBounds: (_bounds: unknown, out: object) =>
+        Object.assign(out, {
+          minSurfaceY: 0,
+          maxSurfaceY: 0,
+          maxSolidY: 0,
+          maxFluidY: -Infinity,
+        }),
+    } as unknown as WorldContext;
+    const store = new ChunkStore(world, context, null, []),
+      first = store.planView(0.5, 1.62, 0.5, 32);
+    await store.requestPlannedView(first);
+    for (const chunk of store.chunks.values()) chunk.state = "visible";
+    store.uploads.length = 0;
+    const next = store.planView(32.5, 1.62, 0.5, 32),
+      retained = next.addresses.filter((a) => store.hasView([a], true));
+    store.retain(retained);
+    fixture.fail = true;
+    await expect(store.requestPlannedView(next)).rejects.toThrow(
+      "generation failure",
+    );
+    expect(store.hasView(retained, true)).toBe(true);
+    expect(store.hasView(next.addresses)).toBe(false);
+    expect(store.chunks.size).toBeLessThanOrEqual(next.addresses.length);
+    store.dispose();
+  });
   it("reports shared cache counts once and every retained prepared reference without guessed heap bytes", () => {
     const stats = {
       geometryCells: 3,
