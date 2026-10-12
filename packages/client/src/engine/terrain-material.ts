@@ -109,7 +109,7 @@ export function createTerrainMaterials(clip: Plane): {
       clipShadows: true,
     });
     material.customProgramCacheKey = () =>
-      `coldfront-terrain-r186-v3-ibara-class-${kind}`;
+      `coldfront-terrain-r186-v3-ibara-class-${kind}${kind === 4 ? "-filtered-lava-v1" : ""}`;
     material.onBeforeCompile = (shader) => {
       Object.assign(shader.uniforms, {
         uViewMode: uniforms.viewMode,
@@ -202,9 +202,16 @@ float cfMacro(vec2 p) {
 }
 // Slow cellular plates. Only the luminous cracks move; the fluid surface and
 // its occlusion remain the exact meshed voxel boundary.
+float cfLavaCrackIntegral(float offset) {
+  // Integral of the original smooth crack profile, extended evenly about an
+  // edge. Box filtering preserves its narrow hot area instead of widening it.
+  float d=abs(offset), t=clamp((d-0.025)/0.115,0.0,1.0);
+  return sign(offset)*(min(d,0.025)+0.115*(t-t*t*t+0.5*t*t*t*t));
+}
 float cfLavaCracks(vec2 world, float seconds) {
   vec2 p=world*0.62 + vec2(seconds*0.018,seconds*0.011);
   p += vec2(cfMacro(world/7.0),cfMacro(world/7.0+17.0))*0.38;
+  float footprint=max(length(dFdx(p)),length(dFdy(p)));
   vec2 base=floor(p), local=fract(p);
   float nearest=10.0, nextNearest=10.0;
   for(int z=-1;z<=1;z++) for(int x=-1;x<=1;x++) {
@@ -215,7 +222,12 @@ float cfLavaCracks(vec2 world, float seconds) {
     if(d<nearest) { nextNearest=nearest; nearest=d; }
     else nextNearest=min(nextNearest,d);
   }
-  return 1.0-smoothstep(0.025,0.14,nextNearest-nearest);
+  float gap=nextNearest-nearest;
+  float width=max(fwidth(gap),0.0001);
+  float cracks=clamp((cfLavaCrackIntegral(gap+width*0.5)-cfLavaCrackIntegral(gap-width*0.5))/width,0.0,1.0);
+  // Once individual cells approach a pixel, retain the mask's sampled area
+  // mean (0.175), not full emission. Near cracks and their motion stay intact.
+  return mix(cracks,0.175,smoothstep(0.25,0.75,footprint));
 }`,
       );
       shader.fragmentShader = shader.fragmentShader.replace(
@@ -228,7 +240,8 @@ uint hash = cfHash(cell);
 float block = floor(vSurface.x+0.5);
 if(block == 4.0 && vVoxelNormal.y < -0.5) block=3.0;
 float layer = block*6.0 + (vVoxelNormal.y > 0.5 ? 3.0 : 0.0) + float(hash%3u);
-vec2 tiled = abs(vVoxelNormal.y)>0.5 ? absoluteWorld.xz : abs(vVoxelNormal.x)>0.5 ? absoluteWorld.zy : absoluteWorld.xy;
+vec2 worldFace = abs(vVoxelNormal.y)>0.5 ? absoluteWorld.xz : abs(vVoxelNormal.x)>0.5 ? absoluteWorld.zy : absoluteWorld.xy;
+vec2 tiled = worldFace;
 // Variant rotation belongs to the shader, never to the greedy merge key.
 if((hash & 4u)!=0u) tiled.x=-tiled.x;
 vec4 texel = texture(uTiles,vec3(fract(tiled),layer));
@@ -280,7 +293,7 @@ if(uViewMode<0.5) {
     float breath=1.0+0.1*sin(uDisplay*0.0011+phase);
     ${
       kind === 4
-        ? `float cracks=cfLavaCracks(tiled,uDisplay*0.001);
+        ? `float cracks=cfLavaCracks(worldFace,uDisplay*0.001);
     outgoingLight *= mix(0.38,0.9,cracks);
     float sourceMask=cracks;`
         : `// P3 marks hot seams by red excess; cool dark crust stays unlit.

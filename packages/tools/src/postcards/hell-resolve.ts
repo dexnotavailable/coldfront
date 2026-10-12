@@ -41,6 +41,8 @@ import {
   supportingVoxelTop,
 } from "./geometry.js";
 import {
+  bankFocusPairs,
+  bankPairAdmission,
   ensembleFissureWitnesses,
   ensembleFramingScore,
   FOREST_ENSEMBLE_BUDGET,
@@ -352,6 +354,7 @@ function seesFissure(
   witness: FissureWitness,
   query: CameraQuery,
   lava: (x: number, z: number) => Readonly<LavaSample>,
+  onFirstHit?: (hit: Attempt) => void,
 ): boolean {
   const p = view.position,
     dx = witness.x - p.x,
@@ -365,18 +368,35 @@ function seesFissure(
       z = p.z + dz * t,
       hit = query.voxel(x, y, z);
     if (hit.density > 0 || hit.fluid !== 0) {
-      if (hit.block !== Block.Lava) return false;
+      const firstHit = {
+        distance: Math.min(d, length),
+        x: Math.floor(x) + 0.5,
+        y: Math.floor(y) + 0.5,
+        z: Math.floor(z) + 0.5,
+        block: hit.block,
+        featureId: hit.featureId ?? null,
+      };
+      if (hit.block !== Block.Lava) {
+        onFirstHit?.({
+          ...firstHit,
+          kind: hit.featureId ? "feature" : "ground-or-other-fluid",
+          visible: false,
+        });
+        return false;
+      }
       const owner = lava(Math.floor(x) + 0.5, Math.floor(z) + 0.5),
         centreY = Math.floor(y) + 0.5;
-      return (
+      const visible =
         owner.kind === "lava" &&
         owner.source === "fissure" &&
         owner.bodyId === witness.fissureId &&
         centreY > owner.bed &&
-        centreY <= owner.level
-      );
+        centreY <= owner.level;
+      onFirstHit?.({ ...firstHit, kind: "lava", owner: { ...owner }, visible });
+      return visible;
     }
   }
+  onFirstHit?.({ kind: "no-first-hit", visible: false });
   return false;
 }
 /** Preserve the exact observed voxel, including Y. Older analytic targets keep
@@ -451,20 +471,93 @@ export function forestSceneCandidates(
       attempt: number;
     }[]
   >();
-  let attempt = 0;
+  let attempt = 0,
+    bankEyes = 0,
+    bankWetRays = 0;
   for (const witness of witnesses) {
     const disc = { x: witness.x, z: witness.z, radius: 144 };
     let roots: readonly ForestRoot[] | undefined;
     let ensembleLoaded = false;
+    const ensemble = formAware ? witness.ensemble : undefined;
+    if (ensemble && !instanceFor)
+      throw Error("Bank pairing requires source instances");
     for (const radius of [3, 5, 8, 12, 20])
       for (let k = 0; k < 8; k++) {
         const angle = (k * Math.PI) / 4,
           x = Math.floor(witness.x + Math.cos(angle) * radius) + 0.5,
           z = Math.floor(witness.z + Math.sin(angle) * radius) + 0.5;
         const y = Math.ceil(groundHeight(x, z) - 0.5) + 1.62;
-        for (const turn of [-0.6, 0, 0.6])
+        let headings: { yaw: number; pair?: ForestEnsemble; risk?: number }[];
+        if (ensemble && instanceFor) {
+          const bankView: MainCameraCandidate = {
+            region: "hellscape",
+            kind: "eye-level",
+            position: { x, y, z },
+            target: { x: witness.x, y, z: witness.z },
+            hours: 17.25,
+            radius: 512,
+          };
+          bankEyes++;
+          const supported = walkableEye(query, x, y, z);
+          let firstHit: Attempt | undefined;
+          let wetVisible = false;
+          if (supported) {
+            bankWetRays++;
+            wetVisible = seesFissure(bankView, witness, query, lava, (hit) => {
+              firstHit = hit;
+            });
+          }
+          record({
+            stage: "ensemble-bank-observation",
+            id: "HELL-1",
+            ensembleId: ensemble.id,
+            fissureId: witness.fissureId,
+            eye: bankView.position,
+            wet: { x: witness.x, y: witness.y, z: witness.z },
+            supported,
+            wetVisible,
+            firstHit,
+            status: !supported
+              ? "rejected-body-or-support"
+              : !wetVisible
+                ? "rejected-wet-first-hit"
+                : "observed-owned-wet",
+          });
+          if (!supported || !wetVisible) continue;
+          if (!ensembleLoaded) {
+            targetFor(disc, witness.fissureId);
+            ensembleLoaded = true;
+          }
+          const pairs = bankFocusPairs(
+            ensemble,
+            witness,
+            bankView.position,
+            instanceFor,
+          );
+          headings = pairs.map((pair) => ({
+            yaw: Math.atan2(pair.aim.x - x, pair.aim.z - z),
+            pair: pair.ensemble,
+            risk: pair.standOffRisk,
+          }));
+          record({
+            stage: "ensemble-bank-focus-pairs",
+            id: "HELL-1",
+            ensembleId: ensemble.id,
+            eye: bankView.position,
+            pairs: pairs.map((pair) => ({
+              focusIds: [pair.ensemble.hook.id, pair.ensemble.branch.id],
+              aim: pair.aim,
+              standOffRisk: pair.standOffRisk,
+            })),
+            limit: 3,
+          });
+        } else
+          headings = [-0.6, 0, 0.6].map((turn) => ({
+            yaw: Math.atan2(witness.x - x, witness.z - z) + turn,
+          }));
+        for (const heading of headings)
           for (const pitch of FOREST_CAMERA_PITCHES) {
-            const yaw = Math.atan2(witness.x - x, witness.z - z) + turn;
+            const yaw = heading.yaw;
             const view: MainCameraCandidate = {
               region: "hellscape",
               kind: "eye-level",
@@ -477,6 +570,10 @@ export function forestSceneCandidates(
               hours: 17.25,
               radius: 512,
             };
+            const pairing =
+              heading.pair && instanceFor
+                ? bankPairAdmission(view, heading.pair, witness, instanceFor)
+                : undefined;
             const identity = {
               stage: "preflight",
               id: "HELL-1",
@@ -485,9 +582,23 @@ export function forestSceneCandidates(
               ...(witness.ensemble ? { ensembleId: witness.ensemble.id } : {}),
               rootDisc: disc,
               view,
+              ...(pairing
+                ? {
+                    bankPairFraming: pairing,
+                    sourceFocusIds: [
+                      heading.pair?.hook.id,
+                      heading.pair?.branch.id,
+                    ],
+                    standOffRisk: heading.risk,
+                  }
+                : {}),
             };
             const reject = (reason: string) =>
               record({ ...identity, status: "rejected", reason });
+            if (pairing && !pairing.admitted) {
+              reject(`bank-pair-frame:${pairing.reasons.join(",")}`);
+              continue;
+            }
             const frame = cameraFrame(view);
             if (frame.sunOffsetDegrees < 60 || frame.sunOffsetDegrees > 150) {
               reject("dusk-light");
@@ -519,11 +630,11 @@ export function forestSceneCandidates(
               reject("central-ground");
               continue;
             }
-            if (!walkableEye(query, x, y, z)) {
+            if (!ensemble && !walkableEye(query, x, y, z)) {
               reject("body-or-support");
               continue;
             }
-            if (!seesFissure(view, witness, query, lava)) {
+            if (!ensemble && !seesFissure(view, witness, query, lava)) {
               reject("fissure-occluded");
               continue;
             }
@@ -542,17 +653,14 @@ export function forestSceneCandidates(
               reject("sparse-local-forest");
               continue;
             }
-            // Materialize this same source-bound coverage target once per
-            // witness, before ranking its whole nominated forms. This reuses
-            // the target/instance caches; no additional pose or grid is added.
-            if (witness.ensemble && instanceFor && !ensembleLoaded) {
-              targetFor(disc, witness.fissureId);
-              ensembleLoaded = true;
-            }
             const score = formAware
               ? forestFramingScore(view, tall) +
                 (witness.ensemble
-                  ? ensembleFramingScore(view, witness.ensemble, instanceFor)
+                  ? ensembleFramingScore(
+                      view,
+                      heading.pair ?? witness.ensemble,
+                      instanceFor,
+                    )
                   : 0)
               : tall.reduce((sum, root) => {
                   const dx = root.x - x,
@@ -584,7 +692,9 @@ export function forestSceneCandidates(
             group.push({
               view,
               disc,
-              witness,
+              witness: heading.pair
+                ? { ...witness, ensemble: heading.pair }
+                : witness,
               score,
               attempt: identity.attempt,
             });
@@ -629,6 +739,14 @@ export function forestSceneCandidates(
         proposal: candidate.attempt,
         view: candidate.view,
         targetFeature,
+        ...(candidate.witness.ensemble
+          ? {
+              sourceFocusIds: [
+                candidate.witness.ensemble.hook.id,
+                candidate.witness.ensemble.branch.id,
+              ],
+            }
+          : {}),
       });
       if (candidates.length === 50) break;
     }
@@ -638,6 +756,8 @@ export function forestSceneCandidates(
     stage: "proposal-summary",
     id: "HELL-1",
     proposals: attempt,
+    bankEyes,
+    bankWetRays,
     fissurePatches: groups.size,
     fullGridCandidates: candidates.length,
   });

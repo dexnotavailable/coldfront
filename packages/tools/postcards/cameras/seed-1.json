@@ -646,19 +646,19 @@
     "seed": 1,
     "worldgenVersion": 4,
     "sourceHash": "91f1471f8154038cc5ebaef7cf8e4f79b7cb4949591e2cb9cf81f7cf3c5b3a41",
-    "resolverHash": "45ccf841e63d4fa9d810a26fd8868f33adecda091365ae9b3f43fd8b76ba63b0",
+    "resolverHash": "3be713bd6dc3597a09e5a41f3ef93bbf627e4b54e11c8eebe194ea77a93cf4f4",
     "variant": "production",
     "cameras": [
       {
         "position": {
-          "x": 4374.5,
-          "y": 39.62,
-          "z": 5553.5
+          "x": 5669.5,
+          "y": 30.62,
+          "z": 5417.5
         },
         "target": {
-          "x": 4329.245166004061,
-          "y": 45.21927446565913,
-          "z": 5508.245166004061
+          "x": 5705.6371182972825,
+          "y": 36.21927446565914,
+          "z": 5470.321479354219
         },
         "hours": 17.25,
         "radius": 512,
@@ -670,63 +670,67 @@
         "targetFeature": {
           "kind": "thorn-cluster",
           "featureIds": [
-            10196483, 10196487, 10196491, 10196493, 10196503, 10196509,
-            10196510, 10196515, 10196518, 10196520, 10261783, 10261789,
-            10261798, 10262017, 10262018, 10262019, 10262020, 10262021,
-            10262022, 10262023, 10262024, 10262025, 10262026, 10262027,
-            10262028, 10262029, 10262030, 10262031, 10262032, 10262033,
-            10262034, 10262035, 10262036, 10262037, 10262038, 10262039,
-            10262040, 10262041, 10262042, 10262043, 10262044, 10262045,
-            10262046, 10262047, 10262048, 10262049, 10262050, 10262051,
-            10262052, 10262053, 10262054, 10262055, 10262056, 25395713
+            10198273, 10198277, 10198278, 10198279, 10198282, 10198284,
+            10198285, 10198286, 10198287, 10198288, 10198289, 10198290,
+            10198292, 10198294, 10198295, 10198298, 10198299, 10198300,
+            10198301, 10198304, 10198306, 10198307, 10198308, 10198309,
+            10198311, 10263874, 10263876, 10263878, 10263879, 10263881,
+            10263882, 10263883, 10263885, 10263886, 10263887, 10263888,
+            10263889, 10263891, 10263893, 10263894, 10263895, 10263896,
+            10263898, 10263899, 10263900, 10263901, 10263902, 10263903,
+            10263904, 10263906, 10263908, 10263909, 10263910, 10263911,
+            10264072, 10264073, 10264074, 10264075, 10264076, 10264077,
+            10264078, 10264081, 10264082, 10264085, 10264090, 10264094,
+            10264097, 10264099, 10264104, 10264132, 10264134, 10264140,
+            10264198, 10264208, 10264212, 10264217, 10264231, 10329347,
+            10329348, 10329350, 10329351, 10329352, 10329356, 10329358,
+            10329361, 10329365, 10329366, 10329370, 10329375, 10329376, 10329381
           ],
           "bounds": {
-            "minX": 4142.952054070895,
-            "minY": -71.02196013580246,
-            "minZ": 5344.310650726928,
-            "maxX": 4521.278559722205,
-            "maxY": 373.3653865108226,
-            "maxZ": 5661.582352584534
+            "minX": 5528.569144040883,
+            "minY": -52.66927848391185,
+            "minZ": 5255.111120778795,
+            "maxX": 5827.409974490614,
+            "maxY": 204.70944564643975,
+            "maxZ": 5602.27548392776
           },
           "rootDisc": {
-            "x": 4355.5,
-            "z": 5550.5,
+            "x": 5669.5,
+            "z": 5429.5,
             "radius": 144
           },
-          "fissureId": 1088015266,
-          "observedFissurePoint": {
-            "x": 4355.5,
-            "y": 34.5,
-            "z": 5550.5
-          }
+          "fissureId": 1088348037
         },
         "validation": {
           "eyeClear": true,
           "walkable": true,
           "centralClear": true,
-          "skyFraction": 0.2326388888888889,
-          "featureFraction": 0.3962673611111111,
+          "skyFraction": 0.3927951388888889,
+          "featureFraction": 0.23350694444444445,
           "waterFraction": 0,
-          "horizonFraction": 0.5624733802135394,
-          "sunOffsetDegrees": 94.08561677997488,
+          "horizonFraction": 0.56247338021354,
+          "sunOffsetDegrees": 96.53691551217547,
           "sunElevationDegrees": 11.33313571163032,
-          "highestVisibleSample": 136.43571831692708,
-          "altitudeAboveHighestSample": -96.81571831692708,
+          "highestVisibleSample": 114.26129732618409,
+          "altitudeAboveHighestSample": -83.64129732618409,
           "rayColumns": 64,
           "rayRows": 36,
-          "targetFraction": 0.3962673611111111,
+          "targetFraction": 0.23350694444444445,
           "visibleFeatureIds": [
-            10196483, 10196510, 10261783, 10262021, 10262024, 10262025,
-            10262032, 10262036, 10262038, 10262042, 10262049, 25395713
+            10198277, 10198295, 10263874, 10263878, 10263888, 10263889,
+            10263893, 10263895, 10263900, 10263908, 10263910, 10264072,
+            10264077, 10264082, 10264085, 10264097, 10264099, 10264104,
+            10264132, 10264208, 10264217, 10264231, 10329347, 10329348,
+            10329350, 10329352, 10329358, 10329366
           ],
-          "lavaFraction": 0.0008680555555555555,
-          "fissureFraction": 0.0008680555555555555,
-          "targetFissureFraction": 0.0008680555555555555,
+          "lavaFraction": 0.004340277777777778,
+          "fissureFraction": 0.004340277777777778,
+          "targetFissureFraction": 0.004340277777777778,
           "targetLavaFraction": 0,
           "visibleLavaOwners": [
             {
               "source": "fissure",
-              "bodyId": 1088015266
+              "bodyId": 1088348037
             }
           ],
           "passed": true
@@ -739,231 +743,131 @@
             "hooked-witness-unreadable"
           ],
           "score": 52,
-          "dominantId": 10262038,
+          "dominantId": 10198295,
           "dominantComplete": false,
           "groundTransition": true,
           "sizeClasses": [0, 1, 2],
           "families": {
-            "curved": [10262025],
+            "curved": [10198277, 10264099],
             "hooked": [],
-            "branched": [10262025],
-            "broken": [10262042]
+            "branched": [10329352],
+            "broken": [10329366, 10329358]
           },
           "parents": [
             {
-              "id": 10262038,
-              "cells": 262,
-              "fraction": 0.11371527777777778,
-              "borderCells": 4,
+              "id": 10198295,
+              "cells": 129,
+              "fraction": 0.055989583333333336,
+              "borderCells": 16,
               "contour": {
-                "id": 10262038,
+                "id": 10198295,
                 "complete": false,
                 "useful": false,
-                "heightPixels": 515.6585005523598,
-                "curvePixels": 46.314309990673415,
-                "curveT": 0.48441995563398843,
-                "hookTurnDegrees": 6.744784168631065,
-                "hookPixels": 54.831991735210934
+                "heightPixels": 687.0073380454148,
+                "curvePixels": 60.858983804151585,
+                "curveT": 0.46969147149210777,
+                "hookTurnDegrees": 11.858180483122391,
+                "hookPixels": 1383.637088793801
               },
               "mainVisible": false,
               "bodyVisible": false,
-              "rootCells": 93,
-              "adjacentGroundCells": 109
+              "rootCells": 73,
+              "adjacentGroundCells": 79
             },
             {
-              "id": 10262025,
-              "cells": 249,
-              "fraction": 0.10807291666666667,
-              "borderCells": 0,
+              "id": 10264208,
+              "cells": 92,
+              "fraction": 0.03993055555555555,
+              "borderCells": 3,
               "contour": {
-                "id": 10262025,
-                "complete": true,
-                "useful": true,
-                "heightPixels": 424.91158473630617,
-                "curvePixels": 26.52593556982581,
-                "curveT": 0.4136433490409991,
-                "hookTurnDegrees": 5.13047939210571,
-                "hookPixels": 22.455029522643343
-              },
-              "mainVisible": true,
-              "bodyVisible": true,
-              "rootCells": 37,
-              "adjacentGroundCells": 37
-            },
-            {
-              "id": 25395713,
-              "cells": 95,
-              "fraction": 0.04123263888888889,
-              "borderCells": 6,
-              "contour": {
-                "id": 25395713,
+                "id": 10264208,
                 "complete": false,
                 "useful": false,
-                "heightPixels": 577.5639339591521,
-                "curvePixels": 61.48477136162562,
-                "curveT": 0.472673337558632,
-                "hookTurnDegrees": 23.218695553149274,
-                "hookPixels": 20.74331839084287
+                "heightPixels": 482.10438942822157,
+                "curvePixels": 7.881157353677335,
+                "curveT": 0.4819553321627439,
+                "hookTurnDegrees": 2.371341353523008,
+                "hookPixels": 22.67140961432216
               },
               "mainVisible": false,
               "bodyVisible": false,
-              "rootCells": 51,
-              "adjacentGroundCells": 39
+              "rootCells": 3,
+              "adjacentGroundCells": 20
             },
             {
-              "id": 10262036,
-              "cells": 93,
-              "fraction": 0.040364583333333336,
-              "borderCells": 21,
+              "id": 10263893,
+              "cells": 60,
+              "fraction": 0.026041666666666668,
+              "borderCells": 11,
               "contour": {
-                "id": 10262036,
+                "id": 10263893,
                 "complete": false,
                 "useful": false,
-                "heightPixels": 430.55251720395034,
-                "curvePixels": 106.3859663847102,
-                "curveT": 0.48588109430211757,
-                "hookTurnDegrees": 24.088904411582245,
-                "hookPixels": 39.429760605255574
+                "heightPixels": 405.45736857536764,
+                "curvePixels": 92.79371943851953,
+                "curveT": 0.764876567937863,
+                "hookTurnDegrees": 112.41014454890562,
+                "hookPixels": 52.051490422551964
               },
               "mainVisible": false,
               "bodyVisible": false,
-              "rootCells": 38,
-              "adjacentGroundCells": 37
-            },
-            {
-              "id": 10261783,
-              "cells": 80,
-              "fraction": 0.034722222222222224,
-              "borderCells": 8,
-              "contour": {
-                "id": 10261783,
-                "complete": false,
-                "useful": false,
-                "heightPixels": 411.92524534210315,
-                "curvePixels": 80.81019995086427,
-                "curveT": 0.7205828162366331,
-                "hookTurnDegrees": 64.65847304329488,
-                "hookPixels": 50.33319044844544
-              },
-              "mainVisible": false,
-              "bodyVisible": false,
-              "rootCells": 4,
+              "rootCells": 0,
               "adjacentGroundCells": 0
             },
             {
-              "id": 10262049,
+              "id": 10198277,
               "cells": 57,
               "fraction": 0.024739583333333332,
               "borderCells": 0,
               "contour": {
-                "id": 10262049,
-                "complete": false,
-                "useful": false,
-                "heightPixels": 396.6373308320512,
-                "curvePixels": 15.417824829084914,
-                "curveT": 0.7889488871189023,
-                "hookTurnDegrees": 15.42254285544598,
-                "hookPixels": 34.55716765379759
+                "id": 10198277,
+                "complete": true,
+                "useful": true,
+                "heightPixels": 265.67835864399706,
+                "curvePixels": 10.217085732266707,
+                "curveT": 0.4717101956612221,
+                "hookTurnDegrees": 2.304038487294898,
+                "hookPixels": 36.134855734803395
               },
-              "mainVisible": false,
-              "bodyVisible": false,
+              "mainVisible": true,
+              "bodyVisible": true,
               "rootCells": 17,
-              "adjacentGroundCells": 33
+              "adjacentGroundCells": 31
             },
             {
-              "id": 10262024,
-              "cells": 38,
-              "fraction": 0.016493055555555556,
-              "borderCells": 15,
+              "id": 10264082,
+              "cells": 40,
+              "fraction": 0.017361111111111112,
+              "borderCells": 3,
               "contour": {
-                "id": 10262024,
+                "id": 10264082,
                 "complete": false,
                 "useful": false,
-                "heightPixels": 447.94823568013186,
-                "curvePixels": 60.98100844245885,
-                "curveT": 0.8482910880991859,
-                "hookTurnDegrees": 117.61393565538356,
-                "hookPixels": 51.970153869276636
+                "heightPixels": 158.89568701328182,
+                "curvePixels": 19.53904057314452,
+                "curveT": 0.4146200644738533,
+                "hookTurnDegrees": 11.764589282289554,
+                "hookPixels": 10.798433653355929
               },
               "mainVisible": false,
               "bodyVisible": false,
-              "rootCells": 0,
-              "adjacentGroundCells": 0
+              "rootCells": 20,
+              "adjacentGroundCells": 11
             },
             {
-              "id": 10262032,
+              "id": 10329348,
               "cells": 20,
               "fraction": 0.008680555555555556,
               "borderCells": 0,
               "contour": {
-                "id": 10262032,
-                "complete": true,
-                "useful": true,
-                "heightPixels": 202.59552214655588,
-                "curvePixels": 5.4753926307434515,
-                "curveT": 0.6829397035647948,
-                "hookTurnDegrees": 3.462298318068427,
-                "hookPixels": 19.617789832049553
-              },
-              "mainVisible": false,
-              "bodyVisible": true,
-              "rootCells": 4,
-              "adjacentGroundCells": 18
-            },
-            {
-              "id": 10262042,
-              "cells": 7,
-              "fraction": 0.0030381944444444445,
-              "borderCells": 0,
-              "contour": {
-                "id": 10262042,
-                "complete": true,
-                "useful": true,
-                "heightPixels": 89.8949276854483,
-                "curvePixels": 6.106476047211764,
-                "curveT": 0.31279547635519456,
-                "hookTurnDegrees": 42.71903388138017,
-                "hookPixels": 18.524578583290566
-              },
-              "mainVisible": false,
-              "bodyVisible": true,
-              "rootCells": 3,
-              "adjacentGroundCells": 15
-            },
-            {
-              "id": 10196510,
-              "cells": 5,
-              "fraction": 0.002170138888888889,
-              "borderCells": 0,
-              "contour": {
-                "id": 10196510,
-                "complete": true,
-                "useful": true,
-                "heightPixels": 128.0367836137192,
-                "curvePixels": 13.546894201607065,
-                "curveT": 0.6055118868921918,
-                "hookTurnDegrees": 9.880819192106292,
-                "hookPixels": 12.848072053378257
-              },
-              "mainVisible": false,
-              "bodyVisible": true,
-              "rootCells": 0,
-              "adjacentGroundCells": 0
-            },
-            {
-              "id": 10262021,
-              "cells": 5,
-              "fraction": 0.002170138888888889,
-              "borderCells": 0,
-              "contour": {
-                "id": 10262021,
-                "complete": true,
-                "useful": true,
-                "heightPixels": 358.8150741857608,
-                "curvePixels": 22.24491695471807,
-                "curveT": 0.473341394264522,
-                "hookTurnDegrees": 5.7065748427909115,
-                "hookPixels": 29.994601894921534
+                "id": 10329348,
+                "complete": false,
+                "useful": false,
+                "heightPixels": 235.13714863459214,
+                "curvePixels": 14.402824731738287,
+                "curveT": 0.47690384752317444,
+                "hookTurnDegrees": 3.5663344255437344,
+                "hookPixels": 21.352017413923733
               },
               "mainVisible": false,
               "bodyVisible": false,
@@ -971,88 +875,230 @@
               "adjacentGroundCells": 0
             },
             {
-              "id": 10196483,
-              "cells": 2,
-              "fraction": 0.0008680555555555555,
+              "id": 10329366,
+              "cells": 20,
+              "fraction": 0.008680555555555556,
               "borderCells": 0,
               "contour": {
-                "id": 10196483,
+                "id": 10329366,
                 "complete": true,
                 "useful": true,
-                "heightPixels": 245.852216393151,
-                "curvePixels": 24.737084514527304,
-                "curveT": 0.6025022211269297,
-                "hookTurnDegrees": 18.454941291453625,
-                "hookPixels": 15.676444405397065
+                "heightPixels": 83.04968673961093,
+                "curvePixels": 0.6848584546425093,
+                "curveT": 0.36603129759646813,
+                "hookTurnDegrees": 0.433930737955678,
+                "hookPixels": 18.599815270710984
+              },
+              "mainVisible": false,
+              "bodyVisible": true,
+              "rootCells": 8,
+              "adjacentGroundCells": 13
+            },
+            {
+              "id": 10264099,
+              "cells": 19,
+              "fraction": 0.008246527777777778,
+              "borderCells": 0,
+              "contour": {
+                "id": 10264099,
+                "complete": true,
+                "useful": true,
+                "heightPixels": 165.02777805648822,
+                "curvePixels": 18.194789307357546,
+                "curveT": 0.7556626574495504,
+                "hookTurnDegrees": 40.046763020977934,
+                "hookPixels": 16.734439302896046
+              },
+              "mainVisible": true,
+              "bodyVisible": true,
+              "rootCells": 7,
+              "adjacentGroundCells": 25
+            },
+            {
+              "id": 10329358,
+              "cells": 16,
+              "fraction": 0.006944444444444444,
+              "borderCells": 0,
+              "contour": {
+                "id": 10329358,
+                "complete": true,
+                "useful": true,
+                "heightPixels": 124.90682540327202,
+                "curvePixels": 2.7856220260418416,
+                "curveT": 0.47291745131210244,
+                "hookTurnDegrees": 2.4547340027973994,
+                "hookPixels": 16.55070671333519
+              },
+              "mainVisible": false,
+              "bodyVisible": true,
+              "rootCells": 0,
+              "adjacentGroundCells": 0
+            },
+            {
+              "id": 10329352,
+              "cells": 12,
+              "fraction": 0.005208333333333333,
+              "borderCells": 0,
+              "contour": {
+                "id": 10329352,
+                "complete": true,
+                "useful": true,
+                "heightPixels": 129.53517616908238,
+                "curvePixels": 3.5532652211708875,
+                "curveT": 0.6018556712553338,
+                "hookTurnDegrees": 4.650299096864539,
+                "hookPixels": 10.166488589700442
+              },
+              "mainVisible": false,
+              "bodyVisible": true,
+              "rootCells": 2,
+              "adjacentGroundCells": 0
+            },
+            {
+              "id": 10329346,
+              "cells": 10,
+              "fraction": 0.004340277777777778,
+              "borderCells": 0,
+              "contour": {
+                "id": 10329346,
+                "complete": true,
+                "useful": true,
+                "heightPixels": 217.26089159196403,
+                "curvePixels": 2.8970534004696025,
+                "curveT": 0.47238215800602124,
+                "hookTurnDegrees": 1.5121697738239155,
+                "hookPixels": 18.06232021365988
+              },
+              "mainVisible": false,
+              "bodyVisible": true,
+              "rootCells": 0,
+              "adjacentGroundCells": 0
+            },
+            {
+              "id": 10264077,
+              "cells": 9,
+              "fraction": 0.00390625,
+              "borderCells": 0,
+              "contour": {
+                "id": 10264077,
+                "complete": true,
+                "useful": true,
+                "heightPixels": 117.6039655622871,
+                "curvePixels": 6.77800773268759,
+                "curveT": 0.47129989253909726,
+                "hookTurnDegrees": 0.0000012074182697257333,
+                "hookPixels": 9.979042252092706
               },
               "mainVisible": false,
               "bodyVisible": false,
-              "rootCells": 1,
-              "adjacentGroundCells": 3
+              "rootCells": 2,
+              "adjacentGroundCells": 0
             }
           ],
-          "visibilityRays": 22,
-          "voxelQueries": 1989,
+          "visibilityRays": 29,
+          "voxelQueries": 5564,
           "rayBudgetExhausted": false
         },
         "readabilitySetup": {
           "requestedIds": [
-            10262038, 10262025, 25395713, 10262036, 10261783, 10262049,
-            10262024, 10262032, 10262042, 10196510, 10262021, 10196483
+            10198295, 10264208, 10263893, 10198277, 10264082, 10329348,
+            10329366, 10264099, 10329358, 10329352, 10329346, 10264077
           ],
           "reusedIds": [],
           "resolvedIds": [
-            10262038, 10262025, 25395713, 10262036, 10261783, 10262049,
-            10262024, 10262032, 10262042, 10196510, 10262021, 10196483
+            10198295, 10264208, 10263893, 10198277, 10264082, 10329348,
+            10329366, 10264099, 10329358, 10329352, 10329346, 10264077
           ],
           "missingIds": [],
-          "parameterCellRequests": 82,
-          "parameterCellCacheHits": 14,
+          "parameterCellRequests": 4,
+          "parameterCellCacheHits": 21,
           "ownerCellRequests": [
             {
-              "x": 22,
-              "z": 28,
-              "landmark": false,
-              "returnedInstances": 40
-            },
-            {
-              "x": 2,
-              "z": 3,
-              "landmark": true,
-              "returnedInstances": 1
-            },
-            {
-              "x": 21,
-              "z": 28,
-              "landmark": false,
-              "returnedInstances": 40
-            },
-            {
-              "x": 22,
+              "x": 29,
               "z": 27,
               "landmark": false,
-              "returnedInstances": 40
+              "returnedInstances": 39
+            },
+            {
+              "x": 30,
+              "z": 28,
+              "landmark": false,
+              "returnedInstances": 112
+            },
+            {
+              "x": 29,
+              "z": 28,
+              "landmark": false,
+              "returnedInstances": 38
+            },
+            {
+              "x": 29,
+              "z": 29,
+              "landmark": false,
+              "returnedInstances": 37
             }
           ]
         },
         "lavaWitnesses": [
           {
-            "fissureId": 1088015266,
-            "x": 4355.5,
-            "y": 34.5,
-            "z": 5550.5
+            "fissureId": 1088348037,
+            "x": 5669.5,
+            "y": 23.5,
+            "z": 5431.5
+          },
+          {
+            "fissureId": 1088348037,
+            "x": 5669.5,
+            "y": 23.5,
+            "z": 5432.5
+          },
+          {
+            "fissureId": 1088348037,
+            "x": 5670.5,
+            "y": 23.5,
+            "z": 5433.5
+          },
+          {
+            "fissureId": 1088348037,
+            "x": 5670.5,
+            "y": 23.5,
+            "z": 5434.5
+          },
+          {
+            "fissureId": 1088348037,
+            "x": 5670.5,
+            "y": 23.5,
+            "z": 5436.5
+          },
+          {
+            "fissureId": 1088348037,
+            "x": 5670.5,
+            "y": 23.5,
+            "z": 5438.5
+          },
+          {
+            "fissureId": 1088348037,
+            "x": 5671.5,
+            "y": 23.5,
+            "z": 5438.5
+          },
+          {
+            "fissureId": 1088348037,
+            "x": 5671.5,
+            "y": 23.5,
+            "z": 5440.5
           }
         ],
-        "score": 1058.456076388889,
-        "validatedByResolverHash": "45ccf841e63d4fa9d810a26fd8868f33adecda091365ae9b3f43fd8b76ba63b0",
+        "score": 1056.5638888888889,
+        "validatedByResolverHash": "3be713bd6dc3597a09e5a41f3ef93bbf627e4b54e11c8eebe194ea77a93cf4f4",
         "completedSearch": {
           "schema": 1,
           "seed": 1,
           "worldgenVersion": 4,
           "sourceHash": "91f1471f8154038cc5ebaef7cf8e4f79b7cb4949591e2cb9cf81f7cf3c5b3a41",
-          "resolverHash": "45ccf841e63d4fa9d810a26fd8868f33adecda091365ae9b3f43fd8b76ba63b0",
+          "resolverHash": "3be713bd6dc3597a09e5a41f3ef93bbf627e4b54e11c8eebe194ea77a93cf4f4",
           "variant": "production",
-          "selectedViewHash": "adf5eee3621df633b4be633a72640744f32ed98addc87986c193d2063bc5e748",
+          "selectedViewHash": "d3fb100324cab8d7f07587c677ddb0074b05f4e58a218621a4e8731cd2d14b41",
           "fullGridCandidates": 50,
           "fullGridBudget": 50,
           "termination": "budget"

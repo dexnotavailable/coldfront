@@ -23,6 +23,8 @@ import {
   type MainCameraCandidate,
 } from "../../src/postcards/geometry.js";
 import {
+  bankFocusPairs,
+  bankPairAdmission,
   ensembleFramingScore,
   type ForestEnsemble,
 } from "../../src/postcards/hell-forest-ensemble.js";
@@ -41,6 +43,7 @@ import {
 import {
   compareHellCandidates,
   forestFramingScore,
+  forestSceneCandidates,
   hellSelectionPassed,
   observedFissureWitnesses,
   targetFissureVisible,
@@ -411,6 +414,286 @@ describe("bounded HELL-1 form selection", () => {
       id === 92 ? hook : trunk,
     );
     expect(withBranch).toBeLessThan(withoutBranch);
+  });
+  function bankFixture() {
+    const { hook } = missingHook();
+    const branch = asset({
+      id: 93,
+      branchCount: 1,
+      height: 50,
+      base: [0, 0, 110],
+    });
+    const other = asset({ id: 94, height: 30, base: [60, 0, 110] });
+    const ensemble: ForestEnsemble = {
+      id: "bank-fixture",
+      x: 15,
+      z: 105,
+      hook: hook.parameters,
+      branch: branch.parameters,
+      members: [hook.parameters, branch.parameters, other.parameters],
+      score: 0,
+    };
+    const wet = { fissureId: 19, x: 0.5, y: -0.5, z: 10.5 };
+    const base = field([hook, branch, other]);
+    const query: CameraQuery = {
+      ...base,
+      voxel(x, y, z) {
+        if (x >= -1 && x < 2 && z >= 8 && z < 13 && y < 0 && y >= -1)
+          return {
+            density: -1,
+            block: Block.Lava,
+            fluid: Block.Lava,
+            featureId: 0,
+          };
+        return base.voxel(x, y, z);
+      },
+    };
+    const lava = () => ({
+      kind: "lava" as const,
+      source: "fissure" as const,
+      bodyId: 19,
+      bed: -1,
+      level: 0,
+    });
+    const lookup = (id: number) =>
+      [hook, branch, other].find((thorn) => thorn.parameters.id === id);
+    const roots = [hook, branch, other].map((thorn) => ({
+      id: thorn.parameters.id,
+      x: thorn.parameters.base[0],
+      z: thorn.parameters.base[2],
+      height: thorn.parameters.height,
+      radius: thorn.parameters.baseRadius,
+    }));
+    const targetFor = (
+      disc: Readonly<{ x: number; z: number; radius: number }>,
+    ) => ({
+      kind: "thorn-cluster" as const,
+      featureIds: [92, 93, 94],
+      bounds: hook.bounds,
+      rootDisc: disc,
+      fissureId: 19,
+    });
+    return {
+      hook,
+      branch,
+      other,
+      ensemble,
+      wet,
+      query,
+      lava,
+      lookup,
+      roots,
+      targetFor,
+    };
+  }
+  it("observes nearby owned lava before pairing complete useful midground forms from the same bank eye", () => {
+    const f = bankFixture(),
+      events: Readonly<Record<string, unknown>>[] = [];
+    const candidates = forestSceneCandidates(
+      [{ ...f.wet, ensemble: f.ensemble }],
+      f.query,
+      f.lava,
+      () => 0,
+      () => f.roots,
+      f.targetFor,
+      (event) => events.push(event),
+      true,
+      f.lookup,
+    );
+    expect(candidates.length).toBeGreaterThan(0);
+    const banks = events.filter(
+      (event) => event.stage === "ensemble-bank-observation",
+    );
+    expect(banks).toHaveLength(40);
+    const summary = events.find((event) => event.stage === "proposal-summary");
+    expect(summary).toMatchObject({ bankEyes: 40 });
+    expect(Number(summary?.bankWetRays)).toBeLessThanOrEqual(40);
+    expect(Number(summary?.proposals)).toBeLessThanOrEqual(360);
+    for (const candidate of candidates) {
+      expect(
+        Math.hypot(
+          candidate.view.position.x - f.wet.x,
+          candidate.view.position.z - f.wet.z,
+        ),
+      ).toBeLessThanOrEqual(21);
+      const observed = banks.find(
+        (event) =>
+          JSON.stringify(event.eye) === JSON.stringify(candidate.view.position),
+      );
+      expect(observed).toMatchObject({
+        supported: true,
+        wetVisible: true,
+        firstHit: { kind: "lava", visible: true, owner: { bodyId: 19 } },
+      });
+      const checked = bankPairAdmission(
+        candidate.view,
+        f.ensemble,
+        f.wet,
+        f.lookup,
+      );
+      expect(checked.admitted).toBe(true);
+      expect(checked.forms.every((form) => form.complete && form.useful)).toBe(
+        true,
+      );
+    }
+  });
+  it.each(["no-lava", "wrong-owner", "solid-body"] as const)(
+    "does no pairing before actual bank proof when %s fails",
+    (failure) => {
+      const f = bankFixture(),
+        events: Readonly<Record<string, unknown>>[] = [];
+      let lookups = 0,
+        targetCalls = 0;
+      const query =
+        failure === "solid-body"
+          ? field([], () => 7)
+          : failure === "no-lava"
+            ? field([])
+            : f.query;
+      const candidates = forestSceneCandidates(
+        [{ ...f.wet, ensemble: f.ensemble }],
+        query,
+        () => ({ ...f.lava(), bodyId: failure === "wrong-owner" ? 20 : 19 }),
+        () => 0,
+        () => f.roots,
+        (disc) => {
+          targetCalls++;
+          return f.targetFor(disc);
+        },
+        (event) => events.push(event),
+        true,
+        (id) => {
+          lookups++;
+          return f.lookup(id);
+        },
+      );
+      expect(candidates).toEqual([]);
+      expect(lookups).toBe(0);
+      expect(targetCalls).toBe(0);
+      expect(
+        events.filter((event) => event.stage === "ensemble-bank-observation"),
+      ).toHaveLength(40);
+      expect(
+        events.filter((event) => event.stage === "preflight"),
+      ).toHaveLength(0);
+    },
+  );
+  it("deduplicates reciprocal dual-family roles before the three distinct pair cutoff", () => {
+    const thorns = [1, 2, 3].map((id) =>
+      asset({
+        id,
+        hooked: true,
+        branchCount: 1,
+        height: 40,
+        base: [(id - 1) * 10, 0, 100],
+      }),
+    );
+    const members = thorns.map((thorn) => thorn.parameters);
+    const hook = members[0],
+      branch = members[1];
+    if (!hook || !branch) throw Error("Missing dual-family fixture");
+    const ensemble: ForestEnsemble = {
+      id: "dual-family",
+      x: 10,
+      z: 100,
+      hook,
+      branch,
+      members,
+      score: 0,
+    };
+    const lookup = (id: number) =>
+      thorns.find((thorn) => thorn.parameters.id === id);
+    const wet = { fissureId: 19, x: 0.5, y: -0.5, z: 10.5 },
+      eye = { x: 0.5, y: 1.62, z: 5.5 };
+    const pairs = bankFocusPairs(ensemble, wet, eye, lookup);
+    expect(
+      pairs
+        .map((pair) => `${pair.ensemble.hook.id}:${pair.ensemble.branch.id}`)
+        .sort(),
+    ).toEqual(["1:2", "1:3", "2:3"]);
+    expect(
+      bankFocusPairs(
+        { ...ensemble, members: [...members].reverse() },
+        wet,
+        eye,
+        lookup,
+      ),
+    ).toEqual(pairs);
+  });
+  it("selects at most three deterministic bank-relative source pairs and excludes broken or outside-disc alternatives", () => {
+    const f = bankFixture();
+    const close = asset({
+      id: 90,
+      hooked: true,
+      height: 40,
+      base: [0.5, 0, 15],
+    });
+    const broken = asset({
+      id: 89,
+      hooked: true,
+      broken: true,
+      height: 40,
+      base: [20, 0, 100],
+    });
+    const far = asset({
+      id: 88,
+      hooked: true,
+      height: 30,
+      base: [500, 0, 500],
+    });
+    const middleA = asset({
+      id: 95,
+      hooked: true,
+      height: 35,
+      base: [-10, 0, 95],
+    });
+    const middleB = asset({
+      id: 96,
+      hooked: true,
+      height: 35,
+      base: [45, 0, 110],
+    });
+    const members = [
+      close.parameters,
+      broken.parameters,
+      far.parameters,
+      middleA.parameters,
+      middleB.parameters,
+      ...f.ensemble.members,
+    ];
+    const site = { ...f.ensemble, members };
+    const lookup = (id: number) =>
+      [close, broken, far, middleA, middleB].find(
+        (thorn) => thorn.parameters.id === id,
+      ) ?? f.lookup(id);
+    const eye = { x: 0.5, y: 1.62, z: 5.5 };
+    const pairs = bankFocusPairs(site, f.wet, eye, lookup);
+    expect(pairs).toHaveLength(3);
+    expect(
+      pairs.every((pair) => pair.ensemble.hook.id !== close.parameters.id),
+    ).toBe(true);
+    expect(
+      pairs.every((pair) => ![88, 89].includes(pair.ensemble.hook.id)),
+    ).toBe(true);
+    expect(
+      bankFocusPairs(
+        { ...site, members: [...members].reverse() },
+        f.wet,
+        eye,
+        lookup,
+      ),
+    ).toEqual(pairs);
+    expect(
+      bankFocusPairs(
+        {
+          ...f.ensemble,
+          members: f.ensemble.members.map((p) => ({ ...p, broken: true })),
+        },
+        f.wet,
+        eye,
+        lookup,
+      ),
+    ).toEqual([]);
   });
   it("pairs an intact hook with an observed lava bank instead of preserving an unrelated target", () => {
     const { dominant, hook, hidden, instance, targetFor } = missingHook();
