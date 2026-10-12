@@ -241,7 +241,7 @@ The following records describe the completed phase 1.1 tooling and acceptance.
 4. Dig below the surface to try the automatic overhead cut. Press **F3** for debug information and **F4** for time of day, fog, shadows and fly speed.
 5. Press **Esc** to pause or return to the title; **F2** saves a screenshot and **F11** toggles fullscreen. Browse the [interface gallery](https://dex.place/coldfront/?gallery).
 6. Leave a placed block in the world, reload, and press **Play** with the same seed to check your saved edits. This release uses the new generation identity above; edits from earlier generations remain stored separately.
-7. In **F4 → Go to region**, visit **Ibara** and compare **Normal**, **Clay** and **Features**. Select **HELL-1** for the forest and foreground lava fissure, then **HELL-2** for the caldera and its fuller thorn tips. Loading is slow; these destinations retain known anatomy/readability limits. Press **Escape** to return to the overhead view.
+7. In **F4 → Go to region**, visit **Ibara** and compare **Normal**, **Clay** and **Features**. Open **F4 → Postcard mode** and choose **Ibara 2** for the forest and foreground lava fissure, or **Ibara 3** for the caldera and its fuller thorn tips. Loading is slow; these destinations retain known anatomy/readability limits. Press **Escape** to return to the overhead view.
 8. Open the map with **M**, choose a spot and travel. In **F4**, use **Go to region** to compare Shirogane, Kurogane and the Sundered Isles. Discovery cards appear once per saved world identity. Switch to the test world from the title for the smaller sandbox.
 
 Local development: run **npm ci**, then **npm run dev** and open the printed address.
