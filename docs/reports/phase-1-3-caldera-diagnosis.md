@@ -1,6 +1,6 @@
 # Ibara caldera diagnosis · 12 October 2026
 
-The best completed seed-1 HELL-2 view scores **13/20, R2 = 1**. Phase 1.3 remains in progress. The published game stays at `f2739c1`; every geometry/camera experiment below is isolated.
+The best completed seed-1 HELL-2 view scores **13/20, R2 = 1**. Phase 1.3 remains in progress. The output-preserving loading correction is published as `dfa8141`; the geometry/camera experiments remain isolated.
 
 ## Completed caldera view
 
