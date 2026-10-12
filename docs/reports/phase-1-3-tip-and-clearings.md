@@ -10,7 +10,7 @@ Publication receipt **`03ebfb22-78f4-4b65-998e-477e40852d99`** is followed by te
 
 The new save identity is `4:023af1ecf3a1ec69911ef4ec537e1a8aa32d8e0e51a6748c7ca6bc4b18bcedc1`; previous edits remain stored separately under earlier identities. The source-bound HUD pass remains limited to the captured outline, ghost and silhouette rows. The installed 18-entry camera file, SHA256 `bf7ec058…`, is semantically equal to the reviewed raw `3d701e69…` capture input; both repaired regional originals were opened by root and peer.
 
-[Current before/after sheet](../postcards/wip/ibara.jpg): the new 2×2 sheet has HELL-1 A/B in the top row and HELL-2 A/B below, baseline left and selected tip right. Root opened this sheet and its source originals. The [earlier lava comparison](https://github.com/dexnotavailable/coldfront/blob/f2739c16493d840040d7946f6f2eff0f623a420f/docs/postcards/wip/ibara.jpg?raw=true) remains an immutable historical reference.
+[Tip before/after sheet](https://github.com/dexnotavailable/coldfront/blob/29f5cb6331021d56a17316424d43abc61185ef7c/docs/postcards/wip/ibara.jpg?raw=true): the new 2×2 sheet has HELL-1 A/B in the top row and HELL-2 A/B below, baseline left and selected tip right. Root opened this sheet and its source originals. The [earlier lava comparison](https://github.com/dexnotavailable/coldfront/blob/f2739c16493d840040d7946f6f2eff0f623a420f/docs/postcards/wip/ibara.jpg?raw=true) remains an immutable historical reference.
 
 ## Tip comparison
 

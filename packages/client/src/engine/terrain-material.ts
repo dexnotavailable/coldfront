@@ -14,6 +14,7 @@ import {
 } from "three";
 import { BLOCK_REGISTRY, Block } from "../../../shared/src/blocks/registry.js";
 import { generateTextureArray } from "../../../shared/src/blocks/textures/recipes.js";
+import { IBARA_STRATA } from "../../../shared/src/worldgen/main/ibara-material.js";
 
 export type TerrainViewMode = "normal" | "clay" | "features";
 export const TERRAIN_VIEW_MODES = { normal: 0, clay: 1, features: 2 } as const;
@@ -109,7 +110,7 @@ export function createTerrainMaterials(clip: Plane): {
       clipShadows: true,
     });
     material.customProgramCacheKey = () =>
-      `coldfront-terrain-r186-v3-ibara-class-${kind}${kind === 4 ? "-filtered-lava-v1" : ""}`;
+      `coldfront-terrain-r186-v3-ibara-class-${kind}${kind === 0 ? "-strata-v2-reflected" : kind === 4 ? "-filtered-lava-v1" : ""}`;
     material.onBeforeCompile = (shader) => {
       Object.assign(shader.uniforms, {
         uViewMode: uniforms.viewMode,
@@ -200,6 +201,37 @@ float cfMacro(vec2 p) {
   float d=float(cfHash(ivec3(int(q.x)+1,0,int(q.y)+1))&255u)/255.0;
   return mix(mix(a,b,f.x),mix(c,d,f.x),f.y);
 }
+${
+  kind === 0
+    ? `// Integral of the repeating two/three-tone profile, including negative
+// heights. Its box average filters every band edge without sampling a loop.
+float cfStrataIntegral(float p, float count, vec3 tones) {
+  float cycles=floor(p/count);
+  float local=p-cycles*count;
+  return cycles*(tones.x+tones.y+tones.z)
+    + dot(clamp(vec3(local)-vec3(0.0,1.0,2.0),0.0,1.0),tones);
+}
+float cfIbaraStrata(vec3 world, highp uint featureId) {
+  highp uint h=cfHash(ivec3(int(featureId&65535u),int(featureId>>16u),0x1baa));
+  float spacing=mix(${IBARA_STRATA.spacingRange[0].toFixed(1)},${IBARA_STRATA.spacingRange[1].toFixed(1)},float(h&65535u)/65535.0);
+  float count=${IBARA_STRATA.toneCounts[0].toFixed(1)}+float((h>>16u)&1u)*${(IBARA_STRATA.toneCounts[1] - IBARA_STRATA.toneCounts[0]).toFixed(1)};
+  vec3 tones=count<2.5
+    ? vec3(${IBARA_STRATA.toneMultipliers[0]},${IBARA_STRATA.toneMultipliers[2]},0.0)
+    : vec3(${IBARA_STRATA.toneMultipliers[0]},${IBARA_STRATA.toneMultipliers[1].toFixed(1)},${IBARA_STRATA.toneMultipliers[2]});
+  vec2 offset=vec2(float((h>>17u)&127u),float((h>>24u)&127u));
+  float warp=(2.0*cfMacro(world.xz/${IBARA_STRATA.warpWavelength.toFixed(1)}+offset)-1.0)*${IBARA_STRATA.warpAmplitude.toFixed(1)};
+  float band=(world.y+warp)/spacing+float((h>>8u)&255u)/256.0*count;
+  float footprint=fwidth(band);
+  // Reduce before subtracting integrals, retaining precision far from y=0.
+  float centre=mod(band,count);
+  float width=clamp(footprint,0.04,2.0);
+  float filtered=(cfStrataIntegral(centre+width*0.5,count,tones)
+    - cfStrataIntegral(centre-width*0.5,count,tones))/width;
+  float mean=(tones.x+tones.y+tones.z)/count;
+  return mix(filtered,mean,smoothstep(0.5,2.0,footprint));
+}`
+    : ""
+}
 // Slow cellular plates. Only the luminous cracks move; the fluid surface and
 // its occlusion remain the exact meshed voxel boundary.
 float cfLavaCrackIntegral(float offset) {
@@ -248,6 +280,15 @@ vec4 texel = texture(uTiles,vec3(fract(tiled),layer));
 float micro=0.94+float((hash>>5u)&255u)/255.0*0.12;
 float macro=0.88+cfMacro(absoluteWorld.xz/128.0)*0.24;
 vec3 hue=vec3(1.0+float((hash>>13u)&31u)/31.0*0.06-0.03,1.0,1.0-float((hash>>13u)&31u)/31.0*0.06+0.03);
+float strata=1.0;
+${
+  kind === 0
+    ? `// Natural thorn cores only: edited/ordinary blocks have no feature ID.
+// The primitive fixture follows this same production path, without a bypass.
+if(uViewMode<0.5 && cfFeatureId()!=0u && (block==${Block.Obsidian.toFixed(1)} || block==${Block.Basalt.toFixed(1)}))
+  strata=cfIbaraStrata(absoluteWorld,cfFeatureId());`
+    : ""
+}
 diffuseColor *= vec4(uViewMode>0.5 ? vec3(0.48) : texel.rgb*micro*macro*hue, texel.a);
 if(uViewMode>0.5) diffuseColor.a=texel.a;
 ${
@@ -286,6 +327,9 @@ if(uViewMode<0.5) {
   float fresnel=0.08+0.92*pow(1.0-max(0.0,dot(eye,normalize(vVoxelNormal))),5.0);
   outgoingLight += skyReflection*gloss*fresnel*sky*ao;
   ${kind === 3 ? "float ripple=sin(absoluteWorld.x*1.2+uDisplay*0.001)*sin(absoluteWorld.z*0.9-uDisplay*0.0007); outgoingLight *= 0.96 + ripple*0.04;" : ""}
+  // Rock tone covers the completed reflected light, including the sky gloss.
+  // Apply once, before the reflected ceiling and independent source emission.
+  outgoingLight *= strata;
   outgoingLight=min(outgoingLight,vec3(${TERRAIN_REFLECTED_CEILING.toFixed(1)}));
   vec4 source=uEmission[int(block)];
   if(source.a>0.0) {

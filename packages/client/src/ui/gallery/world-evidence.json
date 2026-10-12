@@ -5,11 +5,11 @@
       "id": "outline-ghost",
       "rows": ["hud.outline", "hud.ghost"],
       "image": "fixtures/ui/world-outline-ghost.jpg",
-      "imageSha256": "a6d8a6e231388dc1350fa00c150821392bfd3bba4b659dedd6ab7ab0862a20c8",
+      "imageSha256": "4efcea5ecb21df5b41e31d4f691f14dabeedc188e54c132ad10a853a95f80d50",
       "telemetry": "fixtures/ui/world-outline-ghost.json",
-      "telemetrySha256": "a32fffe2b4a6d7e032acfb00daee6d419b68770879816a0deb09d09fd6fe9f61",
+      "telemetrySha256": "1b36cc5a8a57f79b2e5b3bdacabc38d692a8acb8ca28828fa6de0a750c016fe3",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "c88776a54a27cb4eb9a136aded8b0eae0de42043a24843f965317c8657e32b60",
+      "runReceiptSha256": "ac3265d3d2e3e4f57dc1641286555ced1cfcc850ea65456f25260b66c32a6ccd",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -73,7 +73,7 @@
         },
         {
           "path": "packages/client/src/engine/terrain-material.ts",
-          "sha256": "5e9f98ee88bbeabac00faae7950d39690eed8a5089a651351adacc344e8ac044"
+          "sha256": "f8620235c53053111551282021495406041693acfcf6a611f46d91074c053abc"
         },
         {
           "path": "packages/client/src/engine/terrain-worker.ts",
@@ -370,7 +370,7 @@
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
         "sourceImage": "out/engine/hud-repair/outline-ghost.png",
-        "sourceImageSha256": "2613f66520b447f6b4763a2ae1daafef57c9cc9792d3786ec8b26fd33f4c17c7",
+        "sourceImageSha256": "c6b8be286db7e2a5aed298467b4a66cdaf9ad572864d47a3615e35224ed298e7",
         "quality": 85,
         "width": 1280,
         "height": 720,
@@ -381,11 +381,11 @@
       "id": "silhouette",
       "rows": ["hud.silhouette"],
       "image": "fixtures/ui/world-silhouette.jpg",
-      "imageSha256": "f014dd7f19a64f93f6285f94338389d7a99305e60370260094d8817f33b1612f",
+      "imageSha256": "196f0b0d7ed7c5e765fac132b0a5c5096dabdb6940ae0bbf4ea571701fbd1264",
       "telemetry": "fixtures/ui/world-silhouette.json",
-      "telemetrySha256": "9b8e131e3fdc2e8ce0b68447c3eca6e377404bd4639882e376ed5d383f78b38d",
+      "telemetrySha256": "6d1a278afc27314819d9452e3940e7a7f4a93fc23721fbf2e1f7a799829aae54",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "c88776a54a27cb4eb9a136aded8b0eae0de42043a24843f965317c8657e32b60",
+      "runReceiptSha256": "ac3265d3d2e3e4f57dc1641286555ced1cfcc850ea65456f25260b66c32a6ccd",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -449,7 +449,7 @@
         },
         {
           "path": "packages/client/src/engine/terrain-material.ts",
-          "sha256": "5e9f98ee88bbeabac00faae7950d39690eed8a5089a651351adacc344e8ac044"
+          "sha256": "f8620235c53053111551282021495406041693acfcf6a611f46d91074c053abc"
         },
         {
           "path": "packages/client/src/engine/terrain-worker.ts",
@@ -746,7 +746,7 @@
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
         "sourceImage": "out/engine/hud-repair/silhouette.png",
-        "sourceImageSha256": "6241a5875058e9babda5f991eadba9a4e4fe0c2343db521ba169ad4ddfb29d61",
+        "sourceImageSha256": "fbc1d16716e0fde77414bb58486eacccfae1f96be1f3fc1b66f6c5433f97feab",
         "quality": 85,
         "width": 1280,
         "height": 720,

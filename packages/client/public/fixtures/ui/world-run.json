@@ -43,7 +43,7 @@
           "flying": false,
           "walkDistance": 0,
           "stepRise": 0,
-          "yaw": 0.5428633542934118,
+          "yaw": 0.5418954493918436,
           "headYaw": 0.5404195883339316
         },
         "target": {
@@ -72,11 +72,11 @@
         "loaded": 148,
         "queued": 0,
         "ready": true,
-        "displayTimeMs": 1250,
+        "displayTimeMs": 1549.9000000000005,
         "editCount": 0,
         "lastAction": null,
         "lastEdit": null,
-        "worldTimeSeconds": 1201.3666,
+        "worldTimeSeconds": 1201.6499000000001,
         "rendered": {
           "outline": true,
           "silhouette": false,
@@ -90,7 +90,7 @@
         "postcard": null,
         "rendering": {
           "visible": true,
-          "animationRenders": 3,
+          "animationRenders": 4,
           "hiddenFrames": 0
         },
         "mapReports": [],
@@ -127,15 +127,15 @@
           "flying": false,
           "walkDistance": 0,
           "stepRise": 0,
-          "yaw": 1.741067632690516,
-          "headYaw": 2.199114857512855
+          "yaw": 2.3609434925501516,
+          "headYaw": 2.827433388230814
         },
         "target": null,
         "ghost": null,
         "loaded": 148,
         "queued": 0,
         "ready": true,
-        "displayTimeMs": 250,
+        "displayTimeMs": 383.4000000000001,
         "editCount": 15,
         "lastAction": null,
         "lastEdit": {
@@ -144,7 +144,7 @@
           "z": 1,
           "block": 2
         },
-        "worldTimeSeconds": 1200.3999,
+        "worldTimeSeconds": 1200.4832999999999,
         "rendered": {
           "outline": false,
           "silhouette": true,
@@ -167,13 +167,13 @@
     "selectedBlock": "Sand",
     "normalDistance": 24,
     "yaw": 45,
-    "displayTimeMs": 1250
+    "displayTimeMs": 1549.9000000000005
   },
   "errors": [],
   "warnings": [
-    "[.WebGL-0x625400422600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-    "[.WebGL-0x625400422600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-    "[.WebGL-0x625400422600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-    "[.WebGL-0x625400422600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+    "[.WebGL-0x275c0040d000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x275c0040d000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x275c0040d000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x275c0040d000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
   ]
 }
