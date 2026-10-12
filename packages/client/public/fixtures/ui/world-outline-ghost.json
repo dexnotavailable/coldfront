@@ -39,7 +39,7 @@
     "flying": false,
     "walkDistance": 0,
     "stepRise": 0,
-    "yaw": 0.5444724577131329,
+    "yaw": 0.5472078271102656,
     "headYaw": 0.5404195883339316
   },
   "target": {
@@ -68,11 +68,11 @@
   "loaded": 148,
   "queued": 0,
   "ready": true,
-  "displayTimeMs": 1149.8999999999996,
+  "displayTimeMs": 1149.9999999999995,
   "editCount": 0,
   "lastAction": null,
   "lastEdit": null,
-  "worldTimeSeconds": 1201.2499999999998,
+  "worldTimeSeconds": 1201.2666,
   "rendered": {
     "outline": true,
     "silhouette": false,

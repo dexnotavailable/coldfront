@@ -37,16 +37,27 @@ import {
   type HellTarget,
   inspectHellCamera,
   type MainCameraCandidate,
+  supportingVoxelTop,
 } from "./geometry.js";
 import {
+  FOREST_CAMERA_PITCHES,
+  type FramingObservation,
+  PRODUCTION_CAMERA_BUDGET,
+  productionFramingCandidates,
+} from "./hell-framing-camera.js";
+import { createFramingPreflight } from "./hell-framing-preflight.js";
+import {
   PRIMITIVE_CAMERA_BUDGET,
-  type PrimitiveCameraObservation,
   primitiveCameraRefinements,
 } from "./hell-primitive-camera.js";
 import {
   type HellReadability,
   inspectHellReadability,
 } from "./hell-readability.js";
+import {
+  createVisibleThornResolver,
+  type VisibleThornLookupReceipt,
+} from "./hell-visible-instances.js";
 import { loadPlan, type MainCameraManifest } from "./main-resolve.js";
 import { type CameraQuery, cameraQuery, walkableEye } from "./query.js";
 
@@ -61,6 +72,7 @@ export interface ResolvedHellCamera extends MainCameraCandidate {
   readonly validation: HellCameraValidation;
   readonly score: number;
   readonly readability?: HellReadability;
+  readonly readabilitySetup?: VisibleThornLookupReceipt;
   readonly validatedByResolverHash: string;
   readonly comparison?: {
     readonly productionView: "matched" | "diverged" | "unavailable";
@@ -273,7 +285,7 @@ export function forestSceneCandidates(
           z = Math.floor(witness.z + Math.sin(angle) * radius) + 0.5;
         const y = Math.ceil(groundHeight(x, z) - 0.5) + 1.62;
         for (const turn of [-0.6, 0, 0.6])
-          for (const pitch of [4.25, 7, 9]) {
+          for (const pitch of FOREST_CAMERA_PITCHES) {
             const yaw = Math.atan2(witness.x - x, witness.z - z) + turn;
             const view: MainCameraCandidate = {
               region: "hellscape",
@@ -302,24 +314,27 @@ export function forestSceneCandidates(
               reject("dusk-light");
               continue;
             }
-            // A positive ground density is a safe rejection even before additive
-            // thorns are queried. This does not accept/approximate a final ray hit.
+            // Decision114: only raised ground can reject here. Lower ordinary
+            // cells are deferred to actual support/body and full preflight;
+            // this cheap proposal check never grants a floor exception itself.
             let groundBlocked = false;
             for (const sx of [-0.578125, 0, 0.578125])
               for (const sy of [-7 / 12, 0, 7 / 12]) {
                 if (groundBlocked) break;
                 const ray = frame.ray(sx, sy);
-                for (let d = 1; d < 5; d++)
+                for (let d = 1; d < 5; d++) {
+                  const groundY = groundHeight(
+                    Math.floor(x + ray.x * d) + 0.5,
+                    Math.floor(z + ray.z * d) + 0.5,
+                  );
                   if (
-                    Math.floor(y + ray.y * d) + 0.5 <
-                    groundHeight(
-                      Math.floor(x + ray.x * d) + 0.5,
-                      Math.floor(z + ray.z * d) + 0.5,
-                    )
+                    Math.ceil(groundY - 0.5) > supportingVoxelTop(y) &&
+                    Math.floor(y + ray.y * d) + 0.5 < groundY
                   ) {
                     groundBlocked = true;
                     break;
                   }
+                }
               }
             if (groundBlocked) {
               reject("central-ground");
@@ -568,11 +583,14 @@ export async function resolveHellCameras(
     `hell-s${seed}-${variant}-${sourceHash}-${resolverHash}-${Date.now()}.jsonl`,
   );
   await mkdir(dirname(attemptsPath), { recursive: true });
-  const record = (event: Attempt): void =>
+  let rememberGeometryPreflight: ((event: Attempt) => void) | undefined;
+  const record = (event: Attempt): void => {
+    rememberGeometryPreflight?.(event);
     appendFileSync(
       attemptsPath,
       `${JSON.stringify({ schema: 1, seed, variant, sourceHash, resolverHash, ...event })}\n`,
     );
+  };
   record({ stage: "started", requested });
   const path = resolve(
     root,
@@ -601,6 +619,40 @@ export async function resolveHellCameras(
     query = cameraQuery(context),
     lavaSample = createLavaSample();
   const lava = (x: number, z: number) => ground.lavaQuery(x, z, lavaSample);
+  const framingPreflight = createFramingPreflight(
+    (view) => cameraPoseRejections(view, query),
+    (view, target) => {
+      const reasons: string[] = [];
+      if (query.region(view.position.x, view.position.z) !== "hellscape")
+        return ["wrong-region"];
+      if (target.kind === "thorn-cluster") {
+        const disc = target.rootDisc;
+        if (!disc || target.fissureId === undefined)
+          reasons.push("no-named-fissure-witness");
+        else {
+          const wet = lava(disc.x, disc.z),
+            y = Math.floor(wet.level - 0.5) + 0.5;
+          if (
+            wet.kind !== "lava" ||
+            wet.source !== "fissure" ||
+            wet.bodyId !== target.fissureId ||
+            y <= wet.bed ||
+            y > wet.level ||
+            !seesFissure(
+              view,
+              { fissureId: target.fissureId, x: disc.x, y, z: disc.z },
+              query,
+              lava,
+            )
+          )
+            reasons.push("fissure-occluded");
+        }
+      }
+      return reasons;
+    },
+  );
+  if (variant === "production")
+    rememberGeometryPreflight = framingPreflight.remember;
   const analytic = createIbaraAnalytic(seed);
   const environment = {
     seed,
@@ -611,6 +663,9 @@ export async function resolveHellCameras(
   const features =
     variant === "production" ? createMainIbaraField(field) : null;
   const instanceCache = new Map<number, ThornInstance>();
+  const resolveVisible = features
+    ? createVisibleThornResolver(features, instanceCache)
+    : null;
   const primitive = (bounds: XZBounds): HellTarget => {
     const batch = createPrimitiveIbaraBatch(environment, bounds, 1);
     return {
@@ -736,15 +791,26 @@ export async function resolveHellCameras(
   try {
     for (const id of requested as readonly HellPostcardId[]) {
       const begin = performance.now();
+      // Saved-view and primitive-comparison checks spend the same fifty-view
+      // budget as new coarse/refined candidates. Count at the actual call site.
+      const fullGridBudget = 50;
+      let inspected = 0;
       let comparison: ResolvedHellCamera["comparison"],
         best: ResolvedHellCamera | undefined;
       const inspect = (
         view: MainCameraCandidate,
         targetFeature: HellTarget,
+        purpose: "candidate" | "retained" | "comparison" = "candidate",
       ): ResolvedHellCamera => {
+        if (inspected >= fullGridBudget)
+          throw new Error(`Full-grid inspection budget exhausted for ${id}`);
+        const fullGridOrdinal = ++inspected;
         record({
           stage: "validation-started",
           id,
+          purpose,
+          fullGridOrdinal,
+          fullGridBudget,
           view,
           targetFeature,
           grid: { width: 64, height: 36 },
@@ -764,27 +830,20 @@ export async function resolveHellCameras(
             : {}),
         });
         let readability: HellReadability | undefined;
+        let readabilitySetup: VisibleThornLookupReceipt | undefined;
         if (
           needsReadability &&
           validation.passed &&
-          features &&
+          resolveVisible &&
           targetFeature.kind === "thorn-cluster"
         ) {
-          // Reconstruct source-bound instances for retained cameras too. No saved
-          // score or family flag can certify a camera against the new objective.
-          if (
-            targetFeature.featureIds.some(
-              (featureId) => !instanceCache.has(featureId),
-            )
-          )
-            for (const thorn of features.collect(targetFeature.bounds, 1))
-              instanceCache.set(thorn.parameters.id, thorn);
+          // Resolve source-bound metadata for the same bounded visible parents
+          // that will be inspected, even when rooted outside the target disc.
+          const visible = resolveVisible(hits);
+          readabilitySetup = visible.receipt;
           readability = inspectHellReadability(
             view,
-            targetFeature.featureIds.flatMap((featureId) => {
-              const thorn = instanceCache.get(featureId);
-              return thorn ? [thorn] : [];
-            }),
+            visible.instances,
             hits,
             query,
           );
@@ -792,10 +851,14 @@ export async function resolveHellCameras(
         record({
           stage: "validation-complete",
           id,
+          purpose,
+          fullGridOrdinal,
+          fullGridBudget,
           view,
           targetFeature,
           validation,
           ...(readability ? { readability } : {}),
+          ...(readabilitySetup ? { readabilitySetup } : {}),
         });
         return {
           ...view,
@@ -807,6 +870,7 @@ export async function resolveHellCameras(
           targetFeature,
           validation,
           ...(readability ? { readability } : {}),
+          ...(readabilitySetup ? { readabilitySetup } : {}),
           score:
             (hellSelectionPassed(id, variant, validation, readability)
               ? needsReadability
@@ -839,7 +903,7 @@ export async function resolveHellCameras(
                   )
                 : primitive(match.targetFeature.bounds)
               : match.targetFeature;
-          const checked = inspect(match, target);
+          const checked = inspect(match, target, "comparison");
           comparison = {
             productionView: checked.validation.passed ? "matched" : "diverged",
             reason: checked.validation.passed
@@ -856,7 +920,7 @@ export async function resolveHellCameras(
       if (!best) {
         const previous = cameras.get(id);
         if (previous) {
-          const checked = inspect(previous, previous.targetFeature);
+          const checked = inspect(previous, previous.targetFeature, "retained");
           if (
             hellSelectionPassed(
               id,
@@ -869,7 +933,7 @@ export async function resolveHellCameras(
         }
       }
       const reused = Boolean(best);
-      let inspected = 0;
+      const revalidationCandidates = inspected;
       if (!best) {
         const candidates: ForestCandidate[] = [];
         if (id === "HELL-1") {
@@ -920,31 +984,91 @@ export async function resolveHellCameras(
           `Resolving ${id}/${variant}:${candidates.length} preflight survivors; attempts:${attemptsPath}`,
         );
         const primitiveForest = id === "HELL-1" && variant === "primitive";
-        const observations: PrimitiveCameraObservation[] = [];
+        const productionForest = id === "HELL-1" && variant === "production";
+        const observations: FramingObservation[] = [];
         const coarse = primitiveForest
           ? candidates.slice(0, PRIMITIVE_CAMERA_BUDGET.coarse)
-          : candidates;
+          : productionForest
+            ? candidates.slice(0, PRODUCTION_CAMERA_BUDGET.coarse)
+            : candidates;
         for (const { view, targetFeature: target } of coarse) {
+          if (inspected >= fullGridBudget) break;
           const checked = inspect(view, target);
           observations.push({
             view,
             targetFeature: target,
             validation: checked.validation,
+            ...(checked.readability
+              ? { readability: checked.readability }
+              : {}),
           });
-          inspected++;
           if (!best || checked.score > best.score) best = checked;
+        }
+        if (productionForest) {
+          const refinements =
+            best &&
+            hellSelectionPassed(id, variant, best.validation, best.readability)
+              ? []
+              : productionFramingCandidates(
+                  observations,
+                  (featureId) => instanceCache.get(featureId),
+                  ground.height,
+                  framingPreflight.inspect,
+                  (event) => record({ id, ...event }),
+                );
+          let traced = 0,
+            fallback = 0;
+          for (const refinement of refinements) {
+            if (inspected >= fullGridBudget) break;
+            // The exact view and target passed unchanged preflight before
+            // the final eighteen-slot selection. Full inspection still follows.
+            record({
+              stage: "production-framing-validation-selected",
+              id,
+              ...refinement,
+            });
+            const checked = inspect(refinement.view, refinement.targetFeature);
+            traced++;
+            if (!best || checked.score > best.score) best = checked;
+          }
+          for (const { view, targetFeature } of candidates.slice(
+            coarse.length,
+          )) {
+            if (
+              inspected >= fullGridBudget ||
+              (best &&
+                hellSelectionPassed(
+                  id,
+                  variant,
+                  best.validation,
+                  best.readability,
+                ))
+            )
+              break;
+            const checked = inspect(view, targetFeature);
+            fallback++;
+            if (!best || checked.score > best.score) best = checked;
+          }
+          record({
+            stage: "production-framing-summary",
+            id,
+            revalidationCandidates,
+            coarseCandidates: observations.length,
+            proposedRefinements: refinements.length,
+            tracedRefinements: traced,
+            fallbackCoarseCandidates: fallback,
+            fullGridCandidates: inspected,
+            fullGridBudget,
+          });
         }
         if (primitiveForest) {
           const refinements = best?.validation.passed
             ? []
             : primitiveCameraRefinements(observations);
-          const budget =
-            PRIMITIVE_CAMERA_BUDGET.coarse +
-            PRIMITIVE_CAMERA_BUDGET.refinements;
           let traced = 0,
             fallback = 0;
           for (const refinement of refinements) {
-            if (inspected >= budget) break;
+            if (inspected >= fullGridBudget) break;
             const reasons = cameraPoseRejections(refinement.view, query);
             record({
               stage: "primitive-refinement-preflight",
@@ -955,7 +1079,6 @@ export async function resolveHellCameras(
             });
             if (reasons.length) continue;
             const checked = inspect(refinement.view, refinement.targetFeature);
-            inspected++;
             traced++;
             if (!best || checked.score > best.score) best = checked;
           }
@@ -965,24 +1088,31 @@ export async function resolveHellCameras(
           for (const { view, targetFeature } of candidates.slice(
             coarse.length,
           )) {
-            if (inspected >= budget || best?.validation.passed) break;
+            if (inspected >= fullGridBudget || best?.validation.passed) break;
             const checked = inspect(view, targetFeature);
-            inspected++;
             fallback++;
             if (!best || checked.score > best.score) best = checked;
           }
           record({
             stage: "primitive-refinement-summary",
             id,
-            coarseCandidates: coarse.length,
+            revalidationCandidates,
+            coarseCandidates: observations.length,
             proposedRefinements: refinements.length,
             tracedRefinements: traced,
             fallbackCoarseCandidates: fallback,
             fullGridCandidates: inspected,
-            fullGridBudget: budget,
+            fullGridBudget,
           });
         }
       }
+      record({
+        stage: "inspection-summary",
+        id,
+        revalidationCandidates,
+        fullGridCandidates: inspected,
+        fullGridBudget,
+      });
       if (
         !best ||
         !hellSelectionPassed(id, variant, best.validation, best.readability)

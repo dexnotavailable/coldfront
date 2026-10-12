@@ -19,6 +19,7 @@ import {
   Group,
   HalfFloatType,
   HemisphereLight,
+  InstancedMesh,
   LineBasicMaterial,
   LineSegments,
   type Material,
@@ -31,6 +32,7 @@ import {
   Plane,
   Scene,
   SRGBColorSpace,
+  type Texture,
   UnsignedIntType,
   Vector3,
   WebGLRenderer,
@@ -75,6 +77,16 @@ interface RenderChunk {
   readonly geometries: BufferGeometry[];
   readonly gpuBytes: number;
   readonly fluid: Mesh | null;
+}
+/** EffectPass owns its fullscreen scene through the supported protected API.
+ * Release GPU bindings without disposing the pass/effect subscription graph. */
+class ContextEffectPass extends EffectPass {
+  releaseContextBindings(): void {
+    this.scene.traverse((object) => {
+      if (object instanceof Mesh) object.geometry.dispose();
+    });
+    this.fullscreenMaterial.dispose();
+  }
 }
 function geometry(part: MeshPart): BufferGeometry {
   const g = new BufferGeometry();
@@ -133,6 +145,12 @@ export class WorldRenderer {
   private readonly fog = new FogExp2(0xaab5b4, 0.004);
   private readonly composer: EffectComposer;
   private readonly bloom: BloomEffect;
+  private readonly postPass: ContextEffectPass;
+  private readonly drawnEffectTextures = new Set<Texture>();
+  private readonly forgetEffectTexture = (event: { target: Texture }): void => {
+    this.drawnEffectTextures.delete(event.target);
+    event.target.removeEventListener("dispose", this.forgetEffectTexture);
+  };
   private readonly depthMaterial = new MeshBasicMaterial({
     colorWrite: false,
     clippingPlanes: [this.clip],
@@ -245,6 +263,20 @@ export class WorldRenderer {
     this.scene.add(this.effects.particles, this.effects.pop);
     this.scene.add(this.ibaraEffects.flames, this.ibaraEffects.embers);
     this.marks.add(this.effects.ghost);
+    // Effects cache tiles beyond the lifetime of individual materials. Remember
+    // only maps actually drawn so even a no-longer-selected tile can release
+    // its old context's texture listener when that context is lost.
+    for (const mesh of [this.effects.pop, this.effects.ghost]) {
+      const beforeRender = mesh.onBeforeRender;
+      mesh.onBeforeRender = (...args) => {
+        beforeRender.apply(mesh, args);
+        const map = (args[4] as MeshBasicMaterial).map;
+        if (map && !this.drawnEffectTextures.has(map)) {
+          this.drawnEffectTextures.add(map);
+          map.addEventListener("dispose", this.forgetEffectTexture);
+        }
+      };
+    }
     this.outline = new LineSegments(
       new EdgesGeometry(new BoxGeometry(1.006, 1.006, 1.006)),
       new LineBasicMaterial({
@@ -267,16 +299,15 @@ export class WorldRenderer {
       mipmapBlur: true,
     });
     this.bloom = bloom;
-    this.composer.addPass(
-      new EffectPass(
-        this.camera,
-        bloom,
-        new ToneMappingEffect({
-          mode: ToneMappingMode.ACES_FILMIC,
-          adaptive: false,
-        }),
-      ),
+    this.postPass = new ContextEffectPass(
+      this.camera,
+      bloom,
+      new ToneMappingEffect({
+        mode: ToneMappingMode.ACES_FILMIC,
+        adaptive: false,
+      }),
     );
+    this.composer.addPass(this.postPass);
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(canvas);
     this.resize();
@@ -287,8 +318,58 @@ export class WorldRenderer {
     event.preventDefault();
     this.contextLost = true;
     this.terrain.uniforms.waterDepthReady.value = 0;
+    this.releaseContextBindings();
     this.onLost();
   };
+  /** Three recreates its GPU managers on restore. Dispose their listeners while
+   * the context is still lost, before old buffer/texture/VAO handles can be
+   * presented to the new managers. CPU arrays, settings and scene objects stay. */
+  private releaseContextBindings(): void {
+    const geometries = new Set<BufferGeometry>(),
+      materials = new Set<Material>([
+        ...this.terrain.materials,
+        this.depthMaterial,
+        this.borderMaterial,
+      ]),
+      textures = new Set<Texture>([
+        this.terrain.texture,
+        ...this.drawnEffectTextures,
+      ]);
+    for (const scene of [this.scene, this.depthScene, this.marks])
+      scene.traverse((object) => {
+        if (object instanceof InstancedMesh) {
+          const morphTexture = object.morphTexture;
+          object.dispose();
+          // InstancedMesh.dispose releases and nulls this texture; retain its
+          // CPU morph data/reference so the restored mesh can upload it again.
+          object.morphTexture = morphTexture;
+        }
+        if (!(object instanceof Mesh || object instanceof LineSegments)) return;
+        geometries.add(object.geometry);
+        const owned = Array.isArray(object.material)
+          ? object.material
+          : [object.material];
+        for (const material of owned) {
+          materials.add(material);
+          const map = (material as MeshBasicMaterial).map;
+          if (map) textures.add(map);
+        }
+      });
+    for (const geometry of geometries) geometry.dispose();
+    // Shadow clipping caches also install manager-specific material listeners.
+    for (const material of materials) material.dispose();
+    for (const chunk of this.chunks.values()) textures.add(chunk.cap.texture);
+    for (const texture of textures) texture.dispose();
+    this.drawnEffectTextures.clear();
+    this.waterDepthTarget.dispose();
+    this.sun.shadow.dispose();
+    this.composer.inputBuffer.dispose();
+    this.composer.outputBuffer.dispose();
+    // Effect.dispose releases its owned targets/materials, retaining settings,
+    // mip arrays and subscriptions. Composer/EffectPass.dispose destroys them.
+    this.bloom.dispose();
+    this.postPass.releaseContextBindings();
+  }
   private restored = (): void => {
     this.contextLost = false;
     this.ready = false;
@@ -870,6 +951,10 @@ export class WorldRenderer {
   }
   dispose(): void {
     this.atmosphere?.clear();
+    this.drawnEffectTextures?.forEach((texture) => {
+      texture.dispose();
+    });
+    this.drawnEffectTextures?.clear();
     this.resizeObserver.disconnect();
     this.canvas.removeEventListener("webglcontextlost", this.lost);
     this.canvas.removeEventListener("webglcontextrestored", this.restored);

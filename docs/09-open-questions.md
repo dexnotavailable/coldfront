@@ -205,6 +205,14 @@ The agent appends to lists 2 and 3 and never blocks work waiting for answers.
 
 ---
 
+**2026-10-10 · Postcard support and composition.**
+
+| # | Decision | Why | To reverse |
+|---|---|---|---|
+| 114 | **Eye-level postcard clearance distinguishes the supporting floor from an obstruction.** With validated walking support, ground cells whose top is at or below the supporting voxel top do not fail the five-metre central test; elevated terrain, walls, features and fluids still do. Ground remains in first-hit/coverage/sky data. The 30–45% horizon band applies to the current aerial vista composition, not every eye-level forest view; level and slightly upward eye-level framing are permitted | An independent synthetic audit showed that an otherwise clear flat floor fails at every existing HELL-1 pitch: the 4.25° view reports 38 nearby ground hits, and a lower-central ray reaches its support plane at 3.635 m. The old validator also made a vista-qualified composition rule universal. This correction lets ordinary flat ground be photographed without moving the eye off its walkable +1.62 m position. Eye/body safety, actual nearby obstruction rejection, scene-content checks, 50-view search budget and all HELL score/R2 requirements remain | 04 §14.3; camera preflight/final checks and regression fixtures. Review actual images after changing this interpretation; never count excluded floor as transparent or fabricate visibility |
+
+---
+
 ## 3. Parking lot
 
 - Seasonal modifiers ("the Long Winter": a season with twice the winter)

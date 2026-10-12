@@ -169,8 +169,6 @@ describe("primitive calibration angular refinement", () => {
       { eyeClear: false },
       { walkable: false },
       { centralClear: false },
-      { horizonFraction: 0.29 },
-      { horizonFraction: 0.46 },
       { sunOffsetDegrees: 59 },
       { sunOffsetDegrees: 151 },
       { sunElevationDegrees: 4 },
@@ -187,6 +185,21 @@ describe("primitive calibration angular refinement", () => {
       expect(primitiveSkyTargetDeficit(candidate)).toBe(Infinity);
       expect(primitiveCameraRefinements([candidate])).toEqual([]);
     }
+    const level = {
+      ...base,
+      view: {
+        ...base.view,
+        target: { ...base.view.target, y: base.view.position.y },
+      },
+      validation: { ...base.validation, horizonFraction: 0.5 },
+    };
+    expect(Number.isFinite(primitiveSkyTargetDeficit(level))).toBe(true);
+    expect(
+      primitiveSkyTargetDeficit({
+        ...level,
+        view: { ...level.view, kind: "aerial" },
+      }),
+    ).toBe(Infinity);
     expect(
       primitiveCameraRefinements([
         { ...base, validation: { ...base.validation, passed: true } },

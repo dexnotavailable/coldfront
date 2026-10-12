@@ -126,7 +126,7 @@ describe("fissure-led HELL recovery", () => {
       inspectHellCamera(view, blocker, { target, lava: wet }).centralClear,
     ).toBe(false);
   });
-  it("retains every cheap rejection before full validation and cannot turn a flat ground pose into a camera", () => {
+  it("does not reject supporting flat floor cheaply, but still rejects its missing real fissure", () => {
     const events: Readonly<Record<string, unknown>>[] = [];
     const flat = {
       ...shelf,
@@ -154,6 +154,12 @@ describe("fissure-led HELL recovery", () => {
       (event) => events.push(event),
     );
     expect(candidates).toEqual([]);
+    expect(events.some((event) => event.reason === "central-ground")).toBe(
+      false,
+    );
+    expect(events.some((event) => event.reason === "fissure-occluded")).toBe(
+      true,
+    );
     expect(events.filter((event) => event.stage === "preflight")).toHaveLength(
       360,
     );

@@ -72,6 +72,57 @@ interface TargetInspection {
   /** Tools-only observation of the SAME first hits used by the original gates. */
   onHit?(hit: CameraFirstHit): void;
 }
+/** Decision114: the vista band belongs to aerial composition. Eye-level
+ * horizon is still measured, but is not a universal acceptance constraint. */
+export function cameraHorizonAllowed(
+  camera: Pick<MainCameraCandidate, "kind">,
+  fraction: number,
+): boolean {
+  return (
+    Number.isFinite(fraction) &&
+    (camera.kind !== "aerial" || (fraction >= 0.3 && fraction <= 0.45))
+  );
+}
+/** Top of the exact voxel queried by walkableEye's feet-0.01 support probes.
+ * Callers must validate support/body first before granting any exception. */
+export function supportingVoxelTop(eyeY: number): number {
+  return Math.floor(eyeY - 1.62 - 0.01) + 1;
+}
+export interface GroundHit {
+  readonly x: number;
+  readonly y: number;
+  readonly z: number;
+  readonly block: number;
+  readonly fluid: number;
+  readonly featureId?: number | undefined;
+}
+/** This only classifies a near-obstruction hit; it never changes ray traversal.
+ * CameraQuery.ground returns ceil(columnHeight-0.5), the ordinary column's
+ * voxel top. Unknown/non-integer bounds fail closed. The column bound keeps a
+ * low wall above ordinary terrain from masquerading as floor below the eye. */
+export function isSupportingGroundHit(
+  hit: GroundHit,
+  supportTop: number | null,
+  groundTopAt: ((x: number, z: number) => number) | undefined,
+): boolean {
+  if (
+    supportTop === null ||
+    !Number.isInteger(supportTop) ||
+    hit.fluid !== 0 ||
+    hit.featureId !== 0 ||
+    !BLOCK_REGISTRY[hit.block]?.solid ||
+    hit.block === Block.Log ||
+    hit.block === Block.Leaves ||
+    !groundTopAt
+  )
+    return false;
+  const top = Math.floor(hit.y) + 1;
+  if (top > supportTop) return false;
+  const groundTop = groundTopAt(hit.x, hit.z);
+  return (
+    Number.isInteger(groundTop) && top <= groundTop && groundTop <= supportTop
+  );
+}
 const normalize = (p: Point): Point => {
   const d = Math.hypot(p.x, p.y, p.z);
   if (!d) throw new Error("Zero camera direction");
@@ -139,7 +190,7 @@ export function cameraPoseRejections(
 ): string[] {
   const frame = cameraFrame(camera),
     reasons: string[] = [];
-  if (frame.horizonFraction < 0.3 || frame.horizonFraction > 0.45)
+  if (!cameraHorizonAllowed(camera, frame.horizonFraction))
     reasons.push("horizon");
   if (
     frame.sunOffsetDegrees < 60 ||
@@ -150,8 +201,11 @@ export function cameraPoseRejections(
     reasons.push("dusk-light");
   const p = camera.position;
   if (query.voxel(p.x, p.y, p.z).block !== Block.Air) reasons.push("eye-solid");
-  if (!walkableEye(query, p.x, p.y, p.z)) reasons.push("body-or-support");
+  const walkable = walkableEye(query, p.x, p.y, p.z);
+  if (!walkable) reasons.push("body-or-support");
   if (reasons.length) return reasons;
+  const supportTop =
+    camera.kind === "eye-level" && walkable ? supportingVoxelTop(p.y) : null;
   for (let py = 0; py < 36; py++)
     for (let px = 0; px < 64; px++) {
       const sx = ((px + 0.5) / 64) * 2 - 1,
@@ -164,7 +218,22 @@ export function cameraPoseRejections(
           p.y + ray.y * d,
           p.z + ray.z * d,
         );
-        if (hit.density > 0 || hit.fluid !== 0) return ["central-five-metres"];
+        if (
+          (hit.density > 0 || hit.fluid !== 0) &&
+          !isSupportingGroundHit(
+            {
+              x: p.x + ray.x * d,
+              y: p.y + ray.y * d,
+              z: p.z + ray.z * d,
+              block: hit.block,
+              fluid: hit.fluid,
+              featureId: hit.featureId,
+            },
+            supportTop,
+            query.ground,
+          )
+        )
+          return ["central-five-metres"];
       }
     }
   return reasons;
@@ -189,6 +258,10 @@ export function inspectMainCamera(
     camera.position.y,
     camera.position.z,
   );
+  const supportTop =
+    camera.kind === "eye-level" && eyeClear && walkable
+      ? supportingVoxelTop(camera.position.y)
+      : null;
   let sky = 0,
     water = 0,
     feature = 0,
@@ -214,7 +287,9 @@ export function inspectMainCamera(
         sy = 1 - ((py + 0.5) / grid.height) * 2;
       const ray = frame.ray(sx, sy);
       let block: number = Block.Air;
-      let featureId = 0;
+      let featureId = 0,
+        hitFluid = 0,
+        featureIdentityKnown = false;
       let distance = 0,
         hitX = camera.position.x,
         hitY = camera.position.y,
@@ -250,6 +325,8 @@ export function inspectMainCamera(
           // The query returns reused scratch storage: copy before any query.
           block = voxel.block;
           featureId = voxel.featureId ?? 0;
+          featureIdentityKnown = voxel.featureId !== undefined;
+          hitFluid = voxel.fluid;
           break;
         }
       }
@@ -321,7 +398,23 @@ export function inspectMainCamera(
             block === Block.Water)
         )
           feature++;
-        if (distance < 5 && Math.abs(sx) <= 0.6 && Math.abs(sy) <= 0.6)
+        if (
+          distance < 5 &&
+          Math.abs(sx) <= 0.6 &&
+          Math.abs(sy) <= 0.6 &&
+          !isSupportingGroundHit(
+            {
+              x: hitX,
+              y: hitY,
+              z: hitZ,
+              block,
+              fluid: hitFluid,
+              featureId: featureIdentityKnown ? featureId : undefined,
+            },
+            supportTop,
+            query.ground,
+          )
+        )
           centralClear = false;
       }
     }
@@ -339,8 +432,7 @@ export function inspectMainCamera(
     sky / total >= 0.2 &&
     sky / total <= 0.65 &&
     feature / total >= 0.15 &&
-    horizonFraction >= 0.3 &&
-    horizonFraction <= 0.45 &&
+    cameraHorizonAllowed(camera, horizonFraction) &&
     sunOffsetDegrees >= 60 &&
     sunOffsetDegrees <= 150 &&
     sunElevationDegrees >= 5 &&

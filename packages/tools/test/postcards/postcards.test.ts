@@ -36,6 +36,7 @@ const plane: CameraQuery = {
     density: -y,
     block: y < 0 ? Block.Stone : Block.Air,
     fluid: 0,
+    featureId: 0,
   }),
   height: () => 0,
   ground: () => 0,
@@ -276,8 +277,8 @@ describe("first-pass postcard contracts and geometry", () => {
     };
     const low = inspectMainCamera(eye, plane, { width: 16, height: 9 });
     expect(low.walkable).toBe(true);
-    expect(low.centralClear).toBe(false);
-    expect(low.passed).toBe(false);
+    expect(low.centralClear).toBe(true); // Decision114: validated ordinary support floor.
+    expect(low.passed).toBe(true);
   });
   it("conservatively includes actual70-degree frustum corner rays across negative chunk coordinates", () => {
     const cameraView = {

@@ -50,7 +50,14 @@ export function postcardResolverHash(
       "geometry.ts",
       "main-resolve.ts",
       ...(phase === "1.3"
-        ? ["hell-resolve.ts", "hell-readability.ts", "hell-primitive-camera.ts"]
+        ? [
+            "hell-resolve.ts",
+            "hell-readability.ts",
+            "hell-primitive-camera.ts",
+            "hell-visible-instances.ts",
+            "hell-framing-camera.ts",
+            "hell-framing-preflight.ts",
+          ]
         : []),
     ].map((name) => join(root, "packages/tools/src/postcards", name)),
   );

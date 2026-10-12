@@ -102,7 +102,7 @@ const receipt = {
     meshing:
       "meshChunk using generated halo blocks, exact Uint32 feature IDs and solved packed RGB/sky halo light; includes kernel allocations",
     denseSelection:
-      "50 additional LOD0 accepted ordinary roots: live hellscape weight>=0.85, saturated production thorn mask, >=3 accepted roots in the aligned 96x96m neighbourhood; unique feature-intersecting chunks, deterministic evenly spaced selection in canonical enumeration order. Each measured case must produce nonzero core feature voxels. Regional cases unchanged.",
+      "50 additional LOD0 ordinary roots: live hellscape weight>=0.85, saturated production thorn mask, >=3 accepted roots in the aligned 96x96m neighbourhood. Deterministic strata preserve spatial spread; each tries its original midpoint first, at most 8 roots and original/+1/-1 vertical chunks. Unique chunks must expose faces of the selected feature. Qualification generates chunks before warmup, outside measured intervals, and can populate shared feature caches; each measured repetition still regenerates fresh voxel/light buffers. Rejections are retained. Regional cases unchanged.",
     memory:
       "Exact unique retained typed ArrayBuffer byte lengths for world plan, generated chunk, lighting volume, halo light and mesh; excludes temporary kernel allocations and unmeasured JS heap. Feature-cache snapshots are object/reference COUNTS ONLY; do not sum snapshots or overlapping prepared references.",
     coldPlan:

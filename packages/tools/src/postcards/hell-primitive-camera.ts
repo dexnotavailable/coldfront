@@ -1,7 +1,8 @@
-import type {
-  HellCameraValidation,
-  HellTarget,
-  MainCameraCandidate,
+import {
+  cameraHorizonAllowed,
+  type HellCameraValidation,
+  type HellTarget,
+  type MainCameraCandidate,
 } from "./geometry.js";
 
 /** Reserve refinement INSIDE the existing fifty full-grid candidate budget.
@@ -27,6 +28,7 @@ export interface PrimitiveCameraRefinement {
 /** Ranking only, never validation. All non-area gates must already hold; a
  * missing fissure or unsafe standing point cannot be repaired by this turn. */
 export function primitiveSkyTargetDeficit({
+  view,
   validation: v,
   targetFeature,
 }: PrimitiveCameraObservation): number {
@@ -35,8 +37,7 @@ export function primitiveSkyTargetDeficit({
     !v.eyeClear ||
     !v.walkable ||
     !v.centralClear ||
-    v.horizonFraction < 0.3 ||
-    v.horizonFraction > 0.45 ||
+    !cameraHorizonAllowed(view, v.horizonFraction) ||
     v.sunOffsetDegrees < 60 ||
     v.sunOffsetDegrees > 150 ||
     v.sunElevationDegrees < 5 ||

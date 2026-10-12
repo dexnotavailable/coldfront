@@ -185,7 +185,13 @@ export function cameraQuery(context: WorldContext): CameraQuery {
   return query;
 }
 export function walkableEye(
-  q: CameraQuery,
+  q: {
+    voxel(
+      x: number,
+      y: number,
+      z: number,
+    ): Pick<Readonly<VoxelSample>, "density" | "block">;
+  },
   x: number,
   eyeY: number,
   z: number,

@@ -16,10 +16,17 @@ import type { CubicBezier, Vec3 } from "../../../shared/src/sdf/types.js";
 import {
   type CameraFirstHit,
   cameraFrame,
+  cameraHorizonAllowed,
   type HellCameraValidation,
   inspectHellCamera,
   type MainCameraCandidate,
 } from "../../src/postcards/geometry.js";
+import {
+  type FramingObservation,
+  framingEnvelope,
+  PRODUCTION_CAMERA_BUDGET,
+  productionFramingCandidates,
+} from "../../src/postcards/hell-framing-camera.js";
 import {
   HELL_READABILITY_LIMITS,
   inspectHellReadability,
@@ -29,6 +36,7 @@ import {
   forestFramingScore,
   hellSelectionPassed,
 } from "../../src/postcards/hell-resolve.js";
+import { createVisibleThornResolver } from "../../src/postcards/hell-visible-instances.js";
 import type { CameraQuery } from "../../src/postcards/query.js";
 
 const view: MainCameraCandidate = {
@@ -218,6 +226,394 @@ function hits(thorn: ThornInstance): CameraFirstHit[] {
   }));
 }
 describe("bounded HELL-1 form selection", () => {
+  const allowPreflight = () => ({
+    reasons: [],
+    cachedGeometry: false,
+    cachedRejected: false,
+    targetEvaluated: true,
+  });
+  function observation(
+    thorn: ThornInstance,
+    camera: MainCameraCandidate = view,
+  ): FramingObservation {
+    // Proposal fixture: the original pipeline has already supplied a geometry
+    // pass. The new poses themselves receive no validation/pass flag here.
+    return {
+      view: camera,
+      targetFeature: {
+        kind: "thorn-cluster",
+        featureIds: [thorn.parameters.id],
+        bounds: thorn.bounds,
+        rootDisc: {
+          x: thorn.parameters.base[0],
+          z: thorn.parameters.base[2],
+          radius: 144,
+        },
+        fissureId: 7,
+      },
+      validation: { passed: true } as HellCameraValidation,
+      readability: inspectHellReadability(
+        camera,
+        [thorn],
+        hits(thorn),
+        field([thorn]),
+      ),
+    };
+  }
+  it("automatically frames a cropped dominant within the decision114 eye-level pitch bank", () => {
+    const thorn = asset({ height: 40, base: [0, 0, 60] });
+    expect(framingEnvelope(view, thorn).complete).toBe(false);
+    const original = observation(thorn),
+      snapshot = JSON.stringify(original);
+    const proposals = productionFramingCandidates(
+      [original],
+      () => thorn,
+      () => 0,
+      allowPreflight,
+    );
+    expect(proposals.length).toBeGreaterThan(0);
+    expect(proposals.length).toBeLessThanOrEqual(6);
+    for (const candidate of proposals) {
+      expect(framingEnvelope(candidate.view, thorn)).toMatchObject({
+        complete: true,
+        useful: true,
+        overflow: 0,
+      });
+      expect(candidate.view.position.y).toBe(1.62);
+      expect(candidate.view.position.x % 1).toBeOneOf([0.5, -0.5]);
+      expect(candidate.pitchDegrees).toBeOneOf([-5, 0, 4.25]);
+      const frame = cameraFrame(candidate.view);
+      expect(cameraHorizonAllowed(candidate.view, frame.horizonFraction)).toBe(
+        true,
+      );
+      expect(frame.sunOffsetDegrees).toBeGreaterThanOrEqual(60);
+      expect(frame.sunOffsetDegrees).toBeLessThanOrEqual(150);
+      expect(candidate.view.radius).toBe(512);
+      expect(candidate.view.hours).toBe(17.25);
+      expect(candidate.view.kind).toBe("eye-level");
+      expect(candidate.targetFeature).toBe(original.targetFeature);
+      expect(candidate).not.toHaveProperty("validation");
+    }
+    expect(proposals.some((candidate) => candidate.pitchDegrees <= 0)).toBe(
+      true,
+    );
+    expect(JSON.stringify(original)).toBe(snapshot);
+  });
+  it("keeps projection proposal/ground-query budgets bounded and interleaves distinct measured parents", () => {
+    const thorns = Array.from({ length: 4 }, (_, i) =>
+      asset({ id: i + 1, height: 40, base: [i * 1000, 0, 60] }),
+    );
+    const observations = thorns.map((thorn, i) =>
+      observation(thorn, {
+        ...view,
+        position: { ...view.position, x: view.position.x + i * 1000 },
+        target: { ...view.target, x: view.target.x + i * 1000 },
+      }),
+    );
+    let groundQueries = 0;
+    const events: Readonly<Record<string, unknown>>[] = [];
+    const result = productionFramingCandidates(
+      observations,
+      (id) => thorns.find((thorn) => thorn.parameters.id === id),
+      () => {
+        groundQueries++;
+        return 0;
+      },
+      allowPreflight,
+      (event) => events.push(event),
+    );
+    expect(result.length).toBeLessThanOrEqual(
+      PRODUCTION_CAMERA_BUDGET.refinements,
+    );
+    expect(PRODUCTION_CAMERA_BUDGET.coarse + result.length).toBeLessThanOrEqual(
+      50,
+    );
+    expect(new Set(result.map((c) => c.parent)).size).toBe(3);
+    expect(groundQueries).toBe(45);
+    expect(events.at(-1)).toMatchObject({
+      stage: "production-framing-proposal-summary",
+      parents: 3,
+      groundQueries: 45,
+    });
+    expect(Number(events.at(-1)?.proposals)).toBeLessThanOrEqual(675);
+    expect(result.slice(0, 3).map((c) => c.parent)).toEqual([
+      ...new Set(result.slice(0, 3).map((c) => c.parent)),
+    ]);
+  });
+  it("uses current ground for every new eye and is independent of world coordinates", () => {
+    const thorn = asset({ height: 40, base: [0, 0, 60] }),
+      original = observation(thorn);
+    const proposals = productionFramingCandidates(
+      [original],
+      () => thorn,
+      (x) => (x < 0 ? 2 : 0),
+      allowPreflight,
+    );
+    expect(proposals.length).toBeGreaterThan(0);
+    for (const candidate of proposals)
+      expect(candidate.view.position.y).toBe(
+        candidate.view.position.x < 0 ? 3.62 : 1.62,
+      );
+    const translated = asset({ height: 40, base: [2000, 0, -940] });
+    const shifted = {
+      ...view,
+      position: {
+        x: view.position.x + 2000,
+        y: view.position.y,
+        z: view.position.z - 1000,
+      },
+      target: {
+        x: view.target.x + 2000,
+        y: view.target.y,
+        z: view.target.z - 1000,
+      },
+    };
+    const base = productionFramingCandidates(
+        [original],
+        () => thorn,
+        () => 0,
+        allowPreflight,
+      ),
+      moved = productionFramingCandidates(
+        [observation(translated, shifted)],
+        () => translated,
+        () => 0,
+        allowPreflight,
+      );
+    expect(moved.length).toBe(base.length);
+    for (const candidate of moved)
+      expect(
+        base.some(
+          (other) =>
+            Math.abs(candidate.view.position.x - 2000 - other.view.position.x) <
+              1e-8 &&
+            Math.abs(candidate.view.position.z + 1000 - other.view.position.z) <
+              1e-8 &&
+            candidate.yawDeltaDegrees === other.yawDeltaDegrees,
+        ),
+      ).toBe(true);
+  });
+  it("does not refine failed original geometry, unknown parents or already complete contours", () => {
+    const cropped = asset({ height: 40, base: [0, 0, 60] }),
+      original = observation(cropped),
+      fail = () => {
+        throw new Error("No ground lookup for an ineligible parent");
+      };
+    expect(
+      productionFramingCandidates(
+        [
+          {
+            ...original,
+            validation: { ...original.validation, passed: false },
+          },
+        ],
+        () => cropped,
+        fail,
+        fail,
+      ),
+    ).toEqual([]);
+    expect(
+      productionFramingCandidates([original], () => undefined, fail, fail),
+    ).toEqual([]);
+    const complete = asset();
+    expect(framingEnvelope(view, complete).complete).toBe(true);
+    expect(
+      productionFramingCandidates(
+        [observation(complete)],
+        () => complete,
+        fail,
+        fail,
+      ),
+    ).toEqual([]);
+  });
+  it("preflights the eligible bank before blocked high-score stances can hide lower-score feasible ones", () => {
+    const thorn = asset({ height: 40, base: [0, 0, 68] }),
+      original = observation(thorn);
+    const baseline = productionFramingCandidates(
+      [original],
+      () => thorn,
+      () => 0,
+      allowPreflight,
+    );
+    expect(baseline).toHaveLength(6);
+    const blocked = new Set(
+      baseline.map((candidate) => JSON.stringify(candidate.view)),
+    );
+    const events: Readonly<Record<string, unknown>>[] = [];
+    const selected = productionFramingCandidates(
+      [original],
+      () => thorn,
+      () => 0,
+      (candidate) => ({
+        reasons: blocked.has(JSON.stringify(candidate))
+          ? ["central-five-metres"]
+          : [],
+        cachedGeometry: false,
+        cachedRejected: false,
+        targetEvaluated: true,
+      }),
+      (event) => events.push(event),
+    );
+    expect(selected.length).toBeGreaterThan(0);
+    expect(
+      selected.every(
+        (candidate) => !blocked.has(JSON.stringify(candidate.view)),
+      ),
+    ).toBe(true);
+    expect(selected.length).toBeLessThanOrEqual(6);
+    const summary = events.at(-1);
+    expect(Number(summary?.preflightEvaluated)).toBeGreaterThan(6);
+    expect(Number(summary?.preflightEligible)).toBeGreaterThanOrEqual(
+      selected.length,
+    );
+    expect(summary?.selected).toBe(selected.length);
+  });
+  it("never fills refinement slots with failed preflights and records cached rejection counts", () => {
+    const thorn = asset({ height: 40, base: [0, 0, 68] }),
+      events: Readonly<Record<string, unknown>>[] = [];
+    const selected = productionFramingCandidates(
+      [observation(thorn)],
+      () => thorn,
+      () => 0,
+      () => ({
+        reasons: ["central-ground"],
+        cachedGeometry: true,
+        cachedRejected: true,
+        targetEvaluated: false,
+      }),
+      (event) => events.push(event),
+    );
+    expect(selected).toEqual([]);
+    const summary = events.at(-1);
+    expect(Number(summary?.preflightEvaluated)).toBeGreaterThan(0);
+    expect(summary?.cachedRejected).toBe(summary?.preflightEvaluated);
+    expect(summary).toMatchObject({
+      geometryEvaluated: 0,
+      targetEvaluated: 0,
+      preflightEligible: 0,
+      selected: 0,
+    });
+  });
+  it("evaluates a shared refinement pose separately for different fissure/coverage targets", () => {
+    const thorn = asset({ height: 40, base: [0, 0, 68] }),
+      first = observation(thorn);
+    const second = observation(thorn, {
+      ...view,
+      position: { ...view.position, z: view.position.z + 4 },
+      target: { ...view.target, z: view.target.z + 4 },
+    });
+    if (second.targetFeature.kind !== "thorn-cluster")
+      throw new Error("Wrong fixture target");
+    const other = {
+      ...second,
+      targetFeature: { ...second.targetFeature, fissureId: 8 },
+    };
+    const firstPoses = new Set<string>();
+    productionFramingCandidates(
+      [first],
+      () => thorn,
+      () => 0,
+      allowPreflight,
+      (event) => {
+        if (event.stage === "production-framing-preflight")
+          firstPoses.add(JSON.stringify(event.view));
+      },
+    );
+    const result = productionFramingCandidates(
+      [first, other],
+      () => thorn,
+      () => 0,
+      (candidate, target) => ({
+        reasons:
+          target.kind === "thorn-cluster" &&
+          target.fissureId === 8 &&
+          firstPoses.has(JSON.stringify(candidate))
+            ? []
+            : ["fissure-occluded"],
+        cachedGeometry: false,
+        cachedRejected: false,
+        targetEvaluated: true,
+      }),
+    );
+    expect(result.length).toBeGreaterThan(0);
+    expect(
+      result.every(
+        (candidate) =>
+          candidate.parent === 1 &&
+          firstPoses.has(JSON.stringify(candidate.view)),
+      ),
+    ).toBe(true);
+  });
+  it("can inspect an actual first-hit size witness beyond the target root disc without awarding it target coverage", () => {
+    // Mirrors the recorded omission: parent10329346 has17 real grid hits at
+    // 172.211m and height69.336m but is outside its target's144m root disc.
+    // This controlled asset uses the real grid/part sampler, not a world plan.
+    const local = asset({ id: 7, height: 22, base: [-60, 0, 90] });
+    const distant = asset({
+      id: 10329346,
+      height: 69.33654936769335,
+      base: [0, 0, 172.211],
+      baseRadius: 7,
+    });
+    const query = field([local, distant]),
+      observed: CameraFirstHit[] = [];
+    const target = {
+      kind: "thorn-cluster" as const,
+      featureIds: [7],
+      bounds: local.bounds,
+      rootDisc: { x: 0, z: 0, radius: 144 },
+    };
+    const lava = () => ({
+      kind: "none" as const,
+      source: "none" as const,
+      bodyId: 0,
+      bed: -Infinity,
+      level: -Infinity,
+    });
+    const original = inspectHellCamera(view, query, {
+      target,
+      lava,
+      onHit: (hit) => observed.push(hit),
+    });
+    expect(
+      observed.filter((hit) => hit.featureId === distant.parameters.id).length,
+    ).toBeGreaterThanOrEqual(3);
+    const before = inspectHellReadability(view, [local], observed, query);
+    expect(before.sizeClasses).not.toContain(2);
+    expect(
+      before.parents.find((parent) => parent.id === distant.parameters.id)
+        ?.contour,
+    ).toBeUndefined();
+    let geometryCalls = 0;
+    const lookup = createVisibleThornResolver(
+      {
+        parametersForCell: (x, z, landmark) =>
+          x === 0 && z === 0 && !landmark
+            ? [local.parameters, distant.parameters]
+            : [],
+        cell: () => {
+          geometryCalls++;
+          return [local, distant];
+        },
+        landmarks: () => {
+          throw new Error("Not a landmark");
+        },
+      },
+      new Map([[local.parameters.id, local]]),
+    );
+    const resolved = lookup(observed),
+      after = inspectHellReadability(view, resolved.instances, observed, query);
+    expect(resolved.receipt.resolvedIds).toContain(distant.parameters.id);
+    expect(geometryCalls).toBe(1);
+    expect(
+      after.parents.find((parent) => parent.id === distant.parameters.id),
+    ).toMatchObject({ bodyVisible: true });
+    expect(after.sizeClasses).toContain(2);
+    expect(target.featureIds).toEqual([7]);
+    expect(inspectHellCamera(view, query, { target, lava })).toEqual(original);
+    lookup(observed);
+    expect(geometryCalls).toBe(1);
+  });
   it("projects the exact camera rays back into the postcard pixels", () => {
     const frame = cameraFrame(view);
     for (const [sx, sy] of [

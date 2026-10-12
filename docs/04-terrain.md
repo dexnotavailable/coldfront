@@ -847,16 +847,18 @@ Terrain is judged by eye. These tools make looking fast, repeatable and affordab
 - Scoring rules:
   - aerial altitude is measured from the highest terrain in view
   - golden hour: sun azimuth 60–150° off the view axis, elevation 5–20°
-  - vistas: horizon 30–45% down from the top of the frame
+  - vistas: horizon 30–45% down from the top of the frame. The current aerial composition uses this band; ground-level forest shots are not forced into it. Eye-level shots may aim level or slightly upward to show their forms, subject to all their other checks.
   - the target feature fills at least 15% of the frame
 - Save resolved cameras to `packages/tools/postcards/cameras/seed-<n>.json` (committed).
 - **Validate every camera on every run:**
   - the eye isn't inside solid
   - eye-level shots stand on a walkable voxel, with the eye at +1.62 m
-  - nothing within 5 m in the central 60% of the view
+  - no near obstruction within 5 m in the central 60% of the view. For an eye-level shot with validated walking support, ordinary ground cells whose top is at or below the supporting voxel's top do not count as obstructions. Cells rising above that level, nearby walls, features and fluids still count. This exemption changes only the obstruction test: ground remains a first hit for coverage, visibility and sky measurements. Other shot kinds retain their existing near-clearance test.
   - the sky fraction is within range for the shot type
 
   If validation fails, re-resolve automatically and log it.
+
+**Clarification (decision 114).** A +1.62 m eye with the fixed 70° field of view naturally sees its supporting ground within five metres in the lower centre of the image. Rejecting that floor systematically excludes ordinary flat ground. The rule above distinguishes the support plane from an occluding object; it does not waive eye/body safety, raise the camera, change required scene content, or reduce the rubric bars. Horizon measurements remain in every receipt for review; the vista band is not a universal eye-level constraint.
 
 **Postcard mode** (the client with `?postcard=<id>&seed=<n>`):
 - no render loop and no upload cap

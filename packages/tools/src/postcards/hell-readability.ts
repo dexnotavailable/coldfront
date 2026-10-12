@@ -79,6 +79,24 @@ export interface HellReadability {
 }
 const distance = (a: Projected, b: Projected) =>
   Math.hypot(a.x - b.x, a.y - b.y);
+/** One coverage ordering owns both bounded instance lookup and inspection.
+ * The whole 512m first-hit grid participates, independently of target coverage. */
+export function readabilityParents(hits: readonly CameraFirstHit[]): readonly {
+  readonly id: number;
+  readonly hits: readonly CameraFirstHit[];
+}[] {
+  const groups = new Map<number, CameraFirstHit[]>();
+  for (const hit of hits)
+    if (hit.featureId && BLOCK_REGISTRY[hit.block]?.solid) {
+      const group = groups.get(hit.featureId) ?? [];
+      group.push(hit);
+      groups.set(hit.featureId, group);
+    }
+  return [...groups]
+    .sort((a, b) => b[1].length - a[1].length || a[0] - b[0])
+    .slice(0, HELL_READABILITY_LIMITS.parents)
+    .map(([id, parentHits]) => ({ id, hits: parentHits }));
+}
 function chordDistance(p: Projected, a: Projected, b: Projected): number {
   const dx = b.x - a.x,
     dy = b.y - a.y;
@@ -218,17 +236,8 @@ export function inspectHellReadability(
   query: CameraQuery,
 ): HellReadability {
   const byId = new Map(instances.map((thorn) => [thorn.parameters.id, thorn]));
-  const groups = new Map<number, CameraFirstHit[]>();
-  for (const hit of hits)
-    if (hit.featureId && BLOCK_REGISTRY[hit.block]?.solid) {
-      const group = groups.get(hit.featureId) ?? [];
-      group.push(hit);
-      groups.set(hit.featureId, group);
-    }
-  const ordered = [...groups].sort(
-    (a, b) => b[1].length - a[1].length || a[0] - b[0],
-  );
-  const dominantId = ordered[0]?.[0] ?? null;
+  const ordered = readabilityParents(hits);
+  const dominantId = ordered[0]?.id ?? null;
   let visibilityRays = 0,
     voxelQueries = 0,
     rayBudgetExhausted = false;
@@ -297,7 +306,7 @@ export function inspectHellReadability(
   let dominantComplete = false,
     groundTransition = false;
   const parents: HellReadability["parents"][number][] = [];
-  for (const [id, cells] of ordered.slice(0, HELL_READABILITY_LIMITS.parents)) {
+  for (const { id, hits: cells } of ordered) {
     const thorn = byId.get(id),
       borderCells = cells.filter(
         (h) => h.px === 0 || h.px === 63 || h.py === 0 || h.py === 35,

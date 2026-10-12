@@ -27,6 +27,7 @@ export interface GenerationMeasurement {
   readonly featureCache: FeatureCacheStats | null;
 }
 export interface PipelineMeasurement extends GenerationMeasurement {
+  readonly denseSurfaceEvidence?: DenseSurfaceEvidence;
   readonly typedWorkingSetBytes: {
     readonly generation: number;
     readonly lightingVolume: number;
@@ -44,6 +45,60 @@ export interface PipelineMeasurement extends GenerationMeasurement {
   readonly meshBytes: number;
   readonly litHaloSamples: number;
   readonly skyEvidence: SkyEvidence;
+}
+export interface DenseSurfaceEvidence {
+  readonly solidVoxels: number;
+  readonly openVoxels: number;
+  readonly featureVoxels: number;
+  readonly selectedFeatureVoxels: number;
+  readonly visibleFeatureFaces: number;
+  readonly selectedFeatureFaces: number;
+}
+/** Collision openness alone is insufficient: opaque lava is non-solid but
+ * hides every adjoining face. Count actual feature-to-nonopaque interfaces,
+ * including the generated border halo, before accepting a surface case. */
+export function denseSurfaceEvidence(
+  chunk: VoxelChunk,
+  selectedFeatureId: number,
+): DenseSurfaceEvidence {
+  let solidVoxels = 0,
+    featureVoxels = 0,
+    selectedFeatureVoxels = 0,
+    visibleFeatureFaces = 0,
+    selectedFeatureFaces = 0;
+  for (const block of chunk.blocks)
+    if (BLOCK_REGISTRY[block]?.solid) solidVoxels++;
+  for (let y = 0; y < 32; y++)
+    for (let z = 0; z < 32; z++)
+      for (let x = 0; x < 32; x++) {
+        const h = haloIndex(x, y, z),
+          id = chunk.featureIds?.[h] ?? 0;
+        if (id === 0) continue;
+        featureVoxels++;
+        if (id === selectedFeatureId) selectedFeatureVoxels++;
+        if (!BLOCK_REGISTRY[chunk.haloBlocks[h] as number]?.opaque) continue;
+        for (const neighbour of [
+          haloIndex(x - 1, y, z),
+          haloIndex(x + 1, y, z),
+          haloIndex(x, y - 1, z),
+          haloIndex(x, y + 1, z),
+          haloIndex(x, y, z - 1),
+          haloIndex(x, y, z + 1),
+        ]) {
+          if (BLOCK_REGISTRY[chunk.haloBlocks[neighbour] as number]?.opaque)
+            continue;
+          visibleFeatureFaces++;
+          if (id === selectedFeatureId) selectedFeatureFaces++;
+        }
+      }
+  return {
+    solidVoxels,
+    openVoxels: chunk.blocks.length - solidVoxels,
+    featureVoxels,
+    selectedFeatureVoxels,
+    visibleFeatureFaces,
+    selectedFeatureFaces,
+  };
 }
 export interface SkyEvidence {
   readonly state: "lit" | "dark-submerged";
@@ -219,6 +274,14 @@ export function measurePipeline(
   for (const value of lights) if (value >>> 12 > 0) litHaloSamples++;
   if (mesh.quads === 0)
     throw new Error("Surface benchmark produced no visible mesh");
+  const denseSurface =
+    sample.category === "dense-ibara"
+      ? denseSurfaceEvidence(chunk, sample.denseEvidence?.featureId ?? 0)
+      : null;
+  if (denseSurface && denseSurface.selectedFeatureFaces === 0)
+    throw new Error(
+      "Dense Ibara case has no visible faces belonging to its selected feature",
+    );
   const skyEvidence = pipelineSkyEvidence(
     chunk,
     context.columns,
@@ -236,6 +299,7 @@ export function measurePipeline(
     ...counts(chunk.blocks),
     outputBytes,
     featureVoxels: featureCount,
+    ...(denseSurface ? { denseSurfaceEvidence: denseSurface } : {}),
     featureCache: context.featureCacheStats?.() ?? null,
     typedWorkingSetBytes: {
       generation: outputBytes,

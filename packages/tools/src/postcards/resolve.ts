@@ -10,11 +10,28 @@ import {
   sampleTestVoxel,
   TEST_POND,
 } from "../../../shared/src/worldgen/test-world.js";
+import { isSupportingGroundHit, supportingVoxelTop } from "./geometry.js";
+import { walkableEye } from "./query.js";
 
 interface Point {
   x: number;
   y: number;
   z: number;
+}
+interface TestCameraQuery {
+  get(x: number, y: number, z: number): number;
+  voxel(
+    x: number,
+    y: number,
+    z: number,
+  ): Readonly<{
+    density: number;
+    block: number;
+    fluid: number;
+    featureId?: number | undefined;
+  }>;
+  ground(x: number, z: number): number;
+  clear(): void;
 }
 export interface PostcardCamera {
   id: "TEST-1";
@@ -35,7 +52,7 @@ export interface PostcardCamera {
   };
   score: number;
 }
-function query(seed: number) {
+function query(seed: number): TestCameraQuery {
   const columns = new Map<
       string,
       { column: Float64Array; trees: ReturnType<typeof collectTestTrees> }
@@ -53,12 +70,12 @@ function query(seed: number) {
     }
     return c;
   };
-  const get = (x: number, y: number, z: number) => {
+  const sample = (x: number, y: number, z: number) => {
     const ix = Math.floor(x),
       iy = Math.floor(y),
       iz = Math.floor(z),
       c = column(ix, iz);
-    return sampleTestVoxel(
+    const result = sampleTestVoxel(
       seed,
       ix + 0.5,
       iy + 0.5,
@@ -66,14 +83,28 @@ function query(seed: number) {
       voxel,
       c.column,
       c.trees,
-    ).block;
+    );
+    // This legacy backend contains ordinary terrain, fluid and Log/Leaves
+    // trees. Supply explicit non-feature identity only for its non-tree cells;
+    // do not fabricate a feature ID for the trees.
+    return Object.assign(result, {
+      featureId:
+        result.block === Block.Log || result.block === Block.Leaves
+          ? undefined
+          : 0,
+    });
   };
   const ground = (x: number, z: number) =>
     Math.ceil(
       (column(Math.floor(x), Math.floor(z)).column[Column.Height] as number) -
         0.5,
     );
-  return { get, ground, clear: () => columns.clear() };
+  return {
+    get: (x, y, z) => sample(x, y, z).block,
+    voxel: sample,
+    ground,
+    clear: () => columns.clear(),
+  };
 }
 function normalize(p: Point): Point {
   const d = Math.hypot(p.x, p.y, p.z);
@@ -86,9 +117,9 @@ function cross(a: Point, b: Point): Point {
     z: a.x * b.y - a.y * b.x,
   };
 }
-function inspect(
+export function inspectTestCamera(
   camera: Omit<PostcardCamera, "validation" | "score">,
-  q: ReturnType<typeof query>,
+  q: TestCameraQuery,
 ): PostcardCamera {
   const direction = normalize({
     x: camera.target.x - camera.position.x,
@@ -99,6 +130,17 @@ function inspect(
     up = cross(right, direction),
     tangent = Math.tan((35 * Math.PI) / 180),
     aspect = 16 / 9;
+  const eyeClear =
+    q.get(camera.position.x, camera.position.y, camera.position.z) ===
+    Block.Air;
+  const walkable = walkableEye(
+    q,
+    camera.position.x,
+    camera.position.y,
+    camera.position.z,
+  );
+  const supportTop =
+    eyeClear && walkable ? supportingVoxelTop(camera.position.y) : null;
   let sky = 0,
     water = 0,
     trees = 0,
@@ -113,19 +155,45 @@ function inspect(
         z: direction.z + right.z * nx + up.z * ny,
       });
       let hit = 0,
-        distance = 0;
+        distance = 0,
+        hitX = camera.position.x,
+        hitY = camera.position.y,
+        hitZ = camera.position.z,
+        hitFluid = 0;
+      let hitFeatureId: number | undefined;
       for (distance = 0; distance <= 300; distance += 2) {
-        hit = q.get(
-          camera.position.x + ray.x * distance,
-          camera.position.y + ray.y * distance,
-          camera.position.z + ray.z * distance,
-        );
+        hitX = camera.position.x + ray.x * distance;
+        hitY = camera.position.y + ray.y * distance;
+        hitZ = camera.position.z + ray.z * distance;
+        const voxel = q.voxel(hitX, hitY, hitZ);
+        hit = voxel.block;
+        hitFluid = voxel.fluid;
+        hitFeatureId = voxel.featureId;
         if (hit) break;
       }
       if (!hit) sky++;
       if (hit === Block.Water) water++;
       if (hit === Block.Log || hit === Block.Leaves) trees++;
-      if (hit && distance < 5 && px >= 13 && px < 51 && py >= 7 && py < 29)
+      if (
+        hit &&
+        distance < 5 &&
+        px >= 13 &&
+        px < 51 &&
+        py >= 7 &&
+        py < 29 &&
+        !isSupportingGroundHit(
+          {
+            x: hitX,
+            y: hitY,
+            z: hitZ,
+            block: hit,
+            fluid: hitFluid,
+            featureId: hitFeatureId,
+          },
+          supportTop,
+          q.ground,
+        )
+      )
         centralClear = false;
     }
   const total = 64 * 36,
@@ -138,13 +206,6 @@ function inspect(
     Math.PI;
   const pitch = Math.asin(direction.y),
     horizonFraction = 0.5 + Math.tan(pitch) / (2 * tangent);
-  const eyeClear =
-    q.get(camera.position.x, camera.position.y, camera.position.z) ===
-    Block.Air;
-  const feetY = camera.position.y - 1.62,
-    walkable =
-      q.get(camera.position.x, feetY - 0.01, camera.position.z) !== Block.Air &&
-      q.get(camera.position.x, feetY + 0.05, camera.position.z) === Block.Air;
   const validation = {
     eyeClear,
     walkable,
@@ -163,14 +224,11 @@ function inspect(
     sky / total < 0.65 &&
     water / total >= 0.15 &&
     sunOffsetDegrees >= 60 &&
-    sunOffsetDegrees <= 150 &&
-    horizonFraction >= 0.3 &&
-    horizonFraction <= 0.45;
+    sunOffsetDegrees <= 150;
   const score =
     (legal ? 100 : 0) +
     (water / total) * 20 +
-    Math.min(0.15, trees / total) * 40 -
-    Math.abs(horizonFraction - 0.38) * 15;
+    Math.min(0.15, trees / total) * 40;
   return { ...camera, validation, score };
 }
 export async function resolveTestCamera(
@@ -192,7 +250,7 @@ export async function resolveTestCamera(
     const old = document as unknown as PostcardCamera;
     if (old.id !== "TEST-1" || old.seed !== seed)
       throw new Error("No matching TEST-1 camera");
-    const checked = inspect(
+    const checked = inspectTestCamera(
       {
         id: old.id,
         seed: old.seed,
@@ -214,7 +272,7 @@ export async function resolveTestCamera(
       radius = candidate < 25 ? 25 : 28;
     const x = TEST_POND.x + Math.cos(angle) * radius,
       z = TEST_POND.z + Math.sin(angle) * radius * 0.82;
-    const camera = inspect(
+    const camera = inspectTestCamera(
       {
         id: "TEST-1",
         seed,
