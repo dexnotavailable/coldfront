@@ -465,6 +465,7 @@ describe("bounded HELL-1 form selection", () => {
   it("retains distinct witnessed centres until preflight can reject one without hiding the other", () => {
     const { hidden, instance, targetFor } = missingHook();
     const other = { fissureId: 19, x: 21.5, y: -0.5, z: 60.5 };
+    const events: Readonly<Record<string, unknown>>[] = [];
     const result = productionFramingCandidates(
       [{ ...hidden, lavaWitnesses: [...(hidden.lavaWitnesses ?? []), other] }],
       instance,
@@ -478,12 +479,17 @@ describe("bounded HELL-1 form selection", () => {
             ? []
             : ["fissure-occluded"],
       }),
-      undefined,
+      (event) => events.push(event),
       targetFor,
     );
     expect(result).toHaveLength(1);
     expect(result[0]?.lavaWitness).toEqual(other);
     expect(result[0]?.certifiedPose).toBe(true);
+    expect(
+      events.filter((event) => event.stage === "production-framing-parent"),
+    ).toHaveLength(1);
+    expect(events.at(-1)).toMatchObject({ parents: 1, proposals: 225 });
+    expect(Number(events.at(-1)?.groundQueries)).toBeLessThanOrEqual(15);
   });
   it("uses exact observed lava Y while old targets retain their analytic top-wet behavior", () => {
     const base = field([]);

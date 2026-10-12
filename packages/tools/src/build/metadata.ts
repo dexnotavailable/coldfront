@@ -57,6 +57,7 @@ export function postcardResolverHash(
             "hell-visible-instances.ts",
             "hell-framing-camera.ts",
             "hell-framing-preflight.ts",
+            "hell-forest-ensemble.ts",
           ]
         : []),
     ].map((name) => join(root, "packages/tools/src/postcards", name)),

@@ -134,6 +134,21 @@ vi.mock("../../src/postcards/geometry.js", async (importOriginal) => ({
 vi.mock("../../src/postcards/hell-visible-instances.js", () => ({
   createVisibleThornResolver: () => () => ({ instances: [], receipt: {} }),
 }));
+// This suite exercises the shared grid ledger, not source-family nomination.
+// Real nomination and its fail-closed empty result have separate fixture tests.
+vi.mock(
+  "../../src/postcards/hell-forest-ensemble.js",
+  async (importOriginal) => ({
+    ...(await importOriginal<
+      typeof import("../../src/postcards/hell-forest-ensemble.js")
+    >()),
+    ordinaryForestEnsembles: () => [],
+    ensembleFissureWitnesses: (
+      _sites: unknown,
+      witnessesFor: (anchor: { x: number; z: number }) => unknown,
+    ) => witnessesFor({ x: 0, z: 0 }),
+  }),
+);
 vi.mock("../../src/postcards/hell-readability.js", () => ({
   inspectHellReadability: () => state.readability,
 }));

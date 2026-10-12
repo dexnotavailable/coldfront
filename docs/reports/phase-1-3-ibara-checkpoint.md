@@ -34,6 +34,27 @@ The public tunnel was also recovered from a missing launcher using its exact ver
 
 This view takes **234.974 seconds** to capture all 1,306 chunks from a fresh world. Its original 180-second test remains failed. Decision 116 permits the separate bounded diagnostic continuation for images and profiling; it does not turn the timing result into a pass. The image and [receipt](../postcards/m1/HELL-1-diagnostic-050-s1.receipt.json) retain that boundary.
 
-A fresh blind Astra review gives **15/20 provisionally, R2 = 1**. The coordinator opened both PNG and JPEG. Scale, distribution, identity, atmosphere and visible routes read well. Complete hook and branch silhouettes remain unclear, roots need more natural debris transitions, and the largest thorn has repetitive pale edges. Primitive calibration remains open, so there is no calibrated score of record or phase acceptance.
+The first uncalibrated blind review gave 15/20. A fresh review now scores the real plain-cone control 7/20 and this production image **14/20, R2 = 1**. The coordinator gives 15, making **14/20 the calibrated score of record**. Both full images were opened. Curvature, grouping, identity and atmosphere read; substantial attached branches and convincing broken forms remain insufficiently legible. Root transitions, material repetition and the missing broad landform also remain visible limits. HELL acceptance is still open.
 
 The passive trace accounts for every one of the 1,306 requests and results. Generation and lighting-volume preparation occupy 97.43% of summed worker stage time across six overlapping workers. It records 681.222 million raw misses and 21,618 cache evictions. These are loading observations, not hardware FPS. The subsequently reviewed postcard-only scheduling change groups up to four already-pending neighbouring chunks. Its complete cold capture reaches readiness in 176.147 seconds with identical PNG bytes and RGBA pixels. Across the same 1,230,131,296 raw lookups, misses fall from 681,221,697 to 455,904,209 and evictions from 21,618 to 14,157. Independent review accepts the exact six-file integration, all 1,306 request/result identities, unchanged memory bounds and closed workers/browser/server. These are two single timing observations, not a repeated speed comparison or FPS result. The unsuccessful 128-page candidate stays isolated; the cache remains at 96 pages.
+## Calibration anchor
+
+![Ibara plain-cone calibration control](../postcards/m1/HELL-1-calibration-primitive-s1.jpg)
+
+The actual primitive world loads all 1,823 requested chunks and captures in 143.400 seconds under the unchanged standard deadline. Browser closure, isolation, camera and complete readiness checks pass, with zero application errors and four known ReadPixels warnings. This control uses a different camera heading from production 050; it is not a matched pixel comparison. Its blind score is 7/20, meeting the calibration maximum of 8. [Capture receipt](../postcards/m1/HELL-1-calibration-primitive-s1.receipt.json).
+
+| Criterion | Production | Control |
+|---|---:|---:|
+| R1 Scale hierarchy | 1 | 1 |
+| R2 Not primitive | 1 | 0 |
+| R3 Grounded | 1 | 0 |
+| R4 Distribution | 2 | 0 |
+| R5 Silhouette | 2 | 0 |
+| R6 Materials | 1 | 1 |
+| R7 Identity | 2 | 1 |
+| R8 Light and atmosphere | 2 | 1 |
+| R9 Voxel readability | 1 | 2 |
+| R10 Playable | 1 | 1 |
+| **Calibrated blind total** | **14/20** | **7/20** |
+
+These image grades do not establish a numeric walkable percentage. HELL-2 and both other seeds remain ungraded.

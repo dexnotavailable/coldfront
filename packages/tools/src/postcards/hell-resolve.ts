@@ -41,6 +41,13 @@ import {
   supportingVoxelTop,
 } from "./geometry.js";
 import {
+  ensembleFissureWitnesses,
+  ensembleFramingScore,
+  FOREST_ENSEMBLE_BUDGET,
+  type ForestEnsemble,
+  ordinaryForestEnsembles,
+} from "./hell-forest-ensemble.js";
+import {
   FOREST_CAMERA_PITCHES,
   type FramingLavaWitness,
   type FramingObservation,
@@ -111,7 +118,9 @@ export interface HellCameraManifest {
   readonly attemptsPath: string;
 }
 type Attempt = Readonly<Record<string, unknown>>;
-export type FissureWitness = FramingLavaWitness;
+export type FissureWitness = FramingLavaWitness & {
+  readonly ensemble?: ForestEnsemble;
+};
 /** Actual lava first hits only; a target label or an analytic wet point alone
  * cannot seed a bank pair. The same centre/owner test as the full-grid gate. */
 export function observedFissureWitnesses(
@@ -432,7 +441,7 @@ export function forestSceneCandidates(
   formAware = false,
 ): ForestCandidate[] {
   const groups = new Map<
-    number,
+    string,
     {
       view: MainCameraCandidate;
       disc: RootDisc;
@@ -471,6 +480,7 @@ export function forestSceneCandidates(
               id: "HELL-1",
               attempt: attempt++,
               fissureId: witness.fissureId,
+              ...(witness.ensemble ? { ensembleId: witness.ensemble.id } : {}),
               rootDisc: disc,
               view,
             };
@@ -531,7 +541,10 @@ export function forestSceneCandidates(
               continue;
             }
             const score = formAware
-              ? forestFramingScore(view, tall)
+              ? forestFramingScore(view, tall) +
+                (witness.ensemble
+                  ? ensembleFramingScore(view, witness.ensemble)
+                  : 0)
               : tall.reduce((sum, root) => {
                   const dx = root.x - x,
                     dz = root.z - z,
@@ -557,7 +570,8 @@ export function forestSceneCandidates(
               tallRootCount: tall.length,
               selectionScore: score,
             });
-            const group = groups.get(witness.fissureId) ?? [];
+            const groupKey = witness.ensemble?.id ?? String(witness.fissureId);
+            const group = groups.get(groupKey) ?? [];
             group.push({
               view,
               disc,
@@ -565,14 +579,28 @@ export function forestSceneCandidates(
               score,
               attempt: identity.attempt,
             });
-            groups.set(witness.fissureId, group);
+            groups.set(groupKey, group);
           }
       }
   }
-  // Round-robin actual fissure patches: one very dense patch must not consume
-  // all50 views while failing the unchanged sky-fraction gate.
+  // Production round-robins distinct ensembles; primitive keeps fissure patches.
+  // Within a site, prefer new eye positions before spending slots on another
+  // yaw/pitch at the same bank. Neither rule adds full-grid slots.
   for (const group of groups.values())
     group.sort((a, b) => b.score - a.score || a.attempt - b.attempt);
+  for (const group of groups.values()) {
+    if (!group[0]?.witness.ensemble) continue;
+    const seen = new Set<string>();
+    const unique: typeof group = [],
+      duplicate: typeof group = [];
+    for (const candidate of group) {
+      const p = candidate.view.position,
+        key = `${p.x},${p.y},${p.z}`;
+      (seen.has(key) ? duplicate : unique).push(candidate);
+      seen.add(key);
+    }
+    group.splice(0, group.length, ...unique, ...duplicate);
+  }
   const candidates: ForestCandidate[] = [];
   for (let round = 0; candidates.length < 50; round++) {
     let found = false;
@@ -1120,7 +1148,38 @@ export async function resolveHellCameras(
         if (id === "HELL-1") {
           const anchor = context.regionAnchor("hellscape");
           if (!anchor) throw new Error("Missing Ibara anchor");
-          const witnesses = nearbyFissureWitnesses(anchor, analytic, lava);
+          const sites = features
+            ? ordinaryForestEnsembles(anchor, features.parametersForCell)
+            : [];
+          if (features)
+            record({
+              stage: "forest-ensemble-nominations",
+              id,
+              budget: FOREST_ENSEMBLE_BUDGET,
+              sites,
+            });
+          const witnesses = features
+            ? ensembleFissureWitnesses(
+                sites,
+                (site) => nearbyFissureWitnesses(site, analytic, lava),
+                (event) => record({ id, ...event }),
+              )
+            : nearbyFissureWitnesses(anchor, analytic, lava);
+          if (features)
+            record({
+              stage: "forest-ensemble-shortlist",
+              id,
+              budget: FOREST_ENSEMBLE_BUDGET,
+              sites: [
+                ...new Map(
+                  witnesses.flatMap((witness) =>
+                    witness.ensemble
+                      ? [[witness.ensemble.id, witness.ensemble] as const]
+                      : [],
+                  ),
+                ).values(),
+              ],
+            });
           record({ stage: "fissure-witnesses", id, witnesses });
           candidates.push(
             ...forestSceneCandidates(
