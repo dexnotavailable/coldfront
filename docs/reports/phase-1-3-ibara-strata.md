@@ -1,6 +1,6 @@
 # Ibara rock layers and shape diagnosis
 
-The `fbc0d967` baseline has no active horizontal rock-layer shader, despite the material requirement in terrain §8.5. The selected replacement adds warped layers at the existing 3–7 m spacing, using two or three restrained tones. Generation, voxel shapes, camera destinations and save identity remain unchanged. The increment is integrated for release checks, not yet published.
+The `fbc0d967` baseline has no active horizontal rock-layer shader, despite the material requirement in terrain §8.5. The selected replacement is **live as `3f7e0df8335e53b81405bd2b36c168d3fa68168a`** and adds warped layers at the existing 3–7 m spacing, using two or three restrained tones. Generation, voxel shapes, camera destinations and save identity remain unchanged.
 
 ## Opened comparisons
 
@@ -20,7 +20,11 @@ The integrated source passes **790 tests / 93 files**, check and build in **274.
 
 Root opens the [new 2×2 material comparison](../postcards/wip/ibara.jpg), with HELL-1 above HELL-2 and baseline left/new layers right. The 1280×720 JPEG is 126,461 bytes; the complete WIP image set is 838,242 bytes, within its 1 MB limit. All four source originals were opened before assembly. The historical tip comparison remains pinned in its own report.
 
-Clean-checkout, exact production-bundle journey and publication remain pending.
+Clean physical-D Node 22 install/build passes in **13.6348735 s**, and the site build in **2.331976 s**. [CI 38286520482](https://github.com/dexnotavailable/coldfront/actions/runs/38286520482) passes, including Chromium, Firefox and WebKit determinism checks.
+
+The exact production-bundle journey passes all fourteen stages at **2026-10-12 17:53:26.224 UTC**. Root and independent Astra open all fourteen originals. Independent verification matches 178 source files, 326 distribution files, five runner files and 29 evidence bindings. Actual placement/breaking/movement, immediate replay and reload persistence, Ibara modes, HELL-1 travel/Escape and play after one injected malformed catalogue pass. There are zero application errors, failed responses or external requests; four ReadPixels warnings remain, and browser/server cleanup completes. Evidence: `out/phase13/strata-release-prep/runs/2026-10-12T17-48-27.630Z/receipt.json` and its `independent-review/` sibling.
+
+Publication receipt **`b863c7fc-979d-4bc8-b66b-f5c322ada1cf`** and `out/phase13/strata-release-prep/public-readback.json` verify ten public files and isolation headers at **17:56:18.540 UTC**. This proves local production play and matching public bytes; the separately refused public-browser action was not retried. The release retains `4:023af1e…` save identity. Try **F4 → Postcard mode → Ibara 2 / Ibara 3**, then Escape to return overhead.
 
 ## Shape diagnosis
 
