@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 
-import { BLOCK_REGISTRY } from "../../../shared/src/blocks/registry.js";
+import { BLOCK_REGISTRY, Block } from "../../../shared/src/blocks/registry.js";
 import {
   createLightVolume,
   emissionLight,
@@ -128,6 +128,9 @@ function buildVolume(a: Address): LitCache {
         tile = columnTile(Math.floor(wx / 32), Math.floor(wz / 32), area);
       const start = (wx - tile.x + 32 * (wz - tile.z)) * area.columns.stride;
       const c = tile.columns.subarray(start, start + area.columns.stride);
+      // Natural contents end at this proven bound. Edits and the canonical
+      // mesh halo keep precedence; only external cell centres above it are Air.
+      area.skyInput(wx + 0.5, wz + 0.5, sky, c);
       for (let y = 0; y < 96; y++) {
         const i = lightIndex(v, x, y, z);
         const inHalo =
@@ -139,7 +142,9 @@ function buildVolume(a: Address): LitCache {
           edit ??
           (inHalo
             ? (chunk.haloBlocks[haloIndex(x - 32, y - 32, z - 32)] as number)
-            : sample(area, wx, oy + y, wz, c));
+            : oy + y + 0.5 > sky.highestFilterY
+              ? Block.Air
+              : sample(area, wx, oy + y, wz, c));
         blocks[i] = id;
         v.opacity[i] = BLOCK_REGISTRY[id]?.lightFiltering ?? 15;
         v.sources[i] = emissions[id] ?? 0;
@@ -156,7 +161,6 @@ function buildVolume(a: Address): LitCache {
       }
       // Actual surface/feature/water bound; only the64m incoming-light window is
       // evaluated. Shared skyInput owns natural bounds, never test-tree guesses.
-      area.skyInput(wx + 0.5, wz + 0.5, sky, c);
       const topY = oy + 95;
       let incoming = 15;
       for (

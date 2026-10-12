@@ -16,6 +16,10 @@ import * as lighting from "../../../shared/src/lighting/flood.js";
 import {
   CHUNK_VOLUME,
   HALO_VOLUME,
+  WORLD_MAX_XZ,
+  WORLD_MAX_Y,
+  WORLD_MIN_XZ,
+  WORLD_MIN_Y,
 } from "../../../shared/src/world/constants.js";
 import {
   haloIndex,
@@ -36,7 +40,11 @@ const hash = (array: ArrayBufferView) =>
     .update(Buffer.from(array.buffer, array.byteOffset, array.byteLength))
     .digest("hex");
 
-async function scenario(cached: boolean) {
+async function scenario(
+  cached: boolean,
+  skyOnly = false,
+  fullSampling = false,
+) {
   vi.resetModules();
   const snapshots: {
       blocks: string;
@@ -50,6 +58,7 @@ async function scenario(cached: boolean) {
     }[] = [],
     stats: NonNullable<ChunkResult["blockSampleCacheStats"]>[] = [],
     rawCalls: number[] = [],
+    boundCalls: { equal: number; above: number; outside: number }[] = [],
     built: VoxelChunk[] = [],
     volumes = new Map<string, lighting.LightVolume>();
   let messages: WorkerResponse[] = [],
@@ -57,6 +66,9 @@ async function scenario(cached: boolean) {
     seed = 1,
     primitive = false,
     calls = 0,
+    equal = 0,
+    above = 0,
+    outside = 0,
     stream = createHash("sha256"),
     sampled = 0,
     used = 0;
@@ -66,6 +78,16 @@ async function scenario(cached: boolean) {
     used = 0;
   };
   const blockAt = (x: number, y: number, z: number) => {
+    if (
+      x < WORLD_MIN_XZ ||
+      x >= WORLD_MAX_XZ ||
+      z < WORLD_MIN_XZ ||
+      z >= WORLD_MAX_XZ ||
+      y < WORLD_MIN_Y ||
+      y >= WORLD_MAX_Y ||
+      y + 0.5 > 96.5
+    )
+      return Block.Air;
     // A narrow sky shaft with one natural filter and an emissive gallery.
     if (x === 0 && z === 0 && y >= -4)
       return y === 80 ? Block.Water : Block.Air;
@@ -85,11 +107,29 @@ async function scenario(cached: boolean) {
     sampleColumn: (_x: number, _z: number, out: Float64Array) => out,
     sampleVoxel(x, y, z, out) {
       calls++;
+      if (y === 96.5) equal++;
+      if (y > 96.5) above++;
+      if (
+        x < WORLD_MIN_XZ ||
+        x >= WORLD_MAX_XZ ||
+        z < WORLD_MIN_XZ ||
+        z >= WORLD_MAX_XZ
+      )
+        outside++;
       out.block = blockAt(Math.floor(x), Math.floor(y), Math.floor(z));
       return out;
     },
-    skyInput(_x, _z, out) {
-      out.highestFilterY = 96;
+    skyInput(x, z, out) {
+      // Infinity is a conservative reference bound: it disables the shortcut
+      // while the same natural field still contains no blocks above 96.5.
+      out.highestFilterY = fullSampling
+        ? Infinity
+        : x < WORLD_MIN_XZ ||
+            x >= WORLD_MAX_XZ ||
+            z < WORLD_MIN_XZ ||
+            z >= WORLD_MAX_XZ
+          ? -Infinity
+          : 96.5;
       out.solidBelowY = -20;
       return out;
     },
@@ -203,20 +243,21 @@ async function scenario(cached: boolean) {
       send({ type: "init", world, plan: {} as WorldPlanData, edits });
       expect(messages.at(-1)?.type).toBe("ready");
     };
-    const request = (cx: number) => {
+    const request = (cx: number, cy = 0, cz = 0) => {
       stream = createHash("sha256");
       used = sampled = calls = 0;
+      equal = above = outside = 0;
       messages = [];
       send({
         type: "chunk",
         world,
         id: snapshots.length + 1,
         revision: 0,
-        address: { cx, cy: 0, cz: 0 },
+        address: { cx, cy, cz },
       });
       const result = messages.at(-1);
       if (result?.type !== "chunk") throw new Error(JSON.stringify(result));
-      const volume = volumes.get(`${cx},0,0`);
+      const volume = volumes.get(`${cx},${cy},${cz}`);
       if (!volume) throw new Error("Missing volume");
       flush();
       snapshots.push({
@@ -233,6 +274,7 @@ async function scenario(cached: boolean) {
       if (!cacheStats) throw new Error("Missing block cache counters");
       stats.push(cacheStats);
       rawCalls.push(calls);
+      boundCalls.push({ equal, above, outside });
       expect(cacheStats.pageLimit).toBe(96);
       expect(cacheStats.pages).toBeLessThanOrEqual(96);
       expect(cacheStats.typedArrayBytes).toBe(
@@ -256,6 +298,26 @@ async function scenario(cached: boolean) {
       );
     };
     init();
+    if (skyOnly) {
+      request(0, 2); // External sky contains centres equal to and above 96.5.
+      request(1, 2); // Reuse the natural cache in an overlapping light volume.
+      for (const block of [Block.Stone, Block.VentMouth, Block.Air]) {
+        edit({ x: 0, y: 110, z: 0, block });
+        request(0, 2); // Edited roof above natural content and outside mesh halo.
+      }
+      for (const y of [127, 128, 191, 192]) {
+        edit({ x: 0, y, z: 0, block: Block.Stone });
+        request(0, 2); // top, top+1, top+64 and unchanged outside-policy top+65.
+        edit({ x: 0, y, z: 0, block: Block.Air });
+        request(0, 2);
+      }
+      init([{ x: 0, y: 110, z: 0, block: Block.Stone }]);
+      request(0, 2); // Fresh solve with the above-bound persisted roof.
+      request(-1, -1, -1);
+      request(703, 2, 703);
+      request(-704, 2, -704);
+      return { snapshots, stats, rawCalls, boundCalls };
+    }
     request(0);
     request(1); // Distinct address; its external volume overlaps owner0.
     request(0); // Existing whole-volume cache; no raw sampling.
@@ -343,7 +405,7 @@ async function scenario(cached: boolean) {
       revision: 0,
     });
     expect(messages).toHaveLength(before);
-    return { snapshots, stats, rawCalls };
+    return { snapshots, stats, rawCalls, boundCalls };
   } finally {
     vi.unstubAllGlobals();
     vi.doUnmock("../../../shared/src/world/world-context.js");
@@ -355,6 +417,25 @@ async function scenario(cached: boolean) {
 }
 
 describe("worker lighting sample reuse", () => {
+  it("preserves exact volumes, light and meshes when external proven sky bypasses sampling", async () => {
+    const reference = await scenario(true, true, true),
+      bounded = await scenario(true, true);
+    // A valid unbounded sky input forces full natural sampling in the same real
+    // worker/light/mesh path. Sampling-stream lengths intentionally differ.
+    const outputs = (value: Awaited<ReturnType<typeof scenario>>) =>
+      value.snapshots.map(
+        ({ externalBlocks: _blocks, externalSamples: _samples, ...output }) =>
+          output,
+      );
+    expect(outputs(bounded)).toEqual(outputs(reference));
+    expect(bounded.rawCalls[0]).toBeLessThan(reference.rawCalls[0] as number);
+    expect(bounded.boundCalls[0]?.equal).toBeGreaterThan(0);
+    expect(bounded.boundCalls[0]?.above).toBe(0);
+    expect(reference.boundCalls[0]?.above).toBeGreaterThan(0);
+    expect(bounded.boundCalls.at(-1)?.outside).toBe(0);
+    expect(reference.boundCalls.at(-1)?.outside).toBeGreaterThan(0);
+    expect(outputs(bounded)[2]).toEqual(outputs(bounded)[13]);
+  });
   it("matches uncached block streams, opacity, sources, light and meshes through overlap, edits, eviction, transfer and init", async () => {
     // Real worker/light/mesh code; only world creation and chunk generation use
     // a cheap deterministic fixture. No plan, actual terrain or browser runs.

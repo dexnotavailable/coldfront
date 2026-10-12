@@ -1,4 +1,11 @@
-import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  realpathSync,
+  writeFileSync,
+} from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createElement } from "preact";
@@ -69,7 +76,10 @@ export function lintUi() {
 }
 if (
   process.argv[1] &&
-  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+  existsSync(resolve(process.argv[1])) &&
+  // Node resolves the module through junctions; compare the entry the same way.
+  realpathSync(fileURLToPath(import.meta.url)) ===
+    realpathSync(resolve(process.argv[1]))
 ) {
   const result = lintUi();
   mkdirSync(resolve(root, "out/ui"), { recursive: true });
