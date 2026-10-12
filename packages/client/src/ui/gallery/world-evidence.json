@@ -5,11 +5,11 @@
       "id": "outline-ghost",
       "rows": ["hud.outline", "hud.ghost"],
       "image": "fixtures/ui/world-outline-ghost.jpg",
-      "imageSha256": "b122abe9ce2a63db3b4e5f5af4dd8901b2a0211b8405ebd9bd1a26d7c8eb94e7",
+      "imageSha256": "a6d8a6e231388dc1350fa00c150821392bfd3bba4b659dedd6ab7ab0862a20c8",
       "telemetry": "fixtures/ui/world-outline-ghost.json",
-      "telemetrySha256": "440620ff5d9ea94a16a708ffcc49c4ba6dcec87747fb0151461b11bd48ab937a",
+      "telemetrySha256": "a32fffe2b4a6d7e032acfb00daee6d419b68770879816a0deb09d09fd6fe9f61",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "e99d586a23e729cf674a9b17a8ce328c91d360785d2d5fb89671e7cab9d23197",
+      "runReceiptSha256": "c88776a54a27cb4eb9a136aded8b0eae0de42043a24843f965317c8657e32b60",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -165,7 +165,7 @@
         },
         {
           "path": "packages/shared/src/features/ibara/shape.ts",
-          "sha256": "277ac86587567d4a05a79aa24d06157ec2f982b534fb750c742986640fd42f59"
+          "sha256": "e3df6992f609279a1c34bf35d03b4dfcd08f6c08edc07ee44e13c86a3f3cd8e1"
         },
         {
           "path": "packages/shared/src/features/ibara/types.ts",
@@ -370,7 +370,7 @@
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
         "sourceImage": "out/engine/hud-repair/outline-ghost.png",
-        "sourceImageSha256": "81b4ee39196154e5da355fe3489aff0f99713cc15f15cdf56c9f5c6cf8ed43e1",
+        "sourceImageSha256": "2613f66520b447f6b4763a2ae1daafef57c9cc9792d3786ec8b26fd33f4c17c7",
         "quality": 85,
         "width": 1280,
         "height": 720,
@@ -381,11 +381,11 @@
       "id": "silhouette",
       "rows": ["hud.silhouette"],
       "image": "fixtures/ui/world-silhouette.jpg",
-      "imageSha256": "c14f2e627830a97813290710129d1e24fd05a09e7f75fda028eccb00b8a3e19c",
+      "imageSha256": "f014dd7f19a64f93f6285f94338389d7a99305e60370260094d8817f33b1612f",
       "telemetry": "fixtures/ui/world-silhouette.json",
-      "telemetrySha256": "9a8ef6dc960ea51e8285aa3c90436a3fe50d6c76178aa37f10a4c184b7f4ec8e",
+      "telemetrySha256": "9b8e131e3fdc2e8ce0b68447c3eca6e377404bd4639882e376ed5d383f78b38d",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "e99d586a23e729cf674a9b17a8ce328c91d360785d2d5fb89671e7cab9d23197",
+      "runReceiptSha256": "c88776a54a27cb4eb9a136aded8b0eae0de42043a24843f965317c8657e32b60",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -541,7 +541,7 @@
         },
         {
           "path": "packages/shared/src/features/ibara/shape.ts",
-          "sha256": "277ac86587567d4a05a79aa24d06157ec2f982b534fb750c742986640fd42f59"
+          "sha256": "e3df6992f609279a1c34bf35d03b4dfcd08f6c08edc07ee44e13c86a3f3cd8e1"
         },
         {
           "path": "packages/shared/src/features/ibara/types.ts",
@@ -746,7 +746,7 @@
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
         "sourceImage": "out/engine/hud-repair/silhouette.png",
-        "sourceImageSha256": "5a117fa61a522a9df7da41e63e1cb29de60a173896a2ddbe96d69078ebbb9b3b",
+        "sourceImageSha256": "6241a5875058e9babda5f991eadba9a4e4fe0c2343db521ba169ad4ddfb29d61",
         "quality": 85,
         "width": 1280,
         "height": 720,

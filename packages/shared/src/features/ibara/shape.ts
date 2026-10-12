@@ -221,8 +221,9 @@ function safeExponent(
   exponent: number,
   length: number,
   id: number,
+  maximumThinLength = Math.max(1.5, 0.04 * length),
 ): number {
-  const allowed = Math.min(length, Math.max(1.5, 0.04 * length));
+  const allowed = Math.min(length, maximumThinLength);
   if (allowed >= length) return exponent;
   const cap = detLog(0.25 / (radius - TIP_RADIUS)) / detLog(allowed / length);
   let high = Math.min(exponent, cap);
@@ -402,6 +403,7 @@ function sweep(
   arch = false,
   roughness = true,
   preparedSpine?: Spine,
+  maximumThinLength?: number,
 ): ThornSweep {
   const spine = preparedSpine ?? featureSpine(curves, diagnostics);
   if (spine.capped)
@@ -410,7 +412,7 @@ function sweep(
     );
   const profileExponent = arch
     ? exponent
-    : safeExponent(radius, exponent, spine.length, p.id);
+    : safeExponent(radius, exponent, spine.length, p.id, maximumThinLength);
   const radii = new Float64Array(PROFILE_SAMPLES);
   let maxRadius = 0;
   for (let i = 0; i < PROFILE_SAMPLES; i++) {
@@ -506,6 +508,8 @@ export function instantiateThorn(
     p.arch,
     true,
     provisional,
+    // Only intact ordinary mains tighten the proportional tip allowance.
+    !p.landmark && !p.broken && !p.arch ? 1.5 : undefined,
   );
   const sweeps: ThornSweep[] = [main],
     debris: ThornSweep[] = [],

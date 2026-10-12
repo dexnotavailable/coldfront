@@ -313,6 +313,7 @@ This is the feature that failed before. Follow it closely, then tune by eye. Eve
   - Draw `p` from [0.5, 1.4], then clamp it so the part thinner than 0.7 m is no longer than `max(1.5 m, 4% of the length L)`:
     `p ≤ detLog(0.25 / (r₀ − 0.45)) / detLog(max(1.5, 0.04·L) / L)`.
     A one-voxel point at the very tip reads as a point. A long one-voxel stick does not.
+  - **Ordinary intact main tips:** for a non-landmark, unbroken, non-arch main sweep, tighten the same interpolated-table exponent clamp to an absolute **1.5 m** maximum below radius 0.7 m. Preserve the spine, height, lean, base radius and full-length 0.45 m endpoint. Branches, debris, broken mains, arches and landmarks keep the proportional rule above. A lower exponent also widens the middle of the affected main profile and can change branch exposure at the union; measure that tradeoff. Radius is a shape proxy, not a count of occupied voxels: separately inspect bounded terminal voxel connectivity and the rendered silhouette.
   - **Knuckles** `kn(t)`: only when `r₀ ≥ 4 m`. 2–4 smooth bumps, each of absolute amplitude `max(0.6 m, 0.12 · r)`.
 - **Cross-section:** a polygon whose facet count depends on size.
   - `r₀ < 4 m`: 3–4 facets, facetiness ≥ 0.6
@@ -359,6 +360,7 @@ This is the feature that failed before. Follow it closely, then tune by eye. Eve
 - branched: 30–40% of thorns ≥ 40 m
 - ≥ 95% of thorns differ from their nearest neighbour by ≥ 20% in height, ≥ 8° in lean or ≥ 0.1 h in bend
 - no tip thinner than 0.7 m for longer than `max(1.5 m, 0.04 L)`
+- ordinary intact non-arch main sweeps additionally stay below radius 0.7 m for at most 1.5 m; the whole-region report's proportional check remains a separate, weaker metric until it reports this stronger main-tip condition explicitly. Neither radius check substitutes for actual voxel-width or R9 image acceptance.
 
 For the neighbour check, evaluate each accepted ordinary thorn against the closest
 other accepted ordinary base in XZ; exact distance ties choose the lower unsigned

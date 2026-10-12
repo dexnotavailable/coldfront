@@ -229,6 +229,20 @@ The agent appends to lists 2 and 3 and never blocks work waiting for answers.
 
 ---
 
+### 12 October 2026 · Short terminal points
+
+| # | Decision | Why | To reverse |
+|---|---|---|---|
+| 117 | **Ordinary intact non-arch main thorn sweeps use an absolute 1.5 m maximum below radius 0.7 m.** Use the existing interpolated-profile exponent clamp, preserving the spine, height, lean, base radius and full-length 0.45 m endpoint. Broken mains, branches, debris, arches and landmarks retain the previous proportional allowance | A complete caldera image exposed a seven-voxel terminal chain despite passing the older 4%-of-length radius proxy. The tighter profile shortens the witnessed chain to four voxels; fresh calibrated full-world review prefers it and improves R9 from 0 to 1. The body widens too, so neighbouring silhouettes still require review. This does not pass R2 or the HELL quality gate, and a radius limit is not a universal voxel-width proof | 04 §8.5; `features/ibara/shape.ts` and its focused readability regressions. Restore the previous proportional default for these mains, regenerate golden data and re-review affected views. Do not clip the endpoint or change other families to undo this choice |
+
+---
+
+### 12 October 2026 · Supported regional destinations
+
+| # | Decision | Why | To reverse |
+|---|---|---|---|
+| 118 | **A regional postcard whose refreshed aerial pose fails may use an actual supported ground eye at the retained X/Z.** Set the eye to validated feet +1.62 m; changing the camera kind alone never establishes walking support. Preserve the declared heading, radius, FOV and safety/content bars, record every failed proposal, and require native pixels before adopting the repaired view | The source023 refresh finds a 204.709 m P12-hellscape solid bound, exposing the stale bound used by its old aerial placement. Two above-bound aerial proposals fail the sky gate. At the original X/Z, four-corner support finds feet 24 m/eye 25.62 m and one fixed 9°-down grid passes; the lake separately passes at 10° down. Geometry and both native repair images pass scoped root/peer review; neither repair grants HELL/R2 or phase acceptance | Catalogue pose/evidence and `out/phase13/tip-camera-refresh/` receipts. Restore an aerial destination only with current source-bound clearance and reviewed native pixels; do not lower bounds, widen FOV or relabel a floating eye to undo this choice |
+
 ## 3. Parking lot
 
 - Seasonal modifiers ("the Long Winter": a season with twice the winter)

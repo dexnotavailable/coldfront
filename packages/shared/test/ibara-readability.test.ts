@@ -1,5 +1,10 @@
 import { createHash } from "node:crypto";
 import { describe, expect, it, vi } from "vitest";
+import {
+  createIbaraWorkspace,
+  sampleThornSweep,
+  sweepRadius,
+} from "../src/features/ibara/sample.js";
 import { instantiateThorn } from "../src/features/ibara/shape.js";
 import type {
   ThornInstance,
@@ -394,5 +399,187 @@ describe("small Ibara S-curve readability", () => {
           )
           .digest("hex"),
       ).toBe(hash);
+  });
+});
+
+// Exact source91 HELL-2 seed1 owner parameters from the 2026-10-12 body/profile
+// receipt (owner8891401), followed by its 1,872-cell production occupancy probe.
+// Flat ground at baseY affects incidental debris only; these tests sample the
+// main sweep alone, not a WorldPlan or production chunk cleanup.
+const longTipWitness: ThornParameters = {
+  id: 8891401,
+  cellX: 44,
+  cellZ: 7,
+  cluster: 0,
+  index: 8,
+  base: [8635.048966192337, 33.07310484832025, 1469.5111290749005],
+  height: 117.72198294666302,
+  baseRadius: 10.118207950569976,
+  flowX: -0.24873723007401555,
+  flowZ: -0.9685710043022693,
+  leanDegrees: 5.9726936391544125,
+  bend: 35.4682024547197,
+  sCurve: false,
+  hooked: false,
+  broken: false,
+  breakT: 0.6389695584191941,
+  branchCount: 0,
+  facets: 5,
+  facetiness: 0.989823425412178,
+  twist: 0.0005761771124704074,
+  phase: 5.467178004102894,
+  exponent: 1.22494417920243,
+  core: "obsidian",
+  crust: "none",
+  nearLava: true,
+  landmark: false,
+  arch: false,
+  archSpan: 164.7261363081634,
+};
+const tipEnvironment = {
+  seed: 1,
+  weightAt: () => 1,
+  surfaceAt: () => longTipWitness.base[1],
+};
+const shapeHash = (value: unknown): string =>
+  createHash("sha256").update(JSON.stringify(value)).digest("hex");
+
+describe("ordinary intact main-tip readability", () => {
+  it("caps the actual interpolated tail at 1.5 m across ordinary main shapes without clipping", () => {
+    for (const change of [
+      {},
+      { id: 8891417, height: 80, bend: 12, baseRadius: 8, sCurve: true },
+      {
+        id: 8891420,
+        height: 64,
+        bend: 6,
+        baseRadius: 6,
+        hooked: true,
+        branchCount: 2,
+      },
+    ]) {
+      const parameters = { ...longTipWitness, ...change };
+      const snapshot = JSON.stringify(parameters);
+      const thorn = instantiateThorn(parameters, tipEnvironment);
+      const main = thorn.sweeps[0];
+      if (!main) throw new Error("Missing main sweep");
+      expect(thorn.parameters).toBe(parameters);
+      expect(JSON.stringify(parameters)).toBe(snapshot);
+      expect(main.thinTipLength).toBeLessThanOrEqual(1.5 + 1e-9);
+      expect(
+        sweepRadius(main, 1 - 1.5 / main.spine.length),
+      ).toBeGreaterThanOrEqual(0.7);
+      expect(sweepRadius(main, 0)).toBe(parameters.baseRadius);
+      expect(sweepRadius(main, 1)).toBe(0.45);
+      guards(thorn);
+    }
+    const main = instantiateThorn(longTipWitness, tipEnvironment).sweeps[0];
+    if (!main) throw new Error("Missing witness main sweep");
+    // Frozen pre-correction spine: every position, frame and length.
+    expect(shapeHash(main.spine)).toBe(
+      "80db07eebed5e92ec8c1b845db23487687b9bc0b727a5274d2f15f360cbdf8d6",
+    );
+  });
+
+  it("preserves excluded whole features and independent branch/debris/rubble data", () => {
+    const cases: readonly [Partial<ThornParameters>, string][] = [
+      [
+        { landmark: true },
+        "7a33803de131713eff3c3669acc2bb79e4a58bd061080b83659c3a952b03eb1d",
+      ],
+      [
+        { broken: true },
+        "ab4c5182e3c0a9a3a780b78fcdcce14447884c0a43dbdbbeb824d3235c899e93",
+      ],
+      [
+        { landmark: true, arch: true },
+        "769cd16ae396076098ac56e6f7156c2fb8828b05f03f7908b923079ef0e2c702",
+      ],
+    ];
+    for (const [change, beforeHash] of cases)
+      expect(
+        shapeHash(
+          instantiateThorn({ ...longTipWitness, ...change }, tipEnvironment),
+        ),
+      ).toBe(beforeHash);
+    const branched = instantiateThorn(
+      { ...longTipWitness, branchCount: 2 },
+      tipEnvironment,
+    );
+    expect(
+      shapeHash({
+        sweeps: branched.sweeps.slice(1),
+        debris: branched.debris,
+        rubble: branched.rubble,
+      }),
+    ).toBe("d17922e6d3bd3f8de8f5d512be4e28a93dbbad0777b1c9bc58d7389b7c706284");
+    // Exact branch objects do not guarantee unchanged exposure at their union
+    // with a widened main. The native image review owns that separate check.
+  });
+
+  it("shortens the saved seven-voxel terminal stair chain without disconnecting it", () => {
+    const main = instantiateThorn(longTipWitness, tipEnvironment).sweeps[0];
+    if (!main) throw new Error("Missing witness main sweep");
+    const work = createIbaraWorkspace();
+    const key = (x: number, y: number, z: number): string => `${x},${y},${z}`;
+    type Cell = { x: number; y: number; z: number };
+    const cells = new Map<string, boolean>(),
+      occupied = new Map<string, Cell>();
+    // Identical fixed box to the inspected production receipt. Before:
+    // 45 occupied voxels; endpoint chain seven voxels/six face steps.
+    for (let z = 1451; z <= 1458; z++)
+      for (let x = 8637; x <= 8649; x++)
+        for (let y = 136; y <= 153; y++) {
+          const solid =
+            sampleThornSweep(main, x + 0.5, y + 0.5, z + 0.5, 0, work) < 0;
+          cells.set(key(x, y, z), solid);
+          if (solid) occupied.set(key(x, y, z), { x, y, z });
+        }
+    expect(cells.size).toBe(1872);
+    const faces = [
+      [1, 0, 0],
+      [-1, 0, 0],
+      [0, 1, 0],
+      [0, -1, 0],
+      [0, 0, 1],
+      [0, 0, -1],
+    ] as const;
+    const adjacent = (cellKey: string): string[] => {
+      const cell = occupied.get(cellKey);
+      if (!cell) throw new Error("Missing occupied cell");
+      return faces.map(([dx, dy, dz]) =>
+        key(cell.x + dx, cell.y + dy, cell.z + dz),
+      );
+    };
+    const tip = key(8640, 150, 1455);
+    expect(occupied.has(tip)).toBe(true);
+    expect(adjacent(tip).filter((k) => occupied.has(k))).toHaveLength(1);
+    const thin = new Set(
+      [...occupied.keys()].filter(
+        (k) =>
+          adjacent(k).every((n) => cells.has(n)) &&
+          adjacent(k).filter((n) => occupied.has(n)).length <= 2,
+      ),
+    );
+    const connected = (allowed: ReadonlySet<string>): Set<string> => {
+      const seen = new Set<string>();
+      const queue = allowed.has(tip) ? [tip] : [];
+      if (queue.length) seen.add(tip);
+      for (let i = 0; i < queue.length; i++)
+        for (const neighbour of adjacent(queue[i] as string))
+          if (allowed.has(neighbour) && !seen.has(neighbour)) {
+            seen.add(neighbour);
+            queue.push(neighbour);
+          }
+      return seen;
+    };
+    const terminalChain = connected(thin);
+    expect(terminalChain.size).toBeGreaterThan(0);
+    expect(terminalChain.size).toBeLessThanOrEqual(4);
+    expect(connected(new Set(occupied.keys())).size).toBe(occupied.size);
+    // Count sideways stair turns, not just vertical runs.
+    expect(
+      new Set([...terminalChain].map((k) => occupied.get(k)?.x)).size,
+    ).toBeGreaterThan(1);
   });
 });
