@@ -1,8 +1,14 @@
 import { IBARA_CELL_SIZE } from "../../../shared/src/features/ibara/cells.js";
-import type { ThornParameters } from "../../../shared/src/features/ibara/types.js";
+import type {
+  ThornInstance,
+  ThornParameters,
+} from "../../../shared/src/features/ibara/types.js";
 import type { XZ } from "../../../shared/src/world/types.js";
 import { cameraFrame, type MainCameraCandidate } from "./geometry.js";
-import type { FramingLavaWitness } from "./hell-framing-camera.js";
+import {
+  type FramingLavaWitness,
+  framingEnvelope,
+} from "./hell-framing-camera.js";
 
 /** Parameter nomination only. These ceilings do not add camera-grid slots. */
 export const FOREST_ENSEMBLE_BUDGET = Object.freeze({
@@ -241,15 +247,29 @@ export function ensembleFissureWitnesses(
     }
   return selected;
 }
-/** Use conservative envelopes to prefer stand-off and complete ensemble
- * framing. The full grid and built-spine readability remain the proof. */
+/** Production uses whole built envelopes to prefer stand-off and complete
+ * ensemble framing; parameter-only callers retain a conservative fallback.
+ * Ranking is not visibility proof: full-grid readability still follows. */
 export function ensembleFramingScore(
   view: MainCameraCandidate,
   site: ForestEnsemble,
+  instanceFor?: (id: number) => ThornInstance | undefined,
 ): number {
   const frame = cameraFrame(view);
   let score = 0;
   for (const p of [site.hook, site.branch]) {
+    if (instanceFor) {
+      const instance = instanceFor(p.id);
+      if (!instance)
+        throw Error(`Missing source-bound ensemble instance: ${p.id}`);
+      // Whole built spine, hook return and branches with their actual radii.
+      // A deeply cropped ordinary root must not tie a modest near miss at -60.
+      const { margin } = framingEnvelope(view, instance);
+      score += Number.isFinite(margin)
+        ? Math.min(60, margin) + (margin >= 24 ? 40 : 0)
+        : -1_000_000;
+      continue;
+    }
     const radius = lateralReach(p),
       bottom = p.base[1],
       top = bottom + p.height;
@@ -265,7 +285,7 @@ export function ensembleFramingScore(
               : Math.min(point.x, 1280 - point.x, point.y, 720 - point.y),
           );
         }
-    score += Math.max(-60, Math.min(60, margin)) + (margin >= 24 ? 40 : 0);
+    score += Math.min(60, margin) + (margin >= 24 ? 40 : 0);
   }
   return score;
 }

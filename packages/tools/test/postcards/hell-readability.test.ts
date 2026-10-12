@@ -23,6 +23,10 @@ import {
   type MainCameraCandidate,
 } from "../../src/postcards/geometry.js";
 import {
+  ensembleFramingScore,
+  type ForestEnsemble,
+} from "../../src/postcards/hell-forest-ensemble.js";
+import {
   type FramingLavaWitness,
   type FramingObservation,
   framingEnvelope,
@@ -343,6 +347,71 @@ describe("bounded HELL-1 form selection", () => {
         id === 92 ? hook : id === 41 ? dominant : undefined,
     };
   }
+  it("separates severe ordinary crop from a moderate crop using whole built hook and branch envelopes", () => {
+    const { hook } = missingHook();
+    const branch = asset({
+      id: 93,
+      branchCount: 1,
+      height: 40,
+      base: [0, 0, 100],
+    });
+    const ensemble: ForestEnsemble = {
+      id: "synthetic",
+      x: 15,
+      z: 100,
+      hook: hook.parameters,
+      branch: branch.parameters,
+      members: [hook.parameters, branch.parameters],
+      score: 0,
+    };
+    const instance = (id: number) =>
+      id === 92 ? hook : id === 93 ? branch : undefined;
+    const pose = (distance: number): MainCameraCandidate => ({
+      ...view,
+      position: { x: 15.5, y: 1.62, z: 100 - distance },
+      target: { x: 15.5, y: 7.62, z: 164 - distance },
+    });
+    const far = ensembleFramingScore(pose(200), ensemble, instance);
+    const moderate = ensembleFramingScore(pose(30), ensemble, instance);
+    const severe = ensembleFramingScore(pose(8), ensemble, instance);
+    expect(far).toBeGreaterThan(moderate);
+    expect(moderate).toBeGreaterThan(severe);
+    expect(severe).toBeLessThan(-120); // old two-parent -60 floor hid this distinction.
+    expect(() =>
+      ensembleFramingScore(pose(200), ensemble, () => undefined),
+    ).toThrow("Missing source-bound ensemble instance");
+  });
+  it("penalizes a cropped branch even when its main trunk envelope fits", () => {
+    const hook = asset({ id: 92, hooked: true, height: 30, base: [0, 0, 100] });
+    const branch = asset({
+      id: 93,
+      branchCount: 1,
+      height: 40,
+      base: [110, 0, 100],
+    });
+    const trunk = {
+      ...branch,
+      parameters: { ...branch.parameters, branchCount: 0 },
+      sweeps: branch.sweeps.slice(0, 1),
+    };
+    const ensemble: ForestEnsemble = {
+      id: "synthetic",
+      x: 55,
+      z: 100,
+      hook: hook.parameters,
+      branch: branch.parameters,
+      members: [hook.parameters, branch.parameters],
+      score: 0,
+    };
+    const camera = { ...view, target: { ...view.target, y: 7.62 } };
+    const withBranch = ensembleFramingScore(camera, ensemble, (id) =>
+      id === 92 ? hook : branch,
+    );
+    const withoutBranch = ensembleFramingScore(camera, ensemble, (id) =>
+      id === 92 ? hook : trunk,
+    );
+    expect(withBranch).toBeLessThan(withoutBranch);
+  });
   it("pairs an intact hook with an observed lava bank instead of preserving an unrelated target", () => {
     const { dominant, hook, hidden, instance, targetFor } = missingHook();
     expect(framingEnvelope(hidden.view, dominant).complete).toBe(true);

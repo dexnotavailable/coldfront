@@ -439,6 +439,7 @@ export function forestSceneCandidates(
   targetFor: (disc: RootDisc, fissureId: number) => HellTarget,
   record: (event: Attempt) => void,
   formAware = false,
+  instanceFor?: (id: number) => ThornInstance | undefined,
 ): ForestCandidate[] {
   const groups = new Map<
     string,
@@ -454,6 +455,7 @@ export function forestSceneCandidates(
   for (const witness of witnesses) {
     const disc = { x: witness.x, z: witness.z, radius: 144 };
     let roots: readonly ForestRoot[] | undefined;
+    let ensembleLoaded = false;
     for (const radius of [3, 5, 8, 12, 20])
       for (let k = 0; k < 8; k++) {
         const angle = (k * Math.PI) / 4,
@@ -540,10 +542,17 @@ export function forestSceneCandidates(
               reject("sparse-local-forest");
               continue;
             }
+            // Materialize this same source-bound coverage target once per
+            // witness, before ranking its whole nominated forms. This reuses
+            // the target/instance caches; no additional pose or grid is added.
+            if (witness.ensemble && instanceFor && !ensembleLoaded) {
+              targetFor(disc, witness.fissureId);
+              ensembleLoaded = true;
+            }
             const score = formAware
               ? forestFramingScore(view, tall) +
                 (witness.ensemble
-                  ? ensembleFramingScore(view, witness.ensemble)
+                  ? ensembleFramingScore(view, witness.ensemble, instanceFor)
                   : 0)
               : tall.reduce((sum, root) => {
                   const dx = root.x - x,
@@ -1191,6 +1200,7 @@ export async function resolveHellCameras(
               forestTarget,
               record,
               variant === "production",
+              (featureId) => instanceCache.get(featureId),
             ),
           );
         } else {

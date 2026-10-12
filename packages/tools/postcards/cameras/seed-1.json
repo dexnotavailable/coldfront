@@ -646,7 +646,7 @@
     "seed": 1,
     "worldgenVersion": 4,
     "sourceHash": "91f1471f8154038cc5ebaef7cf8e4f79b7cb4949591e2cb9cf81f7cf3c5b3a41",
-    "resolverHash": "61ad7a87c0eafe65f87c29377b64ace174e0d287c41ae11ee343ea42359bd04b",
+    "resolverHash": "45ccf841e63d4fa9d810a26fd8868f33adecda091365ae9b3f43fd8b76ba63b0",
     "variant": "production",
     "cameras": [
       {
@@ -1000,15 +1000,40 @@
             10262038, 10262025, 25395713, 10262036, 10261783, 10262049,
             10262024, 10262032, 10262042, 10196510, 10262021, 10196483
           ],
-          "reusedIds": [
+          "reusedIds": [],
+          "resolvedIds": [
             10262038, 10262025, 25395713, 10262036, 10261783, 10262049,
             10262024, 10262032, 10262042, 10196510, 10262021, 10196483
           ],
-          "resolvedIds": [],
           "missingIds": [],
-          "parameterCellRequests": 0,
-          "parameterCellCacheHits": 0,
-          "ownerCellRequests": []
+          "parameterCellRequests": 82,
+          "parameterCellCacheHits": 14,
+          "ownerCellRequests": [
+            {
+              "x": 22,
+              "z": 28,
+              "landmark": false,
+              "returnedInstances": 40
+            },
+            {
+              "x": 2,
+              "z": 3,
+              "landmark": true,
+              "returnedInstances": 1
+            },
+            {
+              "x": 21,
+              "z": 28,
+              "landmark": false,
+              "returnedInstances": 40
+            },
+            {
+              "x": 22,
+              "z": 27,
+              "landmark": false,
+              "returnedInstances": 40
+            }
+          ]
         },
         "lavaWitnesses": [
           {
@@ -1019,13 +1044,13 @@
           }
         ],
         "score": 1058.456076388889,
-        "validatedByResolverHash": "61ad7a87c0eafe65f87c29377b64ace174e0d287c41ae11ee343ea42359bd04b",
+        "validatedByResolverHash": "45ccf841e63d4fa9d810a26fd8868f33adecda091365ae9b3f43fd8b76ba63b0",
         "completedSearch": {
           "schema": 1,
           "seed": 1,
           "worldgenVersion": 4,
           "sourceHash": "91f1471f8154038cc5ebaef7cf8e4f79b7cb4949591e2cb9cf81f7cf3c5b3a41",
-          "resolverHash": "61ad7a87c0eafe65f87c29377b64ace174e0d287c41ae11ee343ea42359bd04b",
+          "resolverHash": "45ccf841e63d4fa9d810a26fd8868f33adecda091365ae9b3f43fd8b76ba63b0",
           "variant": "production",
           "selectedViewHash": "adf5eee3621df633b4be633a72640744f32ed98addc87986c193d2063bc5e748",
           "fullGridCandidates": 50,
