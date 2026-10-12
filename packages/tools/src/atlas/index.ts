@@ -1,7 +1,8 @@
 import { createHash } from "node:crypto";
+import { existsSync, realpathSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 import { atlasReview } from "../terrain-review/annotate.js";
 import { sourceHashes, writeRaster } from "../terrain-review/output.js";
 import { createReviewSource } from "../terrain-review/source.js";
@@ -83,6 +84,9 @@ export async function runAtlas(args: readonly string[]): Promise<void> {
 }
 if (
   process.argv[1] &&
-  import.meta.url === pathToFileURL(resolve(process.argv[1])).href
+  existsSync(resolve(process.argv[1])) &&
+  // Node resolves the module through junctions; compare the entry the same way.
+  realpathSync(fileURLToPath(import.meta.url)) ===
+    realpathSync(resolve(process.argv[1]))
 )
   await runAtlas(process.argv.slice(2));
