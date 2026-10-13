@@ -1,6 +1,6 @@
 # Ibara rock-layer contrast
 
-The selected material increment makes the existing horizontal rock layers easier to distinguish. Root and a fresh image-only reviewer prefer it in both fixed forest and caldera comparisons, with a modest difference and no obvious lava, ground or form regression. Release qualification is in progress; the live build remains `a82f5dd` until the exact production checks pass.
+The selected material increment makes the existing horizontal rock layers easier to distinguish. Root and a fresh image-only reviewer prefer it in both fixed forest and caldera comparisons, with a modest difference and no obvious lava, ground or form regression. The increment is live as **`3e784a3e9b69db7c9b5505fc5d70aee3b7d9eb50`**. The current generation-676 save identity is retained.
 
 ![Rock-layer comparison](../postcards/wip/ibara.jpg)
 
@@ -16,11 +16,17 @@ The shader scales the resolved strata contrast by 1.5 around each feature's exis
 - The primitive control receives genuine current-generation validation at its original fixed pose: one plan/grid, 127,356 queries, **5.778 s**, with no search or camera adjustment. Its isolated current-material capture loads **1,823 chunks**, zero queued, in **102.039 s**; total **105.626 s**, standard timing pass, zero errors and cleanup recorded true. Its 241 file bindings and 69 dependencies pass independent audit. The generated catalogue adds only this validated primitive section; all eighteen normal destinations and TEST remain unchanged.
 - Shared generation stays `676c1de…`; the completed generation-676 golden, numeric-report, atlas/slice and CPU-benchmark evidence remains applicable. CPU generation timing is not a graphics measurement: the current benchmark's **median/p95 is 53.504/577.809 ms**, with the six aggregate kernel-budget misses still open. No Radeon FPS improvement is claimed.
 
+## Verified release
+
+Exact clean Node22 install/build passes in **11.274 s**, site build in **2.126 s**. [CI38478297503](https://github.com/dexnotavailable/coldfront/actions/runs/38478297503) passes, including browser determinism. The fresh local production journey passes all fourteen stages in **302.635 s**. Root and a fresh independent reviewer open all fourteen originals and four HUD images; all 178 source/326 distribution files and fresh execution bindings match. Placement, breaking, movement, replay/reload persistence, view modes, real forest travel/Escape and malformed-catalogue recovery pass, with zero application errors, external requests or failed responses. Four ReadPixels warnings remain; browser/server closure is recorded true.
+
+Publication receipt **`eb60e9dc-eb94-4b37-ac90-1d004ad17de3`** identifies the live release. Ten public entry/asset/font hash checks and isolation headers pass at **22:48:25.388 UTC on 13 October**; a separate public camera readback matches `24cdbf36…` at **22:49:53.883 UTC**. Public-browser gameplay remains separately unverified under the earlier restriction. Fresh receipts are in `out/phase13/strata-release-prep/candidate-f1aa/`.
+
 ## Formal score boundary
 
 Root scores the current control 8/20, forest 17/20 and caldera 16/20. The first fresh formal reviewer scores the control **9/20**, making its forest/caldera scores invalid under the unchanged calibration rule. A second independent reviewer, shown only the control and rubric, also scores **9/20**. Both failed calibrations are retained; no further reviewers are sought for this candidate and no threshold is changed.
 
-Consequently there is **no new valid formal score of record**. The earlier release's calibrated 16/15 remains historical evidence, not a new score for this material. Preference in the A/B comparisons supports the incremental change; it does not pass phase 1.3. Calibration consistency, mandatory HELL acceptance and seeds 2–3 remain open.
+Consequently there is **no new valid formal score of record**. The earlier release's calibrated 16/15 remains historical evidence, not a new score for this material. Preference in the A/B comparisons supports the incremental change; it does not pass phase 1.3. A subsequent source/receipt audit finds the fixture conformant: uniform 96 m cones, 12 m radius and 64 m horizontal spacing, with the surrounding volcanic terrain retained as specified. No implementation defect explaining the extra control point was found. Calibration interpretation, mandatory HELL acceptance and seeds 2–3 remain open; the audit is `out/phase13/primitive-calibration-audit.md`.
 
 ## Evidence
 

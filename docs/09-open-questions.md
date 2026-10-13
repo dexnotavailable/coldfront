@@ -251,7 +251,7 @@ The agent appends to lists 2 and 3 and never blocks work waiting for answers.
 
 ## 3. Parking lot
 
-- **M1.3 calibration consistency (14 October 2026):** two independent current-material primitive-control reviews score 9/20, exceeding the fixed ≤8 anchor rule. Both are invalid; keep the threshold and mandatory HELL bars unchanged. Audit the fixture and rubric interpretation before further formal grading rather than seeking additional reviewers for this candidate. Paired image preferences can support an incremental release but cannot establish phase acceptance. Evidence: `reports/phase-1-3-strata-contrast.md`.
+- **M1.3 calibration consistency (14 October 2026):** two independent current-material primitive-control reviews score 9/20, exceeding the fixed ≤8 anchor rule. Both are invalid; keep the threshold and mandatory HELL bars unchanged. The source/receipt audit finds the fixture conformant (uniform 96 m height, 12 m radius, 64 m grid); interpretation remains unresolved. Keep both invalid reviews and do not seek additional reviewers for this candidate. Paired image preferences can support an incremental release but cannot establish phase acceptance. Evidence: `reports/phase-1-3-strata-contrast.md`.
 
 - Seasonal modifiers ("the Long Winter": a season with twice the winter)
 - Player-built monuments recorded in the Ledger of Kings
