@@ -1,6 +1,6 @@
 # Distant lava correction · 13 October 2026
 
-The selected material keeps distant lava orange instead of washing it into a pale sheet. Nearby cracks and glow are preserved. This is a rendering change: generation `023af1e…`, the current camera catalogue and saved edits stay unchanged. Publication checks are in progress; the live build is still `3f7e0df`.
+The selected material keeps distant lava orange instead of washing it into a pale sheet. Nearby cracks and glow are preserved. This is a rendering change: generation `023af1e…`, the current camera catalogue and saved edits stay unchanged. The increment is live as **`9d5b0f207980aae1489bb18e57993761a23ef5af`**.
 
 ## What changed and why
 
@@ -49,4 +49,6 @@ All **790 tests in 93 files** pass in **252.300 s**. The first check fails only 
 - Reviews: `out/phase13/lava-continuum-pixel-review.md` and `out/phase13/continuum-formatted-hud-review/`.
 - Numeric studies: `D:/Dex/Temp/coldfront-lava-energy-0435cee/out/lava-energy/continuum-only/` (failed) and `continuum29/` (finite check passed).
 
-Local test/check/build are complete. Clean-checkout build, production gameplay journey, CI and publication readback must finish before this increment is reported live. The unchanged generator's atlas, slices and complete CPU benchmark remain applicable. The separately preferred branch-quota study is not included in this material release.
+Local test/check/build are complete. The exact clean Node22 install/build passes in **20.329 s**, and the site build in **2.199 s**. [CI 38427068086](https://github.com/dexnotavailable/coldfront/actions/runs/38427068086) passes, including Chromium, Firefox and WebKit goldens. The fourteen-stage production journey finishes at **16:08:20.166 UTC**; root and a fresh independent reviewer open all fourteen originals and verify the 178-source/326-distribution binding. Placement, breaking, movement, replay/reload persistence, Ibara views, postcard travel/Escape and invalid-catalogue recovery pass. Errors, failed responses and external requests are zero; four ReadPixels warnings remain and cleanup completes.
+
+Publication receipt **`fa0bdc0f-e94e-4532-b940-7a9fb3f598ee`** and `out/phase13/continuum-release-prep/public-readback.json` verify ten public files plus COOP/COEP at **16:18:12.639 UTC**. Public-browser gameplay remains separately unverified under its existing restriction. The unchanged generator's atlas, slices and complete CPU benchmark remain applicable. The separately preferred branch-quota study is not included in this material release.
