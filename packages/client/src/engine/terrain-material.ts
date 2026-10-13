@@ -126,7 +126,7 @@ export function createTerrainMaterials(clip: Plane): {
       clipShadows: true,
     });
     material.customProgramCacheKey = () =>
-      `coldfront-terrain-r186-v3-ibara-class-${kind}${kind === 0 ? "-strata-v2-reflected" : kind === 4 ? "-filtered-lava-v1-continuum29-v1" : ""}`;
+      `coldfront-terrain-r186-v3-ibara-class-${kind}${kind === 0 ? "-strata-v3-contrast" : kind === 4 ? "-filtered-lava-v1-continuum29-v1" : ""}`;
     material.onBeforeCompile = (shader) => {
       Object.assign(shader.uniforms, {
         uViewMode: uniforms.viewMode,
@@ -247,7 +247,8 @@ float cfIbaraStrata(vec3 world, highp uint featureId) {
   float filtered=(cfStrataIntegral(centre+width*0.5,count,tones)
     - cfStrataIntegral(centre-width*0.5,count,tones))/width;
   float mean=(tones.x+tones.y+tones.z)/count;
-  return mix(filtered,mean,smoothstep(0.5,2.0,footprint));
+  // Preserve the feature's mean; separate only its resolved layer tones.
+  return mean+1.5*(mix(filtered,mean,smoothstep(0.5,2.0,footprint))-mean);
 }`
     : ""
 }

@@ -6,7 +6,7 @@ The selected increment is live as **`a82f5dd4ae93428d858ebe5cbaef24273bf0de5c`**
 
 Within each complete accepted cluster, a seeded draw rounds the 35% branching quota. A positive quota includes the tallest eligible thorn and fills remaining places using the original packing order. Small cohorts may receive zero. Existing branch-count draws and excluded families remain unchanged. [Decision 119](../09-open-questions.md) records this deliberate height correlation; the whole-region report denominator and passing bands are unchanged.
 
-![Branch comparison](../postcards/wip/ibara.jpg)
+![Branch comparison](https://github.com/dexnotavailable/coldfront/blob/a82f5dd4ae93428d858ebe5cbaef24273bf0de5c/docs/postcards/wip/ibara.jpg?raw=true)
 
 Forest above caldera; baseline left, selected candidate right. Root opens all four originals and the assembled sheet. A fresh pixel-only release reviewer prefers B in both pairs: a modest forest improvement and clearer caldera improvement, with no visible material regression. The large central caldera thorn gains a curved branch; a taller background form gains forks. The sheet is 1280×720 and 103,300 bytes; the WIP folder totals 815,081 bytes. This preference review does not replace the existing calibrated phase scores of 16/15.
 

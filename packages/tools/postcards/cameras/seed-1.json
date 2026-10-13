@@ -920,5 +920,94 @@
       "hell2": "Published candidate48 retained exactly, verified genuine676 fixed-grid validation; no addition.",
       "validationEvidence": "Two existing676 proofs with78 exact recorded dependencies each; original resolver identity preserved. No new search or visual pass."
     }
+  },
+  "phase13Primitive": {
+    "schema": 1,
+    "worldKind": "main",
+    "seed": 1,
+    "worldgenVersion": 4,
+    "sourceHash": "676c1dee2fe6e97007d306b08f8efeb1381c9d9510f701f4558f22721f2116cb",
+    "resolverHash": "a3c9265c37c247ffb5d70506028f2609138012683fb3ccd27786e61d2538e47c",
+    "variant": "primitive",
+    "cameras": [
+      {
+        "id": "HELL-1",
+        "region": "hellscape",
+        "kind": "eye-level",
+        "position": {
+          "x": 5669.5,
+          "y": 30.62,
+          "z": 5417.5
+        },
+        "target": {
+          "x": 5669.5,
+          "y": 36.21927446565914,
+          "z": 5481.5
+        },
+        "hours": 17.25,
+        "radius": 512,
+        "seed": 1,
+        "ungraded": true,
+        "targetFeature": {
+          "kind": "thorn-cluster",
+          "featureIds": [
+            10198280, 10198281, 10263809, 10263810, 10263811, 10263812,
+            10263813, 10263814, 10263815, 10263816, 10263817, 10264065,
+            10264068, 10264071, 10329346, 10329347
+          ],
+          "bounds": {
+            "minX": 5556,
+            "minY": 23.743076938944046,
+            "minZ": 5300,
+            "maxX": 5772,
+            "maxY": 124.88243486219147,
+            "maxZ": 5580
+          },
+          "rootDisc": {
+            "x": 5669.5,
+            "z": 5429.5,
+            "radius": 144
+          },
+          "fissureId": 1088348037
+        },
+        "validation": {
+          "eyeClear": true,
+          "walkable": true,
+          "centralClear": true,
+          "skyFraction": 0.2035590277777778,
+          "featureFraction": 0.3546006944444444,
+          "waterFraction": 0,
+          "horizonFraction": 0.56247338021354,
+          "sunOffsetDegrees": 130.91438322002512,
+          "sunElevationDegrees": 11.33313571163032,
+          "highestVisibleSample": 114.54745348058019,
+          "altitudeAboveHighestSample": -83.92745348058018,
+          "rayColumns": 64,
+          "rayRows": 36,
+          "targetFraction": 0.3546006944444444,
+          "visibleFeatureIds": [
+            10263813, 10263814, 10263816, 10263817, 10329346, 10329347
+          ],
+          "lavaFraction": 0.003472222222222222,
+          "fissureFraction": 0.003472222222222222,
+          "targetFissureFraction": 0.003472222222222222,
+          "targetLavaFraction": 0,
+          "visibleLavaOwners": [
+            {
+              "source": "fissure",
+              "bodyId": 1088348037
+            }
+          ],
+          "passed": true
+        },
+        "validatedByResolverHash": "a3c9265c37c247ffb5d70506028f2609138012683fb3ccd27786e61d2538e47c"
+      }
+    ],
+    "manualRetention": {
+      "fixedHistoricalPose": true,
+      "freshValidation": true,
+      "automaticSelection": false,
+      "ungraded": true
+    }
   }
 }
