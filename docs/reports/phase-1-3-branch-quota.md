@@ -1,6 +1,6 @@
-# Clearer Ibara branches · release qualification
+# Clearer Ibara branches · verified live increment
 
-The selected increment gives the tallest ordinary thorns more reliably visible forks. It preserves thorn positions, population and non-branch parameters, plus the published lava material and camera poses. **Milestone 1.3 remains incomplete:** HELL-1 scores 16/20 of record; HELL-2 scores 15/20, below its mandatory total of 16. This is not a phase pass.
+The selected increment is live as **`a82f5dd4ae93428d858ebe5cbaef24273bf0de5c`**. It gives the tallest ordinary thorns more reliably visible forks, preserving thorn positions, population and non-branch parameters, plus the published lava material and camera poses. **Milestone 1.3 remains incomplete:** HELL-1 scores 16/20 of record; HELL-2 scores 15/20, below its mandatory total of 16. This is not a phase pass.
 
 ## Change and images
 
@@ -25,7 +25,11 @@ The full HELL-1 image loads 1,306 chunks in 98.540 s; HELL-2 loads 1,624 in 229.
 
 ## Release boundary
 
-The production clean build, fresh gameplay journey, CI and publication readback are still being completed. A new full CPU benchmark for generation 676 is required in this session; the old generation-023 numbers are historical. No Radeon FPS improvement is claimed.
+The exact clean Node22 install/build passes in **12.565 s**, site build in **2.289 s**, and [CI38458465023](https://github.com/dexnotavailable/coldfront/actions/runs/38458465023) passes including all three browsers. The fresh production journey completes all 14 stages in **312.655 s**. Root and independent Astra open every original and verify 178 source and 326 distribution files. Placement, breaking, movement, replay/reload persistence, view modes, HELL-1 travel/Escape and malformed-catalogue recovery pass. There are zero application errors, failed responses or external requests; four ReadPixels warnings remain, and browser/server cleanup passes.
+
+Publication receipt **`f9a6c2bb-eb04-463c-aad9-c049dfca1039`** and `out/phase13/quota-release-prep/public-readback.json` confirm ten public file hashes and isolation headers at **20:08:54.643 UTC on 13 October**. Public-browser gameplay remains separately unverified under its earlier restriction.
+
+The new full generation-676 CPU benchmark is running alone from the exact clean release checkout. Its receipt is `D:/Dex/Temp/coldfront-clean-phase13-a82f5dd/out/quota-benchmark/2026-10-13T20-09-52.235Z/exit.json`. Results remain pending; the old generation-023 numbers are historical. No Radeon FPS improvement is claimed.
 
 Generation identity changes to `4:676c1dee2fe6e97007d306b08f8efeb1381c9d9510f701f4558f22721f2116cb`. Earlier edits remain stored under their previous world identities and are not loaded into this changed world. The release journey must verify new placement/breaking and persistence under the new identity.
 
