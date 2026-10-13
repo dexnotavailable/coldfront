@@ -11,7 +11,7 @@
 |---|---|---|
 | 1.1 Foundations | ✓ Complete, with recorded limits | 190 tests, check/build, clean Node22 build, complete UI lint and all-three-browser CI pass; accepted images/tools/save fixes published as d4c4c49. Public-site browser launch remains unavailable. |
 | 1.2 World plan | ✓ Complete, with recorded limits | Runtime, three-seed geography, atlas/slice, all-region travel and sixteen ungraded postcards accepted; 310 tests, check/build, complete UI lint, clean Node22 build and all-three-browser CI pass. Live as 18a975d. [Phase plan](plans/phase-1-2.md). |
-| 1.3 Terrain toolkit + Ibara | In progress | [Reviewed integration plan](plans/phase-1-3.md); generation `676c1de…` is live as `a82f5dd`, with clearer branches and retained lava/rock materials. Tests, check/build, clean production journey, three-browser CI and public HTTP pass. Calibrated control 8/20; record **HELL-1 16/20, HELL-2 15/20**, both R2=2. HELL-2's total bar and seeds 2–3 visual acceptance remain open. Caldera still misses 180 seconds; the new CPU benchmark is running. |
+| 1.3 Terrain toolkit + Ibara | In progress | [Reviewed integration plan](plans/phase-1-3.md); generation `676c1de…` is live as `a82f5dd`, with clearer branches and retained lava/rock materials. Tests, check/build, clean production journey, three-browser CI and public HTTP pass. Calibrated control 8/20; record **HELL-1 16/20, HELL-2 15/20**, both R2=2. HELL-2's total bar and seeds 2–3 visual acceptance remain open. Caldera still misses 180 seconds; the new CPU benchmark is complete, with six aggregate kernel metrics over target. |
 | 1.4 Far terrain | ☐ Specified, not implemented | LOD0–LOD6, full-height column tiles beyond LOD1, ~16 km maximum reach at altitude; acceptance includes at least 5 km of real terrain. 04 §13.5 / roadmap 1.4. |
 | 1.5 Kurogane + Selva | ☐ | |
 | 1.6 Fantasy regions | ☐ | |
@@ -25,7 +25,7 @@
 
 **Verified live branch increment: `a82f5dd`.** **795 tests / 93 files, check and build pass** in 271.80 / 21.610 / 4.479 s. Exact clean/site builds pass in 12.565/2.289 s; CI38458465023 passes including all three browsers. All 14 production-journey stages pass in 312.655 s, with every image opened by root and a fresh reviewer and all 178 source/326 distribution bindings verified. Public ten-file/hash/header readback passes at 20:08:54.643 UTC. Publication receipt: `f9a6c2bb-eb04-463c-aad9-c049dfca1039`. All 18 destinations retain their poses; new HUD and ten atlas/slice images are reviewed. Only six golden branch samples change; all 150 TEST records remain exact. Rim and scree experiments are excluded. Scores remain 16/15 and phase1.3 remains open. [Release evidence](reports/phase-1-3-branch-quota.md) · Decision 119 records the height correlation.
 
-**Generation-676 CPU benchmark running:** the unchanged full suite runs alone in the exact clean `a82f5dd` checkout. Receipt/log: `D:/Dex/Temp/coldfront-clean-phase13-a82f5dd/out/quota-benchmark/2026-10-13T20-09-52.235Z/`. Do not start a duplicate or run renders/tests/builds alongside it. New numbers are pending; generation-023 figures below are historical.
+**Generation-676 CPU benchmark complete:** the full default run finishes with exit 0 after 59.7 minutes, without parallel heavy jobs. All 124 summaries independently recalculate exactly from 2,400 regular / 960 coarse / 150 dense samples. Generation median/p95 is **53.504/577.809 ms**, lighting **15.585/23.391 ms**, meshing **6.379/9.814 ms**. Six aggregate kernel metrics remain over their phase 1.10 targets. The table below is current; generation 023 numbers are historical. This does not measure Radeon FPS or establish a controlled speedup.
 
 **Published generation's visual record:** HELL-1 scores **16/20** (root17, blind16, control8), with R2=2; all 1,306 chunks load in **98.540 s**. HELL-2 scores **15/20** (root16, blind15, control8), with R2=2; its 1,624-chunk capture takes **229.961 s**, retaining the failed 180-second check. A fresh current-material preference review also prefers the branch increment in both scenes. This does not pass phase1.3.
 
@@ -217,26 +217,26 @@ The current matched tip reviews above are HELL-1 A 15 / B 15 and HELL-2 A 12 / B
 | Primitive calibration | 1 | 8/20 | 7/20 | Calibration valid | Straight cones and regular rows; this is a negative control, not production terrain. |
 | P12 surface set | 1 | Ungraded by phase 1.2 design | Independent image review passed | Ungraded | All sixteen regions captured and opened; full feature-quality terrain and far LOD remain later work. |
 
-## Bench (current live tip source)
+## Bench (current live generation 676)
 
-The unchanged default benchmark for **live `fbc0d967` / generation `023af1e…`** completes on Node 22.23.3 / Windows / Ryzen 9 7950X with exit 0. It runs alone for **56.5 minutes**: raw receipt **3389.498 s**, wrapper **3390.329 s**, with their timer boundaries preserved. Independent review verifies **all 124 timing summaries**, 59 shared source files and eight harness files. Five warmups per category are discarded before **2,400 regional LOD0 / 960 LOD1 / 150 dense Ibara measurements**, covering 800 / 320 / 50 unique cases and all sixteen regions. Stage sums match exactly; all dense selected-feature and dark-submerged guards pass.
+The unchanged default benchmark for **a82f5dd / generation 676** completes on Node 22.23.3 / Windows / Ryzen 9 7950X with exit 0. It runs alone for **59.7 minutes**: raw receipt **3579.053 s**, wrapper **3579.848 s**. The independently reviewed reducer verifies all **124 timing summaries**, 59 shared source files and eight harness files. Five warmups per category are discarded before **2,400 regional LOD0 / 960 LOD1 / 150 dense Ibara measurements**, covering 800 / 320 / 50 unique cases across sixteen regions. Stage sums match exactly; dense visibility and dark-submerged guards pass.
 
 | CPU measurement | Median ms | p95 ms | Target status |
 |---|---:|---:|---|
-| LOD0 generation | 51.244 | 566.747 | over-target |
-| Dense Ibara generation | 730.587 | 1357.207 | over-target |
-| Lighting | 14.570 | 23.660 | over-target |
-| Dense Ibara lighting | 18.195 | 27.172 | over-target |
-| Meshing | 6.406 | 9.440 | over-target |
-| Dense Ibara meshing | 5.870 | 9.049 | over-target |
-| Neighbourhood preparation | 709.833 | 1058.979 | no-applicable-target |
-| Complete regional pipeline | 783.825 | 1700.402 | no-applicable-target |
-| Complete dense Ibara pipeline | 5509.613 | 13867.594 | no-applicable-target |
-| LOD1 voxel generation | 18.653 | 567.112 | no-applicable-target |
+| LOD0 generation | 53.504 | 577.809 | over-target |
+| Dense Ibara generation | 732.670 | 1338.473 | over-target |
+| Lighting | 15.585 | 23.391 | over-target |
+| Dense Ibara lighting | 17.687 | 26.204 | over-target |
+| Meshing | 6.379 | 9.814 | over-target |
+| Dense Ibara meshing | 5.897 | 9.632 | over-target |
+| Neighbourhood preparation | 751.610 | 1131.805 | no-applicable-target |
+| Complete regional pipeline | 830.079 | 1804.032 | no-applicable-target |
+| Complete dense Ibara pipeline | 5729.716 | 15018.042 | no-applicable-target |
+| LOD1 voxel generation | 20.794 | 576.939 | no-applicable-target |
 
-Cold plan: **2186.2223 ms**, one observation within the 3000 ms target. Retained plan buffers: **19,922,960 bytes**. Context preparation takes 51.3074 ms; sample qualification takes 124.814 s and may warm shared feature caches before measured calls allocate fresh voxel/light buffers. Six aggregate generation/lighting/meshing metrics exceed their informational phase-1.10 targets. These are **CPU shared-kernel measurements**, excluding client worker reuse, transfers, uploads, rendering and Radeon FPS. One run establishes no stable A/B speedup or regression. The older source-bound results remain historical.
+Cold plan: **2141.4307 ms**, one observation within the 3000 ms target. Retained plan buffers: **19,922,960 bytes**. Context preparation takes 46.454 ms; sample qualification takes 129.051 s and may warm feature caches before measured calls allocate fresh buffers. Six aggregate generation/lighting/meshing metrics exceed their informational phase 1.10 targets. These are CPU shared-kernel measurements, excluding worker reuse, transfers, uploads, rendering and Radeon FPS. The changed sample-set hash means this is not a controlled A/B speed comparison with generation 023.
 
-Audit and exact values: `out/phase13/tip-benchmark/2026-10-12T14-34-16.442Z/independent-review/summary.json` and `review.md`. Raw receipt: `D:/Dex/Temp/coldfront-clean-phase13-fbc0d96/out/step4/bench-gen-2026-10-12T14-34-17.120Z.json`. Shared source hash `af1d897f…`, unchanged harness `0f4f9a55…`; raw receipt SHA256 `1a93d816acdb8351159523c986e8df5214004f741838281f3501571c7b2d49e1`.
+Audit: `out/phase13/quota-benchmark-review/audit.json`; source review: `review.md`; independent result review: `result-review.md`. Raw receipt: `D:/Dex/Temp/coldfront-clean-phase13-a82f5dd/out/step4/bench-gen-2026-10-13T20-09-52.857Z.json`. Shared source `223dd016…`, unchanged harness `0f4f9a55…`; raw SHA256 `93f0e08277884882b4fcca41d4a5b30caaa114f1536e8c6de54803503339d393`. Prior generation 023 results remain historical above and in their preserved receipt.
 
 ### Previous generation-4 benchmark (historical)
 
@@ -284,16 +284,16 @@ The following records describe the completed phase 1.1 tooling and acceptance.
 
 ## Known issues and next
 
-- First playable commit f8f9d95 is pushed and published at [dex.place/coldfront](https://dex.place/coldfront/), with [PR #2](https://github.com/dexnotavailable/coldfront/pull/2) merged as the working step-3 increment. GitHub CI and the clean Node 22.23.3/npm 10.9.8 checkout build pass. Public version, HTTP200 and isolation headers are verified.
-- Next: diagnose the saved selector candidates before changing composition criteria or searching again; its completed frame is rejected. Independently test derived far-only emission compensation while retaining the original near lava pattern. The branch-height study stays unintegrated after a pixel-identical caldera result; the reflection-only direction trial remains rejected. Keep the original lava scale while investigating unresolved brightness without a close-range regression. The current material has a valid fresh primitive calibration; HELL-1/H2 records remain 15/13 and both fail. Continue anatomy/readability and seeds 1–3. The preferred rock-layer material is live and release checks pass. The branch-shoulder trial is closed and parked after a tied full-forest comparison; Tree02 has passed its isolated tests, bake and six-image form review. Neither is integrated. The central comb persists with roughness disabled, so roughness removal is not proposed. The live-source benchmark is complete and audited, with six kernel metrics over target. Earlier paired tip reviews remain historical; the new calibrated scores and criterion disagreement are recorded above. All required seeds and the strict HELL bars remain open. Finite loading can leave a thorn tip visible without its parent trunk; distant terrain remains phase 1.4. These CPU/loading results do not establish Radeon FPS or stable A/B speedup.
-- The current main-world save identity is `4:023af1ecf3a1ec69911ef4ec537e1a8aa32d8e0e51a6748c7ca6bc4b18bcedc1`. Earlier records remain stored separately. Main/test worlds, seeds and discovery memory remain separate; Clear my edits affects only the current world’s edits.
-- Save/transition corrections are published in d4c4c49: 11 targeted regressions, independent source review, and local production checks of a visible placed block through immediate Quit/Play and reload/Play. Reads and writes are ordered; failed reads cannot erase prior saves, storage errors do not poison later writes, and Clear cannot race new edits or another world. Queued Play readiness and postcard Escape routing have regressions too. Existing save keys/schema and worldgen cache identity are unchanged.
+- Current live release **a82f5dd / generation 676** passes 795 tests, check/build, exact clean/site builds, three-browser CI, the fourteen-stage local production journey and public HTTP hashes/headers. Phase 1.3 remains incomplete: **HELL-1 16/20, HELL-2 15/20**, both R2=2; the caldera must reach 16 and seeds 2–3 still need visual acceptance.
+- Next: run one fixed-pose ground-lighting diagnostic; it tests whether packed skylight hides exposed foreground steps and cannot reveal physically occluded roots. The dry-rim and scree variants are parked after no score gain. Preserve their failed timing evidence. Far terrain remains phase 1.4; finite loading can expose tips whose parents are outside the loaded columns.
+- The current main-world save identity is `4:676c1dee2fe6e97007d306b08f8efeb1381c9d9510f701f4558f22721f2116cb`. Earlier records remain stored separately. The current release journey verifies placement/breaking and persistence through replay/reload. Main/test worlds, seeds and discovery memory remain separate; Clear my edits affects only the current world's edits.
+- Asset follow-ups remain isolated: wolf stance correction and house door have independent source clearance, but their fresh tests and current-renderer captures are pending. The preserved King, two giant trees, smithy and watchtower are historical studies, not live integrated content.
 - GPU uploads currently cap eight chunk results per frame, rather than eight individual meshes. CPU mesh arrays remain for context restoration; freeing them after upload is still pending. The out-only cold diagnostic now records complete worker-stage/cache timings; the normal postcard receipt still reports total duration.
 - Local production browser checks prove exact seed restoration and retained block edits after reload. Automatic approval review rejected launching the public-site browser check without giving a detailed reason. No public browser started; public gameplay verification remains unavailable. That action was not retried through another route.
 - The build reports a large main chunk (about 944 kB, 243 kB gzip); optimization follows measurements. The current check has 79 warnings and two information notes, with no errors. Most warnings are controlled test/gallery assertions and motion CSS overrides.
 - The documented Pages name was corrected: coldfront.pages.dev belongs to another website. Ordinary build remains compatible with Pages; the actual release uses the owner's existing site mount.
 
-## Try this (live material release `3f7e0df`)
+## Try this (live branch release `a82f5dd`)
 
 1. Open [COLDFRONT](https://dex.place/coldfront/), choose **Kaldmark** and press **Play**. Walk with **W A S D**; zoom with the wheel, turn with **← →**, and tilt with **↑ ↓**.
 2. Double-tap **Space** to fly. Use **Space** to rise and **Shift** to descend. Double-tap **W** to sprint when playing in a window.
@@ -301,7 +301,7 @@ The following records describe the completed phase 1.1 tooling and acceptance.
 4. Dig below the surface to try the automatic overhead cut. Press **F3** for debug information and **F4** for time of day, fog, shadows and fly speed.
 5. Press **Esc** to pause or return to the title; **F2** saves a screenshot and **F11** toggles fullscreen. Browse the [interface gallery](https://dex.place/coldfront/?gallery).
 6. Leave a placed block in the world, reload, and press **Play** with the same seed to check your saved edits. This release uses the new generation identity above; edits from earlier generations remain stored separately.
-7. In **F4 → Go to region**, visit **Ibara** and compare **Normal**, **Clay** and **Features**. Open **F4 → Go to postcard** and choose **Ibara 2** for the forest or **Ibara 3** for the caldera. Look for the new horizontal rock tones on broad thorn faces. Loading is slow; anatomy/readability limits remain. Press **Escape** to return to the overhead view.
+7. In **F4 → Go to region**, visit **Ibara** and compare **Normal**, **Clay** and **Features**. Open **F4 → Go to postcard** and choose **Ibara 2** for the forest or **Ibara 3** for the caldera. Look for clearer forks on the tall thorns and retained horizontal rock tones. Loading is slow; the caldera foreground and roots still need work. Press **Escape** to return to the overhead view.
 8. Open the map with **M**, choose a spot and travel. In **F4**, use **Go to region** to compare Shirogane, Kurogane and the Sundered Isles. Discovery cards appear once per saved world identity. Switch to the test world from the title for the smaller sandbox.
 
 Local development: run **npm ci**, then **npm run dev** and open the printed address.
