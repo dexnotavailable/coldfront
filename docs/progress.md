@@ -21,7 +21,13 @@
 | 1.10 Polish + performance | ☐ | |
 
 ## Current session
-**13 October 2026 · Codex · `codex/phase-1-3-world`**
+**14 October 2026 · Codex · `codex/phase-1-3-world`**
+
+**Unintegrated generation candidate:** the branch-quota plus published lava material now has complete seed-1 images. HELL-1 scores **16/20 of record** (root17, blind16, control8), with R2=2 and a modest preference over the baseline. All 1,306 requested chunks load in **98.540 s**, with zero application errors. Combined HELL-2 remains **15/20 of record** (root16, blind15, control8), with R2=2; its complete 1,624-chunk capture takes **229.961 s**, retaining the failed 180-second check. These are candidate results, not a change to live generation or a phase pass.
+
+**Numeric checks and next correction:** all three complete candidate terrain reports pass. Independent audit verifies 80,056 saved parameter rows, 79,943 saved neighbour comparisons and 177,892 checked sweeps without capped or failed tips. Spatial results remain sampled and do not clear the earlier translated-fixture failure. Source diagnosis finds a genuinely level circular caldera crest, with the current eye only 1.74 m above it; the rim fits within the loaded radius. A separate broad dry-rim correction is being tested to break that artificial shape while protecting existing channel banks and routing. Its first 36 focused tests pass; no new rim image or acceptance is claimed. Live remains `9d5b0f2`.
+
+**13 October release evidence**
 
 **Verified live release: `9d5b0f207980aae1489bb18e57993761a23ef5af`.** The exact clean Node22 install/build passes in **20.329 s**, site build in **2.199 s**, and [CI 38427068086](https://github.com/dexnotavailable/coldfront/actions/runs/38427068086) passes including all three browsers. The fourteen-stage production journey passes at **16:08:20.166 UTC**. Root and fresh independent Astra open every original; 178 source files, 326 distribution files and all image/evidence bindings match. Placement, breaking, movement, replay/reload persistence, Ibara views, postcard travel/Escape and malformed-catalogue recovery pass. Zero application errors, failed responses or external requests; four ReadPixels warnings remain. Publication receipt **`fa0bdc0f-e94e-4532-b940-7a9fb3f598ee`** and `out/phase13/continuum-release-prep/public-readback.json` confirm ten public file hashes and isolation headers at **16:18:12.639 UTC**. Public-browser play remains separately unverified. Generation and saved edits are unchanged.
 
