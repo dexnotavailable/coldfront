@@ -243,6 +243,12 @@ The agent appends to lists 2 and 3 and never blocks work waiting for answers.
 |---|---|---|---|
 | 118 | **A regional postcard whose refreshed aerial pose fails may use an actual supported ground eye at the retained X/Z.** Set the eye to validated feet +1.62 m; changing the camera kind alone never establishes walking support. Preserve the declared heading, radius, FOV and safety/content bars, record every failed proposal, and require native pixels before adopting the repaired view | The source023 refresh finds a 204.709 m P12-hellscape solid bound, exposing the stale bound used by its old aerial placement. Two above-bound aerial proposals fail the sky gate. At the original X/Z, four-corner support finds feet 24 m/eye 25.62 m and one fixed 9°-down grid passes; the lake separately passes at 10° down. Geometry and both native repair images pass scoped root/peer review; neither repair grants HELL/R2 or phase acceptance | Catalogue pose/evidence and `out/phase13/tip-camera-refresh/` receipts. Restore an aerial destination only with current source-bound clearance and reviewed native pixels; do not lower bounds, widen FOV or relabel a floating eye to undo this choice |
 
+### 14 October 2026 · Visible branches in accepted clusters
+
+| # | Decision | Why | To reverse |
+|---|---|---|---|
+| 119 | **Allocate ordinary intact thorn branches using a stochastically rounded 35% quota over each final accepted cluster.** When the quota is positive, reserve its tallest eligible member, then use the original seeded packing order. Tiny cohorts may receive zero; preserve the existing branch-count draw and excluded families | Independent draws left the dominant accepted forms unbranched even when the region-wide percentage passed. The reviewed quota gives the forest and caldera clearer attached forks while preserving IDs, positions, population and all non-branch parameters. This introduces intentional height correlation rather than independent per-thorn incidence. Three-seed whole-region bands still pass with the unchanged denominator. It is an incremental improvement, not completion of the mandatory HELL visual bars | 04 §8.5 and `features/ibara/cells.ts`. Restore independent draws for this cohort, regenerate golden data and repeat affected image/report checks. Do not change population, report denominator or passing bars to reverse the policy |
+
 ## 3. Parking lot
 
 - Seasonal modifiers ("the Long Winter": a season with twice the winter)

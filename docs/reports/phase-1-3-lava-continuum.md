@@ -12,7 +12,7 @@ This intentionally reduces unresolved source emission. Its calibration omits rea
 
 ## Images inspected
 
-![Lava material comparison](../postcards/wip/ibara.jpg)
+![Lava material comparison](https://github.com/dexnotavailable/coldfront/blob/9d5b0f207980aae1489bb18e57993761a23ef5af/docs/postcards/wip/ibara.jpg?raw=true)
 
 Forest above caldera; baseline left, selected material right. Root opens all four originals and this browser-rendered comparison sheet. The 1280×720 JPEG uses 102,880 bytes; the complete WIP folder totals 814,661 bytes.
 

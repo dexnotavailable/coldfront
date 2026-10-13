@@ -29,7 +29,7 @@
     "worldKind": "main",
     "seed": 1,
     "worldgenVersion": 4,
-    "sourceHash": "023af1ecf3a1ec69911ef4ec537e1a8aa32d8e0e51a6748c7ca6bc4b18bcedc1",
+    "sourceHash": "676c1dee2fe6e97007d306b08f8efeb1381c9d9510f701f4558f22721f2116cb",
     "resolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
     "cameras": [
       {
@@ -756,7 +756,7 @@
     "worldKind": "main",
     "seed": 1,
     "worldgenVersion": 4,
-    "sourceHash": "023af1ecf3a1ec69911ef4ec537e1a8aa32d8e0e51a6748c7ca6bc4b18bcedc1",
+    "sourceHash": "676c1dee2fe6e97007d306b08f8efeb1381c9d9510f701f4558f22721f2116cb",
     "resolverHash": "a3c9265c37c247ffb5d70506028f2609138012683fb3ccd27786e61d2538e47c",
     "variant": "production",
     "cameras": [
@@ -816,8 +816,8 @@
           "eyeClear": true,
           "walkable": true,
           "centralClear": true,
-          "skyFraction": 0.3845486111111111,
-          "featureFraction": 0.2417534722222222,
+          "skyFraction": 0.3836805555555556,
+          "featureFraction": 0.2404513888888889,
           "waterFraction": 0,
           "horizonFraction": 0.56247338021354,
           "sunOffsetDegrees": 96.53691551217547,
@@ -826,7 +826,7 @@
           "altitudeAboveHighestSample": -79.86534581332089,
           "rayColumns": 64,
           "rayRows": 36,
-          "targetFraction": 0.2417534722222222,
+          "targetFraction": 0.2404513888888889,
           "visibleFeatureIds": [
             10198277, 10198295, 10263874, 10263878, 10263888, 10263889,
             10263893, 10263895, 10263900, 10263908, 10263910, 10264072,
@@ -882,8 +882,8 @@
           "eyeClear": true,
           "walkable": true,
           "centralClear": true,
-          "skyFraction": 0.3723958333333333,
-          "featureFraction": 0.5147569444444444,
+          "skyFraction": 0.3719618055555556,
+          "featureFraction": 0.5099826388888888,
           "waterFraction": 0,
           "horizonFraction": 0.38690178862577407,
           "sunOffsetDegrees": 143.5929563708954,
@@ -892,12 +892,12 @@
           "altitudeAboveHighestSample": -68.87184224945767,
           "rayColumns": 64,
           "rayRows": 36,
-          "targetFraction": 0.5147569444444444,
+          "targetFraction": 0.5099826388888888,
           "visibleFeatureIds": [],
-          "lavaFraction": 0.05685763888888889,
+          "lavaFraction": 0.05381944444444445,
           "fissureFraction": 0,
           "targetFissureFraction": 0,
-          "targetLavaFraction": 0.05555555555555555,
+          "targetLavaFraction": 0.05251736111111111,
           "visibleLavaOwners": [
             {
               "source": "caldera",
@@ -916,9 +916,9 @@
     "manualRetention": {
       "ungraded": true,
       "selectorSearch": false,
-      "hell1": "Published view050 retained exactly; stale completedSearch removed.",
-      "hell2": "Already captured gen023 candidate48, explicit addition to published catalogue.",
-      "validationEvidence": "Existing gen023 proof, identical generation/query/geometry; original proof resolver hash retained."
+      "hell1": "Published view050 retained exactly, verified genuine676 fixed-grid validation.",
+      "hell2": "Published candidate48 retained exactly, verified genuine676 fixed-grid validation; no addition.",
+      "validationEvidence": "Two existing676 proofs with78 exact recorded dependencies each; original resolver identity preserved. No new search or visual pass."
     }
   }
 }

@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { describe, expect, it, vi } from "vitest";
 import {
+  assignIbaraBranchQuota,
   cappedPoisson,
   createIbaraPlacement,
   ibaraNormalInclinationFloor,
@@ -26,9 +27,11 @@ import { instantiateThorn } from "../src/features/ibara/shape.js";
 import {
   createIbaraSample,
   type IbaraCellDiagnostics,
+  type IbaraClusterParameters,
   type IbaraEnvironment,
   type ThornInstance,
 } from "../src/features/ibara/types.js";
+import { hash2, hash5, rand01 } from "../src/math/hash.js";
 import * as spineModule from "../src/sdf/spine.js";
 import { createSpineSample, sampleSpine } from "../src/sdf/spine.js";
 import { pointInBounds } from "../src/sdf/types.js";
@@ -42,6 +45,156 @@ const environment: IbaraEnvironment = {
 const clusters = instantiateIbaraCell(environment, 0, 0);
 const thorns = clusters.flatMap((cluster) => cluster.thorns);
 const landmarks = instantiateIbaraLandmarks(environment, 0, 0);
+describe("accepted-cluster branch quota", () => {
+  const fixture = (count: number): IbaraClusterParameters => {
+    const prototype = thorns[0]?.parameters;
+    if (!prototype) throw new Error("Missing parameter fixture");
+    return {
+      cellX: 10,
+      cellZ: -3,
+      index: 0,
+      x: 1920,
+      z: -576,
+      mask: 1,
+      radius: 80,
+      thorns: Array.from({ length: count }, (_, index) => ({
+        ...prototype,
+        id: thornFeatureId(10, -3, 0, index),
+        cellX: 10,
+        cellZ: -3,
+        cluster: 0,
+        index,
+        height: 40 + index,
+        branchCount: 0,
+        broken: false,
+        arch: false,
+        landmark: false,
+      })),
+    };
+  };
+  it("rounds five eligible members to one or two, includes the tallest, and retains the35% expectation", () => {
+    const input = fixture(5);
+    let selected = 0;
+    const seen = new Set<number>();
+    for (let seed = 0; seed < 2048; seed++) {
+      const result = assignIbaraBranchQuota(seed, input);
+      const branched = result.thorns.filter((p) => p.branchCount > 0);
+      expect([1, 2]).toContain(branched.length);
+      expect(branched.some((p) => p.id === input.thorns[4]?.id)).toBe(true);
+      for (const p of branched) {
+        const word = hash5(seed, p.cellX, p.cellZ, p.cluster, p.index);
+        expect(p.branchCount).toBe(1 + Math.floor(3 * rand01(hash2(word, 13))));
+      }
+      selected += branched.length;
+      seen.add(branched.length);
+    }
+    expect([...seen].sort()).toEqual([1, 2]);
+    expect(selected / (2048 * 5)).toBeGreaterThan(0.34);
+    expect(selected / (2048 * 5)).toBeLessThan(0.36);
+  });
+  it.each([1, 2])(
+    "does not impose a minimum of one on a %i-member cluster",
+    (count) => {
+      const outcomes = new Set<number>();
+      for (let seed = 0; seed < 128; seed++)
+        outcomes.add(
+          assignIbaraBranchQuota(seed, fixture(count)).thorns.filter(
+            (p) => p.branchCount > 0,
+          ).length,
+        );
+      expect([...outcomes].sort()).toEqual([0, 1]);
+    },
+  );
+  it("ignores input order, preserves excluded/control fields and never mutates frozen parameters", () => {
+    const input = fixture(12);
+    const controls = input.thorns.slice(8).map((p, i) =>
+      Object.freeze({
+        ...p,
+        broken: i === 0,
+        arch: i === 1,
+        landmark: i === 2,
+        height: i === 3 ? 39 : 300,
+        branchCount: i === 0 || i === 2 ? 2 : 0,
+      }),
+    );
+    const members = Object.freeze([
+      ...input.thorns
+        .slice(0, 8)
+        .map((p) => Object.freeze({ ...p, height: 50 })),
+      ...controls,
+    ]);
+    const original = { ...input, thorns: members };
+    const assigned = assignIbaraBranchQuota(17, original);
+    const reversed = assignIbaraBranchQuota(17, {
+      ...original,
+      thorns: [...members].reverse(),
+    });
+    expect(reversed.thorns.slice().reverse()).toEqual(assigned.thorns);
+    expect(assigned.thorns.map((p) => p.id)).toEqual(members.map((p) => p.id));
+    expect(assigned.thorns[0]?.branchCount).toBeGreaterThan(0);
+    for (let i = 0; i < members.length; i++) {
+      const before = members[i],
+        after = assigned.thorns[i];
+      if (!before || !after) throw new Error("Missing fixture member");
+      expect({ ...after, branchCount: before.branchCount }).toEqual(before);
+      if (i >= 8) expect(after).toBe(before);
+    }
+  });
+  it("uses accepted cluster populations independently of neighbour queries, reverse order and eviction", () => {
+    const cells = [
+      [-1, 0],
+      [0, -1],
+      [0, 0],
+      [1, 0],
+      [2, -1],
+    ] as const;
+    let eligibleClusters = 0;
+    for (const seed of [1, 2, 3]) {
+      const env = { ...environment, seed };
+      const first = createIbaraField(env, 1),
+        second = createIbaraField(env, 8);
+      const expected = cells.map(([x, z]) => first.parametersForCell(x, z));
+      for (const [x, z] of [...cells].reverse())
+        second.parametersForCell(x + 1, z + 1);
+      for (let i = cells.length - 1; i >= 0; i--) {
+        const cell = cells[i],
+          snapshot = expected[i];
+        if (!cell || !snapshot) throw new Error("Missing cell fixture");
+        const actual = second.parametersForCell(cell[0], cell[1]);
+        expect(actual).toEqual(snapshot);
+        first.parametersForCell(cell[0] + 5, cell[1] - 5);
+        expect(first.parametersForCell(cell[0], cell[1])).toEqual(snapshot);
+        for (const cluster of new Set(actual.map((p) => p.cluster))) {
+          const eligible = actual.filter(
+            (p) =>
+              p.cluster === cluster &&
+              !p.landmark &&
+              !p.arch &&
+              !p.broken &&
+              p.height >= 40,
+          );
+          if (!eligible.length) continue;
+          eligibleClusters++;
+          const branched = eligible.filter((p) => p.branchCount > 0);
+          expect(branched.length).toBeGreaterThanOrEqual(
+            Math.floor(0.35 * eligible.length),
+          );
+          expect(branched.length).toBeLessThanOrEqual(
+            Math.ceil(0.35 * eligible.length),
+          );
+          const tallest = [...eligible].sort(
+            (a, b) => b.height - a.height || a.id - b.id,
+          )[0];
+          if (branched.length)
+            expect(branched.some((p) => p.id === tallest?.id)).toBe(true);
+        }
+      }
+      expect(first.cachedInstanceCount).toBe(0);
+      expect(second.cachedInstanceCount).toBe(0);
+    }
+    expect(eligibleClusters).toBeGreaterThan(0);
+  });
+});
 describe("Ibara deterministic feature cells", () => {
   it("preserves small-blade category floors through production parameter and diagnostic paths without geometry", () => {
     const spy = vi.spyOn(spineModule, "flattenBeziers");
@@ -579,7 +732,7 @@ describe("cell-owned production placement diagnostics", () => {
     );
   };
 
-  it("preserves saved operands except normal inclination, with exact outliers, landmarks and ID/order on seeds1-3 signed cells", () => {
+  it("preserves saved nonbranch operands except normal inclination, with exact excluded roles, landmarks and ID/order", () => {
     const hash = (value: unknown): string =>
       createHash("sha256").update(JSON.stringify(value)).digest("hex");
     const records = [];
@@ -607,6 +760,35 @@ describe("cell-owned production placement diagnostics", () => {
             parametersSha256: hash(
               parameters.map((p) => ({
                 ...p,
+                // Reconstruct the original branch role ONLY for the cohort
+                // intentionally changed by the quota; keep the old baseline
+                // hash protecting every other operand and all excluded roles.
+                branchCount:
+                  !p.landmark && !p.arch && !p.broken && p.height >= 40
+                    ? rand01(
+                        hash2(
+                          hash5(seed, p.cellX, p.cellZ, p.cluster, p.index),
+                          12,
+                        ),
+                      ) < 0.35
+                      ? 1 +
+                        Math.floor(
+                          3 *
+                            rand01(
+                              hash2(
+                                hash5(
+                                  seed,
+                                  p.cellX,
+                                  p.cellZ,
+                                  p.cluster,
+                                  p.index,
+                                ),
+                                13,
+                              ),
+                            ),
+                        )
+                      : 0
+                    : p.branchCount,
                 leanDegrees:
                   p.landmark || p.leanDegrees >= 45 ? p.leanDegrees : 0,
               })),
@@ -616,7 +798,8 @@ describe("cell-owned production placement diagnostics", () => {
         }
     }
     // Recorded before contrast: 18 fixtures / 114 parameter objects. Only normal
-    // ordinary inclination may differ; all landmark geometry stays exact.
+    // ordinary inclination and eligible branch assignment may differ; the
+    // original roles are normalized above and all landmark geometry stays exact.
     expect(hash(records)).toBe(
       "81affbba3e7d439f2bbdba8209327e41d7587ab76bf05912c6b5a6627175778f",
     );

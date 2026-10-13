@@ -451,6 +451,54 @@ function localParametersIbaraCell(
  * most 22sqrt(40) beyond their owning cell. Thus a two-cell halo contains
  * every possible conflicting ordinary base, including across negative cells. */
 export const IBARA_PLACEMENT_NEIGHBOUR_CELLS = 2;
+/** Allocate anatomy only over FINAL accepted cluster members. This changes
+ * branch presence, not placement or any other parameter. The independent
+ * cluster draw stochastically rounds 35% without forcing tiny clusters to one. */
+export function assignIbaraBranchQuota(
+  seed: number,
+  cluster: IbaraClusterParameters,
+): IbaraClusterParameters {
+  const eligible = cluster.thorns.filter(
+    (p) => !p.landmark && !p.arch && !p.broken && p.height >= 40,
+  );
+  if (!eligible.length) return cluster;
+  const hundredths = 35 * eligible.length;
+  const quota =
+    Math.floor(hundredths / 100) +
+    Number(
+      rand01(
+        hash4(seed ^ 0x6272616e, cluster.cellX, cluster.cellZ, cluster.index),
+      ) <
+        (hundredths % 100) / 100,
+    );
+  const memberSeed = (p: ThornParameters) =>
+    hash5(seed, p.cellX, p.cellZ, p.cluster, p.index);
+  // The public array is index-sorted. Reconstruct the original seeded packing
+  // priority explicitly, without sorting or mutating a cached parameter array.
+  const ranked = eligible
+    .slice()
+    .sort((a, b) => memberSeed(b) - memberSeed(a) || a.id - b.id);
+  const tallest = eligible.reduce((a, b) =>
+    b.height > a.height || (b.height === a.height && b.id < a.id) ? b : a,
+  );
+  const selected = new Set<number>();
+  if (quota > 0) selected.add(tallest.id);
+  for (const p of ranked) {
+    if (selected.size >= quota) break;
+    selected.add(p.id);
+  }
+  const eligibleIds = new Set(eligible.map((p) => p.id));
+  return {
+    ...cluster,
+    thorns: cluster.thorns.map((p) => {
+      if (!eligibleIds.has(p.id)) return p;
+      const branchCount = selected.has(p.id)
+        ? 1 + Math.floor(3 * rand01(hash2(memberSeed(p), 13)))
+        : 0;
+      return branchCount === p.branchCount ? p : { ...p, branchCount };
+    }),
+  };
+}
 export interface IbaraPlacement {
   cell(cellX: number, cellZ: number): readonly IbaraClusterParameters[];
   inspectCell(cellX: number, cellZ: number): IbaraPlacementCell;
@@ -537,7 +585,7 @@ export function createIbaraPlacement(
         for (const cluster of raw(x, z).clusters)
           neighbours.push(...cluster.thorns);
     let rejectedSpacingInstances = 0;
-    const clusters = local.clusters.map((cluster) => ({
+    const acceptedClusters = local.clusters.map((cluster) => ({
       ...cluster,
       thorns: cluster.thorns.filter((p) => {
         const rank = priority(p);
@@ -563,6 +611,9 @@ export function createIbaraPlacement(
         return true;
       }),
     }));
+    const clusters = acceptedClusters.map((cluster) =>
+      assignIbaraBranchQuota(environment.seed, cluster),
+    );
     const result: IbaraPlacementCell = {
       clusters,
       diagnostics: Object.freeze({

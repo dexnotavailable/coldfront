@@ -4,8 +4,8 @@
   "worldgenVersion": 4,
   "encoding": "sha256; uint16-le; uint32-le; ieee754-binary64-le; signed-zero-preserved; NaN-rejected; main-feature-pair-halo-aligned",
   "provenance": {
-    "sourceHash": "af1d897f6f1b39e42c5bfefbec88871475be288dcfc7004b54d330c8a75287cc",
-    "sourceCommit": "cdd6aef9209546e8d11d0575d17779a7737b0be2",
+    "sourceHash": "223dd016c782d712bcba1ad4205de2880f2ca6aa8669b8f6ba507afdc0dbb831",
+    "sourceCommit": "d929b3e5a47e5b635f69164d3896b04c2b8a4dd8",
     "nodeVersion": "v22.23.3"
   },
   "records": [
@@ -6158,20 +6158,20 @@
         "seed": 1,
         "region": "hellscape",
         "cx": 177,
-        "cy": 1,
-        "cz": 169,
+        "cy": 2,
+        "cz": 166,
         "lod": 0,
         "spacing": 1,
         "coverage": "thorn-branch",
-        "targetFeatureId": 10198282
+        "targetFeatureId": 10198300
       },
       "hashes": {
-        "blocks": "673f2a4dc616fdf71504f47a82c4f441d8e4131f2d2c6ff3e4714c8c0faaa685",
-        "haloBlocks": "69bd8759e98b53e21f6d138e239681f10fe3d47dba02066b39243cadec1505ca",
-        "density": "7e3cf9175e9b75164b53049c57d2fd87ba069d5c99793f804539c3de1b34c9f4",
-        "columns": "f5084120569d13cf95cf406967fde5851af7e63da4db37aaad7d21e7bb157af0",
-        "featureIds": "5fa27e71efe0fea6e5e37395f0254c5e50d453028aee311c7b6f074a4a47c45b",
-        "featureT": "e009e2de895fedbeffd22de3398d0569ebf6b88837ffd390684bbe7ed133989a"
+        "blocks": "d27986071c87c94e0dfb3bd6969b90e4495d45b630da9d149df272db81b74905",
+        "haloBlocks": "bfceff6f412f0dfb769b32ca059a20d52622623638917481c1ca1fcab87a8d37",
+        "density": "e400f1a7580a66103d2b3f6eae306271022e364fbf295e7d5e1182515383b546",
+        "columns": "f691d1c7bc3534c0a6f301fe982bbd9c857ace60fe9219a48c7b6ef378ae60c5",
+        "featureIds": "c9a958453e88d55638cb13f2b252ec96f7188c057514b085a4ad31bb91c0037e",
+        "featureT": "0343b2df718a49f9689f0c31d0d1f6ecd0dab8518e479d9a78e0e67e59040caa"
       }
     },
     {
@@ -6273,20 +6273,20 @@
         "seed": 1,
         "region": "hellscape",
         "cx": 88,
-        "cy": 0,
-        "cz": 84,
+        "cy": 1,
+        "cz": 83,
         "lod": 1,
         "spacing": 2,
         "coverage": "thorn-branch",
-        "targetFeatureId": 10198282
+        "targetFeatureId": 10198300
       },
       "hashes": {
-        "blocks": "8882328beb4688cacf0c842d71c61b440ed4286d21139e27f2ac43c90b0dbd68",
-        "haloBlocks": "a4f37798438e7d6c3c50e5c15d7f18ab2b29dab84f883c5e1dc6e79cd7625b9c",
-        "density": "4bdd5d44f5f5a20a75920f51f50e7226aeb784b17bdadbeba475c82631eeab67",
-        "columns": "e636cea8ee612c781761f530afe6c055c723b5a71d001a5e2af199033c8ff17b",
-        "featureIds": "2b8796e70ba75ff0e3df31da413b688312fc3b79ea5ad6e5b81675bdffd9b98d",
-        "featureT": "fbdea23d51ac559b430a29d3e9fe219280035803f6d666153fceda90959b6f98"
+        "blocks": "04185cbcf039c6eeed27ae03eabbb1353d8d1e075eab36e022b8d1a6b83801a3",
+        "haloBlocks": "70801ac479e447e9c06966980e34be720cb2e513d4ce3a3b876fa4070bc8f3f7",
+        "density": "8235624e598da4fc4f0fde8b8135f0e8d8dcaef9163ebbb82b95f8454fba643f",
+        "columns": "56567b2467bfa71bc7819933029be693c1d5b8f8167d83fe43dca9ace17e42ba",
+        "featureIds": "2512b473cfac148add0e6b76eb60e84ad8f11c404e6f01cc5176c08e21397531",
+        "featureT": "af46491fbf77fa4578788476632e3d77fe6ee359a5f9a641330abfb7eb6cad0f"
       }
     },
     {
@@ -6479,21 +6479,21 @@
         "world": "main",
         "seed": 2,
         "region": "hellscape",
-        "cx": 188,
-        "cy": 1,
-        "cz": 190,
+        "cx": 200,
+        "cy": 2,
+        "cz": 208,
         "lod": 0,
         "spacing": 1,
         "coverage": "thorn-branch",
-        "targetFeatureId": 10460996
+        "targetFeatureId": 10658071
       },
       "hashes": {
-        "blocks": "4f5cdb5aa1059d5f4a8245c0d170db34dd2b6711013985d711cde450fe5b099e",
-        "haloBlocks": "a06515634d5b93aa3b7b4d45e0254d61949c2daec819b5a0e8a531115a288328",
-        "density": "a003ac50dc0814c88986fac73a10beee93fdc03c123f8eeae1f8d71b4961c93b",
-        "columns": "79c7028e8434355ad9d85497b2fcf358e14abfb7c4a1e2060996a42a013d3184",
-        "featureIds": "80e0987bc6f45f6afbc6e61574e8f73e9c142aa16ce32901650deff3a1709833",
-        "featureT": "47572b15471121b2c586493c6b1f57d873d1c17495a00649af05de498786a8c5"
+        "blocks": "4b8a27d7502d200852e2d8fd158b86786960dc20e972e305a238748a467ce26d",
+        "haloBlocks": "6f0659e552f50af1ed61bbc5a18418c1ce0b8979ee966450f493abdf058234ac",
+        "density": "e4b40c279cbaf8760119c5f3e010758a7006b443ad594baf410cfa099c3a5355",
+        "columns": "bfdd6dfd2e577cec96553b2912b6f7e6d094519bf9e74fc192e16dc73bf459a8",
+        "featureIds": "37eb5377fe45830d307bc86af5b659c5d2181d9d9e135a4e9dcfecde6469a710",
+        "featureT": "a7476c7efa0a4bf409205ee8d0bd6c821d5e489346a4fa3daef1b93445d864db"
       }
     },
     {
@@ -6594,21 +6594,21 @@
         "world": "main",
         "seed": 2,
         "region": "hellscape",
-        "cx": 94,
-        "cy": 0,
-        "cz": 95,
+        "cx": 100,
+        "cy": 1,
+        "cz": 104,
         "lod": 1,
         "spacing": 2,
         "coverage": "thorn-branch",
-        "targetFeatureId": 10460996
+        "targetFeatureId": 10658071
       },
       "hashes": {
-        "blocks": "38a7cdfe3d286f3a58d5a442b276f7869ee2aad6e0a433845ef0f54dba623387",
-        "haloBlocks": "56be3eb41ffdf673d0832d66711088eb3a4325906295657947b8c8edc03a8966",
-        "density": "bdce94abc8b9b9f8b2d5b2c5b364054989c12066c64785ac818100e048adc0f1",
-        "columns": "39593fe04d8562ef61fa6ca8fb24d4b01ab9047ba8e97a793cfa1c6ed564ef17",
-        "featureIds": "ca7ca10cf6b11ca04417d35dd0f2f01ce2b2b0f51a18602643a5821dc08ed890",
-        "featureT": "7683fff8acf493ec4ed8b0342a17939500da70eef36b8253398730f62bbd41ee"
+        "blocks": "a8866745c6bc9216538ee3da4351695e71d8aecca3b92d8e6f4f0279173a8ed5",
+        "haloBlocks": "cd41898a5bd7e3b85fbc9082902136d9f9eba81b2d6a580c9d8bcfae5b41fa75",
+        "density": "86a0cdbf27890cd2f82106490e4bb0875af8a3d23895b4c99ab02fdee0a93acb",
+        "columns": "77cd9e1fb6036f89502fc3ce07b5e61dd8f0d7c21e18abd0999448b775708041",
+        "featureIds": "116d6d4116331ded428d8d86436f95c6644fa67f2e230a8dd92b8c534051390c",
+        "featureT": "dac65e8a12286121c916ad802eb9dc0aef71c8efa80ad1a35e17a46c45f3a57b"
       }
     },
     {
@@ -6802,20 +6802,20 @@
         "seed": 3,
         "region": "hellscape",
         "cx": 177,
-        "cy": 0,
-        "cz": 172,
+        "cy": 1,
+        "cz": 171,
         "lod": 0,
         "spacing": 1,
         "coverage": "thorn-branch",
-        "targetFeatureId": 10263833
+        "targetFeatureId": 10263813
       },
       "hashes": {
-        "blocks": "21850096fdbcb4092a17f2d4146b613828e11fa98f0a9a15b2c68452b5dccb16",
-        "haloBlocks": "4fb8764c3e4c45d959fd59023a5f34b74555e475de562239cdd637c9019efc17",
-        "density": "e3b5a82957fa0e6bd149d21db750e4bdf42c4f0463cd63832398d7ad685f5704",
-        "columns": "d8785bd2e75a2b70368049859d67bbe44688878281eba0583cf7ca0c01933d72",
-        "featureIds": "37d134437b5379716c359a0c0948d7449eff6cada82dc1d41e78726abcfdd802",
-        "featureT": "44a34a7bf99f43cd0cbcf931c38afc239b457e9d82a8666da865e64eacf73090"
+        "blocks": "5676651c38ddcc6c25b97037fd0ecc988f728a643004d81a7dac1aea2a214fc6",
+        "haloBlocks": "38baebbb4f5f2474e96f7f89ea7d9c8f86d8538a1f72e21f903933dad955a7db",
+        "density": "6f60c3cffc6ebb8f70d2cb0a03e4396d2ad3603c2685996aa1069e6bac053d27",
+        "columns": "5672b0a8e85d07f1642e127685873043933d0461f374e34640fb90bd71042903",
+        "featureIds": "dc5429d9b3c06d6117807e6c2dc013631b08aa8e7a3b3413bf821c5d7a6ce06e",
+        "featureT": "1877f3b9aebb2b365c64dcde7dfb687e4fe29ffa4bbd5f0bba67ced9fdb0d601"
       }
     },
     {
@@ -6918,19 +6918,19 @@
         "region": "hellscape",
         "cx": 88,
         "cy": 0,
-        "cz": 86,
+        "cz": 85,
         "lod": 1,
         "spacing": 2,
         "coverage": "thorn-branch",
-        "targetFeatureId": 10263833
+        "targetFeatureId": 10263813
       },
       "hashes": {
-        "blocks": "e0bbb9529ed6ac04b1476e43442e4d46b3627163916f48a36da451dd63f8b87f",
-        "haloBlocks": "ca562c97371b22bb78b1c6f590bb0502ea582d82d3739f9fe9a7400c6d2a0343",
-        "density": "4bdff1e8d6c2b611be8bf46ffcd525b5eb84507cf1e21ccf8eaade48aeccff8d",
-        "columns": "3e56e51261e75677e06326664d8a6c042232ca06f74872bf8bc505aa330a296a",
-        "featureIds": "adc8f90c883c78c27fcddb12fd70114a08933670edca3792e64fdb59e42076e2",
-        "featureT": "6f0417f4671ac34538a413ef6b297517cd7a9bec5d760b2e9037430963786bc2"
+        "blocks": "d1a0339af2471f3784fbc819cca7958c89f817a2a8e70213d12caf865574587c",
+        "haloBlocks": "1be9c0c7062ffa8aabdbf1aa8d4dd6afaf468863a9232174ae90e277b770cbd8",
+        "density": "df972fc20090c8b37c4fa3c805dc60f4db7806bd29a1931f94128b5e9c0409d7",
+        "columns": "be25b3c5cdfd8a7ce3e53cd6e4968efcd6af2606b6e16a4ed82f50116b41a26b",
+        "featureIds": "25b5fd7c88f1092cf5480e0c99126841c33b02b2c1ea9903f6d709c2541302c4",
+        "featureT": "54a2cb497dbad6a524d5c47f22b9304bb0ce72ea54e7e51a339c7efa587d99f6"
       }
     },
     {

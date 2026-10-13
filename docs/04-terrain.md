@@ -321,6 +321,7 @@ This is the feature that failed before. Follow it closely, then tune by eye. Eve
   - colossi: 5–8 facets
   - Twist 0–120° along the spine. Surface roughness only where `r ≥ 4 m`, amplitude ≥ 0.6 m.
 - **Branches:** only on thorns with `h ≥ 40 m`. 35% of those get 1–3 branches from `t ∈ [0.2, 0.6]`, 0.2–0.4 h long, with branch `r₀ ≥ 1.5 m`, angled outward and up.
+  - For accepted ordinary intact, non-arch thorns, allocate a stochastically rounded 35% quota within each complete cluster after cross-cell spacing rejection. A separately salted cluster draw rounds the fractional recipient count; tiny cohorts may receive zero. If the quota is positive, include the tallest eligible member (lower ID breaks a height tie), then fill it using the original seeded packing order. Reuse each recipient's original 1–3 branch-count draw. Broken thorns, arches, landmarks and shorter thorns retain their assignments. This intentionally correlates branching with height; it does not move or resize thorns. The report's 30–40% band still counts all ordinary thorns at least 40 m high, including broken ones (decision 119).
 - **Broken:** 12% are truncated at `t ∈ [0.45, 0.8]` with a jagged cap (a noise-displaced half-space subtraction), plus 1–3 **fallen shards** (`r ≥ 1.2 m`), half-buried nearby.
 - **Scree:** shards 4–10 m tall with `r₀ ≥ max(1.2 m, 0.3 · h)`, plus rubble boulders, within 1–2 × `r₀` of big bases.
 - **Fillet:** `k = max(2 m, 0.5 · r₀)`. This is what flares the roots.
