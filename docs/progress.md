@@ -23,6 +23,12 @@
 ## Current session
 **13 October 2026 · Codex · `codex/phase-1-3-world`**
 
+**Local material gates pass:** 790 tests / 93 files in **252.300 s**; after a formatting-only correction, check/build pass in **17.898/7.735 s**. The code's 1,278 parsed tokens are unchanged by formatting. UI lint reports 106 states, zero missing current rows and 23 bindings. Final refreshed HUD images pass independent review with 88 source and eight artifact bindings. Clean release build and production journey are next; no live-publication claim yet.
+
+**Selected lava correction, release checks running:** a derived 29-value brightness table reduces distant pale washout while preserving all four near-frame PNGs exactly. Root and fresh Astra prefer the full caldera comparison and judge the forest pair unchanged in appearance. All 1,624 caldera chunks load in **212.322 s** (180-second failure retained); all 1,306 forest chunks load in **100.589 s** (pass). The shader and refreshed HUD evidence are integrated locally; live remains `3f7e0df` until publication. [Evidence and preserved failed variants](reports/phase-1-3-lava-continuum.md).
+
+**Branch quota remains separate:** all 37 affected tests pass. Root and fresh Astra prefer its four-angle specimen and full caldera view; the latter scores **15/20 with R2=2** for both, still below the mandatory 16. The actual full capture loads all 1,624 chunks in **162.843 s**, with zero application errors. Three-seed parameter reports pass all eight bands, but remain explicitly incomplete without their remaining terrain checks. A single detached main cell appears in both translated fixture arms; the new branch's 560 cells attach correctly. This fixture failure is preserved and does not establish the real-world singleton's presence or cleanup. No quota generation change is integrated or published.
+
 **Latest material check:** the original-spacing emission trial builds, loads all 1,624 caldera chunks in **236.925 s** and preserves all four near-frame PNGs exactly. Root and fresh Astra open ten originals. The far lake is less washed out, but a new middle-distance color band fails the declared transition condition, so the candidate stays unintegrated. Source calibration and near preservation do not override that visible defect. The next anatomy check examines whether an existing branch role can move to the tallest eligible member of the same cluster, preserving the branch population and original crater layout; no generation change is accepted yet.
 
 

@@ -26,6 +26,20 @@ export const TERRAIN_EMISSION_SCALE = 8;
 // Red-dominant ember seams need exposure by luminance, not just a red channel
 // above threshold. Keep their authored hue/mask and steady propagated RGB intact.
 export const TERRAIN_EMBER_EMISSION_GAIN = 4;
+// Saved Float32 continuum29 calibration, packed into eight vec4 uniforms.
+// Spacing is 1/64 through w=0.25, then 1/16; no runtime ACES or extra noise.
+export const TERRAIN_LAVA_EMISSION_GAINS = Object.freeze([
+  1, 0.8067225217819214, 0.6518799066543579, 0.5530297160148621,
+  0.4851410984992981, 0.43541669845581055, 0.3972267210483551,
+  0.36684277653694153, 0.34200602769851685, 0.32126790285110474,
+  0.30365172028541565, 0.28847524523735046, 0.27524518966674805,
+  0.2635980248451233, 0.2532569169998169, 0.2440076619386673,
+  0.23568181693553925, 0.2092752754688263, 0.19037340581417084,
+  0.17622464895248413, 0.16531772911548615, 0.15675796568393707,
+  0.14999130368232727, 0.1447933167219162, 0.14088858664035797,
+  0.13798388838768005, 0.13598015904426575, 0.13482238352298737,
+  0.13448631763458252,
+]);
 
 export interface TerrainUniforms {
   readonly viewMode: IUniform<number>;
@@ -99,6 +113,8 @@ export function createTerrainMaterials(clip: Plane): {
     ),
   };
   const gloss = { value: BLOCK_REGISTRY.map((block) => block.gloss) };
+  const lavaGainTable = new Float32Array(32);
+  lavaGainTable.set(TERRAIN_LAVA_EMISSION_GAINS);
   const materials = [0, 1, 2, 3, 4].map((kind) => {
     const material = new MeshLambertMaterial({
       color: new Color(1, 1, 1),
@@ -110,7 +126,7 @@ export function createTerrainMaterials(clip: Plane): {
       clipShadows: true,
     });
     material.customProgramCacheKey = () =>
-      `coldfront-terrain-r186-v3-ibara-class-${kind}${kind === 0 ? "-strata-v2-reflected" : kind === 4 ? "-filtered-lava-v1" : ""}`;
+      `coldfront-terrain-r186-v3-ibara-class-${kind}${kind === 0 ? "-strata-v2-reflected" : kind === 4 ? "-filtered-lava-v1-continuum29-v1" : ""}`;
     material.onBeforeCompile = (shader) => {
       Object.assign(shader.uniforms, {
         uViewMode: uniforms.viewMode,
@@ -129,6 +145,8 @@ export function createTerrainMaterials(clip: Plane): {
         uWaterDepthLinearize: uniforms.waterDepthLinearize,
         uWaterDepthReady: uniforms.waterDepthReady,
       });
+      if (kind === 4)
+        shader.uniforms.uLavaEmissionGains = { value: lavaGainTable };
       shader.vertexShader = shader.vertexShader.replace(
         "#include <common>",
         `#include <common>
@@ -164,6 +182,7 @@ precision highp sampler2DArray;
 precision highp int;
 uniform float uViewMode;
 uniform vec4 uEmission[${BLOCK_REGISTRY.length}];
+${kind === 4 ? "uniform vec4 uLavaEmissionGains[8];" : ""}
 uniform float uGloss[${BLOCK_REGISTRY.length}];
 flat varying highp vec2 vFeatureIdParts;
 uniform sampler2DArray uTiles;
@@ -240,7 +259,7 @@ float cfLavaCrackIntegral(float offset) {
   float d=abs(offset), t=clamp((d-0.025)/0.115,0.0,1.0);
   return sign(offset)*(min(d,0.025)+0.115*(t-t*t*t+0.5*t*t*t*t));
 }
-float cfLavaCracks(vec2 world, float seconds) {
+float cfLavaCracks(vec2 world, float seconds, out float footprintFade) {
   vec2 p=world*0.62 + vec2(seconds*0.018,seconds*0.011);
   p += vec2(cfMacro(world/7.0),cfMacro(world/7.0+17.0))*0.38;
   float footprint=max(length(dFdx(p)),length(dFdy(p)));
@@ -259,7 +278,21 @@ float cfLavaCracks(vec2 world, float seconds) {
   float cracks=clamp((cfLavaCrackIntegral(gap+width*0.5)-cfLavaCrackIntegral(gap-width*0.5))/width,0.0,1.0);
   // Once individual cells approach a pixel, retain the mask's sampled area
   // mean (0.175), not full emission. Near cracks and their motion stay intact.
-  return mix(cracks,0.175,smoothstep(0.25,0.75,footprint));
+  footprintFade=smoothstep(0.25,0.75,footprint);
+  return mix(cracks,0.175,footprintFade);
+}
+${
+  kind === 4
+    ? `float cfLavaEmissionGain(float w) {
+  float scaled=w<0.25 ? w*64.0 : 16.0+(w-0.25)*16.0;
+  int index=int(min(27.0,floor(scaled)));
+  float fraction=scaled-float(index);
+  int next=index+1;
+  float low=uLavaEmissionGains[index/4][index%4];
+  float high=uLavaEmissionGains[next/4][next%4];
+  return mix(low,high,fraction);
+}`
+    : ""
 }`,
       );
       shader.fragmentShader = shader.fragmentShader.replace(
@@ -337,7 +370,8 @@ if(uViewMode<0.5) {
     float breath=1.0+0.1*sin(uDisplay*0.0011+phase);
     ${
       kind === 4
-        ? `float cracks=cfLavaCracks(worldFace,uDisplay*0.001);
+        ? `float lavaFootprintFade;
+    float cracks=cfLavaCracks(worldFace,uDisplay*0.001,lavaFootprintFade);
     outgoingLight *= mix(0.38,0.9,cracks);
     float sourceMask=cracks;`
         : `// P3 marks hot seams by red excess; cool dark crust stays unlit.
@@ -346,6 +380,12 @@ if(uViewMode<0.5) {
     // Shape the registry hue before HDR scaling so hot cracks retain colour
     // through ACES. This is presentation only; source light remains unchanged.
     float renderGain=block==${Block.EmberCrust.toFixed(1)} ? ${TERRAIN_EMBER_EMISSION_GAIN.toFixed(1)} : 1.0;
+    ${
+      kind === 4
+        ? `if(block==${Block.Lava.toFixed(1)} && lavaFootprintFade>0.0)
+      renderGain *= cfLavaEmissionGain(lavaFootprintFade);`
+        : ""
+    }
     outgoingLight += pow(source.rgb,vec3(2.2))*source.a*${TERRAIN_EMISSION_SCALE.toFixed(1)}*renderGain*sourceMask*breath;
   }
 } else if(uViewMode<1.5) {

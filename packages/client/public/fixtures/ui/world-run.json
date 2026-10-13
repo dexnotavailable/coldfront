@@ -6,7 +6,7 @@
         "postcard": null,
         "rendering": {
           "visible": true,
-          "animationRenders": 12,
+          "animationRenders": 13,
           "hiddenFrames": 0
         },
         "mapReports": [],
@@ -43,7 +43,7 @@
           "flying": false,
           "walkDistance": 0,
           "stepRise": 0,
-          "yaw": 0.5418954493918436,
+          "yaw": 0.5517526195184765,
           "headYaw": 0.5404195883339316
         },
         "target": {
@@ -72,11 +72,11 @@
         "loaded": 148,
         "queued": 0,
         "ready": true,
-        "displayTimeMs": 1549.9000000000005,
+        "displayTimeMs": 1133.4,
         "editCount": 0,
         "lastAction": null,
         "lastEdit": null,
-        "worldTimeSeconds": 1201.6499000000001,
+        "worldTimeSeconds": 1201.2167,
         "rendered": {
           "outline": true,
           "silhouette": false,
@@ -90,7 +90,7 @@
         "postcard": null,
         "rendering": {
           "visible": true,
-          "animationRenders": 4,
+          "animationRenders": 7,
           "hiddenFrames": 0
         },
         "mapReports": [],
@@ -127,15 +127,15 @@
           "flying": false,
           "walkDistance": 0,
           "stepRise": 0,
-          "yaw": 2.3609434925501516,
-          "headYaw": 2.827433388230814
+          "yaw": 3.0808893748273505,
+          "headYaw": 3.141592653589793
         },
         "target": null,
         "ghost": null,
         "loaded": 148,
         "queued": 0,
         "ready": true,
-        "displayTimeMs": 383.4000000000001,
+        "displayTimeMs": 633.2999999999997,
         "editCount": 15,
         "lastAction": null,
         "lastEdit": {
@@ -144,7 +144,7 @@
           "z": 1,
           "block": 2
         },
-        "worldTimeSeconds": 1200.4832999999999,
+        "worldTimeSeconds": 1200.7167,
         "rendered": {
           "outline": false,
           "silhouette": true,
@@ -167,13 +167,13 @@
     "selectedBlock": "Sand",
     "normalDistance": 24,
     "yaw": 45,
-    "displayTimeMs": 1549.9000000000005
+    "displayTimeMs": 1133.4
   },
   "errors": [],
   "warnings": [
-    "[.WebGL-0x275c0040d000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-    "[.WebGL-0x275c0040d000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-    "[.WebGL-0x275c0040d000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-    "[.WebGL-0x275c0040d000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+    "[.WebGL-0x5cd40040f400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x5cd40040f400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x5cd40040f400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x5cd40040f400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
   ]
 }
