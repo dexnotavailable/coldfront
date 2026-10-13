@@ -30,7 +30,17 @@ Root and a fresh reviewer open both full caldera images. The larger cells show m
 
 Both versions then receive four close-range frames at 0, 250, 1,000 and 4,000 ms. Root and independent review open all eight originals. Both retain connected cracks and coherent sampled changes, but the original is slightly preferred nearby: the candidate's enlarged white bands and repeated interior streaks dominate. The fixed-time samples do not prove continuous playback. Physical drift also doubles when frequency halves, despite unchanged clock coefficients. All eight hashes and both 152-file source manifests match; cleanup passes.
 
-The standalone scale change is **not selected**. A possible next study would retain the original spacing and investigate the brightness of unresolved emission through the actual tone-mapping curve. That remains an unimplemented hypothesis, not a chosen gain or a waiver of filtering requirements.
+The standalone scale change is **not selected**. The following emission study retains the original spacing.
+
+## Lava emission: near preserved, transition still unsuitable
+
+A fixed 65,536-sample calibration transcribes the active ACES curve and original 0.62/m crack mask. Its measured mask mean is **0.17645149784739714**, compatible with the authored 0.175 under the predeclared 0.005 tolerance. One bounded solve derives gain **0.13448631958484292** for unresolved source emission. The first helper fails before sampling because its shader-source comparison includes unrelated formatting; that failure remains recorded. A separately repaired active-function comparison passes. Independent source review checks the actual curve, matrix orientation, exposure and all saved calibration/candidate bindings.
+
+The candidate builds and captures all **1,624 chunks in 236.925 s**, preserving the failed 180-second check. It produces no application errors or external requests; browser and server close. Root and fresh Astra open both full originals. The far lake is less washed out, but a new broad orange-to-yellow transition crosses its middle. The reviewer modestly prefers the candidate overall; the coordinator holds it because that band fails the declared no-new-transition-band condition.
+
+Four additional near frames at 0, 250, 1,000 and 4,000 ms are **byte-identical** to their baseline partners. Root and peer open all eight: the bright connected cracks, dark interiors and glow are preserved. These frozen samples do not establish continuous playback. The candidate remains **unintegrated and unpublished**.
+
+Source inspection identifies a plausible mechanism: blending the crack mask toward its mean and independently blending emission gain multiplies two linear transitions. Previously dark interiors can brighten above their far-end emission before dimming. Matching only the two endpoints does not constrain the intermediate tone-mapped result. A derived continuous response is the next material hypothesis; it is not yet implemented or accepted. Caldera anatomy work proceeds separately.
 
 ## Evidence retained
 
@@ -39,5 +49,7 @@ The standalone scale change is **not selected**. A possible next study would ret
 - `out/phase13/hell2-framing-source-review.md`; isolated selector `D:/Dex/Temp/coldfront-hell2-framing-0435cee/out/hell2-framing/`.
 - `out/phase13/lava-scale-pixel-review.md`, `lava-scale-near-review.md`; isolated lava study `D:/Dex/Temp/coldfront-lava-scale-0435cee/out/lava-scale/`.
 - Near originals: `out/phase13/lava-near-proof/runs/2026-10-13T07-59-45.938Z/` and `2026-10-13T07-59-59.236Z/`.
+- Emission candidate: `D:/Dex/Temp/coldfront-lava-energy-0435cee/out/lava-energy/runs/2026-10-13T09-04-01.494Z/`; candidate PNG SHA256 `05e877f0636fa9ac457813461666860c06a0a5e74fbc67cf0b4aed38594b05d2`.
+- Emission near frames: `out/phase13/lava-near-proof/runs/2026-10-13T09-09-06.763Z/`; independent source and pixel reviews: `out/phase13/lava-energy-source-review.md` and `lava-energy-pixel-review.md`.
 
 The unchanged live runtime's 790-test suite, check/build, clean build, production journey, public readback and three-browser CI remain the release evidence. No new performance gain, numeric walkability census, multi-seed acceptance or phase completion is claimed here.

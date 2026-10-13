@@ -24,7 +24,7 @@ Clean physical-D Node 22 install/build passes in **13.6348735 s**, and the site 
 
 The exact production-bundle journey passes all fourteen stages at **2026-10-12 17:53:26.224 UTC**. Root and independent Astra open all fourteen originals. Independent verification matches 178 source files, 326 distribution files, five runner files and 29 evidence bindings. Actual placement/breaking/movement, immediate replay and reload persistence, Ibara modes, HELL-1 travel/Escape and play after one injected malformed catalogue pass. There are zero application errors, failed responses or external requests; four ReadPixels warnings remain, and browser/server cleanup completes. Evidence: `out/phase13/strata-release-prep/runs/2026-10-12T17-48-27.630Z/receipt.json` and its `independent-review/` sibling.
 
-Publication receipt **`b863c7fc-979d-4bc8-b66b-f5c322ada1cf`** and `out/phase13/strata-release-prep/public-readback.json` verify ten public files and isolation headers at **17:56:18.540 UTC**. This proves local production play and matching public bytes; the separately refused public-browser action was not retried. The release retains `4:023af1e…` save identity. Try **F4 → Postcard mode → Ibara 2 / Ibara 3**, then Escape to return overhead.
+Publication receipt **`b863c7fc-979d-4bc8-b66b-f5c322ada1cf`** and `out/phase13/strata-release-prep/public-readback.json` verify ten public files and isolation headers at **17:56:18.540 UTC**. This proves local production play and matching public bytes; the separately refused public-browser action was not retried. The release retains `4:023af1e…` save identity. Try **F4 → Go to postcard → Ibara 2 / Ibara 3**, then Escape to return overhead.
 
 ## Shape diagnosis
 

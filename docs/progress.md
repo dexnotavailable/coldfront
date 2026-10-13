@@ -23,6 +23,8 @@
 ## Current session
 **13 October 2026 · Codex · `codex/phase-1-3-world`**
 
+**Latest material check:** the original-spacing emission trial builds, loads all 1,624 caldera chunks in **236.925 s** and preserves all four near-frame PNGs exactly. Root and fresh Astra open ten originals. The far lake is less washed out, but a new middle-distance color band fails the declared transition condition, so the candidate stays unintegrated. Source calibration and near preservation do not override that visible defect. The next anatomy check examines whether an existing branch role can move to the tallest eligible member of the same cluster, preserving the branch population and original crater layout; no generation change is accepted yet.
+
 
 **13 October follow-up:** the height-staging fixture is preferred in two views and ties the others, but its complete caldera image is byte-identical to live after a repaired validation call; it remains unintegrated. A capped baseline diagnostic finds no eligible multi-branch owner among the twelve dominant sampled thorns. HELL-2's selector does not currently rank visible anatomy; an isolated correction passes 85 focused tests and source review, but its 20-grid cycle selects a view whose foreground thorn blocks the crater. Fresh calibrated A/B prefers the original15 to candidate11 (control6); the selector and camera stay unintegrated. A larger lava-cell trial improves distant crust visibility but fails its declared metric and worsens close-range balance, so it is not selected. [Evidence, limits and next work](reports/phase-1-3-caldera-followup.md).
 
@@ -275,7 +277,7 @@ The following records describe the completed phase 1.1 tooling and acceptance.
 4. Dig below the surface to try the automatic overhead cut. Press **F3** for debug information and **F4** for time of day, fog, shadows and fly speed.
 5. Press **Esc** to pause or return to the title; **F2** saves a screenshot and **F11** toggles fullscreen. Browse the [interface gallery](https://dex.place/coldfront/?gallery).
 6. Leave a placed block in the world, reload, and press **Play** with the same seed to check your saved edits. This release uses the new generation identity above; edits from earlier generations remain stored separately.
-7. In **F4 → Go to region**, visit **Ibara** and compare **Normal**, **Clay** and **Features**. Open **F4 → Postcard mode** and choose **Ibara 2** for the forest or **Ibara 3** for the caldera. Look for the new horizontal rock tones on broad thorn faces. Loading is slow; anatomy/readability limits remain. Press **Escape** to return to the overhead view.
+7. In **F4 → Go to region**, visit **Ibara** and compare **Normal**, **Clay** and **Features**. Open **F4 → Go to postcard** and choose **Ibara 2** for the forest or **Ibara 3** for the caldera. Look for the new horizontal rock tones on broad thorn faces. Loading is slow; anatomy/readability limits remain. Press **Escape** to return to the overhead view.
 8. Open the map with **M**, choose a spot and travel. In **F4**, use **Go to region** to compare Shirogane, Kurogane and the Sundered Isles. Discovery cards appear once per saved world identity. Switch to the test world from the title for the smaller sandbox.
 
 Local development: run **npm ci**, then **npm run dev** and open the printed address.
