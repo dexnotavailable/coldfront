@@ -466,6 +466,15 @@ export class WorldRenderer {
     border.visible = false;
     this.scene.add(group, cap.mesh, border);
     this.depthScene.add(depth, depthCap);
+    // Initialize after attachment: water can query matrixWorld before a draw.
+    // A future CPU rebase/reparent must explicitly refresh these static matrices.
+    for (const terrainRoot of [group, depth]) {
+      terrainRoot.updateWorldMatrix(true, true);
+      terrainRoot.traverse((object) => {
+        object.matrixAutoUpdate = false;
+        object.matrixWorldAutoUpdate = false;
+      });
+    }
     this.chunks.set(key, {
       worldId: result.world.id,
       group,

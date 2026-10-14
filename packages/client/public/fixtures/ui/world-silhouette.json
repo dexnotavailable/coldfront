@@ -2,7 +2,7 @@
   "postcard": null,
   "rendering": {
     "visible": true,
-    "animationRenders": 5,
+    "animationRenders": 6,
     "hiddenFrames": 0
   },
   "mapReports": [],
@@ -39,7 +39,7 @@
     "flying": false,
     "walkDistance": 0,
     "stepRise": 0,
-    "yaw": 2.860558955615522,
+    "yaw": 2.9729724348052304,
     "headYaw": 3.141592653589793
   },
   "target": null,
@@ -47,7 +47,7 @@
   "loaded": 148,
   "queued": 0,
   "ready": true,
-  "displayTimeMs": 466.6999999999998,
+  "displayTimeMs": 533.2999999999997,
   "editCount": 15,
   "lastAction": null,
   "lastEdit": {
@@ -56,7 +56,7 @@
     "z": 1,
     "block": 2
   },
-  "worldTimeSeconds": 1200.5668,
+  "worldTimeSeconds": 1200.6332999999997,
   "rendered": {
     "outline": false,
     "silhouette": true,

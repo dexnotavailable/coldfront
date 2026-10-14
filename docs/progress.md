@@ -22,6 +22,7 @@
 
 ## Current session
 **14 October 2026 · Codex · `codex/phase-1-3-acceptance`**
+**Static-terrain transform optimization:** terrain matrices are initialized once after upload, then skip automatic recomposition. The actual-renderer comparison passes all 36 frame pairs (72 renders) with exact pixels, matrices and draws; eligible compositions/world products fall from 2,544 each to zero while traversal remains. Root and independent Astra open all twelve fixture originals and four fresh HUD images. All 811 tests pass; a native-image provenance path error is corrected with byte-identical copies and two manifest-path changes, then check/build pass. The failed first check remains recorded. The change is integrated for the next exact clean build and production release tour; live remains D968 pending those gates. No FPS gain or Radeon-stutter fix is established. [Evidence](reports/static-terrain-transforms.md).
 
 **Segment-culling check, closed:** the fixed historical-main comparison declares 1,750 voxel-centre samples and deduplicates them to 745. Production and the instrumented culling-on copy agree exactly at every point; disabling the early-out produces no value, occupancy, station or winning-segment difference. The sampled-joint hypothesis is parked without a geometry change or expanded search. Historical branch allocation remains explicitly separate from the current world. [Evidence](reports/ibara-comb-culling.md).
 
