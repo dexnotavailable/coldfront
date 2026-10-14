@@ -5,11 +5,11 @@
       "id": "outline-ghost",
       "rows": ["hud.outline", "hud.ghost"],
       "image": "fixtures/ui/world-outline-ghost.jpg",
-      "imageSha256": "2eab0bf500fb77871720753f20e692112248df43adc8010ac71e08f0b9d66cc5",
+      "imageSha256": "f12dab88a7b4877db66b8e2ccf31e526d7c25c18b2cad05538c3741d44421950",
       "telemetry": "fixtures/ui/world-outline-ghost.json",
-      "telemetrySha256": "82ce9bac2d84e16a41b76125eb898398c675b5d00b253abd5ae0ceb09da26a78",
+      "telemetrySha256": "b7dec6cd26d1c3d1cb4e16fb05a489e3c68143afa7216cf3bfece488d585c417",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "6313ccaa84e59bb69020844621e3e185bcf8a060ccd050b614b50e2f5db5ed1a",
+      "runReceiptSha256": "b37df24463803def6b7213a55535f84c654b90ba06f6a4344ac88d1ff1a741df",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -18,6 +18,10 @@
         {
           "path": "packages/client/src/dev/test-scenes.ts",
           "sha256": "1ab3207179b29a58d332e8e2d6c8812382e3d151d83110cb7068e0061f5409c2"
+        },
+        {
+          "path": "packages/client/src/engine/assets/house-door.ts",
+          "sha256": "6476fc6fa5b8035db16d0015e1c3a118b9c0c7720385e223ec4a2c85be882603"
         },
         {
           "path": "packages/client/src/engine/assets/smithy-parts.ts",
@@ -146,6 +150,10 @@
         {
           "path": "packages/shared/src/assets/structures/early-smithy.ts",
           "sha256": "5360261b50895d2f3e00bdb6a10cab466df7dc573c0f99a3032b0cdf8952392d"
+        },
+        {
+          "path": "packages/shared/src/assets/structures/hearthlands-house.ts",
+          "sha256": "432e117ee8a159dd4f1712b9f4e7d6743384ece2c7cb1c4dd76d00a731de3787"
         },
         {
           "path": "packages/shared/src/assets/structures/watchtower.ts",
@@ -381,8 +389,8 @@
         "format": "jpeg",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
-        "sourceImage": "out/engine/hud-smithy-library-0f45efa/outline-ghost.png",
-        "sourceImageSha256": "ecfeba01bac486c53c99c76233ef68ee8243ec5b3e1270065e73ba9ae471bf1d",
+        "sourceImage": "out/engine/hud-house-library-a115d6d/outline-ghost.png",
+        "sourceImageSha256": "cbafe3e6a2846a4c5e3926e203991f5e6b17b6ecb021e4d0a4a7e82c2da2b2dc",
         "quality": 85,
         "width": 1280,
         "height": 720,
@@ -393,11 +401,11 @@
       "id": "silhouette",
       "rows": ["hud.silhouette"],
       "image": "fixtures/ui/world-silhouette.jpg",
-      "imageSha256": "89116132349497fe0caac8d36678fb0509ac8e4a70a9ecefae3e7f9fcbd812bf",
+      "imageSha256": "1180e117c01953ab23f520bf0b8933f68bd1c20bab90e2e2e6b22bbf47bc5abb",
       "telemetry": "fixtures/ui/world-silhouette.json",
-      "telemetrySha256": "45a9830b23f075412727e81aafd7b76754b613a69025d2c8725fbc272c801d19",
+      "telemetrySha256": "825e83e4ef8fa503eac66ad0ada81a1b3a088a70c17037fa45aae6e7f1a3731e",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "6313ccaa84e59bb69020844621e3e185bcf8a060ccd050b614b50e2f5db5ed1a",
+      "runReceiptSha256": "b37df24463803def6b7213a55535f84c654b90ba06f6a4344ac88d1ff1a741df",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -406,6 +414,10 @@
         {
           "path": "packages/client/src/dev/test-scenes.ts",
           "sha256": "1ab3207179b29a58d332e8e2d6c8812382e3d151d83110cb7068e0061f5409c2"
+        },
+        {
+          "path": "packages/client/src/engine/assets/house-door.ts",
+          "sha256": "6476fc6fa5b8035db16d0015e1c3a118b9c0c7720385e223ec4a2c85be882603"
         },
         {
           "path": "packages/client/src/engine/assets/smithy-parts.ts",
@@ -534,6 +546,10 @@
         {
           "path": "packages/shared/src/assets/structures/early-smithy.ts",
           "sha256": "5360261b50895d2f3e00bdb6a10cab466df7dc573c0f99a3032b0cdf8952392d"
+        },
+        {
+          "path": "packages/shared/src/assets/structures/hearthlands-house.ts",
+          "sha256": "432e117ee8a159dd4f1712b9f4e7d6743384ece2c7cb1c4dd76d00a731de3787"
         },
         {
           "path": "packages/shared/src/assets/structures/watchtower.ts",
@@ -769,8 +785,8 @@
         "format": "jpeg",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
-        "sourceImage": "out/engine/hud-smithy-library-0f45efa/silhouette.png",
-        "sourceImageSha256": "88844641018a73a5431a1402f32ac81a9ae83e02690dfe9a514942612861215c",
+        "sourceImage": "out/engine/hud-house-library-a115d6d/silhouette.png",
+        "sourceImageSha256": "74dac29066bb2cdbd609025918e44f551732a7cf5c191d30ae74608cb1d680e5",
         "quality": 85,
         "width": 1280,
         "height": 720,
