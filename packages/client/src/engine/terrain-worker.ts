@@ -51,7 +51,6 @@ interface ColumnCache {
 interface LitCache {
   readonly address: Address;
   readonly volume: LightVolume;
-  readonly blocks: Uint16Array;
   readonly chunk: VoxelChunk;
 }
 let world: WorldSession | null = null;
@@ -109,8 +108,7 @@ function sample(
 }
 function buildVolume(a: Address): LitCache {
   const chunk = generateWorldChunk(context, a.cx, a.cy, a.cz);
-  const v = createLightVolume(96, 96, 96),
-    blocks = new Uint16Array(v.light.length);
+  const v = createLightVolume(96, 96, 96);
   const ox = a.cx * 32 - 32,
     oy = a.cy * 32 - 32,
     oz = a.cz * 32 - 32;
@@ -145,7 +143,6 @@ function buildVolume(a: Address): LitCache {
             : oy + y + 0.5 > sky.highestFilterY
               ? Block.Air
               : sample(area, wx, oy + y, wz, c));
-        blocks[i] = id;
         v.opacity[i] = BLOCK_REGISTRY[id]?.lightFiltering ?? 15;
         v.sources[i] = emissions[id] ?? 0;
         if (inHalo) {
@@ -193,7 +190,7 @@ function buildVolume(a: Address): LitCache {
         ((v.sources[top] as number) & 0x0fff) |
         (Math.max(0, incoming - (v.opacity[top] as number)) << 12);
     }
-  return { address: a, volume: v, blocks, chunk };
+  return { address: a, volume: v, chunk };
 }
 function applyEdit(edit: VoxelEdit): void {
   if (!insideFrame(edit.x, edit.y, edit.z))
@@ -209,7 +206,6 @@ function applyEdit(edit: VoxelEdit): void {
       continue;
     }
     const i = lightIndex(cached.volume, x, y, z);
-    cached.blocks[i] = edit.block;
     cached.volume.opacity[i] = BLOCK_REGISTRY[edit.block]?.lightFiltering ?? 15;
     cached.volume.sources[i] =
       ((cached.volume.sources[i] as number) & 0xf000) |
@@ -271,7 +267,6 @@ function generate(request: Extract<WorkerRequest, { type: "chunk" }>): void {
     cacheBytes += column.columns.byteLength;
   for (const lit of volumes.values())
     cacheBytes +=
-      lit.blocks.byteLength +
       lit.volume.opacity.byteLength +
       lit.volume.light.byteLength +
       lit.volume.sources.byteLength +
