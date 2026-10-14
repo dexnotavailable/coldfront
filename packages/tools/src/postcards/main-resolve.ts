@@ -215,36 +215,46 @@ export async function loadPlan(
   try {
     const bytes = await readFile(path),
       cached = deserialize(bytes) as {
-        seed: number;
-        sourceHash: string;
-        worldgenVersion: number;
-        data: WorldPlanData;
-        checksum: string;
-      };
+        schema?: unknown;
+        seed?: unknown;
+        sourceHash?: unknown;
+        worldgenVersion?: unknown;
+        payload?: unknown;
+        checksum?: unknown;
+      } | null;
     if (
+      cached?.schema === 2 &&
       cached.seed === seed &&
       cached.sourceHash === sourceHash &&
       cached.worldgenVersion === WORLDGEN_VERSION &&
-      createHash("sha256").update(serialize(cached.data)).digest("hex") ===
+      cached.payload instanceof Uint8Array &&
+      createHash("sha256").update(cached.payload).digest("hex") ===
         cached.checksum
     ) {
-      hydrateWorldPlan(cached.data);
-      return cached.data;
+      const data = deserialize(cached.payload) as WorldPlanData;
+      if (data?.seed === seed && data.worldgenVersion === WORLDGEN_VERSION) {
+        hydrateWorldPlan(data);
+        return data;
+      }
     }
   } catch {
     /* A corrupt/stale optional tool cache is rebuilt explicitly. */
   }
   const data = buildWorldPlan(seed);
   hydrateWorldPlan(data);
+  // Equal values need not reserialize to equal V8 bytes. Preserve and hash
+  // the exact payload instead; verify it before decoding or hydrating a hit.
+  const payload = serialize(data);
   await mkdir(dirname(path), { recursive: true });
   await writeFile(
     path,
     serialize({
+      schema: 2,
       seed,
       sourceHash,
       worldgenVersion: WORLDGEN_VERSION,
-      data,
-      checksum: createHash("sha256").update(serialize(data)).digest("hex"),
+      payload,
+      checksum: createHash("sha256").update(payload).digest("hex"),
     }),
   );
   return data;
