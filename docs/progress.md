@@ -2,7 +2,7 @@
 
 **Current milestone:** 1 · The World
 **Current phase:** 1.3 · Terrain toolkit + Ibara (visual corrections and final release checks)
-**Playable link:** [dex.place/coldfront](https://dex.place/coldfront/) · [Interface gallery](https://dex.place/coldfront/?gallery) · [Current PR #9](https://github.com/dexnotavailable/coldfront/pull/9). Live game commit: `ecc26af` (generation 4, verified terrain-review cache correction; current saves retained). The unrelated `coldfront.pages.dev` site is not this game's preview.
+**Playable link:** [dex.place/coldfront](https://dex.place/coldfront/) · [Interface gallery](https://dex.place/coldfront/?gallery) · [Merged increment #9](https://github.com/dexnotavailable/coldfront/pull/9). Live game commit: `d9686d3` (generation 4, lower terrain-worker memory; current saves retained). The unrelated `coldfront.pages.dev` site is not this game's preview.
 **Agent guide:** `AGENTS.md` (Codex and Claude Code both follow it). **Interface:** only what `docs/11-interface-catalogue.md` lists.
 
 ## Status board
@@ -11,7 +11,7 @@
 |---|---|---|
 | 1.1 Foundations | ✓ Complete, with recorded limits | 190 tests, check/build, clean Node22 build, complete UI lint and all-three-browser CI pass; accepted images/tools/save fixes published as d4c4c49. Public-site browser launch remains unavailable. |
 | 1.2 World plan | ✓ Complete, with recorded limits | Runtime, three-seed geography, atlas/slice, all-region travel and sixteen ungraded postcards accepted; 310 tests, check/build, complete UI lint, clean Node22 build and all-three-browser CI pass. Live as 18a975d. [Phase plan](plans/phase-1-2.md). |
-| 1.3 Terrain toolkit + Ibara | In progress | [Reviewed integration plan](plans/phase-1-3.md); generation `676c1de…` is live as `ecc26af`, with clearer thorn strata and a corrected review-tool cache. Tests, check/build, exact clean/site builds, production journey, CI and public HTTP pass. No new formal score: two primitive-control grades of 9 fail the unchanged ≤8 calibration gate. Earlier a82 scores 16/15 remain historical. Seeds 2–3 and mandatory HELL acceptance remain open; six aggregate CPU metrics exceed later targets. |
+| 1.3 Terrain toolkit + Ibara | In progress | [Reviewed integration plan](plans/phase-1-3.md); generation `676c1de…` is live as `d9686d3`, with lower terrain-worker memory, clearer thorn strata and a corrected review-tool cache. Tests, check/build, exact clean/site builds, production journey, CI and public HTTP pass. No new formal score: two primitive-control grades of 9 fail the unchanged ≤8 calibration gate. Earlier a82 scores 16/15 remain historical. Seeds 2–3 and mandatory HELL acceptance remain open; six aggregate CPU metrics exceed later targets. |
 | 1.4 Far terrain | ☐ Specified, not implemented | LOD0–LOD6, full-height column tiles beyond LOD1, ~16 km maximum reach at altitude; acceptance includes at least 5 km of real terrain. 04 §13.5 / roadmap 1.4. |
 | 1.5 Kurogane + Selva | ☐ | |
 | 1.6 Fantasy regions | ☐ | |
@@ -21,9 +21,9 @@
 | 1.10 Polish + performance | ☐ | |
 
 ## Current session
-**14 October 2026 · Codex · `codex/phase-1-3-readability`**
+**14 October 2026 · Codex · `codex/phase-1-3-acceptance`**
 
-**Worker memory reduction, validated and integrated:** remove a private block buffer that the terrain worker writes but never reads. This avoids 1,769,472 allocated bytes per fresh volume and saves 3.375 MiB per worker when both existing cache slots are filled. The real-worker comparison passes 704 cross-variant typed-array checks through fresh loads, cache hits, edits, reloads and eviction; timings do not show a speedup. All 811 tests, check/build and fresh two-case HUD evidence pass, including independent review. Generation 676 and saved edits are preserved. Exact clean/site builds, the production journey, CI and publication are next. [Evidence and limits](reports/terrain-worker-memory.md).
+**Worker memory reduction, published and merged:** live `d9686d3` removes a private block buffer that the terrain worker writes but never reads. This avoids 1,769,472 allocated bytes per fresh volume and saves 3.375 MiB per worker when both existing cache slots are filled. The real-worker comparison passes 704 cross-variant typed-array checks through fresh loads, cache hits, edits, reloads and eviction; timings do not show a speedup. All 811 tests, check/build, fresh HUD evidence, exact clean/site builds and CI pass. The fourteen-stage production journey passes in 280.879 s; root and fresh Astra open all fourteen new originals. Eleven public hash/header checks verify publication receipt `76110b74-8476-4d2e-a2a1-b4af708e13f2` at 03:48:57.680 UTC. PR #9 merges at 03:50:13 UTC as `55716fd`; this fresh branch continues unfinished phase 1.3. Generation 676 and saved edits are preserved. [Evidence and limits](reports/terrain-worker-memory.md).
 
 **Main-start terrain marks, closed:** four fixed-view captures and eight pixel rays identify the three sampled dark marks as exposed grass-block sides, with adjacent controls on horizontal tops. Root and independent Astra inspect the originals and verify the result. The two actual worker meshes provide one matching quad per hit, full skylight at all corners/outside cells and valid AO values. No sampled geometry or missing-daylight defect is found; the terrain remains unchanged. Captures take 14.975 s, rays 2.385 s and worker readback 3.280 s. This does not diagnose every Ibara mark. [Evidence](reports/main-start-terrain-marks.md).
 
