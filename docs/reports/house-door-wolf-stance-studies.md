@@ -1,6 +1,6 @@
 # House door and frost-wolf stance studies
 
-Both changes pass their bounded prototype checks under the current `a82f5dd` renderer. They remain isolated assets outside the live world.
+Both changes passed their bounded prototype checks under the then-current `a82f5dd` renderer. They remain outside the live world; the later house-library adoption is recorded below.
 
 ## House door
 
@@ -11,6 +11,24 @@ The initial 61 tests pass, including the original house and forbidden-token chec
 This proves two static poses. Interaction, collision registration, enclosure, heating and placement in generated settlements remain unimplemented.
 
 Source and evidence: `D:/Dex/Temp/coldfront-house-door-a82f5dd`. Checks are under `out/house-door/checks/2026-10-13T21-20-28.997Z/`. Images, receipt and fresh review are in `out/house-door/pass-01/`, with the review under `independent-review/`. Earlier API/type and format failures are preserved, as are the pre-repair source packets.
+
+## House library adoption, 14 October 2026
+
+The unchanged revision-4 house, its door presentation helper and nine existing tests enter the [unregistered asset library](../assets/README.md). The 498-voxel shell, doorway, approach and pending functional-part anchors are preserved. The helper provides visible door poses; it adds no gameplay collision or enclosure.
+
+The accepted receipt binds the current model, door and capture-helper hashes; test hashes are verified separately. Four hashes in the older handoff predate final formatting; that handoff remains preserved. The fresh copy verifies all eight study source/helper/test files before execution. Only the four model/helper/test files are proposed for canonical adoption; the historical study README and capture harness stay isolated.
+
+At `a115d6d`, all nine focused tests, four TypeScript checks and formatting pass. Two fresh current-renderer captures complete in **3.841 s**. Root opens `close-closed.png` and `close-open.png`; both are byte-identical to the accepted originals. The closed plank leaf fits the visible doorway beneath the porch, and the open leaf sits alongside the dark entry. Porch shade and the small door size limit fine contact assessment. These remain static poses, not interaction or continuous-motion proof.
+
+All twelve current source bindings match, with no drift, application errors, external requests, GL errors or context loss. Four ReadPixels warnings are retained. The receipt is written after awaited browser/server closure; a separate process check belongs to root. The source and new evidence are at `D:/Dex/Temp/coldfront-house-library-a115d6d`, with captures under `out/house-door/adoption-current-01/` and checks/reviews under `out/house-library/`. Old study roots and failures are untouched.
+
+Generation/save identity remains 676; the broader build hash includes the new library files. The live game, terrain scores, atlas/slice and benchmark remain unchanged. House placement, construction/support, functional hearth and door, enclosure, heating, furnishings, interaction/collision and navigation remain future work.
+
+The two existing HUD cases are refreshed in **15.917 s** with 93 source bindings per case. Root and Astra open both PNG originals and both shipping JPEGs. Independent review verifies all 186 source bindings, eight artifact bindings and the placement-ghost difference of 2,440 pixels / 113,933 total RGB difference. The native/public metadata is identical after parsing; formatting adds only a final newline to the three public JSON files. No source or image changes follow. The faint ghost and pale blue covered-avatar silhouette remain visible; the latter reflects this captured animation pose, without a claim of pixel equality to an earlier HUD run.
+
+Bounded A7 review passes the three existing canvas marks at 1280×720: no words appear, marks align with their intended positions, and panel/disabled-control/blocking-screen keyboard checks are inapplicable. No new screen or other-resolution review is claimed.
+
+The full integration suite passes **837 tests across 99 files** in **284.89 s** (285.482 s wrapper). Check and build pass in **17.943/3.015 s**. The study includes the four isolated capture helpers but no extra tests; those helpers are excluded from canonical adoption. No new WIP image is committed, leaving the existing 939,899-byte image budget unchanged. Exact-commit clean-build and CI receipts remain separate release checks.
 
 ## Frost wolf
 

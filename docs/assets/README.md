@@ -43,3 +43,22 @@ The pending-functional-parts state and construction brief are historical study r
 ```text
 npm test -- packages/shared/test/assets/early-smithy.test.ts packages/tools/test/assets/smithy-parts.test.ts
 ```
+
+## Hearthlands house
+
+`hearthlands-house`, revision 4: a 498-voxel timber and masonry shell with a stepped roof, covered stoop and open chimney. Its 9 × 11 m main shell preserves 63 m² of living floor. A separate presentation helper supplies the plank door.
+
+- [Model and integer sampler](../../packages/shared/src/assets/structures/hearthlands-house.ts): `HEARTHLANDS_HOUSE` and `sampleHearthlandsHouse`.
+- [Door presentation](../../packages/client/src/engine/assets/house-door.ts): `HOUSE_DOOR` and `HouseDoor`.
+- [Four geometry tests](../../packages/shared/test/hearthlands-house.test.ts) and [five door tests](../../packages/tools/test/assets/house-door.test.ts).
+- [Accepted static door study and fresh adoption evidence](../reports/house-door-wolf-stance-studies.md#house-library-adoption-14-october-2026).
+
+Coordinates are local metres, Y up, entrance facing -Z. The occupied bounds run from `[1, 0, 1]` to exclusive `[12, 11, 17]`; the pivot is `[6.5, 0, 4]`. Floor and approach are Y=1, while the foundation bottom is Y=0. Future site preparation must bring the approach to floor height. Exported cells are frozen and ordered Y/Z/X; integer sampling outside the template returns Air.
+
+The door's skylight callback takes **world coordinates**. Call `sync()` after changing the assembly transform to update depth and sampled lighting, pass world-Y cuts, and call `dispose()` when finished. `setOpen()` selects a static outward pose from closed to 90 degrees. The leaf does not supply collision or close the voxel doorway for enclosure checks.
+
+The pending-functional-parts state, bed/lamp anchors and support intentions remain study metadata. The historical brief and capture harness stay in the isolated study. Placement, rotation, foundations, construction, structural validation, functional doors/hearths, furnishings, heating, interaction, collision and NPC navigation remain future work. No new block ID, dependency, world-generation rule or settlement registration is introduced.
+
+```text
+npm test -- packages/shared/test/hearthlands-house.test.ts packages/tools/test/assets/house-door.test.ts
+```
