@@ -2,7 +2,7 @@
 
 **Current milestone:** 1 · The World
 **Current phase:** 1.3 · Terrain toolkit + Ibara (visual corrections and final release checks)
-**Playable link:** [dex.place/coldfront](https://dex.place/coldfront/) · [Interface gallery](https://dex.place/coldfront/?gallery) · [Current PR #8](https://github.com/dexnotavailable/coldfront/pull/8). Live game commit: `3e784a3` (generation 4, clearer dark rock layers and genuine current-generation primitive-camera validation; current saves retained). The unrelated `coldfront.pages.dev` site is not this game's preview.
+**Playable link:** [dex.place/coldfront](https://dex.place/coldfront/) · [Interface gallery](https://dex.place/coldfront/?gallery) · [Merged increment #8](https://github.com/dexnotavailable/coldfront/pull/8). Live game commit: `ecc26af` (generation 4, verified terrain-review cache correction; current saves retained). The unrelated `coldfront.pages.dev` site is not this game's preview.
 **Agent guide:** `AGENTS.md` (Codex and Claude Code both follow it). **Interface:** only what `docs/11-interface-catalogue.md` lists.
 
 ## Status board
@@ -11,7 +11,7 @@
 |---|---|---|
 | 1.1 Foundations | ✓ Complete, with recorded limits | 190 tests, check/build, clean Node22 build, complete UI lint and all-three-browser CI pass; accepted images/tools/save fixes published as d4c4c49. Public-site browser launch remains unavailable. |
 | 1.2 World plan | ✓ Complete, with recorded limits | Runtime, three-seed geography, atlas/slice, all-region travel and sixteen ungraded postcards accepted; 310 tests, check/build, complete UI lint, clean Node22 build and all-three-browser CI pass. Live as 18a975d. [Phase plan](plans/phase-1-2.md). |
-| 1.3 Terrain toolkit + Ibara | In progress | [Reviewed integration plan](plans/phase-1-3.md); generation `676c1de…` is live as `3e784a3`, with clearer thorn strata. Tests, check/build, exact clean/site builds, production journey, CI and public HTTP pass. No new formal score: two primitive-control grades of 9 fail the unchanged ≤8 calibration gate. Earlier a82 scores 16/15 remain historical. Seeds 2–3 and mandatory HELL acceptance remain open; six aggregate CPU metrics exceed later targets. |
+| 1.3 Terrain toolkit + Ibara | In progress | [Reviewed integration plan](plans/phase-1-3.md); generation `676c1de…` is live as `ecc26af`, with clearer thorn strata and a corrected review-tool cache. Tests, check/build, exact clean/site builds, production journey, CI and public HTTP pass. No new formal score: two primitive-control grades of 9 fail the unchanged ≤8 calibration gate. Earlier a82 scores 16/15 remain historical. Seeds 2–3 and mandatory HELL acceptance remain open; six aggregate CPU metrics exceed later targets. |
 | 1.4 Far terrain | ☐ Specified, not implemented | LOD0–LOD6, full-height column tiles beyond LOD1, ~16 km maximum reach at altitude; acceptance includes at least 5 km of real terrain. 04 §13.5 / roadmap 1.4. |
 | 1.5 Kurogane + Selva | ☐ | |
 | 1.6 Fantasy regions | ☐ | |
@@ -21,9 +21,9 @@
 | 1.10 Polish + performance | ☐ | |
 
 ## Current session
-**14 October 2026 · Codex · `codex/phase-1-3-world`**
+**14 October 2026 · Codex · `codex/phase-1-3-readability`**
 
-**Selected review-tool cache fix:** 811 tests / 94 files, check and build pass; independent code review clears the two-file change. The cache now verifies stored payload bytes before decoding and validation. A real seed-3 cold/warm test takes 2167.430/81.826 ms with identical plan values and an unchanged warm file. Generation/save identity stays 676. Clean-checkout/CI/publication verification follows; live remains 3e784a3 until verified promotion. [Evidence](reports/terrain-plan-cache.md).
+**Published and merged cache increment: `ecc26af`.** All 811 tests / 94 files, check/build, exact clean/site builds and CI pass. The fresh fourteen-stage production journey passes in 337.842 s; root and fresh Astra open all fourteen new originals plus four retained HUD images, with 179 source/326 distribution bindings verified. Publication receipt `43a29baf-d588-4c89-8444-dc236c6553ca` and eleven public hash/header checks pass at 01:26:45.073 UTC. PR #8 merges at 01:28:40 UTC as `aba6160`; phase 1.3 remains in progress on this fresh continuation branch. A real cache cold/warm read measures 2167.430/81.826 ms with identical values and unchanged warm file. Generation/save identity remains 676. [Evidence](reports/terrain-plan-cache.md).
 
 **Additional bounded studies:** the seed-3 vertical strip is a real small Obsidian thorn, with no sampled cleanup or missing-column defect; geometry stays unchanged. The smithy's three-cell cold Ash bed passes 16 tests, types, formatting and six matched images; root and independent review prefer it modestly. It remains isolated from the live world. [Thorn diagnosis](reports/phase-1-3-seed3-strip-diagnosis.md) · [Smithy study](reports/smithy-hearth-study.md).
 
@@ -298,16 +298,17 @@ The following records describe the completed phase 1.1 tooling and acceptance.
 
 ## Known issues and next
 
-- Current live release **3e784a3 / generation 676** passes 795 tests, check/build, exact clean/site builds, CI, the fourteen-stage production journey and public HTTP hashes/headers. Phase 1.3 remains incomplete: current formal calibration is invalid; the older a82 scores 16/15 remain historical, and seeds 2–3 remain ungraded despite complete reviewed image coverage.
+- Current live release **ecc26af / generation 676** passes 811 tests, check/build, exact clean/site builds, CI, the fourteen-stage production journey and public HTTP hashes/headers. Phase 1.3 remains incomplete: current formal calibration is invalid; the older a82 scores 16/15 remain historical, and seeds 2–3 remain ungraded despite complete reviewed image coverage.
 - Next: address the captured foreground occlusion and thorn readability with a distinct terrain correction. The isolated camera fallback tested seven additional views but selected the original; it is parked, without wider caps or a seed-3 repeat. Resolve calibration interpretation before new formal terrain acceptance. Two control grades fail at 9/20; both are preserved, and source/receipt audit finds the fixture conformant. No additional reviewers for this candidate, threshold change or terrain-bar change follows. The full-sky, dry-rim and scree directions remain parked. Far terrain stays phase 1.4; finite loading can expose tips whose parents are outside the loaded columns.
 - The current main-world save identity is `4:676c1dee2fe6e97007d306b08f8efeb1381c9d9510f701f4558f22721f2116cb`. Earlier records remain stored separately. The current release journey verifies placement/breaking and persistence through replay/reload. Main/test worlds, seeds and discovery memory remain separate; Clear my edits affects only the current world's edits.
 - Asset follow-ups remain isolated: wolf horizontal stance correction and house door pass scoped tests and current-renderer appearance review. Full contact behaviour, terrain adaptation and gameplay integration remain open. The giant-tree gentle-slope study and single-root burial correction now pass bounded appearance review; the preserved King, second giant tree, smithy and watchtower retain their earlier study boundaries. None is live integrated content.
 - GPU uploads currently cap eight chunk results per frame, rather than eight individual meshes. CPU mesh arrays remain for context restoration; freeing them after upload is still pending. The out-only cold diagnostic now records complete worker-stage/cache timings; the normal postcard receipt still reports total duration.
 - Local production browser checks prove exact seed restoration and retained block edits after reload. Automatic approval review rejected launching the public-site browser check without giving a detailed reason. No public browser started; public gameplay verification remains unavailable. That action was not retried through another route.
+- Small dark triangular terrain flecks are visible in both the earlier and current Main/Ibara captures. Their cause is unassigned; they are not a regression from the cache correction. Clay discovery text remains faint.
 - The build reports a large main chunk (about 1,056 kB, 281 kB gzip); optimization follows measurements. The current check has 79 warnings and two information notes, with no errors. Most warnings are controlled test/gallery assertions and motion CSS overrides.
 - The documented Pages name was corrected: coldfront.pages.dev belongs to another website. Ordinary build remains compatible with Pages; the actual release uses the owner's existing site mount.
 
-## Try this (live rock-layer release `3e784a3`)
+## Try this (live verified increment `ecc26af`)
 
 1. Open [COLDFRONT](https://dex.place/coldfront/), choose **Kaldmark** and press **Play**. Walk with **W A S D**; zoom with the wheel, turn with **← →**, and tilt with **↑ ↓**.
 2. Double-tap **Space** to fly. Use **Space** to rise and **Shift** to descend. Double-tap **W** to sprint when playing in a window.

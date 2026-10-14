@@ -24,4 +24,8 @@ The change naturally updates both camera-resolver fingerprints and the release f
 - `out/plan-cache/source-review.md/json`: independent review and final source hashes.
 - [Strip diagnosis](phase-1-3-seed3-strip-diagnosis.md): original checksum failures, semantic comparison and voxel evidence.
 
-Integration is selected after those checks. Exact clean-checkout, CI and publication results are recorded in the PR and progress log when executed. Phase 1.3's formal terrain acceptance remains open.
+The fix is published as `ecc26af861fe08c92d02c6bb1fba320f293d0de7`. Its exact clean-checkout build passes in **12.005 s**, site build in **2.301 s**, and [CI38493628175](https://github.com/dexnotavailable/coldfront/actions/runs/38493628175) passes including three browsers. The fresh production journey passes all fourteen stages in **337.842 s** with zero errors/external requests/failed responses, four retained ReadPixels warnings and complete cleanup. Root and a fresh reviewer open all fourteen originals plus four retained HUD images; all 179 source and 326 distribution bindings match.
+
+Publication receipt `43a29baf-d588-4c89-8444-dc236c6553ca` and `out/phase13/plan-cache-release/public-readback.json` verify eleven public files and isolation headers at **2026-10-14 01:26:45.073 UTC**. Public-browser gameplay remains separately unavailable. HUD and camera geometry evidence are explicitly retained; current resolver identities are separately checked, with no old proof retagged as new validation.
+
+[PR #8](https://github.com/dexnotavailable/coldfront/pull/8) merges the verified increment at 01:28:40 UTC as `aba61607d204088fc2007046dd8bae3c93bae0de`. Phase 1.3's formal terrain acceptance remains open; continuation uses a fresh branch. Small dark triangular terrain flecks are confirmed in the previous captures as well as this run; their cause remains unassigned. The final release record is under `out/phase13/plan-cache-release/`.
