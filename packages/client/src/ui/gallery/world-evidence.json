@@ -7,9 +7,9 @@
       "image": "fixtures/ui/world-outline-ghost.jpg",
       "imageSha256": "a19491ecbc9d674494de14b46a965071005bff567a397f8d7ad2746b19135a58",
       "telemetry": "fixtures/ui/world-outline-ghost.json",
-      "telemetrySha256": "87eef6f205ea3e10a1ff6f8b5e64434442702b0f38879ac509c0a9237fd944b3",
+      "telemetrySha256": "1e89a02bcbc61e28c0328232ee9814e2ca7a858c7880e6c84ef6b8c8a710e2da",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "16e06272ff265ad384f4b1c041281872ed83352ad0ee3db1d86c6a85421a7c9f",
+      "runReceiptSha256": "ea9f5b986bf75fcdf09fd319de5115923f01908048463d957782623d5eb92ae8",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -138,6 +138,10 @@
         {
           "path": "packages/client/src/game/world-save.ts",
           "sha256": "1d29327cfc05be763b83e0cc72e8c92a833ce66aa518f0b9e32bec5cbc2e9171"
+        },
+        {
+          "path": "packages/shared/src/assets/structures/watchtower.ts",
+          "sha256": "ad669481b11b2d507bc474a13de07c5c168afbb09d59ef366257f81cb89ac8a8"
         },
         {
           "path": "packages/shared/src/blocks/registry.ts",
@@ -369,8 +373,8 @@
         "format": "jpeg",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
-        "sourceImage": "out/engine/hud-static-transforms-2026-10-14T04-51-46-221Z/outline-ghost.png",
-        "sourceImageSha256": "56ccca6bdb30efcdf6a38f33b0d75812371a796742b733e79e869ff572c9c483",
+        "sourceImage": "out/engine/hud-watchtower-library-9ccc495/outline-ghost.png",
+        "sourceImageSha256": "08e8192095713f8a88bdbed6d9a0cada3f74d5723d8747a614ce609531bb13fc",
         "quality": 85,
         "width": 1280,
         "height": 720,
@@ -381,11 +385,11 @@
       "id": "silhouette",
       "rows": ["hud.silhouette"],
       "image": "fixtures/ui/world-silhouette.jpg",
-      "imageSha256": "89116132349497fe0caac8d36678fb0509ac8e4a70a9ecefae3e7f9fcbd812bf",
+      "imageSha256": "b2942ab4189d65a3b0a83cc61cc78288e1ebf255ae1881f2ea34a41fcd524930",
       "telemetry": "fixtures/ui/world-silhouette.json",
-      "telemetrySha256": "b17b0d4c60da4a62c153442f28dc2c2557c89a0b58dde2fc2a5a22203ec9ebdd",
+      "telemetrySha256": "98db01db98d39c5367db2fa56b172a1469d940790e7e6733aaf6d2c50b932e85",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "16e06272ff265ad384f4b1c041281872ed83352ad0ee3db1d86c6a85421a7c9f",
+      "runReceiptSha256": "ea9f5b986bf75fcdf09fd319de5115923f01908048463d957782623d5eb92ae8",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -514,6 +518,10 @@
         {
           "path": "packages/client/src/game/world-save.ts",
           "sha256": "1d29327cfc05be763b83e0cc72e8c92a833ce66aa518f0b9e32bec5cbc2e9171"
+        },
+        {
+          "path": "packages/shared/src/assets/structures/watchtower.ts",
+          "sha256": "ad669481b11b2d507bc474a13de07c5c168afbb09d59ef366257f81cb89ac8a8"
         },
         {
           "path": "packages/shared/src/blocks/registry.ts",
@@ -745,8 +753,8 @@
         "format": "jpeg",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
-        "sourceImage": "out/engine/hud-static-transforms-2026-10-14T04-51-46-221Z/silhouette.png",
-        "sourceImageSha256": "88844641018a73a5431a1402f32ac81a9ae83e02690dfe9a514942612861215c",
+        "sourceImage": "out/engine/hud-watchtower-library-9ccc495/silhouette.png",
+        "sourceImageSha256": "1f189b28c123ab4c9ed6cc4eac725c026790899160bccbc699802dee3ed86f35",
         "quality": 85,
         "width": 1280,
         "height": 720,
