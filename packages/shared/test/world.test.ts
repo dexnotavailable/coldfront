@@ -33,7 +33,7 @@ describe("pointwise test-world contract", () => {
     generateTestChunk({ seed: 3, cx: 2, cy: -1, cz: -2, spacing: 2 });
     generateTestChunk({ seed: 2, cx: 0, cy: 0, cz: 0 });
     const repeated = generateTestChunk(request);
-    expect(WORLDGEN_VERSION).toBe(3);
+    expect(WORLDGEN_VERSION).toBe(4);
     expect(first.blocks).toBeInstanceOf(Uint16Array);
     expect(first.blocks.length).toBe(CHUNK_VOLUME);
     expect(first.haloBlocks.length).toBe(HALO_VOLUME);

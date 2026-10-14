@@ -19,6 +19,7 @@ import {
 import { Stat, Text, Value } from "../components/Text";
 import { matrixFixtures } from "./matrices";
 import { phase12PrimitiveFixtures } from "./phase12";
+import { phase13Fixtures } from "./phase13";
 import { currentScreenFixtures } from "./screens";
 import { worldFixtures } from "./world-fixtures";
 export interface GalleryFixture {
@@ -154,5 +155,6 @@ export const galleryFixtures: readonly GalleryFixture[] = [
   ...primitiveFixtures,
   ...matrixFixtures,
   ...phase12PrimitiveFixtures,
+  ...phase13Fixtures,
   ...screenFixtures,
 ];

@@ -238,6 +238,12 @@ d = T · g  +  K(x, y, z)  +  micro(x, y, z)
 - **Structure fitting.** Under structure massing (the Keep, ruins, the Buried City) add density, and above it remove density, with a falloff, so buildings sit into the ground (Minecraft's "beardifier" idea).
 - **Crumb cleanup (LOD0).** After carving, flood-fill solids. Remove components under 64 voxels that **don't touch the chunk's outermost voxel layer**, except where the region allows floating features.
 
+  Use six face neighbours and the canonical 32³ world owner of each unit cell, including negative coordinates. Classify against the unmodified field; only a completed, closed component below 64 may be removed. Keep components that reach the boundary, an eligible floating-feature owner, or 64 solids. Cache eviction must not change the answer.
+
+  The shared spacing-1 sampler applies this mask to point and prepared queries, core voxels and every halo entry, including the eight upper layers. Collision, camera rays and lighting therefore see the same cleanup; chunk-buffer-only deletion is insufficient. Removed cells have negative density and zero feature ID/t, followed by legitimate owned-fluid refill. User edits remain outside cleanup. TEST and spacings above 1 retain their existing generators.
+
+  This policy introduces unit-cell density discontinuities and conservatively retains boundary-touching crumbs; report those limits rather than claiming a smooth or globally crumb-free field. Conservative upper bounds may overestimate after deletion. The present shortcut through proven solid ground relies on monotonic ground plus additive features: subtractive caves must replace or disable that proof.
+
 ---
 
 ## 8. Stage D: features (the SDF system)
@@ -307,6 +313,7 @@ This is the feature that failed before. Follow it closely, then tune by eye. Eve
   - Draw `p` from [0.5, 1.4], then clamp it so the part thinner than 0.7 m is no longer than `max(1.5 m, 4% of the length L)`:
     `p ≤ detLog(0.25 / (r₀ − 0.45)) / detLog(max(1.5, 0.04·L) / L)`.
     A one-voxel point at the very tip reads as a point. A long one-voxel stick does not.
+  - **Ordinary intact main tips:** for a non-landmark, unbroken, non-arch main sweep, tighten the same interpolated-table exponent clamp to an absolute **1.5 m** maximum below radius 0.7 m. Preserve the spine, height, lean, base radius and full-length 0.45 m endpoint. Branches, debris, broken mains, arches and landmarks keep the proportional rule above. A lower exponent also widens the middle of the affected main profile and can change branch exposure at the union; measure that tradeoff. Radius is a shape proxy, not a count of occupied voxels: separately inspect bounded terminal voxel connectivity and the rendered silhouette.
   - **Knuckles** `kn(t)`: only when `r₀ ≥ 4 m`. 2–4 smooth bumps, each of absolute amplitude `max(0.6 m, 0.12 · r)`.
 - **Cross-section:** a polygon whose facet count depends on size.
   - `r₀ < 4 m`: 3–4 facets, facetiness ≥ 0.6
@@ -314,6 +321,7 @@ This is the feature that failed before. Follow it closely, then tune by eye. Eve
   - colossi: 5–8 facets
   - Twist 0–120° along the spine. Surface roughness only where `r ≥ 4 m`, amplitude ≥ 0.6 m.
 - **Branches:** only on thorns with `h ≥ 40 m`. 35% of those get 1–3 branches from `t ∈ [0.2, 0.6]`, 0.2–0.4 h long, with branch `r₀ ≥ 1.5 m`, angled outward and up.
+  - For accepted ordinary intact, non-arch thorns, allocate a stochastically rounded 35% quota within each complete cluster after cross-cell spacing rejection. A separately salted cluster draw rounds the fractional recipient count; tiny cohorts may receive zero. If the quota is positive, include the tallest eligible member (lower ID breaks a height tie), then fill it using the original seeded packing order. Reuse each recipient's original 1–3 branch-count draw. Broken thorns, arches, landmarks and shorter thorns retain their assignments. This intentionally correlates branching with height; it does not move or resize thorns. The report's 30–40% band still counts all ordinary thorns at least 40 m high, including broken ones (decision 119).
 - **Broken:** 12% are truncated at `t ∈ [0.45, 0.8]` with a jagged cap (a noise-displaced half-space subtraction), plus 1–3 **fallen shards** (`r ≥ 1.2 m`), half-buried nearby.
 - **Scree:** shards 4–10 m tall with `r₀ ≥ max(1.2 m, 0.3 · h)`, plus rubble boulders, within 1–2 × `r₀` of big bases.
 - **Fillet:** `k = max(2 m, 0.5 · r₀)`. This is what flares the roots.
@@ -353,6 +361,18 @@ This is the feature that failed before. Follow it closely, then tune by eye. Eve
 - branched: 30–40% of thorns ≥ 40 m
 - ≥ 95% of thorns differ from their nearest neighbour by ≥ 20% in height, ≥ 8° in lean or ≥ 0.1 h in bend
 - no tip thinner than 0.7 m for longer than `max(1.5 m, 0.04 L)`
+- ordinary intact non-arch main sweeps additionally stay below radius 0.7 m for at most 1.5 m; the whole-region report's proportional check remains a separate, weaker metric until it reports this stronger main-tip condition explicitly. Neither radius check substitutes for actual voxel-width or R9 image acceptance.
+
+For the neighbour check, evaluate each accepted ordinary thorn against the closest
+other accepted ordinary base in XZ; exact distance ties choose the lower unsigned
+feature ID. Landmarks are reported separately. Height and bend differences use
+the focal thorn's height as the denominator. Lean means the scalar inclination
+from vertical, and bend means its unsigned amplitude; heading is a separate
+orientation field. Any one of the three inclusive thresholds qualifies that
+thorn as different. This fixes the conventions used by the first measured
+census (decision 113); the 95% requirement and all other bands remain unchanged.
+Receipts retain exact comparison operands for the accepted population so the
+reported nearest pairs and directed comparisons can be independently reproduced.
 
 ### 8.6 Feature catalogue (other regions)
 
@@ -830,16 +850,20 @@ Terrain is judged by eye. These tools make looking fast, repeatable and affordab
 - Scoring rules:
   - aerial altitude is measured from the highest terrain in view
   - golden hour: sun azimuth 60–150° off the view axis, elevation 5–20°
-  - vistas: horizon 30–45% down from the top of the frame
+  - vistas: horizon 30–45% down from the top of the frame. The current aerial composition uses this band; ground-level forest shots are not forced into it. Eye-level shots may aim level or slightly upward to show their forms, subject to all their other checks.
   - the target feature fills at least 15% of the frame
 - Save resolved cameras to `packages/tools/postcards/cameras/seed-<n>.json` (committed).
 - **Validate every camera on every run:**
   - the eye isn't inside solid
   - eye-level shots stand on a walkable voxel, with the eye at +1.62 m
-  - nothing within 5 m in the central 60% of the view
+  - no near obstruction within 5 m in the central 60% of the view. For an eye-level shot with validated walking support, ordinary ground cells whose top is at or below the supporting voxel's top do not count as obstructions. Cells rising above that level, nearby walls, features and fluids still count. This exemption changes only the obstruction test: ground remains a first hit for coverage, visibility and sky measurements. Other shot kinds retain their existing near-clearance test.
   - the sky fraction is within range for the shot type
 
   If validation fails, re-resolve automatically and log it.
+
+**Composition diagnostics (decision 115).** Automated contour margins, largest-parent border hits and projected family-size thresholds guide camera ranking and refinement. They are not additional geometric safety conditions. After the bounded search, a geometrically valid camera may be saved and rendered as **ungraded**, retaining every failed composition diagnostic. This lets actual images determine the remaining visual work. Every Ibara content check in §8.5, primitive calibration and the strict rubric/R2 bars still apply to phase acceptance. Reuse a completed search only for the same generation and resolver inputs; never label an ungraded result as visually accepted.
+
+**Clarification (decision 114).** A +1.62 m eye with the fixed 70° field of view naturally sees its supporting ground within five metres in the lower centre of the image. Rejecting that floor systematically excludes ordinary flat ground. The rule above distinguishes the support plane from an occluding object; it does not waive eye/body safety, raise the camera, change required scene content, or reduce the rubric bars. Horizon measurements remain in every receipt for review; the vista band is not a universal eye-level constraint.
 
 **Postcard mode** (the client with `?postcard=<id>&seed=<n>`):
 - no render loop and no upload cap
@@ -851,6 +875,7 @@ Terrain is judged by eye. These tools make looking fast, repeatable and affordab
 **Throughput:**
 - Run all of a seed's shots in one page (teleport, evict), with a persistent browser profile, so the WorldPlan cache and compiled shaders survive between shots.
 - Log plan, gen, light, mesh and render milliseconds per shot. **Budget: ≤ 60 s per shot** in the cloud VM. Generation dominates; rendering is ~4–10 s.
+- **Diagnostic continuation (decision 116):** keep the standard capture's timing result and failure receipt. Before phase 1.10, a separately labelled diagnostic run may continue waiting for the complete unchanged chunk set up to a fixed 300-second ceiling, while recording whether the original 180-second harness deadline was missed. Capture only after every required chunk is generated, lit, meshed and uploaded; record stage timings and the miss. This produces image/profiling evidence, not a passing timing test or a performance fix. The explicit CLI switch is `--diagnostic-continue`: select exactly one postcard ID, without `--commit` or `--resolve-only`. Its immutable standard-timeout receipt and exit code 1 preserve a missed 180-second test even if the later complete image is saved. Diagnostic outputs stay in a unique attempt directory and cannot replace normal, best or committed postcards. The 300-second ceiling covers the initial readiness wait; navigation, camera resolution, encoding and cleanup are separate. The 60-second target, geometric validation, primitive calibration and final visual bars stay unchanged.
 
 **Files:**
 - Iteration renders go to `out/postcards/<id>-s<seed>.jpg` (not committed).

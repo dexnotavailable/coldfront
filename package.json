@@ -29,7 +29,9 @@
     "test:golden:browsers": "node --import tsx packages/tools/src/golden/browsers.ts",
     "bench:gen": "node --import tsx packages/tools/src/bench/run.ts",
     "atlas": "tsx packages/tools/src/atlas/index.ts",
-    "slice": "tsx packages/tools/src/slice/index.ts"
+    "slice": "tsx packages/tools/src/slice/index.ts",
+    "terrain-report": "tsx packages/tools/src/terrain-report/index.ts",
+    "test:browser:ibara": "node --import tsx packages/tools/src/browser-tests/run.ts phase13"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",

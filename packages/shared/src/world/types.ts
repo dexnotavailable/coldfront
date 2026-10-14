@@ -1,6 +1,7 @@
 /** Public world contracts. Imports: world/types.ts, world/regions.ts,
  * world/world-context.ts and worldplan/index.ts. No runtime stand-ins. */
 import type { Aabb } from "../sdf/types.js";
+import type { GenerationVariant } from "./generation-variant.js";
 
 export type WorldKind = "main" | "test";
 export type SurfaceRegionId =
@@ -240,7 +241,7 @@ export interface UndergroundCell extends XZ {
  * terrainMacro includes base+bowl+owned shapes+macro regional relief exactly once.
  * routingHeight is a SEPARATE flood result and never sampled as rendered terrain. */
 export interface WorldPlanData {
-  readonly schema: 1;
+  readonly schema: 2;
   readonly seed: number;
   readonly worldgenVersion: number;
   readonly grid: {
@@ -259,6 +260,7 @@ export interface WorldPlanData {
   readonly waterBodies: readonly SurfaceWaterBody[];
   readonly undergroundCells: readonly UndergroundCell[];
   readonly sites: WorldSites;
+  readonly ibara: IbaraPlanData;
 }
 export interface PlanProgress {
   readonly stage: "geometry" | "drainage" | "water" | "sites" | "complete";
@@ -305,10 +307,26 @@ export interface SkyInput {
   solidBelowY: number;
   highestFilterY: number;
 }
+/** Integer object/reference counts, not JS heap byte estimates. Geometry and
+ * placement caches are shared by a context: never sum snapshots from its areas.
+ * preparedInstanceReferences counts references held by this batch, including
+ * instances also retained by another batch or by the shared geometry cache. */
+export interface FeatureCacheStats {
+  readonly geometryCells: number;
+  readonly geometryCellLimit: number;
+  readonly placementCells: number;
+  readonly placementCellLimit: number;
+  readonly cachedInstances: number;
+  readonly preparedInstanceReferences: number;
+}
 export interface WorldAreaSampler {
   readonly kind: WorldKind;
   readonly seed: number;
   readonly columns: WorldColumnLayout;
+  /** Snapshot only. Excludes unmeasured JS object heap and deduplication of references. */
+  featureCacheStats?(): FeatureCacheStats;
+  /** Context-wide cleanup counts; do not sum snapshots from prepared areas. */
+  cleanupCacheStats?(): CleanupCacheStats;
   createColumn(): Float64Array;
   sampleColumn(x: number, z: number, out: Float64Array): Float64Array;
   sampleVoxel(
@@ -324,6 +342,25 @@ export interface WorldAreaSampler {
     out: SkyInput,
     column?: Float64Array,
   ): SkyInput;
+}
+/** Exact typed-buffer byte lengths and reference counts, not JS heap estimates.
+ * Raw columns hold no prepared-area references, so area eviction releases all
+ * cleanup-owned batch references. Feature geometry's own cache is separate. */
+export interface CleanupCacheStats {
+  readonly ownerChunks: number;
+  readonly ownerChunkLimit: number;
+  readonly flagBufferBytes: number;
+  readonly searchBufferBytes: number;
+  readonly searches: number;
+  readonly rawQueries: number;
+  readonly maxSearchDiscoveries: number;
+  readonly rawAreas: number;
+  readonly rawAreaLimit: number;
+  readonly rawColumns: number;
+  readonly rawColumnLimit: number;
+  readonly rawColumnBufferBytes: number;
+  readonly rawAreaColumnBufferBytes: number;
+  readonly rawPreparedInstanceReferences: number;
 }
 /** Context point queries equal prepared queries at the default spacing of 1.
  * prepareArea caches deterministic features for a closed rectangle. Build it once
@@ -352,4 +389,9 @@ export interface WorldIdentity {
 }
 export type WorldContextOptions =
   | { kind: "test"; seed: number }
-  | { kind: "main"; seed: number; plan: WorldPlanData };
+  | {
+      kind: "main";
+      seed: number;
+      plan: WorldPlanData;
+      variant?: GenerationVariant;
+    };

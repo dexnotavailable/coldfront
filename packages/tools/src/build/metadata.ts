@@ -39,6 +39,30 @@ export function contentHash(root: string, files: readonly string[]): string {
   }
   return hash.digest("hex");
 }
+export function postcardResolverHash(
+  root: string,
+  phase: "1.2" | "1.3",
+): string {
+  return contentHash(
+    root,
+    [
+      "query.ts",
+      "geometry.ts",
+      "main-resolve.ts",
+      ...(phase === "1.3"
+        ? [
+            "hell-resolve.ts",
+            "hell-readability.ts",
+            "hell-primitive-camera.ts",
+            "hell-visible-instances.ts",
+            "hell-framing-camera.ts",
+            "hell-framing-preflight.ts",
+            "hell-forest-ensemble.ts",
+          ]
+        : []),
+    ].map((name) => join(root, "packages/tools/src/postcards", name)),
+  );
+}
 
 /** Save compatibility follows docs04 section3: worldgen/registry, never rendering. */
 export function sourceFingerprints(
@@ -54,6 +78,7 @@ export function sourceFingerprints(
     "noise",
     "world",
     "sdf",
+    "features",
   ].flatMap((directory) => {
     const path = join(sharedRoot, directory);
     return existsSync(path) ? sourceFiles(path) : [];
@@ -66,6 +91,9 @@ export function sourceFingerprints(
     ...sourceFiles(join(root, "packages/client/src")),
     ...sourceFiles(join(root, "packages/client/public")),
     ...sourceFiles(join(root, "packages/tools/src/build")),
+    ...(existsSync(join(root, "packages/tools/src/postcards"))
+      ? sourceFiles(join(root, "packages/tools/src/postcards"))
+      : []),
     ...sourceFiles(join(root, "packages/tools/postcards/cameras")),
     join(root, "packages/client/index.html"),
     join(root, "packages/client/vite.config.ts"),

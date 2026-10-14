@@ -1,6 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { WorldSession } from "../../../client/src/contracts/game-ui.js";
-import type { VoxelEdit } from "../../../client/src/engine/worker-protocol.js";
+import type {
+  TerrainViewMode,
+  WorldSession,
+} from "../../../client/src/contracts/game-ui.js";
+import type {
+  ChunkViewPlan,
+  StoredChunk,
+} from "../../../client/src/engine/chunk-store.js";
+import type {
+  Address,
+  ChunkResult,
+  VoxelEdit,
+} from "../../../client/src/engine/worker-protocol.js";
 import {
   type WorldSave,
   worldKey,
@@ -23,6 +34,7 @@ const fixture = vi.hoisted(() => ({
     seed: number;
     disposed: boolean;
     edits: Map<string, VoxelEdit>;
+    chunks: Map<string, StoredChunk>;
   }[],
   frames: new Map<number, FrameRequestCallback>(),
   nextFrame: 0,
@@ -35,6 +47,15 @@ const fixture = vi.hoisted(() => ({
   maxPools: 0,
   worldVisible: true,
   captures: 0,
+  capturePlan: [] as Address[],
+  plans: [] as ChunkViewPlan[],
+  requestedPlans: [] as ChunkViewPlan[],
+  retained: [] as string[][],
+  uploaded: [] as string[],
+  removed: [] as string[],
+  validUploaded: new Set<string>(),
+  planFailure: false,
+  workerFailure: false,
 }));
 vi.mock("../../../client/src/engine/effects.js", () => ({
   blockIcon: () => "fixture-icon",
@@ -76,8 +97,8 @@ vi.mock("../../../client/src/engine/chunk-store.js", () => ({
   ChunkStore: class {
     poolActive = true;
     disposed = false;
-    chunks = new Map();
-    uploads = [];
+    chunks = new Map<string, StoredChunk>();
+    uploads: ChunkResult[] = [];
     edits = new Map<string, VoxelEdit>();
     workers = { queues: { generate: 0, light: 0, mesh: 0 }, memoryBytes: 0 };
     memoryBytes = 0;
@@ -98,8 +119,13 @@ vi.mock("../../../client/src/engine/chunk-store.js", () => ({
     get seed() {
       return this.world.identity.seed;
     }
-    hasView() {
-      return true;
+    hasView(addresses: readonly Address[], uploaded = false) {
+      return (
+        !uploaded ||
+        addresses.every((a) =>
+          fixture.validUploaded.has(`${a.cx},${a.cy},${a.cz}`),
+        )
+      );
     }
     get = (x: number, y: number, z: number) =>
       this.edits.get(`${x},${y},${z}`)?.block ?? (y < 6 ? 3 : 0);
@@ -115,8 +141,54 @@ vi.mock("../../../client/src/engine/chunk-store.js", () => ({
     async requestCamera() {
       return this.requestView();
     }
-    retain() {
-      return [];
+    planView(): ChunkViewPlan {
+      if (fixture.planFailure) throw new Error("fixture plan failure");
+      const addresses = fixture.capturePlan;
+      const plan = {
+        world: this.world,
+        addresses,
+        jobs: addresses.map((a, d) => ({ a, d })),
+      };
+      fixture.plans.push(plan);
+      return plan;
+    }
+    planCamera() {
+      return this.planView();
+    }
+    async requestPlannedView(plan: ChunkViewPlan) {
+      fixture.requestedPlans.push(plan);
+      await fixture.viewGate;
+      if (fixture.workerFailure)
+        throw new Error("fixture missing chunk failed");
+      for (const address of plan.addresses) {
+        const key = `${address.cx},${address.cy},${address.cz}`;
+        if (this.chunks.has(key)) continue;
+        const result = {
+          address,
+          world: this.world,
+          revision: 0,
+        } as ChunkResult;
+        this.chunks.set(key, {
+          address,
+          result,
+          revision: 0,
+          state: "meshing",
+          touched: 0,
+        });
+        this.uploads.push(result);
+      }
+      return plan.addresses;
+    }
+    retain(addresses: readonly Address[]) {
+      const keep = new Set(addresses.map((a) => `${a.cx},${a.cy},${a.cz}`)),
+        removed: string[] = [];
+      fixture.retained.push([...keep]);
+      for (const key of this.chunks.keys())
+        if (!keep.has(key)) {
+          this.chunks.delete(key);
+          removed.push(key);
+        }
+      return removed;
     }
     suspendWorkers() {
       if (this.poolActive) {
@@ -146,6 +218,7 @@ vi.mock("../../../client/src/engine/chunk-store.js", () => ({
 vi.mock("../../../client/src/engine/renderer.js", () => ({
   WorldRenderer: class {
     camera = { position: { x: 0, y: 24, z: 24 }, fov: 40 };
+    viewMode: TerrainViewMode = "normal";
     statistics = { draws: 0, triangles: 0, memory: 0 };
     effects = {
       placementActive: () => false,
@@ -165,6 +238,9 @@ vi.mock("../../../client/src/engine/renderer.js", () => ({
     }
     setPostcard(active: boolean) {
       this.camera.fov = active ? 70 : 40;
+    }
+    setViewMode(mode: TerrainViewMode) {
+      this.viewMode = mode;
     }
     setHud() {}
     setWorld() {}
@@ -187,8 +263,15 @@ vi.mock("../../../client/src/engine/renderer.js", () => ({
       });
     }
     update() {}
-    upload() {}
-    remove() {}
+    upload(result: ChunkResult) {
+      const key = `${result.address.cx},${result.address.cy},${result.address.cz}`;
+      fixture.uploaded.push(key);
+      fixture.validUploaded.add(key);
+    }
+    remove(key: string) {
+      fixture.removed.push(key);
+      fixture.validUploaded.delete(key);
+    }
     dispose() {}
   },
 }));
@@ -240,6 +323,14 @@ beforeEach(async () => {
   fixture.pools = fixture.maxPools = 0;
   fixture.worldVisible = true;
   fixture.captures = 0;
+  fixture.capturePlan = [];
+  fixture.plans.length = fixture.requestedPlans.length = 0;
+  fixture.retained.length =
+    fixture.uploaded.length =
+    fixture.removed.length =
+      0;
+  fixture.validUploaded.clear();
+  fixture.planFailure = fixture.workerFailure = false;
   storage = new StorageFixture();
   vi.stubGlobal("indexedDB", storage.factory);
   vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
@@ -274,6 +365,115 @@ afterEach(async () => {
 });
 
 describe("real game-port lifecycle serialization with deferred storage", () => {
+  it("keeps overlap GPU ownership, removes only obsolete meshes and uses its one planned destination", async () => {
+    const world = currentWorld(),
+      store = fixture.stores[0];
+    if (!store) throw new Error("Missing store");
+    const camera = {
+      id: "TEST-1" as const,
+      identity: world.identity,
+      position: { x: 10, y: 10, z: 10 },
+      target: { x: 0, y: 6, z: 0 },
+      hours: 17.25,
+      radius: 96,
+    };
+    fixture.capturePlan = [
+      { cx: 0, cy: 0, cz: 0 },
+      { cx: 1, cy: 0, cz: 0 },
+    ];
+    await game.renderPostcard(camera);
+    const overlap = store.chunks.get("1,0,0");
+    fixture.uploaded.length = fixture.removed.length = 0;
+    fixture.capturePlan = [
+      { cx: 1, cy: 0, cz: 0 },
+      { cx: 2, cy: 0, cz: 0 },
+    ];
+    await game.renderPostcard({ ...camera, position: { x: 50, y: 10, z: 10 } });
+    expect(fixture.retained.at(-1)).toEqual(["1,0,0"]);
+    expect(fixture.removed).toEqual(["0,0,0"]);
+    expect(fixture.uploaded).toEqual(["2,0,0"]);
+    expect(store.chunks.get("1,0,0")).toBe(overlap);
+    expect([...store.chunks.keys()]).toEqual(["1,0,0", "2,0,0"]);
+    expect(fixture.plans).toHaveLength(2);
+    expect(fixture.requestedPlans[0]).toBe(fixture.plans[0]);
+    expect(fixture.requestedPlans[1]).toBe(fixture.plans[1]);
+    expect(fixture.pools).toBe(1);
+    expect(fixture.maxPools).toBe(1);
+    expect(fixture.captures).toBe(2);
+  });
+  it("invalid planning fails before retention or renderer eviction", async () => {
+    const world = currentWorld();
+    fixture.planFailure = true;
+    await expect(
+      game.renderPostcard({
+        id: "TEST-1",
+        identity: world.identity,
+        position: { x: 10, y: 10, z: 10 },
+        target: { x: 0, y: 6, z: 0 },
+        hours: 17.25,
+        radius: 96,
+      }),
+    ).rejects.toThrow("plan failure");
+    expect(fixture.retained).toEqual([]);
+    expect(fixture.removed).toEqual([]);
+    expect(fixture.requestedPlans).toEqual([]);
+    expect(fixture.captures).toBe(0);
+  });
+  it.each(["worker", "GPU"])(
+    "rejects %s failure without publishing a new successful capture",
+    async (kind) => {
+      const world = currentWorld(),
+        camera = {
+          id: "TEST-1" as const,
+          identity: world.identity,
+          position: { x: 10, y: 10, z: 10 },
+          target: { x: 0, y: 6, z: 0 },
+          hours: 17.25,
+          radius: 96,
+        };
+      await game.renderPostcard(camera);
+      const report = game.telemetry().postcard;
+      fixture.workerFailure = kind === "worker";
+      fixture.prepareFailure = kind === "GPU";
+      await expect(
+        game.renderPostcard({ ...camera, position: { x: 50, y: 10, z: 10 } }),
+      ).rejects.toThrow(
+        kind === "worker" ? "missing chunk failed" : "GPU preparation",
+      );
+      expect(fixture.captures).toBe(1);
+      expect(game.telemetry().postcard).toEqual(report);
+      expect(game.telemetry().ready).toBe(false);
+    },
+  );
+  it("cancels held capture before Quit/Play without publishing into or disposing the next world", async () => {
+    const old = currentWorld();
+    let release = () => {};
+    fixture.viewGate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const capture = game.renderPostcard({
+      id: "TEST-1",
+      identity: old.identity,
+      position: { x: 10, y: 10, z: 10 },
+      target: { x: 0, y: 6, z: 0 },
+      hours: 17.25,
+      radius: 96,
+    });
+    const rejected = expect(capture).rejects.toThrow("cancelled");
+    await Promise.resolve();
+    await Promise.resolve();
+    game.port.apply({ type: "quit" });
+    game.port.apply({ type: "start", seed: 2, worldKind: "test" });
+    release();
+    fixture.viewGate = null;
+    await rejected;
+    await drain(game.ready());
+    expect(fixture.captures).toBe(0);
+    expect(currentWorld().identity.seed).toBe(2);
+    expect(currentWorld().id).not.toBe(old.id);
+    expect(fixture.pools).toBe(1);
+    expect(fixture.stores.at(-1)?.disposed).toBe(false);
+  });
   it("switches validated postcard views in one world/pool, waits for requested terrain and resumes the original free camera", async () => {
     const world = currentWorld(),
       stores = fixture.stores.length;

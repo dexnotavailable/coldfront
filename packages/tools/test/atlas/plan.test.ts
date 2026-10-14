@@ -1,3 +1,6 @@
+import { createHash } from "node:crypto";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   REGION_IDS,
@@ -5,7 +8,10 @@ import {
 } from "../../../shared/src/world/regions.js";
 import { createRegionWeights } from "../../../shared/src/worldplan/geometry.js";
 import { parseAtlas } from "../../src/atlas/config.js";
+import { atlasSourceHashes } from "../../src/atlas/index.js";
 import { type AtlasRequest, renderAtlas } from "../../src/atlas/render.js";
+import { REPO_ROOT } from "../../src/golden/fixture.js";
+import { writeRaster } from "../../src/terrain-review/output.js";
 import { createTestWorldSource } from "../../src/terrain-review/source.js";
 import { geometryPlan } from "../terrain-review/plan-fixture.js";
 
@@ -19,6 +25,41 @@ const request: AtlasRequest = {
   relief: 4,
 };
 describe("WorldPlan atlas", () => {
+  it("binds the emitted small-fixture receipt to every source byte including coverage helpers", async () => {
+    const sources = await atlasSourceHashes(REPO_ROOT);
+    expect(new Set(sources.map((s) => s.path)).size).toBe(sources.length);
+    expect(
+      sources.some(
+        (s) => s.path === "packages/tools/src/terrain-report/ibara.ts",
+      ),
+    ).toBe(true);
+    const raster = renderAtlas(request, {
+      ...createTestWorldSource(1),
+      world: "main",
+      plan: geometryPlan(),
+    });
+    const receiptPath = await writeRaster(
+      REPO_ROOT,
+      "out/p7-diagnostics/test-receipt/atlas-fixture.png",
+      raster,
+      0,
+      sources,
+    );
+    const receipt = JSON.parse(await readFile(receiptPath, "utf8")) as {
+      sources: typeof sources;
+      sampling: { seed: number; worldgenVersion: number };
+    };
+    expect(receipt.sampling).toMatchObject({
+      seed: 1,
+      worldgenVersion: raster.metadata.worldgenVersion,
+    });
+    for (const entry of receipt.sources)
+      expect(entry.sha256).toBe(
+        createHash("sha256")
+          .update(await readFile(join(REPO_ROOT, entry.path)))
+          .digest("hex"),
+      );
+  });
   it("uses authoritative blended colours and reports actual sampled area rather than height statistics", () => {
     const plan = geometryPlan(),
       source = { ...createTestWorldSource(1), world: "main", plan };
@@ -153,5 +194,45 @@ describe("WorldPlan atlas", () => {
         bounds: { minX: -256, maxX: 256 },
       },
     });
+  });
+  it("renders supplied production feature masks and reports the requested-domain coverage", () => {
+    const source = {
+      ...createTestWorldSource(1),
+      world: "main",
+      plan: geometryPlan(),
+      writeFeatureMasks(
+        x: number,
+        _z: number,
+        out: { weight: number; thorn: number },
+      ) {
+        out.weight = 1;
+        out.thorn = x < 0 ? 0 : 1;
+      },
+    };
+    const image = renderAtlas({ ...request, mode: "features" }, source);
+    expect(image.metadata.features).toMatchObject({
+      region: "hellscape",
+      samples: 64,
+      weight: 64,
+      weighted: { thorn: 0.5, dense: 0.5 },
+    });
+    expect([...image.rgba.slice(0, 4)]).toEqual([18, 22, 48, 255]);
+    expect([...image.rgba.slice(4 * 4, 4 * 5)]).toEqual([238, 142, 48, 255]);
+    expect(image.metadata.sampleConvention).toContain(
+      "requested raster domain",
+    );
+    expect(parseAtlas(["--mode", "features"]).request.mode).toBe("features");
+    expect(() => parseAtlas(["--mode", "features", "--layer", "pit"])).toThrow(
+      /surface-only/,
+    );
+    expect(() =>
+      parseAtlas(["--world", "test", "--mode", "features"]),
+    ).toThrow();
+    expect(() =>
+      renderAtlas({ ...request, mode: "features" }, {
+        ...source,
+        writeFeatureMasks: undefined,
+      } as unknown as typeof source),
+    ).toThrow(/production/);
   });
 });

@@ -19,6 +19,7 @@ import {
   chunkKey,
   editKey,
   type VoxelEdit,
+  type WorkerFeatureCacheStats,
 } from "./worker-protocol.js";
 export type ChunkState =
   | "requested"
@@ -35,6 +36,94 @@ export interface StoredChunk {
   revision: number;
   state: ChunkState;
   touched: number;
+}
+export interface ChunkViewJob {
+  readonly a: Address;
+  readonly d: number;
+}
+export interface ChunkViewPlan {
+  readonly world: WorldSession;
+  readonly jobs: readonly ChunkViewJob[];
+  readonly addresses: readonly Address[];
+}
+/** Exact ordered destination selection, without requesting or generating chunks. */
+export function planChunkView(
+  context: Pick<WorldContext, "conservativeBounds">,
+  edits: Iterable<VoxelEdit>,
+  x: number,
+  y: number,
+  z: number,
+  radius: number,
+  includeColumn?: (cx: number, cz: number) => boolean,
+): readonly ChunkViewJob[] {
+  if (
+    !insideFrame(x, y, z) ||
+    !Number.isFinite(radius) ||
+    radius <= 0 ||
+    radius > 600
+  )
+    throw new RangeError("View outside world frame");
+  const changed = [...edits];
+  const cx = Math.floor(x / 32),
+    cz = Math.floor(z / 32),
+    cy = Math.floor(y / 32),
+    r = Math.ceil(radius / 32);
+  const jobs: { a: Address; d: number }[] = [];
+  for (let dz = -r; dz <= r; dz++)
+    for (let dx = -r; dx <= r; dx++) {
+      if (dx * dx + dz * dz > (r + 0.4) * (r + 0.4)) continue;
+      const ax = cx + dx,
+        az = cz + dz;
+      if (ax < -704 || ax >= 704 || az < -704 || az >= 704) continue;
+      if (includeColumn && !includeColumn(ax, az)) continue;
+      const bounds: WorldBounds = {
+        minSurfaceY: 0,
+        maxSurfaceY: 0,
+        maxSolidY: 0,
+        maxFluidY: 0,
+      };
+      context.conservativeBounds(
+        {
+          minX: ax * 32,
+          minZ: az * 32,
+          maxX: ax * 32 + 32,
+          maxZ: az * 32 + 32,
+        },
+        bounds,
+      );
+      const low = bounds.minSurfaceY;
+      let high = Math.max(
+        bounds.maxSurfaceY,
+        bounds.maxSolidY,
+        bounds.maxFluidY,
+      );
+      for (const edit of changed)
+        if (
+          Math.floor(edit.x / 32) === ax &&
+          Math.floor(edit.z / 32) === az &&
+          edit.block !== Block.Air
+        )
+          high = Math.max(high, edit.y + 1);
+      const levels = new Set<number>();
+      const minY = Math.max(-48, Math.floor((low - 3) / 32));
+      const maxY = Math.min(31, Math.floor(high / 32));
+      for (let ay = minY; ay <= maxY; ay++) levels.add(ay);
+      if (Math.abs(dx) <= 1 && Math.abs(dz) <= 1)
+        for (let ay = Math.max(-48, cy - 1); ay <= Math.min(31, cy + 1); ay++)
+          levels.add(ay);
+      // Surface and body bands stay separate: flight must not generate all
+      // the empty vertical chunks between the ground and the avatar.
+      for (const ay of levels)
+        jobs.push({
+          a: { cx: ax, cy: ay, cz: az },
+          d: dx * dx + dz * dz + 2 * (ay - cy) * (ay - cy),
+        });
+    }
+  jobs.sort(
+    (a, b) =>
+      a.d - b.d || a.a.cx - b.a.cx || a.a.cz - b.a.cz || a.a.cy - b.a.cy,
+  );
+  return jobs;
 }
 export class ChunkStore {
   readonly chunks = new Map<string, StoredChunk>();
@@ -176,12 +265,13 @@ export class ChunkStore {
       return (
         !!chunk?.result &&
         sameSession(this.world, chunk.result.world) &&
+        chunkKey(chunk.result.address) === chunkKey(address) &&
         chunk.result.revision === chunk.revision &&
         (!uploaded || chunk.state === "visible")
       );
     });
   }
-  request(address: Address, priority = 0): Promise<void> {
+  request(address: Address, priority = 0, postcard = false): Promise<void> {
     if (this.stopped || this.suspended)
       return Promise.reject(new Error("Chunk store unavailable"));
     if (
@@ -198,7 +288,12 @@ export class ChunkStore {
       pending = this.pending.get(key);
     if (pending) return pending;
     let stored = this.chunks.get(key);
-    if (stored?.result && stored.result.revision === stored.revision) {
+    if (
+      stored?.result &&
+      sameSession(this.world, stored.result.world) &&
+      chunkKey(stored.result.address) === key &&
+      stored.result.revision === stored.revision
+    ) {
       stored.touched = ++this.tick;
       return Promise.resolve();
     }
@@ -215,10 +310,16 @@ export class ChunkStore {
     stored.state = "generating";
     const revision = stored.revision;
     const promise = this.workers
-      .request(address, revision, priority, (stage) => {
-        const current = this.chunks.get(key);
-        if (current) current.state = stage;
-      })
+      .request(
+        address,
+        revision,
+        priority,
+        (stage) => {
+          const current = this.chunks.get(key);
+          if (current) current.state = stage;
+        },
+        postcard,
+      )
       .then((result) => {
         if (this.stopped) return;
         for (const key of ["generate", "light", "mesh"] as const)
@@ -250,10 +351,55 @@ export class ChunkStore {
           current &&
           current.revision !== revision
         )
-          void this.request(address, priority).catch(() => {});
+          void this.request(address, priority, postcard).catch(() => {});
       });
     this.pending.set(key, promise);
     return promise;
+  }
+  /** The same ordered plan owns retention and subsequent requests. */
+  planView(
+    x: number,
+    y: number,
+    z: number,
+    radius: number,
+    includeColumn?: (cx: number, cz: number) => boolean,
+  ): ChunkViewPlan {
+    const jobs = planChunkView(
+      this.context,
+      this.edits.values(),
+      x,
+      y,
+      z,
+      radius,
+      includeColumn,
+    );
+    return { world: this.world, jobs, addresses: jobs.map((job) => job.a) };
+  }
+  planCamera(view: PostcardView): ChunkViewPlan {
+    return this.planView(
+      view.position.x,
+      Math.max(-1535, Math.min(1023, view.position.y)),
+      view.position.z,
+      view.radius,
+      (cx, cz) => postcardColumnVisible(view, cx, cz),
+    );
+  }
+  async requestPlannedView(
+    plan: ChunkViewPlan,
+    postcard = false,
+  ): Promise<readonly Address[]> {
+    if (!sameSession(this.world, plan.world))
+      throw new Error("Destination plan belongs to another world session");
+    await this.workers.ready;
+    await Promise.all(
+      plan.jobs.map((job) => this.request(job.a, job.d, postcard)),
+    );
+    // An edit may invalidate a first result. Real revisions and uploaded state
+    // remain the acceptance boundary, including for retained overlap.
+    await this.settled();
+    if (!this.hasView(plan.addresses))
+      throw new Error("Requested terrain is not complete");
+    return plan.addresses;
   }
   /** Surface columns plus body band, with a one-chunk light halo in each worker. */
   async requestView(
@@ -262,7 +408,9 @@ export class ChunkStore {
     z: number,
     radius: number,
     includeColumn?: (cx: number, cz: number) => boolean,
+    postcard = false,
   ): Promise<readonly Address[]> {
+    // Preserve rejection of invalid inputs before waiting for pool startup.
     if (
       !insideFrame(x, y, z) ||
       !Number.isFinite(radius) ||
@@ -271,81 +419,22 @@ export class ChunkStore {
     )
       throw new RangeError("View outside world frame");
     await this.workers.ready;
-    const cx = Math.floor(x / 32),
-      cz = Math.floor(z / 32),
-      cy = Math.floor(y / 32),
-      r = Math.ceil(radius / 32);
-    const jobs: { a: Address; d: number }[] = [];
-    for (let dz = -r; dz <= r; dz++)
-      for (let dx = -r; dx <= r; dx++) {
-        if (dx * dx + dz * dz > (r + 0.4) * (r + 0.4)) continue;
-        const ax = cx + dx,
-          az = cz + dz;
-        if (ax < -704 || ax >= 704 || az < -704 || az >= 704) continue;
-        if (includeColumn && !includeColumn(ax, az)) continue;
-        const bounds: WorldBounds = {
-          minSurfaceY: 0,
-          maxSurfaceY: 0,
-          maxSolidY: 0,
-          maxFluidY: 0,
-        };
-        this.context.conservativeBounds(
-          {
-            minX: ax * 32,
-            minZ: az * 32,
-            maxX: ax * 32 + 32,
-            maxZ: az * 32 + 32,
-          },
-          bounds,
-        );
-        const low = bounds.minSurfaceY;
-        let high = Math.max(
-          bounds.maxSurfaceY,
-          bounds.maxSolidY,
-          bounds.maxFluidY,
-        );
-        for (const edit of this.edits.values())
-          if (
-            Math.floor(edit.x / 32) === ax &&
-            Math.floor(edit.z / 32) === az &&
-            edit.block !== Block.Air
-          )
-            high = Math.max(high, edit.y + 1);
-        const levels = new Set<number>();
-        const minY = Math.max(-48, Math.floor((low - 3) / 32));
-        const maxY = Math.min(31, Math.floor(high / 32));
-        for (let ay = minY; ay <= maxY; ay++) levels.add(ay);
-        if (Math.abs(dx) <= 1 && Math.abs(dz) <= 1)
-          for (let ay = Math.max(-48, cy - 1); ay <= Math.min(31, cy + 1); ay++)
-            levels.add(ay);
-        // Surface and body bands stay separate: flight must not generate all
-        // the empty vertical chunks between the ground and the avatar.
-        for (const ay of levels)
-          jobs.push({
-            a: { cx: ax, cy: ay, cz: az },
-            d: dx * dx + dz * dz + 2 * (ay - cy) * (ay - cy),
-          });
-      }
-    jobs.sort(
-      (a, b) =>
-        a.d - b.d || a.a.cx - b.a.cx || a.a.cz - b.a.cz || a.a.cy - b.a.cy,
+    return this.requestPlannedView(
+      this.planView(x, y, z, radius, includeColumn),
+      postcard,
     );
-    await Promise.all(jobs.map((j) => this.request(j.a, j.d)));
-    const addresses = jobs.map((j) => j.a);
-    // A racing edit may have invalidated a first result. Await the queued refill
-    // and check real mesh revisions rather than treating resolved jobs as ready.
-    await this.settled();
-    if (!this.hasView(addresses))
-      throw new Error("Requested terrain is not complete");
-    return addresses;
   }
-  requestCamera(view: PostcardView): Promise<readonly Address[]> {
+  requestCamera(
+    view: PostcardView,
+    postcard = false,
+  ): Promise<readonly Address[]> {
     return this.requestView(
       view.position.x,
       Math.max(-1535, Math.min(1023, view.position.y)),
       view.position.z,
       view.radius,
       (cx, cz) => postcardColumnVisible(view, cx, cz),
+      postcard,
     );
   }
   retain(addresses: readonly Address[]): string[] {
@@ -357,6 +446,11 @@ export class ChunkStore {
         this.chunks.delete(key);
         removed.push(key);
       }
+    // Do not let a previously completed upload resurrect an evicted result.
+    const evicted = new Set(removed);
+    for (let i = this.uploads.length - 1; i >= 0; i--)
+      if (evicted.has(chunkKey((this.uploads[i] as ChunkResult).address)))
+        this.uploads.splice(i, 1);
     return removed;
   }
   edit(edit: VoxelEdit): void {
@@ -375,9 +469,12 @@ export class ChunkStore {
       if (
         Math.abs(stored.address.cx - cx) > 1 ||
         Math.abs(stored.address.cz - cz) > 1 ||
-        Math.abs(stored.address.cy - cy) > 1
+        edit.y < stored.address.cy * 32 - 32 ||
+        edit.y >= stored.address.cy * 32 + 128
       )
         continue;
+      // Match the worker's 96m volume plus its 64m incoming-sky window.
+      // A roof can invalidate lower meshes up to three chunk levels away.
       stored.revision++;
       if (
         stored.result &&
@@ -394,6 +491,23 @@ export class ChunkStore {
   get queueSize(): number {
     return this.workers.queued;
   }
+  /** Shared geometry counted once; each retained prepared area counted once,
+   * including areas still referenced by point columns after area-LRU eviction. */
+  get featureCacheStats(): WorkerFeatureCacheStats | undefined {
+    type DiagnosticSampler = WorldAreaSampler & {
+      featureCacheStats?(): WorkerFeatureCacheStats;
+    };
+    const shared = (this.context as DiagnosticSampler).featureCacheStats?.();
+    if (!shared) return undefined;
+    const retained = new Set(this.pointAreas.values());
+    for (const column of this.pointColumns.values()) retained.add(column.area);
+    let preparedInstanceReferences = 0;
+    for (const area of retained)
+      preparedInstanceReferences +=
+        (area as DiagnosticSampler).featureCacheStats?.()
+          .preparedInstanceReferences ?? 0;
+    return { ...shared, preparedInstanceReferences };
+  }
   get memoryBytes(): number {
     let size = this.workers.memoryBytes + planBytes(this.context.plan?.data);
     for (const column of this.pointColumns.values())
@@ -408,6 +522,7 @@ export class ChunkStore {
             p.expansions.byteLength +
             p.packedPositions.byteLength +
             p.surfaces.byteLength +
+            p.featureIdParts.byteLength +
             p.indices.byteLength;
       }
     return size;

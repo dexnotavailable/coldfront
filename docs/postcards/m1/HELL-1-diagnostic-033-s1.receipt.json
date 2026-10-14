@@ -1,0 +1,33 @@
+{
+  "status": "diagnostic-ungraded-not-phase-acceptance",
+  "sourceCommit": "233e73eb9d8cad61a9fc9f6f70e00c92a70bd279",
+  "seed": 1,
+  "ordinal": 33,
+  "camera": {
+    "x": 5561.5,
+    "y": 30.62,
+    "z": 5541.5
+  },
+  "target": {
+    "x": 5585.86523247589,
+    "y": 36.21927446565914,
+    "z": 5600.68053266401
+  },
+  "hours": 17.25,
+  "fov": 70,
+  "width": 1280,
+  "height": 720,
+  "radius": 512,
+  "readyChunks": 1135,
+  "requestedChunks": 1135,
+  "captureMs": 149709.1654,
+  "imageSha256": "9f4c245447d23db0a69afcb7d6c308af322871715ac1480c9b9af37675cf8e44",
+  "originalPngSha256": "483ed1b108a902de011cecb83b75f210c241fce21d91036906e60df7481a1260",
+  "sourceHash": "094490c83d82d9e8889e75129f985c23dbc5ed6390d19c3a81268c328294c740",
+  "resolverHash": "7a78a411af0734d84a8a919f04595702928a6e0816bd0147616d8df11c240864",
+  "provisionalScore": 13,
+  "requiredR2": 2,
+  "provisionalR2": 1,
+  "secondView": "Timed out after180s; no second image",
+  "scope": "Out-only source harness importing actual GameRuntime, generator, workers and renderer; primitive calibration incomplete"
+}

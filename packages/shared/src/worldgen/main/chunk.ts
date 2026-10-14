@@ -32,11 +32,13 @@ export function generateWorldChunk(
   const maxX = sampleCenter(cx, 32, spacing);
   const maxZ = sampleCenter(cz, 32, spacing);
   sampleCenter(cy, 39, spacing);
-  const area = context.prepareArea({ minX, minZ, maxX, maxZ });
+  const area = context.prepareArea({ minX, minZ, maxX, maxZ }, spacing);
   const stride = context.columns.stride;
   const blocks = new Uint16Array(CHUNK_VOLUME);
   const haloBlocks = new Uint16Array(HALO_VOLUME);
   const density = new Float64Array(HALO_VOLUME);
+  const featureIds = new Uint32Array(HALO_VOLUME);
+  const featureT = new Float64Array(HALO_VOLUME);
   const columns = new Float64Array(HALO_WIDTH * HALO_WIDTH * stride);
   const column = area.createColumn();
   const voxel: VoxelSample = { density: 0, block: 0, fluid: 0 };
@@ -51,6 +53,8 @@ export function generateWorldChunk(
         const h = haloIndex(x, y, z);
         haloBlocks[h] = voxel.block;
         density[h] = voxel.density;
+        featureIds[h] = voxel.featureId ?? 0;
+        featureT[h] = voxel.featureT ?? 0;
         if (x >= 0 && x < 32 && y >= 0 && y < 32 && z >= 0 && z < 32)
           blocks[voxelIndex(x, y, z)] = voxel.block;
       }
@@ -66,6 +70,8 @@ export function generateWorldChunk(
     blocks,
     haloBlocks,
     density,
+    featureIds,
+    featureT,
     columns,
   };
 }

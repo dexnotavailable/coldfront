@@ -3,7 +3,7 @@
  * Source f88305d0a027ca4bb6cd44b10322b87f4a98e912, MIT, Erik Johansson 2020.
  * Full licence is in LICENSE.binary-greedy-meshing. Adaptations: separate
  * border bits for the full 32-cell row, ordered AO and packed-light merge keys,
- * four draw classes, typed-array output. No BigInt or floating-point masks.
+ * five draw classes, exact feature IDs, typed-array output. No BigInt masks.
  */
 import { BLOCK_REGISTRY, Block } from "../blocks/registry.js";
 import { haloIndex } from "../world/coordinates.js";
@@ -16,6 +16,8 @@ export interface MeshPart {
   readonly packedPositions: Float32Array;
   /** block, AO (0..3), packed sky/R/G/B light (four nibbles). */
   readonly surfaces: Float32Array;
+  /** Exact uint32 identity as [low16, high16] per vertex; never normalized. */
+  readonly featureIdParts: Uint16Array;
   readonly indices: Uint32Array;
 }
 export interface ChunkMesh {
@@ -29,6 +31,7 @@ interface Builder {
   e: number[];
   packed: number[];
   s: number[];
+  f: number[];
   i: number[];
 }
 const makeBuilder = (): Builder => ({
@@ -37,6 +40,7 @@ const makeBuilder = (): Builder => ({
   e: [],
   packed: [],
   s: [],
+  f: [],
   i: [],
 });
 function finish(b: Builder): MeshPart {
@@ -46,6 +50,7 @@ function finish(b: Builder): MeshPart {
     expansions: new Int8Array(b.e),
     packedPositions: new Float32Array(b.packed),
     surfaces: new Float32Array(b.s),
+    featureIdParts: new Uint16Array(b.f),
     indices: new Uint32Array(b.i),
   };
 }
@@ -65,7 +70,9 @@ function renderClass(id: number): number {
     : kind === "translucent"
       ? 2
       : kind === "fluid"
-        ? 3
+        ? BLOCK_REGISTRY[id]?.fluidKind === "lava"
+          ? 4
+          : 3
         : 0;
 }
 /** u cross v = axis. This also fixes the AO tuple order for all six faces. */
@@ -101,6 +108,7 @@ function emit(
   block: number,
   ao: number,
   light: number,
+  featureId: number,
 ): void {
   const corners = [
     [u, v],
@@ -120,6 +128,7 @@ function emit(
       (p[0] as number) | ((p[1] as number) << 6) | ((p[2] as number) << 12),
     );
     b.s.push(block, (ao >>> (k * 2)) & 3, light);
+    b.f.push(featureId & 0xffff, featureId >>> 16);
   }
   const flip =
     (ao & 3) + ((ao >>> 4) & 3) > ((ao >>> 2) & 3) + ((ao >>> 6) & 3);
@@ -140,12 +149,19 @@ function emit(
   }
 }
 /** Halo dimensions and indexing are the foundation's 34 x 41 x 34 contract. */
-export function meshChunk(blocks: Uint16Array, lights: Uint16Array): ChunkMesh {
-  const builders = [makeBuilder(), makeBuilder(), makeBuilder(), makeBuilder()];
+export function meshChunk(
+  blocks: Uint16Array,
+  lights: Uint16Array,
+  featureIds?: Uint32Array,
+): ChunkMesh {
+  if (featureIds && featureIds.length !== blocks.length)
+    throw new RangeError("Feature IDs must match the block halo");
+  const builders = Array.from({ length: 5 }, makeBuilder);
   const skirts = makeBuilder();
   const rowMasks = new Uint32Array(32);
   const faceKeys = new Uint32Array(1024);
   const faceLights = new Uint16Array(1024);
+  const faceFeatures = new Uint32Array(1024);
   const faces = new Uint32Array(32 * 32 * 2);
   let quads = 0;
   for (let axis = 0; axis < 3; axis++) {
@@ -196,6 +212,7 @@ export function meshChunk(blocks: Uint16Array, lights: Uint16Array): ChunkMesh {
                   block,
                   255,
                   lights[ni] as number,
+                  featureIds?.[bi] ?? 0,
                 );
               continue;
             }
@@ -217,6 +234,7 @@ export function meshChunk(blocks: Uint16Array, lights: Uint16Array): ChunkMesh {
             const fi = u + 32 * v;
             faceKeys[fi] = (block << 8) | ao;
             faceLights[fi] = lights[ni] as number;
+            faceFeatures[fi] = featureIds?.[bi] ?? 0;
             rowMasks[v] = ((rowMasks[v] as number) | (1 << u)) >>> 0;
           }
         // Greedy rectangles over bit planes. Ordered four-corner AO/light are
@@ -226,13 +244,15 @@ export function meshChunk(blocks: Uint16Array, lights: Uint16Array): ChunkMesh {
             const bits = rowMasks[v] as number;
             const u = 31 - Math.clz32(bits & -bits);
             const key = faceKeys[u + v * 32] as number,
-              light = faceLights[u + v * 32] as number;
+              light = faceLights[u + v * 32] as number,
+              featureId = faceFeatures[u + v * 32] as number;
             let w = 1;
             while (
               u + w < 32 &&
               (bits >>> (u + w)) & 1 &&
               faceKeys[u + w + v * 32] === key &&
-              faceLights[u + w + v * 32] === light
+              faceLights[u + w + v * 32] === light &&
+              faceFeatures[u + w + v * 32] === featureId
             )
               w++;
             const mask = runMask(u, w);
@@ -244,7 +264,8 @@ export function meshChunk(blocks: Uint16Array, lights: Uint16Array): ChunkMesh {
               for (let j = 0; j < w; j++)
                 if (
                   faceKeys[u + j + (v + h) * 32] !== key ||
-                  faceLights[u + j + (v + h) * 32] !== light
+                  faceLights[u + j + (v + h) * 32] !== light ||
+                  faceFeatures[u + j + (v + h) * 32] !== featureId
                 )
                   break outer;
               h++;
@@ -264,6 +285,7 @@ export function meshChunk(blocks: Uint16Array, lights: Uint16Array): ChunkMesh {
               block,
               key & 255,
               light,
+              featureId,
             );
             quads++;
           }

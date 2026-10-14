@@ -43,11 +43,11 @@ small contour loops. The mountain and Rim image pairs are byte-identical.
 
 Desert before:
 
-![Desert diagnostic before](../postcards/wip/calm-desert-before.jpg)
+![Desert diagnostic before](https://raw.githubusercontent.com/dexnotavailable/coldfront/fbc0d967e1df7ee5d34e8d57fe9611d0d1e136ba/docs/postcards/wip/calm-desert-before.jpg)
 
 Desert after:
 
-![Desert diagnostic after](../postcards/wip/calm-desert-after.jpg)
+![Desert diagnostic after](https://raw.githubusercontent.com/dexnotavailable/coldfront/fbc0d967e1df7ee5d34e8d57fe9611d0d1e136ba/docs/postcards/wip/calm-desert-after.jpg)
 
 These are diagnostic aerials, not graded postcards or actual Overhead play.
 The finite loaded patch and existing haze remain visible. They establish the

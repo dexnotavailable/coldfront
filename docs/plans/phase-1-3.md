@@ -66,7 +66,7 @@ unchanged. No Ibara feature source is adopted until P1. Keep these hashes:
 
 Source fingerprints already include SDF sources. P0 therefore changes the
 source identity despite preserving generated buffers; **do not publish P0 as a
-standalone generation-2 release**. P4 integrates actual generation-3 output,
+standalone generation-2 release**. After the separate generation-3 calmer-ground release, P4 integrates actual generation-4 output,
 adds the feature directory to fingerprints and coordinates schema/identity.
 
 **Samples and chunks.** `VoxelSample` gains optional `featureId?: number` and

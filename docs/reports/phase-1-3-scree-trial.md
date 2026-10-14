@@ -1,0 +1,15 @@
+# Scree placement: parked after visual review
+
+The localized crater-wall deposit remains **unintegrated**. Its final full image has the same **15/20 score of record** as the baseline, and neither root nor a fresh blind reviewer prefers it. The live game remains `9d5b0f2`.
+
+The first candidate places one broad fan using a seeded direction. It passes 86 focused tests, but an actual seed-1 comparison finds only **0.099 m** of sampled height change: the protected lava channel masks most of the intended deposit, including a raw 7.782 m peak. This failure of placement remains preserved; no image was claimed for that version.
+
+A separate repair selects among eight seeded directions using 72 fixed clearance probes per caldera. It preserves the deposit formula, final channel mask, original bowl, bounds and routing; if every direction is blocked, it omits the fan. Ninety focused tests, shared source/test type checks and formatting checks pass. The actual seed-1 comparison uses one fresh plan per arm, 89 coordinate pairs and 1,602 charged probes. Fourteen serialized-data comparisons and 72 protected-coordinate checks pass, with a sampled peak of **7.782 m** and 15 positive transect samples. This is finite preservation and effect evidence, not whole-world voxel parity.
+
+The original HELL-2 viewpoint passes one genuine validation grid in **12.788 s**, using 208,468 voxel calls. There is no camera adjustment or search. The candidate build passes. The complete image loads **1,624/1,624 chunks in 229.460 s**, keeping the original 180-second failure and exit code 1. Application errors and external requests are zero; four ReadPixels warnings remain. Browser/server cleanup passes. Independent audit verifies 177 immutable references and the 135 prior parameter bindings, with exactly one authorized camera-installation exception and its retained preimage.
+
+Root opens baseline, candidate and primitive control, scoring **16/16/8**. Fresh Astra opens anonymous byte-identical copies and scores **15/15/8**, a valid calibration. Both generated scenes have R2=2 and no zeros on R1–R4, but still miss the total bar of 16. Preference is **tie**. The enclosing bowl, dark foreground and obscured roots remain visually dominant. A numerical RGBA comparison finds 3,335 changed pixels out of 921,600 (**0.362%**), within x470–611/y335–450. That small change does not establish a useful improvement.
+
+Both studies remain intact: `D:/Dex/Temp/coldfront-scree-fan-9d5b0f2` and `D:/Dex/Temp/coldfront-scree-placement-9d5b0f2`. The final capture is `out/scree-placement/world-trial/runs/2026-10-13T19-09-26.751Z/`, PNG SHA256 `d4c3f9a0b45cd2779c9c5ef5164922179558ae789570d5af8d3a3e5b065c0e53`. Audit: `out/scree-placement/world-trial/audit.md` and `audit.json`. Canonical pixel reviews: `out/phase13/scree-placement-root-review.json` and `out/phase13/scree-placement-blind/`.
+
+No further fan or rim variant follows this trial. The next bounded diagnosis separates physically hidden grounding from low material/lighting visibility before choosing another change. It must preserve the existing lava correction and the visual acceptance bar.

@@ -1,6 +1,7 @@
 import { BLOCK_REGISTRY } from "../../../shared/src/blocks/registry.js";
 import {
   createLightVolume,
+  emissionLight,
   type LightVolume,
   lightIndex,
 } from "../../../shared/src/lighting/flood.js";
@@ -8,6 +9,10 @@ import { HALO_VOLUME } from "../../../shared/src/world/constants.js";
 import { haloIndex } from "../../../shared/src/world/coordinates.js";
 import type { WorldContext } from "../../../shared/src/world/types.js";
 import type { BenchmarkCase } from "./samples.js";
+
+const emissions = Uint16Array.from(BLOCK_REGISTRY, (b) =>
+  emissionLight(b.emission),
+);
 
 /**
  * Real unedited 3x3x3 LOD0 neighbourhood for the accepted shared skylight solver.
@@ -43,8 +48,9 @@ export function prepareChunkLighting(
       area.sampleColumn(wx, wz, column);
       for (let y = 0; y < 96; y++) {
         const id = area.sampleVoxel(wx, oy + y + 0.5, wz, voxel, column).block;
-        volume.opacity[lightIndex(volume, x, y, z)] =
-          BLOCK_REGISTRY[id]?.lightFiltering ?? 15;
+        const i = lightIndex(volume, x, y, z);
+        volume.opacity[i] = BLOCK_REGISTRY[id]?.lightFiltering ?? 15;
+        volume.sources[i] = emissions[id] ?? 0;
       }
       area.skyInput(wx, wz, sky, column);
       const highest = sky.highestFilterY;
@@ -64,7 +70,8 @@ export function prepareChunkLighting(
       }
       const top = lightIndex(volume, x, 95, z);
       volume.sources[top] =
-        Math.max(0, incoming - (volume.opacity[top] as number)) << 12;
+        ((volume.sources[top] as number) & 0x0fff) |
+        (Math.max(0, incoming - (volume.opacity[top] as number)) << 12);
     }
   return volume;
 }

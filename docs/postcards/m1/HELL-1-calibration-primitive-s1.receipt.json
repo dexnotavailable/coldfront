@@ -1,0 +1,247 @@
+{
+  "id": "HELL-1",
+  "seed": 1,
+  "phase": "1.3",
+  "variant": "primitive",
+  "view": "normal",
+  "ungraded": true,
+  "camera": {
+    "position": {
+      "x": 5669.5,
+      "y": 30.62,
+      "z": 5417.5
+    },
+    "target": {
+      "x": 5669.5,
+      "y": 36.21927446565914,
+      "z": 5481.5
+    },
+    "hours": 17.25,
+    "radius": 512,
+    "id": "HELL-1",
+    "region": "hellscape",
+    "kind": "eye-level",
+    "seed": 1,
+    "ungraded": true,
+    "targetFeature": {
+      "kind": "thorn-cluster",
+      "featureIds": [
+        10198280,
+        10198281,
+        10263809,
+        10263810,
+        10263811,
+        10263812,
+        10263813,
+        10263814,
+        10263815,
+        10263816,
+        10263817,
+        10264065,
+        10264068,
+        10264071,
+        10329346,
+        10329347
+      ],
+      "bounds": {
+        "minX": 5556,
+        "minY": 23.743076938944046,
+        "minZ": 5300,
+        "maxX": 5772,
+        "maxY": 124.88243486219147,
+        "maxZ": 5580
+      },
+      "rootDisc": {
+        "x": 5669.5,
+        "z": 5429.5,
+        "radius": 144
+      },
+      "fissureId": 1088348037
+    },
+    "validation": {
+      "eyeClear": true,
+      "walkable": true,
+      "centralClear": true,
+      "skyFraction": 0.2035590277777778,
+      "featureFraction": 0.3546006944444444,
+      "waterFraction": 0,
+      "horizonFraction": 0.56247338021354,
+      "sunOffsetDegrees": 130.91438322002512,
+      "sunElevationDegrees": 11.33313571163032,
+      "highestVisibleSample": 114.54745348058019,
+      "altitudeAboveHighestSample": -83.92745348058018,
+      "rayColumns": 64,
+      "rayRows": 36,
+      "targetFraction": 0.3546006944444444,
+      "visibleFeatureIds": [
+        10263813,
+        10263814,
+        10263816,
+        10263817,
+        10329346,
+        10329347
+      ],
+      "lavaFraction": 0.003472222222222222,
+      "fissureFraction": 0.003472222222222222,
+      "targetFissureFraction": 0.003472222222222222,
+      "targetLavaFraction": 0,
+      "visibleLavaOwners": [
+        {
+          "source": "fissure",
+          "bodyId": 1088348037
+        }
+      ],
+      "passed": true
+    },
+    "score": 105.34496527777777,
+    "validatedByResolverHash": "3be713bd6dc3597a09e5a41f3ef93bbf627e4b54e11c8eebe194ea77a93cf4f4",
+    "comparison": {
+      "productionView": "diverged",
+      "reason": "Production eye/target failed primitive validation: {\"eyeClear\":true,\"walkable\":true,\"centralClear\":true,\"skyFraction\":0.19444444444444445,\"featureFraction\":0.3506944444444444,\"waterFraction\":0,\"horizonFraction\":0.56247338021354,\"sunOffsetDegrees\":96.53691551217547,\"sunElevationDegrees\":11.33313571163032,\"highestVisibleSample\":114.1418497336887,\"altitudeAboveHighestSample\":-83.5218497336887,\"rayColumns\":64,\"rayRows\":36,\"targetFraction\":0.3506944444444444,\"visibleFeatureIds\":[10263814,10263816,10263817,10264068,10329346,10329347],\"lavaFraction\":0.004340277777777778,\"fissureFraction\":0.004340277777777778,\"targetFissureFraction\":0.004340277777777778,\"targetLavaFraction\":0,\"visibleLavaOwners\":[{\"source\":\"fissure\",\"bodyId\":1088348037}],\"passed\":false}"
+    },
+    "completedSearch": {
+      "schema": 1,
+      "seed": 1,
+      "worldgenVersion": 4,
+      "sourceHash": "91f1471f8154038cc5ebaef7cf8e4f79b7cb4949591e2cb9cf81f7cf3c5b3a41",
+      "resolverHash": "3be713bd6dc3597a09e5a41f3ef93bbf627e4b54e11c8eebe194ea77a93cf4f4",
+      "variant": "primitive",
+      "selectedViewHash": "364e8a20ca5cc8925301b600830f9243ff8b481f070f5341dd20cdb12f8aea47",
+      "fullGridCandidates": 33,
+      "fullGridBudget": 50,
+      "termination": "composition-goal"
+    }
+  },
+  "durationMs": 143400.1855,
+  "telemetry": {
+    "postcard": {
+      "id": "HELL-1",
+      "identity": {
+        "kind": "main",
+        "seed": 1,
+        "generation": "4:91f1471f8154038cc5ebaef7cf8e4f79b7cb4949591e2cb9cf81f7cf3c5b3a41:primitive-v1"
+      },
+      "requestedChunks": 1823,
+      "readyChunks": 1823,
+      "planReused": false,
+      "workerTimingsAreSums": true,
+      "timings": {
+        "plan": 3586.764999985695,
+        "generate": 749935.1300003529,
+        "light": 41028.9150005281,
+        "mesh": 9023.859998971224,
+        "upload": 909.1400004923344,
+        "render": 958.0250000357628,
+        "total": 139051.61500003934
+      },
+      "limits": {
+        "dpr": 1,
+        "fov": 70,
+        "animationTime": 0,
+        "renderLoop": false,
+        "uploadCap": null
+      }
+    },
+    "rendering": {
+      "visible": true,
+      "animationRenders": 0,
+      "hiddenFrames": 0
+    },
+    "mapReports": [],
+    "camera": {
+      "position": {
+        "x": 5669.5,
+        "y": 30.62,
+        "z": 5417.5
+      },
+      "focus": {
+        "x": 5669.5,
+        "y": 36.21927446565914,
+        "z": 5481.5
+      },
+      "distance": 64.24446960277423,
+      "requestedDistance": 24,
+      "yaw": 180,
+      "tilt": -5.000000000000003,
+      "chosenTilt": 55,
+      "cut": null,
+      "fov": 70
+    },
+    "body": {
+      "x": -16063.5,
+      "y": 36,
+      "z": -10431.5,
+      "vx": 0,
+      "vy": 0,
+      "vz": 0,
+      "grounded": false,
+      "swimming": false,
+      "sneaking": false,
+      "sprinting": false,
+      "flying": false,
+      "walkDistance": 0,
+      "stepRise": 0,
+      "yaw": 0,
+      "headYaw": 0
+    },
+    "target": null,
+    "ghost": null,
+    "loaded": 1823,
+    "queued": 0,
+    "ready": true,
+    "displayTimeMs": 0,
+    "editCount": 0,
+    "lastAction": null,
+    "lastEdit": null,
+    "worldTimeSeconds": 2250,
+    "rendered": {
+      "outline": false,
+      "silhouette": false,
+      "ghost": false
+    }
+  },
+  "isolated": true,
+  "contextLost": false,
+  "canvas": {
+    "width": 1280,
+    "height": 720
+  },
+  "imageSha256": "74e9a01d7ae9c843cab24373525f6a48d21042bb8fa0fb9f37a6188c7c19221b",
+  "sourcePngSha256": "112c2dfeddf3c4998c9065b963904a3446602a7ee4b3974ec802c4916facee61",
+  "encoding": {
+    "encoder": "sharp",
+    "encoderVersion": "0.35.5",
+    "format": "jpeg",
+    "quality": 85,
+    "width": 1280,
+    "height": 720,
+    "resized": false
+  },
+  "build": {
+    "version": "0.1.0",
+    "basePath": "/",
+    "commit": "96a0e208236a903d0038919319f937812edd069f",
+    "cacheTag": "91f1471f8154038cc5ebaef7cf8e4f79b7cb4949591e2cb9cf81f7cf3c5b3a41",
+    "buildId": "96a0e208236a903d0038919319f937812edd069f-987902f590574c603d2f63a3f402681d424cc12cdeb7efa32afbb234f6549687"
+  },
+  "sourceHash": "91f1471f8154038cc5ebaef7cf8e4f79b7cb4949591e2cb9cf81f7cf3c5b3a41",
+  "errors": [],
+  "warnings": [
+    "[.WebGL-0x6ac400a0c600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x6ac400a0c600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x6ac400a0c600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x6ac400a0c600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+  ],
+  "status": "captured",
+  "image": "HELL-1-calibration-primitive-s1.jpg",
+  "purpose": "Plain-cone calibration anchor; not a production terrain-quality pass",
+  "sourceReceiptSha256": "b648de753630b183771a4579383a65cf009719ed54955a74f2c72fd33c026acf",
+  "runtimeCommit": "96a0e208236a903d0038919319f937812edd069f",
+  "review": {
+    "blindTotal": 7,
+    "calibrationMaximum": 8,
+    "calibrationValid": true,
+    "productionBlindTotal": 14,
+    "productionR2": 1
+  }
+}

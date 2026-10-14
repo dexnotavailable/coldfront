@@ -14,6 +14,10 @@ The default is main world, all sixteen surface regions, seed 1, five discarded w
 
 ## Stage definitions
 
+When Ibara is selected, the benchmark also measures 50 distinct dense-feature chunks, three times by default. The pool retains ordinary production roots with region weight at least 0.85, a saturated thorn mask and at least three accepted roots in the aligned 96 m neighbourhood. Sample-policy version 4 divides that pool into deterministic strata. Each starts at its original midpoint and tests at most eight roots, trying the original vertical chunk and then its upper and lower neighbours. A chunk must expose faces belonging to the selected thorn; solid rock submerged in opaque lava is not a visible interface. Failed candidates and their reasons remain in the receipt, and inability to find all 50 cases fails the run.
+
+This qualification generates bounded candidate chunks before warmup and is included in sample-selection time, not kernel timings. It can populate the shared feature caches. Measurements therefore describe repeated shared-kernel work after selection and warmup, not cold feature construction. Every measured call still generates fresh voxel buffers, builds a fresh lighting volume and verifies visible faces of its selected feature.
+
 | Metric | Measured work |
 |---|---|
 | Cold WorldPlan | First main plan build in a fresh process; context hydration and sample selection are timed separately |
@@ -31,6 +35,6 @@ Raw per-case/per-repetition rows, exact counts, mesh bytes, lit sample counts, s
 
 Median averages the two middle observations when N is even. p95 uses nearest rank `ceil(0.95*N)-1`. Reported values remain unrounded in JSON. The console rounds display only. Budgets are informational until phase 1.10: LOD0 generation median 12ms/p95 40ms, lighting median 3ms, meshing median 4ms. A miss is labelled `over-target` and does not fail the command. No tile budget is applied to LOD1 voxels.
 
-Not measured here: detailed Ibara thorns and other later region features, LOD2–6 full-height tiles, relighting edits, worker/cache/transfer/upload cost, rendering or FPS. These are explicit unavailable entries, not zero-valued timings. Current main-region cases measure first-pass phase 1.2 terrain.
+Not measured here: unimplemented later region features, LOD2–6 full-height tiles, relighting edits, client worker/cache/transfer/upload cost, rendering or FPS. These are unavailable measurements, not zero-valued timings. Current main-region cases use the current shared generator, including Ibara where present; dense Ibara cases are reported separately.
 
 Run in the background with captured logs and reserve the exclusive sampling/render lane. External process activity cannot be certified by this benchmark; the report says so. Do not run it alongside browsers, renderers, atlas/slice generation or another benchmark.

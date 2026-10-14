@@ -16,7 +16,7 @@ import {
   buildWorldPlan,
   hydrateWorldPlan,
 } from "../../../shared/src/worldplan/index.js";
-import { contentHash, sourceFingerprints } from "../build/metadata.js";
+import { postcardResolverHash, sourceFingerprints } from "../build/metadata.js";
 import {
   type CameraValidation,
   inspectMainCamera,
@@ -168,17 +168,21 @@ export function parsePostcardIds(
   phase: string | null,
   only: string | null,
 ): readonly PostcardId[] {
-  if (phase !== null && phase !== "1.1" && phase !== "1.2")
+  if (phase !== null && phase !== "1.1" && phase !== "1.2" && phase !== "1.3")
     throw new Error(`Unsupported postcard phase ${phase}`);
   const known: PostcardId[] = [
     "TEST-1",
     ...SURFACE_REGIONS.map((region) => firstPassId(region.id)),
+    "HELL-1",
+    "HELL-2",
   ];
   const ids = only
     ? only.split(",")
-    : phase === "1.2"
-      ? known.slice(1)
-      : ["TEST-1"];
+    : phase === "1.3"
+      ? ["HELL-1", "HELL-2"]
+      : phase === "1.2"
+        ? known.filter((id) => id.startsWith("P12-"))
+        : ["TEST-1"];
   if (
     !ids.length ||
     ids.some((id) => !known.includes(id as PostcardId)) ||
@@ -187,11 +191,18 @@ export function parsePostcardIds(
     throw new Error("Unknown or duplicate postcard ID");
   if (phase === "1.1" && ids.some((id) => id !== "TEST-1"))
     throw new Error("Main postcards require phase1.2");
+  if (phase === "1.2" && ids.some((id) => id.startsWith("HELL-")))
+    throw new Error("HELL postcards require phase1.3");
+  if (
+    ids.some((id) => id.startsWith("HELL-")) &&
+    ids.some((id) => id.startsWith("P12-"))
+  )
+    throw new Error("Capture phase1.2 and HELL postcards in separate runs");
   if (ids.includes("TEST-1") && ids.length > 1)
     throw new Error("Capture test and main worlds in separate runs");
   return ids as PostcardId[];
 }
-async function loadPlan(
+export async function loadPlan(
   seed: number,
   sourceHash: string,
   root: string,
@@ -204,36 +215,46 @@ async function loadPlan(
   try {
     const bytes = await readFile(path),
       cached = deserialize(bytes) as {
-        seed: number;
-        sourceHash: string;
-        worldgenVersion: number;
-        data: WorldPlanData;
-        checksum: string;
-      };
+        schema?: unknown;
+        seed?: unknown;
+        sourceHash?: unknown;
+        worldgenVersion?: unknown;
+        payload?: unknown;
+        checksum?: unknown;
+      } | null;
     if (
+      cached?.schema === 2 &&
       cached.seed === seed &&
       cached.sourceHash === sourceHash &&
       cached.worldgenVersion === WORLDGEN_VERSION &&
-      createHash("sha256").update(serialize(cached.data)).digest("hex") ===
+      cached.payload instanceof Uint8Array &&
+      createHash("sha256").update(cached.payload).digest("hex") ===
         cached.checksum
     ) {
-      hydrateWorldPlan(cached.data);
-      return cached.data;
+      const data = deserialize(cached.payload) as WorldPlanData;
+      if (data?.seed === seed && data.worldgenVersion === WORLDGEN_VERSION) {
+        hydrateWorldPlan(data);
+        return data;
+      }
     }
   } catch {
     /* A corrupt/stale optional tool cache is rebuilt explicitly. */
   }
   const data = buildWorldPlan(seed);
   hydrateWorldPlan(data);
+  // Equal values need not reserialize to equal V8 bytes. Preserve and hash
+  // the exact payload instead; verify it before decoding or hydrating a hit.
+  const payload = serialize(data);
   await mkdir(dirname(path), { recursive: true });
   await writeFile(
     path,
     serialize({
+      schema: 2,
       seed,
       sourceHash,
       worldgenVersion: WORLDGEN_VERSION,
-      data,
-      checksum: createHash("sha256").update(serialize(data)).digest("hex"),
+      payload,
+      checksum: createHash("sha256").update(payload).digest("hex"),
     }),
   );
   return data;
@@ -249,12 +270,7 @@ export async function resolveMainCameras(
     throw new Error("Postcard seed must be an unsigned32-bit integer");
   const started = performance.now();
   const sourceHash = sourceFingerprints(root).cacheTag;
-  const resolverHash = contentHash(
-    root,
-    ["query.ts", "geometry.ts", "main-resolve.ts"].map((name) =>
-      resolve(root, "packages/tools/src/postcards", name),
-    ),
-  );
+  const resolverHash = postcardResolverHash(root, "1.2");
   const path = resolve(
     root,
     "packages/tools/postcards/cameras",

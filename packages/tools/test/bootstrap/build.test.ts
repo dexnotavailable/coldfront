@@ -3,7 +3,11 @@ import { tmpdir } from "node:os";
 import { dirname, isAbsolute, join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 import { validatePostcard } from "../../../client/src/bootstrap/postcard.js";
-import { contentHash, sourceFingerprints } from "../../src/build/metadata.js";
+import {
+  contentHash,
+  postcardResolverHash,
+  sourceFingerprints,
+} from "../../src/build/metadata.js";
 
 function removeFixture(path: string): void {
   const inside = relative(tmpdir(), path);
@@ -17,6 +21,38 @@ function removeFixture(path: string): void {
 }
 
 describe("build and postcard boundaries", () => {
+  it("invalidates only phase1.3 resolver identity when ensemble selection changes", () => {
+    const root = mkdtempSync(join(tmpdir(), "coldfront-fingerprint-"));
+    const postcards = join(root, "packages/tools/src/postcards");
+    mkdirSync(postcards, { recursive: true });
+    try {
+      for (const name of [
+        "query.ts",
+        "geometry.ts",
+        "main-resolve.ts",
+        "hell-resolve.ts",
+        "hell-readability.ts",
+        "hell-primitive-camera.ts",
+        "hell-visible-instances.ts",
+        "hell-framing-camera.ts",
+        "hell-framing-preflight.ts",
+        "hell-forest-ensemble.ts",
+      ])
+        writeFileSync(join(postcards, name), "initial");
+      const first = postcardResolverHash(root, "1.3");
+      const phase12 = postcardResolverHash(root, "1.2");
+      writeFileSync(
+        join(postcards, "hell-forest-ensemble.ts"),
+        "changed site selection",
+      );
+      expect(postcardResolverHash(root, "1.3")).not.toBe(first);
+      expect(postcardResolverHash(root, "1.2")).toBe(phase12);
+      writeFileSync(join(postcards, "hell-forest-ensemble.ts"), "initial");
+      expect(postcardResolverHash(root, "1.3")).toBe(first);
+    } finally {
+      removeFixture(root);
+    }
+  });
   it("hashes source content and file names consistently across line endings", () => {
     const dir = mkdtempSync(join(tmpdir(), "coldfront-fingerprint-"));
     try {
@@ -95,6 +131,27 @@ describe("build and postcard boundaries", () => {
         "new immutable plan input",
       );
       expect(sourceFingerprints(root).cacheTag).not.toBe(terrain.cacheTag);
+      const plan = sourceFingerprints(root);
+      write(
+        "packages/shared/src/world/generation-variant.ts",
+        "primitive identity codec",
+      );
+      expect(sourceFingerprints(root).cacheTag).not.toBe(plan.cacheTag);
+      const variant = sourceFingerprints(root);
+      write(
+        "packages/tools/src/postcards/hell-resolve.ts",
+        "changed camera resolver",
+      );
+      const resolver = sourceFingerprints(root);
+      expect(resolver.cacheTag).toBe(variant.cacheTag);
+      expect(resolver.releaseHash).not.toBe(variant.releaseHash);
+      write(
+        "packages/tools/postcards/cameras/seed-1.json",
+        "source-bound phase13Primitive camera",
+      );
+      const camera = sourceFingerprints(root);
+      expect(camera.cacheTag).toBe(variant.cacheTag);
+      expect(camera.releaseHash).not.toBe(resolver.releaseHash);
       expect(sourceFingerprints(root, "/coldfront/").cacheTag).toBe(
         sourceFingerprints(root).cacheTag,
       );

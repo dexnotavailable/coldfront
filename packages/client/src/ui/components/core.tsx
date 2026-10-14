@@ -443,16 +443,18 @@ export function Alert({ id }: Base) {
 }
 export { Select, type SelectOption } from "./Select";
 export function Segmented({
+  id,
   ids,
   selected,
   onChange,
 }: {
+  id?: CatalogueId;
   ids: readonly CatalogueId[];
   selected: CatalogueId;
   onChange: (id: CatalogueId) => void;
 }) {
-  return (
-    <div class="cf-segmented">
+  const control = (
+    <fieldset class="cf-segmented" aria-label={id ? t(id) : undefined}>
       {ids.map((id) => (
         <Button
           key={id}
@@ -462,7 +464,15 @@ export function Segmented({
           onClick={() => onChange(id)}
         />
       ))}
+    </fieldset>
+  );
+  return id ? (
+    <div class="cf-control-row" data-ui={id}>
+      <Text id={id} />
+      {control}
     </div>
+  ) : (
+    control
   );
 }
 export function Tabs({

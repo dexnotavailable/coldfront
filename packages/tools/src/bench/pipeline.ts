@@ -5,6 +5,7 @@ import { meshChunk } from "../../../shared/src/meshing/greedy.js";
 import { HALO_WIDTH } from "../../../shared/src/world/constants.js";
 import { haloIndex } from "../../../shared/src/world/coordinates.js";
 import type {
+  FeatureCacheStats,
   WorldColumnLayout,
   WorldContext,
 } from "../../../shared/src/world/types.js";
@@ -22,8 +23,18 @@ export interface GenerationMeasurement {
   readonly fluidVoxels: number;
   readonly airVoxels: number;
   readonly outputBytes: number;
+  readonly featureVoxels: number;
+  readonly featureCache: FeatureCacheStats | null;
 }
 export interface PipelineMeasurement extends GenerationMeasurement {
+  readonly denseSurfaceEvidence?: DenseSurfaceEvidence;
+  readonly typedWorkingSetBytes: {
+    readonly generation: number;
+    readonly lightingVolume: number;
+    readonly haloLight: number;
+    readonly mesh: number;
+    readonly total: number;
+  };
   readonly neighbourhoodPreparationMs: number;
   readonly lightingMs: number;
   readonly haloExtractionMs: number;
@@ -34,6 +45,60 @@ export interface PipelineMeasurement extends GenerationMeasurement {
   readonly meshBytes: number;
   readonly litHaloSamples: number;
   readonly skyEvidence: SkyEvidence;
+}
+export interface DenseSurfaceEvidence {
+  readonly solidVoxels: number;
+  readonly openVoxels: number;
+  readonly featureVoxels: number;
+  readonly selectedFeatureVoxels: number;
+  readonly visibleFeatureFaces: number;
+  readonly selectedFeatureFaces: number;
+}
+/** Collision openness alone is insufficient: opaque lava is non-solid but
+ * hides every adjoining face. Count actual feature-to-nonopaque interfaces,
+ * including the generated border halo, before accepting a surface case. */
+export function denseSurfaceEvidence(
+  chunk: VoxelChunk,
+  selectedFeatureId: number,
+): DenseSurfaceEvidence {
+  let solidVoxels = 0,
+    featureVoxels = 0,
+    selectedFeatureVoxels = 0,
+    visibleFeatureFaces = 0,
+    selectedFeatureFaces = 0;
+  for (const block of chunk.blocks)
+    if (BLOCK_REGISTRY[block]?.solid) solidVoxels++;
+  for (let y = 0; y < 32; y++)
+    for (let z = 0; z < 32; z++)
+      for (let x = 0; x < 32; x++) {
+        const h = haloIndex(x, y, z),
+          id = chunk.featureIds?.[h] ?? 0;
+        if (id === 0) continue;
+        featureVoxels++;
+        if (id === selectedFeatureId) selectedFeatureVoxels++;
+        if (!BLOCK_REGISTRY[chunk.haloBlocks[h] as number]?.opaque) continue;
+        for (const neighbour of [
+          haloIndex(x - 1, y, z),
+          haloIndex(x + 1, y, z),
+          haloIndex(x, y - 1, z),
+          haloIndex(x, y + 1, z),
+          haloIndex(x, y, z - 1),
+          haloIndex(x, y, z + 1),
+        ]) {
+          if (BLOCK_REGISTRY[chunk.haloBlocks[neighbour] as number]?.opaque)
+            continue;
+          visibleFeatureFaces++;
+          if (id === selectedFeatureId) selectedFeatureFaces++;
+        }
+      }
+  return {
+    solidVoxels,
+    openVoxels: chunk.blocks.length - solidVoxels,
+    featureVoxels,
+    selectedFeatureVoxels,
+    visibleFeatureFaces,
+    selectedFeatureFaces,
+  };
 }
 export interface SkyEvidence {
   readonly state: "lit" | "dark-submerged";
@@ -101,7 +166,8 @@ function counts(blocks: Uint16Array): {
   let airVoxels = 0;
   for (const id of blocks) {
     if (BLOCK_REGISTRY[id]?.solid) solidVoxels++;
-    else if (id === Block.Water) fluidVoxels++;
+    else if (BLOCK_REGISTRY[id] && BLOCK_REGISTRY[id]?.fluidKind !== "none")
+      fluidVoxels++;
     else if (id === Block.Air) airVoxels++;
     else throw new Error(`Unexpected open benchmark block ${id}`);
   }
@@ -115,6 +181,31 @@ function counts(blocks: Uint16Array): {
     fluidVoxels,
     airVoxels,
   };
+}
+/** Exact unique ArrayBuffer byte lengths, never estimates for JS objects or references. */
+export function typedBufferBytes(value: unknown): number {
+  const seen = new Set<object>(),
+    buffers = new Set<ArrayBufferLike>();
+  function visit(item: unknown): void {
+    if (!item || typeof item !== "object" || seen.has(item)) return;
+    seen.add(item);
+    if (ArrayBuffer.isView(item)) {
+      buffers.add(item.buffer);
+      return;
+    }
+    for (const child of Object.values(item)) visit(child);
+  }
+  visit(value);
+  return [...buffers].reduce((sum, b) => sum + b.byteLength, 0);
+}
+function featureVoxels(chunk: VoxelChunk): number {
+  let count = 0;
+  if (chunk.featureIds)
+    for (let y = 0; y < 32; y++)
+      for (let z = 0; z < 32; z++)
+        for (let x = 0; x < 32; x++)
+          if (chunk.featureIds[haloIndex(x, y, z)] !== 0) count++;
+  return count;
 }
 function checkContext(sample: BenchmarkCase, context: WorldContext): void {
   if (
@@ -144,11 +235,9 @@ export function measureGeneration(
     repetition,
     generationMs,
     ...counts(chunk.blocks),
-    outputBytes:
-      chunk.blocks.byteLength +
-      chunk.haloBlocks.byteLength +
-      chunk.density.byteLength +
-      chunk.columns.byteLength,
+    outputBytes: typedBufferBytes(chunk),
+    featureVoxels: featureVoxels(chunk),
+    featureCache: context.featureCacheStats?.() ?? null,
   };
 }
 /** Timers wrap the real kernels. Counts/provenance/checks stay outside measured intervals. */
@@ -173,21 +262,26 @@ export function measurePipeline(
   const lit = performance.now();
   const lights = extractHaloLight(volume);
   const extracted = performance.now();
-  const mesh = meshChunk(chunk.haloBlocks, lights);
+  const mesh = meshChunk(chunk.haloBlocks, lights, chunk.featureIds);
   const meshed = performance.now();
-  let meshBytes = 0;
-  for (const part of [...mesh.parts, mesh.skirts])
-    meshBytes +=
-      part.positions.byteLength +
-      part.normals.byteLength +
-      part.expansions.byteLength +
-      part.packedPositions.byteLength +
-      part.surfaces.byteLength +
-      part.indices.byteLength;
+  const meshBytes = typedBufferBytes(mesh),
+    outputBytes = typedBufferBytes(chunk),
+    lightingBytes = typedBufferBytes(volume);
+  const featureCount = featureVoxels(chunk);
+  if (sample.category === "dense-ibara" && featureCount === 0)
+    throw new Error("Dense Ibara case generated no feature voxels");
   let litHaloSamples = 0;
   for (const value of lights) if (value >>> 12 > 0) litHaloSamples++;
   if (mesh.quads === 0)
     throw new Error("Surface benchmark produced no visible mesh");
+  const denseSurface =
+    sample.category === "dense-ibara"
+      ? denseSurfaceEvidence(chunk, sample.denseEvidence?.featureId ?? 0)
+      : null;
+  if (denseSurface && denseSurface.selectedFeatureFaces === 0)
+    throw new Error(
+      "Dense Ibara case has no visible faces belonging to its selected feature",
+    );
   const skyEvidence = pipelineSkyEvidence(
     chunk,
     context.columns,
@@ -203,11 +297,17 @@ export function measurePipeline(
     meshingMs: meshed - extracted,
     totalMeasuredStagesMs: meshed - start,
     ...counts(chunk.blocks),
-    outputBytes:
-      chunk.blocks.byteLength +
-      chunk.haloBlocks.byteLength +
-      chunk.density.byteLength +
-      chunk.columns.byteLength,
+    outputBytes,
+    featureVoxels: featureCount,
+    ...(denseSurface ? { denseSurfaceEvidence: denseSurface } : {}),
+    featureCache: context.featureCacheStats?.() ?? null,
+    typedWorkingSetBytes: {
+      generation: outputBytes,
+      lightingVolume: lightingBytes,
+      haloLight: lights.byteLength,
+      mesh: meshBytes,
+      total: outputBytes + lightingBytes + lights.byteLength + meshBytes,
+    },
     quads: mesh.quads,
     skirtQuads: mesh.skirts.indices.length / 6,
     meshBytes,

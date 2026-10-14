@@ -5,6 +5,7 @@ import {
   WORLD_MIN_XZ,
   WORLD_MIN_Y,
 } from "../../../shared/src/world/constants.js";
+import { generationVariant } from "../../../shared/src/world/generation-variant.js";
 import { SURFACE_REGIONS } from "../../../shared/src/world/regions.js";
 import type {
   SurfaceRegionId,
@@ -26,6 +27,11 @@ export interface WorldSave {
   readonly discoveries: readonly SurfaceRegionId[];
 }
 export function validIdentity(value: WorldIdentity): boolean {
+  try {
+    generationVariant(value);
+  } catch {
+    return false;
+  }
   return (
     (value.kind === "main" || value.kind === "test") &&
     Number.isInteger(value.seed) &&

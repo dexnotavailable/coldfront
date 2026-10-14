@@ -16,6 +16,7 @@ interface Job {
   address: Address;
   revision: number;
   priority: number;
+  postcard: boolean;
   resolve: (result: ChunkResult) => void;
   reject: (error: Error) => void;
   progress: (stage: WorkerStage) => void;
@@ -27,6 +28,7 @@ interface Lane {
   cacheBytes: number;
   stage: WorkerStage;
   ready: boolean;
+  batch: { cx: number; cy: number; cz: number; remaining: number } | null;
   acknowledge(): void;
 }
 export function workerCount(concurrency: number): number {
@@ -99,6 +101,7 @@ export class TerrainWorkers {
         cacheBytes: 0,
         stage: "generating",
         ready: false,
+        batch: null,
         acknowledge,
       };
       this.lanes.push(lane);
@@ -129,6 +132,7 @@ export class TerrainWorkers {
           job.resolve(message);
         }
         this.dispatch(lane);
+        this.dispatchIdle();
       };
       worker.onerror = (event) =>
         this.fail(new Error(event.message || "Terrain worker failed"));
@@ -154,14 +158,20 @@ export class TerrainWorkers {
     void this.ready.catch(() => {});
   }
   private affinity(a: Address): Lane {
-    const hash = (Math.imul(a.cx, 73856093) ^ Math.imul(a.cz, 19349663)) >>> 0;
-    return this.lanes[hash % this.lanes.length] as Lane;
+    // Prefer one cache owner for four neighboring columns and every Y level.
+    // Stagger successive 2x2 rows across the lanes: hashing these small cells
+    // can leave nearby views with idle workers and very uneven queues.
+    const count = this.lanes.length;
+    const cell =
+      Math.floor(a.cx / 2) + Math.floor(a.cz / 2) * Math.ceil(count / 2);
+    return this.lanes[((cell % count) + count) % count] as Lane;
   }
   request(
     address: Address,
     revision: number,
     priority: number,
     progress: (stage: WorkerStage) => void,
+    postcard = false,
   ): Promise<ChunkResult> {
     if (this.stopped) return Promise.reject(this.stopped);
     return new Promise((resolve, reject) => {
@@ -171,6 +181,7 @@ export class TerrainWorkers {
         address,
         revision,
         priority,
+        postcard,
         resolve,
         reject,
         progress,
@@ -180,9 +191,37 @@ export class TerrainWorkers {
     });
   }
   private dispatch(lane: Lane): void {
-    if (this.stopped || !lane.ready || lane.current || lane.jobs.length === 0)
+    if (this.stopped || !lane.ready || lane.current) return;
+    if (lane.jobs.length === 0) {
+      lane.batch = null;
       return;
-    const job = lane.jobs.shift() as Job;
+    }
+    const batch = lane.batch;
+    // Only already-pending postcard work may bypass the priority head. Keep
+    // ordinary requests and urgent revisions on their existing priority path.
+    const index =
+      batch &&
+      batch.remaining > 0 &&
+      lane.jobs.every((job) => job.postcard && job.priority >= 0)
+        ? lane.jobs.findIndex(
+            (job) =>
+              Math.floor(job.address.cx / 2) === batch.cx &&
+              job.address.cy === batch.cy &&
+              Math.floor(job.address.cz / 2) === batch.cz,
+          )
+        : -1;
+    const job = lane.jobs.splice(index < 0 ? 0 : index, 1)[0] as Job;
+    if (index >= 0 && batch) batch.remaining--;
+    else
+      lane.batch =
+        job.postcard && job.priority >= 0
+          ? {
+              cx: Math.floor(job.address.cx / 2),
+              cy: job.address.cy,
+              cz: Math.floor(job.address.cz / 2),
+              remaining: 3,
+            }
+          : null;
     lane.current = job;
     lane.worker.postMessage({
       type: "chunk",
@@ -191,6 +230,29 @@ export class TerrainWorkers {
       address: job.address,
       revision: job.revision,
     } satisfies WorkerRequest);
+  }
+  private dispatchIdle(): void {
+    // Wait for a completion so the initial request batch can establish locality.
+    // Only pending work may move; a running job keeps its worker and callbacks.
+    if (this.stopped || !this.lanes.every((lane) => lane.ready)) return;
+    for (const lane of this.lanes) {
+      if (lane.current || lane.jobs.length > 0) continue;
+      let donor: Lane | undefined;
+      let next: Job | undefined;
+      for (const source of this.lanes) {
+        const head = source.jobs[0];
+        if (
+          head &&
+          (!next || (head.priority - next.priority || head.id - next.id) < 0)
+        ) {
+          donor = source;
+          next = head;
+        }
+      }
+      if (!donor) return;
+      lane.jobs.push(donor.jobs.shift() as Job);
+      this.dispatch(lane);
+    }
   }
   edit(edit: VoxelEdit): void {
     if (this.stopped) return;
@@ -231,6 +293,7 @@ export class TerrainWorkers {
       lane.worker.terminate();
       lane.current?.reject(error);
       lane.current = null;
+      lane.batch = null;
       for (const job of lane.jobs) job.reject(error);
       lane.jobs.length = 0;
     }

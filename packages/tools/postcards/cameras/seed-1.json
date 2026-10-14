@@ -28,11 +28,13 @@
     "schema": 1,
     "worldKind": "main",
     "seed": 1,
-    "worldgenVersion": 3,
-    "sourceHash": "2858bd739eccec02888edae60b9dade0470a3847784e5543b15105f56a55a9f9",
-    "resolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147",
+    "worldgenVersion": 4,
+    "sourceHash": "676c1dee2fe6e97007d306b08f8efeb1381c9d9510f701f4558f22721f2116cb",
+    "resolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
     "cameras": [
       {
+        "id": "P12-plains",
+        "seed": 1,
         "region": "plains",
         "kind": "aerial",
         "position": {
@@ -48,29 +50,36 @@
         "hours": 17.25,
         "radius": 320,
         "terrainUpperBound": 77.42162596700211,
-        "id": "P12-plains",
-        "seed": 1,
         "ungraded": true,
         "validation": {
           "eyeClear": true,
           "walkable": false,
           "centralClear": true,
-          "skyFraction": 0.4861111111111111,
+          "skyFraction": 0.5373263888888888,
           "featureFraction": 0.4487847222222222,
           "waterFraction": 0,
           "horizonFraction": 0.38690178862577457,
           "sunOffsetDegrees": 63.485616779975,
           "sunElevationDegrees": 11.33313571163032,
-          "highestVisibleSample": 56.73615515850001,
-          "altitudeAboveHighestSample": 44.6854708085021,
+          "highestVisibleSample": 57.526638368520395,
+          "altitudeAboveHighestSample": 43.89498759848172,
           "rayColumns": 64,
           "rayRows": 36,
+          "targetFraction": 0,
+          "visibleFeatureIds": [],
+          "lavaFraction": 0,
+          "fissureFraction": 0,
+          "targetFissureFraction": 0,
+          "targetLavaFraction": 0,
+          "visibleLavaOwners": [],
           "passed": true
         },
-        "score": 107.91458333333333,
-        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
+        "score": 107.40243055555555
       },
       {
+        "id": "P12-tundra",
+        "seed": 1,
         "region": "tundra",
         "kind": "aerial",
         "position": {
@@ -86,14 +95,12 @@
         "hours": 17.25,
         "radius": 320,
         "terrainUpperBound": 87.8070935664046,
-        "id": "P12-tundra",
-        "seed": 1,
         "ungraded": true,
         "validation": {
           "eyeClear": true,
           "walkable": false,
           "centralClear": true,
-          "skyFraction": 0.4835069444444444,
+          "skyFraction": 0.5494791666666666,
           "featureFraction": 0.4405381944444444,
           "waterFraction": 0,
           "horizonFraction": 0.38690178862577373,
@@ -103,12 +110,21 @@
           "altitudeAboveHighestSample": 47.95627141757986,
           "rayColumns": 64,
           "rayRows": 36,
+          "targetFraction": 0,
+          "visibleFeatureIds": [],
+          "lavaFraction": 0,
+          "fissureFraction": 0,
+          "targetFissureFraction": 0,
+          "targetLavaFraction": 0,
+          "visibleLavaOwners": [],
           "passed": true
         },
-        "score": 107.77569444444444,
-        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
+        "score": 107.11597222222223
       },
       {
+        "id": "P12-mountains",
+        "seed": 1,
         "region": "mountains",
         "kind": "eye-level",
         "position": {
@@ -123,29 +139,36 @@
         },
         "hours": 17.25,
         "radius": 320,
-        "id": "P12-mountains",
-        "seed": 1,
         "ungraded": true,
         "validation": {
           "eyeClear": true,
           "walkable": true,
           "centralClear": true,
-          "skyFraction": 0.5251736111111112,
+          "skyFraction": 0.5264756944444444,
           "featureFraction": 0.4735243055555556,
           "waterFraction": 0,
           "horizonFraction": 0.3869017886257749,
           "sunOffsetDegrees": 63.485616779975,
           "sunElevationDegrees": 11.33313571163032,
-          "highestVisibleSample": 788.9995626370753,
-          "altitudeAboveHighestSample": 1.6204373629246902,
+          "highestVisibleSample": 788.9999248906907,
+          "altitudeAboveHighestSample": 1.620075109309255,
           "rayColumns": 64,
           "rayRows": 36,
+          "targetFraction": 0,
+          "visibleFeatureIds": [],
+          "lavaFraction": 0,
+          "fissureFraction": 0,
+          "targetFissureFraction": 0,
+          "targetLavaFraction": 0,
+          "visibleLavaOwners": [],
           "passed": true
         },
-        "score": 110.01875,
-        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
+        "score": 110.00572916666667
       },
       {
+        "id": "P12-desert",
+        "seed": 1,
         "region": "desert",
         "kind": "aerial",
         "position": {
@@ -161,29 +184,36 @@
         "hours": 17.25,
         "radius": 320,
         "terrainUpperBound": 89.62728642766626,
-        "id": "P12-desert",
-        "seed": 1,
         "ungraded": true,
         "validation": {
           "eyeClear": true,
           "walkable": false,
           "centralClear": true,
-          "skyFraction": 0.4661458333333333,
+          "skyFraction": 0.5494791666666666,
           "featureFraction": 0.4375,
           "waterFraction": 0,
           "horizonFraction": 0.3869017886257745,
           "sunOffsetDegrees": 77.88561677997541,
           "sunElevationDegrees": 11.33313571163032,
-          "highestVisibleSample": 71.63783882266257,
-          "altitudeAboveHighestSample": 41.98944760500369,
+          "highestVisibleSample": 63.913749064621605,
+          "altitudeAboveHighestSample": 49.71353736304466,
           "rayColumns": 64,
           "rayRows": 36,
+          "targetFraction": 0,
+          "visibleFeatureIds": [],
+          "lavaFraction": 0,
+          "fissureFraction": 0,
+          "targetFissureFraction": 0,
+          "targetLavaFraction": 0,
+          "visibleLavaOwners": [],
           "passed": true
         },
-        "score": 107.88854166666667,
-        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
+        "score": 107.05520833333334
       },
       {
+        "id": "P12-boneyard",
+        "seed": 1,
         "region": "boneyard",
         "kind": "eye-level",
         "position": {
@@ -198,8 +228,6 @@
         },
         "hours": 17.25,
         "radius": 320,
-        "id": "P12-boneyard",
-        "seed": 1,
         "ungraded": true,
         "validation": {
           "eyeClear": true,
@@ -215,12 +243,21 @@
           "altitudeAboveHighestSample": -4.451658396188673,
           "rayColumns": 64,
           "rayRows": 36,
+          "targetFraction": 0,
+          "visibleFeatureIds": [],
+          "lavaFraction": 0,
+          "fissureFraction": 0,
+          "targetFissureFraction": 0,
+          "targetLavaFraction": 0,
+          "visibleLavaOwners": [],
           "passed": true
         },
-        "score": 114.159375,
-        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
+        "score": 114.159375
       },
       {
+        "id": "P12-jungle",
+        "seed": 1,
         "region": "jungle",
         "kind": "aerial",
         "position": {
@@ -236,14 +273,12 @@
         "hours": 17.25,
         "radius": 320,
         "terrainUpperBound": 96.61860924112953,
-        "id": "P12-jungle",
-        "seed": 1,
         "ungraded": true,
         "validation": {
           "eyeClear": true,
           "walkable": false,
           "centralClear": true,
-          "skyFraction": 0.4852430555555556,
+          "skyFraction": 0.5460069444444444,
           "featureFraction": 0.4440104166666667,
           "waterFraction": 0,
           "horizonFraction": 0.38690178862577373,
@@ -253,12 +288,21 @@
           "altitudeAboveHighestSample": 47.604098875350516,
           "rayColumns": 64,
           "rayRows": 36,
+          "targetFraction": 0,
+          "visibleFeatureIds": [],
+          "lavaFraction": 0,
+          "fissureFraction": 0,
+          "targetFissureFraction": 0,
+          "targetLavaFraction": 0,
+          "visibleLavaOwners": [],
           "passed": true
         },
-        "score": 107.82777777777777,
-        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
+        "score": 107.22013888888888
       },
       {
+        "id": "P12-swamp",
+        "seed": 1,
         "region": "swamp",
         "kind": "aerial",
         "position": {
@@ -274,29 +318,36 @@
         "hours": 17.25,
         "radius": 320,
         "terrainUpperBound": 31.5000001,
-        "id": "P12-swamp",
-        "seed": 1,
         "ungraded": true,
         "validation": {
           "eyeClear": true,
           "walkable": false,
           "centralClear": true,
-          "skyFraction": 0.4817708333333333,
+          "skyFraction": 0.5329861111111112,
           "featureFraction": 0.4557291666666667,
-          "waterFraction": 0.06597222222222222,
+          "waterFraction": 0.06727430555555555,
           "horizonFraction": 0.38690178862577485,
           "sunOffsetDegrees": 106.68561677997573,
           "sunElevationDegrees": 11.33313571163032,
-          "highestVisibleSample": 11.277767970815674,
-          "altitudeAboveHighestSample": 44.22223212918433,
+          "highestVisibleSample": 11.945165656019746,
+          "altitudeAboveHighestSample": 43.554834443980255,
           "rayColumns": 64,
           "rayRows": 36,
+          "targetFraction": 0,
+          "visibleFeatureIds": [],
+          "lavaFraction": 0,
+          "fissureFraction": 0,
+          "targetFissureFraction": 0,
+          "targetLavaFraction": 0,
+          "visibleLavaOwners": [],
           "passed": true
         },
-        "score": 108.096875,
-        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
+        "score": 107.58472222222221
       },
       {
+        "id": "P12-lake",
+        "seed": 1,
         "region": "lake",
         "kind": "aerial",
         "position": {
@@ -306,35 +357,42 @@
         },
         "target": {
           "x": -18636.243742085964,
-          "y": 87.38591860238873,
+          "y": 86.23759601781734,
           "z": -7372.0384410654515
         },
         "hours": 17.25,
         "radius": 320,
         "terrainUpperBound": 73.52252278315905,
-        "id": "P12-lake",
-        "seed": 1,
         "ungraded": true,
         "validation": {
           "eyeClear": true,
           "walkable": false,
           "centralClear": true,
-          "skyFraction": 0.5486111111111112,
-          "featureFraction": 0.1762152777777778,
-          "waterFraction": 0.1762152777777778,
-          "horizonFraction": 0.3869017886257736,
+          "skyFraction": 0.6436631944444444,
+          "featureFraction": 0.1792534722222222,
+          "waterFraction": 0.1892361111111111,
+          "horizonFraction": 0.37408948698317535,
           "sunOffsetDegrees": 123.7143832200267,
           "sunElevationDegrees": 11.33313571163032,
-          "highestVisibleSample": 20.36394706295009,
-          "altitudeAboveHighestSample": 77.15857572020896,
+          "highestVisibleSample": 19.672887342624293,
+          "altitudeAboveHighestSample": 77.84963544053475,
           "rayColumns": 64,
           "rayRows": 36,
+          "targetFraction": 0,
+          "visibleFeatureIds": [],
+          "lavaFraction": 0,
+          "fissureFraction": 0,
+          "targetFissureFraction": 0,
+          "targetLavaFraction": 0,
+          "visibleLavaOwners": [],
           "passed": true
         },
-        "score": 101.83819444444444,
-        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
+        "score": 100.9484375
       },
       {
+        "id": "P12-twilight",
+        "seed": 1,
         "region": "twilight",
         "kind": "aerial",
         "position": {
@@ -350,14 +408,12 @@
         "hours": 17.25,
         "radius": 320,
         "terrainUpperBound": 102.12347786770265,
-        "id": "P12-twilight",
-        "seed": 1,
         "ungraded": true,
         "validation": {
           "eyeClear": true,
           "walkable": false,
           "centralClear": true,
-          "skyFraction": 0.49609375,
+          "skyFraction": 0.5520833333333334,
           "featureFraction": 0.4396701388888889,
           "waterFraction": 0,
           "horizonFraction": 0.38690178862577407,
@@ -367,50 +423,65 @@
           "altitudeAboveHighestSample": 42.45623813716037,
           "rayColumns": 64,
           "rayRows": 36,
+          "targetFraction": 0,
+          "visibleFeatureIds": [],
+          "lavaFraction": 0,
+          "fissureFraction": 0,
+          "targetFissureFraction": 0,
+          "targetLavaFraction": 0,
+          "visibleLavaOwners": [],
           "passed": true
         },
-        "score": 107.63246527777777,
-        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
+        "score": 107.07256944444444
       },
       {
+        "id": "P12-hellscape",
+        "seed": 1,
         "region": "hellscape",
-        "kind": "aerial",
+        "kind": "eye-level",
         "position": {
           "x": 5803.918199780956,
-          "y": 93.07465820560594,
+          "y": 25.62,
           "z": 5588.580196315796
         },
         "target": {
           "x": 5853.231047318606,
-          "y": 82.93805402483562,
+          "y": 15.483395819229703,
           "z": 5629.375331659711
         },
         "hours": 17.25,
         "radius": 320,
-        "terrainUpperBound": 69.07465820560594,
-        "id": "P12-hellscape",
-        "seed": 1,
         "ungraded": true,
         "validation": {
           "eyeClear": true,
-          "walkable": false,
+          "walkable": true,
           "centralClear": true,
-          "skyFraction": 0.4865451388888889,
-          "featureFraction": 0.4322916666666667,
+          "skyFraction": 0.3211805555555556,
+          "featureFraction": 0.6788194444444444,
           "waterFraction": 0,
-          "horizonFraction": 0.38690178862577385,
+          "horizonFraction": 0.38690178862577407,
           "sunOffsetDegrees": 80.51438322002475,
           "sunElevationDegrees": 11.33313571163032,
-          "highestVisibleSample": 38.57936674098462,
-          "altitudeAboveHighestSample": 54.495291464621324,
+          "highestVisibleSample": 63.376891499758656,
+          "altitudeAboveHighestSample": -37.75689149975865,
           "rayColumns": 64,
           "rayRows": 36,
+          "targetFraction": 0,
+          "visibleFeatureIds": [],
+          "lavaFraction": 0,
+          "fissureFraction": 0,
+          "targetFissureFraction": 0,
+          "targetLavaFraction": 0,
+          "visibleLavaOwners": [],
           "passed": true
         },
-        "score": 107.58038194444444,
-        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
+        "score": 114.98819444444445
       },
       {
+        "id": "P12-shardfields",
+        "seed": 1,
         "region": "shardfields",
         "kind": "aerial",
         "position": {
@@ -426,14 +497,12 @@
         "hours": 17.25,
         "radius": 320,
         "terrainUpperBound": 104.14965036151753,
-        "id": "P12-shardfields",
-        "seed": 1,
         "ungraded": true,
         "validation": {
           "eyeClear": true,
           "walkable": false,
           "centralClear": true,
-          "skyFraction": 0.4861111111111111,
+          "skyFraction": 0.5451388888888888,
           "featureFraction": 0.4461805555555556,
           "waterFraction": 0,
           "horizonFraction": 0.38690178862577385,
@@ -443,12 +512,21 @@
           "altitudeAboveHighestSample": 54.161097798417956,
           "rayColumns": 64,
           "rayRows": 36,
+          "targetFraction": 0,
+          "visibleFeatureIds": [],
+          "lavaFraction": 0,
+          "fissureFraction": 0,
+          "targetFissureFraction": 0,
+          "targetLavaFraction": 0,
+          "visibleLavaOwners": [],
           "passed": true
         },
-        "score": 107.8625,
-        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
+        "score": 107.27222222222223
       },
       {
+        "id": "P12-isles",
+        "seed": 1,
         "region": "isles",
         "kind": "aerial",
         "position": {
@@ -464,14 +542,12 @@
         "hours": 17.25,
         "radius": 320,
         "terrainUpperBound": 61.617688759478035,
-        "id": "P12-isles",
-        "seed": 1,
         "ungraded": true,
         "validation": {
           "eyeClear": true,
           "walkable": false,
           "centralClear": true,
-          "skyFraction": 0.484375,
+          "skyFraction": 0.5447048611111112,
           "featureFraction": 0.4483506944444444,
           "waterFraction": 0,
           "horizonFraction": 0.38690178862577435,
@@ -481,12 +557,21 @@
           "altitudeAboveHighestSample": 45.90739580413334,
           "rayColumns": 64,
           "rayRows": 36,
+          "targetFraction": 0,
+          "visibleFeatureIds": [],
+          "lavaFraction": 0,
+          "fissureFraction": 0,
+          "targetFissureFraction": 0,
+          "targetLavaFraction": 0,
+          "visibleLavaOwners": [],
           "passed": true
         },
-        "score": 107.92326388888888,
-        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
+        "score": 107.31996527777777
       },
       {
+        "id": "P12-nadir",
+        "seed": 1,
         "region": "nadir",
         "kind": "aerial",
         "position": {
@@ -501,15 +586,13 @@
         },
         "hours": 17.25,
         "radius": 320,
-        "terrainUpperBound": 352.34586664820415,
-        "id": "P12-nadir",
-        "seed": 1,
+        "terrainUpperBound": 356.34586664820415,
         "ungraded": true,
         "validation": {
           "eyeClear": true,
           "walkable": false,
           "centralClear": true,
-          "skyFraction": 0.5260416666666666,
+          "skyFraction": 0.5559895833333334,
           "featureFraction": 0.4379340277777778,
           "waterFraction": 0,
           "horizonFraction": 0.38690178862577373,
@@ -519,12 +602,21 @@
           "altitudeAboveHighestSample": 44.93995480266085,
           "rayColumns": 64,
           "rayRows": 36,
+          "targetFraction": 0,
+          "visibleFeatureIds": [],
+          "lavaFraction": 0,
+          "fissureFraction": 0,
+          "targetFissureFraction": 0,
+          "targetLavaFraction": 0,
+          "visibleLavaOwners": [],
           "passed": true
         },
-        "score": 107.2982638888889,
-        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
+        "score": 106.99878472222223
       },
       {
+        "id": "P12-blackwater",
+        "seed": 1,
         "region": "blackwater",
         "kind": "aerial",
         "position": {
@@ -540,29 +632,36 @@
         "hours": 17.25,
         "radius": 320,
         "terrainUpperBound": 18,
-        "id": "P12-blackwater",
-        "seed": 1,
         "ungraded": true,
         "validation": {
           "eyeClear": true,
           "walkable": false,
           "centralClear": true,
-          "skyFraction": 0.4557291666666667,
+          "skyFraction": 0.5008680555555556,
           "featureFraction": 0.4869791666666667,
-          "waterFraction": 0.4869791666666667,
+          "waterFraction": 0.4991319444444444,
           "horizonFraction": 0.38690178862577407,
           "sunOffsetDegrees": 138.1143832200252,
           "sunElevationDegrees": 11.33313571163032,
-          "highestVisibleSample": 10.786688785016299,
-          "altitudeAboveHighestSample": 31.2133112149837,
+          "highestVisibleSample": null,
+          "altitudeAboveHighestSample": null,
           "rayColumns": 64,
           "rayRows": 36,
+          "targetFraction": 0,
+          "visibleFeatureIds": [],
+          "lavaFraction": 0,
+          "fissureFraction": 0,
+          "targetFissureFraction": 0,
+          "targetLavaFraction": 0,
+          "visibleLavaOwners": [],
           "passed": true
         },
-        "score": 108.98229166666667,
-        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
+        "score": 108.53090277777777
       },
       {
+        "id": "P12-rim",
+        "seed": 1,
         "region": "rim",
         "kind": "aerial",
         "position": {
@@ -578,29 +677,36 @@
         "hours": 17.25,
         "radius": 320,
         "terrainUpperBound": 629.5000001,
-        "id": "P12-rim",
-        "seed": 1,
         "ungraded": true,
         "validation": {
           "eyeClear": true,
           "walkable": false,
           "centralClear": true,
-          "skyFraction": 0.4982638888888889,
+          "skyFraction": 0.6197916666666666,
           "featureFraction": 0.3546006944444444,
           "waterFraction": 0,
           "horizonFraction": 0.3869017886257735,
           "sunOffsetDegrees": 77.8856167799752,
           "sunElevationDegrees": 11.33313571163032,
-          "highestVisibleSample": 600.3576234828158,
-          "altitudeAboveHighestSample": 53.14237661718414,
+          "highestVisibleSample": 599.9211836371372,
+          "altitudeAboveHighestSample": 53.57881646286273,
           "rayColumns": 64,
           "rayRows": 36,
+          "targetFraction": 0,
+          "visibleFeatureIds": [],
+          "lavaFraction": 0,
+          "fissureFraction": 0,
+          "targetFissureFraction": 0,
+          "targetLavaFraction": 0,
+          "visibleLavaOwners": [],
           "passed": true
         },
-        "score": 105.909375,
-        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
+        "score": 104.69409722222223
       },
       {
+        "id": "P12-frost",
+        "seed": 1,
         "region": "frost",
         "kind": "aerial",
         "position": {
@@ -616,28 +722,292 @@
         "hours": 17.25,
         "radius": 320,
         "terrainUpperBound": 629.5000001,
-        "id": "P12-frost",
-        "seed": 1,
         "ungraded": true,
         "validation": {
           "eyeClear": true,
           "walkable": false,
           "centralClear": true,
-          "skyFraction": 0.4817708333333333,
+          "skyFraction": 0.5329861111111112,
           "featureFraction": 0.4539930555555556,
           "waterFraction": 0,
           "horizonFraction": 0.3869017886257733,
           "sunOffsetDegrees": 66.11438322002397,
           "sunElevationDegrees": 11.33313571163032,
-          "highestVisibleSample": 599.9987415104524,
-          "altitudeAboveHighestSample": 53.50125858954755,
+          "highestVisibleSample": 599.9987519706233,
+          "altitudeAboveHighestSample": 53.50124812937668,
           "rayColumns": 64,
           "rayRows": 36,
+          "targetFraction": 0,
+          "visibleFeatureIds": [],
+          "lavaFraction": 0,
+          "fissureFraction": 0,
+          "targetFissureFraction": 0,
+          "targetLavaFraction": 0,
+          "visibleLavaOwners": [],
           "passed": true
         },
-        "score": 108.06215277777778,
-        "validatedByResolverHash": "641a4a5e7b20ef094a64ba81673d763a2c3769979c5267d4f5501b2305397147"
+        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
+        "score": 107.55
       }
     ]
+  },
+  "phase13": {
+    "schema": 1,
+    "worldKind": "main",
+    "seed": 1,
+    "worldgenVersion": 4,
+    "sourceHash": "676c1dee2fe6e97007d306b08f8efeb1381c9d9510f701f4558f22721f2116cb",
+    "resolverHash": "a3c9265c37c247ffb5d70506028f2609138012683fb3ccd27786e61d2538e47c",
+    "variant": "production",
+    "cameras": [
+      {
+        "id": "HELL-1",
+        "seed": 1,
+        "region": "hellscape",
+        "kind": "eye-level",
+        "position": {
+          "x": 5669.5,
+          "y": 30.62,
+          "z": 5417.5
+        },
+        "target": {
+          "x": 5705.6371182972825,
+          "y": 36.21927446565914,
+          "z": 5470.321479354219
+        },
+        "hours": 17.25,
+        "radius": 512,
+        "targetFeature": {
+          "kind": "thorn-cluster",
+          "featureIds": [
+            10198273, 10198277, 10198278, 10198279, 10198282, 10198284,
+            10198285, 10198286, 10198287, 10198288, 10198289, 10198290,
+            10198292, 10198294, 10198295, 10198298, 10198299, 10198300,
+            10198301, 10198304, 10198306, 10198307, 10198308, 10198309,
+            10198311, 10263874, 10263876, 10263878, 10263879, 10263881,
+            10263882, 10263883, 10263885, 10263886, 10263887, 10263888,
+            10263889, 10263891, 10263893, 10263894, 10263895, 10263896,
+            10263898, 10263899, 10263900, 10263901, 10263902, 10263903,
+            10263904, 10263906, 10263908, 10263909, 10263910, 10263911,
+            10264072, 10264073, 10264074, 10264075, 10264076, 10264077,
+            10264078, 10264081, 10264082, 10264085, 10264090, 10264094,
+            10264097, 10264099, 10264104, 10264132, 10264134, 10264140,
+            10264198, 10264208, 10264212, 10264217, 10264231, 10329347,
+            10329348, 10329350, 10329351, 10329352, 10329356, 10329358,
+            10329361, 10329365, 10329366, 10329370, 10329375, 10329376, 10329381
+          ],
+          "bounds": {
+            "minX": 5528.569144040883,
+            "minY": -52.66927848391185,
+            "minZ": 5255.111120778795,
+            "maxX": 5827.409974490614,
+            "maxY": 204.70944564643975,
+            "maxZ": 5602.27548392776
+          },
+          "rootDisc": {
+            "x": 5669.5,
+            "z": 5429.5,
+            "radius": 144
+          },
+          "fissureId": 1088348037
+        },
+        "ungraded": true,
+        "validation": {
+          "eyeClear": true,
+          "walkable": true,
+          "centralClear": true,
+          "skyFraction": 0.3836805555555556,
+          "featureFraction": 0.2404513888888889,
+          "waterFraction": 0,
+          "horizonFraction": 0.56247338021354,
+          "sunOffsetDegrees": 96.53691551217547,
+          "sunElevationDegrees": 11.33313571163032,
+          "highestVisibleSample": 110.48534581332089,
+          "altitudeAboveHighestSample": -79.86534581332089,
+          "rayColumns": 64,
+          "rayRows": 36,
+          "targetFraction": 0.2404513888888889,
+          "visibleFeatureIds": [
+            10198277, 10198295, 10263874, 10263878, 10263888, 10263889,
+            10263893, 10263895, 10263900, 10263908, 10263910, 10264072,
+            10264077, 10264082, 10264085, 10264097, 10264099, 10264104,
+            10264132, 10264208, 10264217, 10264231, 10329347, 10329348,
+            10329350, 10329352, 10329358, 10329366
+          ],
+          "lavaFraction": 0.004340277777777778,
+          "fissureFraction": 0.004340277777777778,
+          "targetFissureFraction": 0.004340277777777778,
+          "targetLavaFraction": 0,
+          "visibleLavaOwners": [
+            {
+              "source": "fissure",
+              "bodyId": 1088348037
+            }
+          ],
+          "passed": true
+        },
+        "validatedByResolverHash": "a3c9265c37c247ffb5d70506028f2609138012683fb3ccd27786e61d2538e47c"
+      },
+      {
+        "id": "HELL-2",
+        "seed": 1,
+        "region": "hellscape",
+        "kind": "eye-level",
+        "position": {
+          "x": 8663.394938404905,
+          "y": 123.62,
+          "z": 1374.0195982909304
+        },
+        "target": {
+          "x": 8623.29252564907,
+          "y": 94.68087764166319,
+          "z": 1552.2788436412811
+        },
+        "hours": 17.25,
+        "radius": 512,
+        "targetFeature": {
+          "kind": "caldera",
+          "calderaId": 4,
+          "bounds": {
+            "minX": 8437.795644813217,
+            "maxX": 8808.789406484924,
+            "minZ": 1366.7819628054276,
+            "maxZ": 1737.7757244771346,
+            "minY": 26.514211387332416,
+            "maxY": 121.87797793648753
+          }
+        },
+        "ungraded": true,
+        "validation": {
+          "eyeClear": true,
+          "walkable": true,
+          "centralClear": true,
+          "skyFraction": 0.3719618055555556,
+          "featureFraction": 0.5099826388888888,
+          "waterFraction": 0,
+          "horizonFraction": 0.38690178862577407,
+          "sunOffsetDegrees": 143.5929563708954,
+          "sunElevationDegrees": 11.33313571163032,
+          "highestVisibleSample": 192.49184224945768,
+          "altitudeAboveHighestSample": -68.87184224945767,
+          "rayColumns": 64,
+          "rayRows": 36,
+          "targetFraction": 0.5099826388888888,
+          "visibleFeatureIds": [],
+          "lavaFraction": 0.05381944444444445,
+          "fissureFraction": 0,
+          "targetFissureFraction": 0,
+          "targetLavaFraction": 0.05251736111111111,
+          "visibleLavaOwners": [
+            {
+              "source": "caldera",
+              "bodyId": 4
+            },
+            {
+              "source": "channel",
+              "bodyId": 65540
+            }
+          ],
+          "passed": true
+        },
+        "validatedByResolverHash": "a3c9265c37c247ffb5d70506028f2609138012683fb3ccd27786e61d2538e47c"
+      }
+    ],
+    "manualRetention": {
+      "ungraded": true,
+      "selectorSearch": false,
+      "hell1": "Published view050 retained exactly, verified genuine676 fixed-grid validation.",
+      "hell2": "Published candidate48 retained exactly, verified genuine676 fixed-grid validation; no addition.",
+      "validationEvidence": "Two existing676 proofs with78 exact recorded dependencies each; original resolver identity preserved. No new search or visual pass."
+    }
+  },
+  "phase13Primitive": {
+    "schema": 1,
+    "worldKind": "main",
+    "seed": 1,
+    "worldgenVersion": 4,
+    "sourceHash": "676c1dee2fe6e97007d306b08f8efeb1381c9d9510f701f4558f22721f2116cb",
+    "resolverHash": "a3c9265c37c247ffb5d70506028f2609138012683fb3ccd27786e61d2538e47c",
+    "variant": "primitive",
+    "cameras": [
+      {
+        "id": "HELL-1",
+        "region": "hellscape",
+        "kind": "eye-level",
+        "position": {
+          "x": 5669.5,
+          "y": 30.62,
+          "z": 5417.5
+        },
+        "target": {
+          "x": 5669.5,
+          "y": 36.21927446565914,
+          "z": 5481.5
+        },
+        "hours": 17.25,
+        "radius": 512,
+        "seed": 1,
+        "ungraded": true,
+        "targetFeature": {
+          "kind": "thorn-cluster",
+          "featureIds": [
+            10198280, 10198281, 10263809, 10263810, 10263811, 10263812,
+            10263813, 10263814, 10263815, 10263816, 10263817, 10264065,
+            10264068, 10264071, 10329346, 10329347
+          ],
+          "bounds": {
+            "minX": 5556,
+            "minY": 23.743076938944046,
+            "minZ": 5300,
+            "maxX": 5772,
+            "maxY": 124.88243486219147,
+            "maxZ": 5580
+          },
+          "rootDisc": {
+            "x": 5669.5,
+            "z": 5429.5,
+            "radius": 144
+          },
+          "fissureId": 1088348037
+        },
+        "validation": {
+          "eyeClear": true,
+          "walkable": true,
+          "centralClear": true,
+          "skyFraction": 0.2035590277777778,
+          "featureFraction": 0.3546006944444444,
+          "waterFraction": 0,
+          "horizonFraction": 0.56247338021354,
+          "sunOffsetDegrees": 130.91438322002512,
+          "sunElevationDegrees": 11.33313571163032,
+          "highestVisibleSample": 114.54745348058019,
+          "altitudeAboveHighestSample": -83.92745348058018,
+          "rayColumns": 64,
+          "rayRows": 36,
+          "targetFraction": 0.3546006944444444,
+          "visibleFeatureIds": [
+            10263813, 10263814, 10263816, 10263817, 10329346, 10329347
+          ],
+          "lavaFraction": 0.003472222222222222,
+          "fissureFraction": 0.003472222222222222,
+          "targetFissureFraction": 0.003472222222222222,
+          "targetLavaFraction": 0,
+          "visibleLavaOwners": [
+            {
+              "source": "fissure",
+              "bodyId": 1088348037
+            }
+          ],
+          "passed": true
+        },
+        "validatedByResolverHash": "a3c9265c37c247ffb5d70506028f2609138012683fb3ccd27786e61d2538e47c"
+      }
+    ],
+    "manualRetention": {
+      "fixedHistoricalPose": true,
+      "freshValidation": true,
+      "automaticSelection": false,
+      "ungraded": true
+    }
   }
 }

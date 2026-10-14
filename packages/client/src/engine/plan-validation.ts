@@ -17,7 +17,7 @@ export function validateWorldPlan(
   if (
     data.seed !== identity.seed ||
     data.worldgenVersion !== version ||
-    data.schema !== 1
+    data.schema !== 2
   )
     throw new Error("WorldPlan compatibility mismatch");
   hydrateWorldPlan(data);

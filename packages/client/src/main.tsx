@@ -21,9 +21,10 @@ import {
   rememberedWorld,
   watchForUpdate,
 } from "./bootstrap/lifecycle.js";
-import { loadPostcard } from "./bootstrap/postcard.js";
+import { loadPostcard, loadPostcardCatalogue } from "./bootstrap/postcard.js";
 import { exposeTelemetry } from "./bootstrap/telemetry.js";
 import { createGameHandle } from "./game/create-game.js";
+import { parseTerrainViewMode } from "./game/postcard.js";
 import {
   createUiController,
   normalizeSeed,
@@ -88,6 +89,11 @@ async function boot(): Promise<void> {
     onWindowedSprint: () => ui?.reportWindowed(),
     build: { version: __CF_BUILD__.version, commit: __CF_BUILD__.commit },
     cacheTag: __CF_BUILD__.cacheTag,
+    initialViewMode: parseTerrainViewMode(query.get("view")),
+    generationVariant:
+      query.get("primitive") === "1" ? "primitive" : "production",
+    resolvePostcards: (identity) =>
+      loadPostcardCatalogue(identity, base, __CF_BUILD__.cacheTag),
     externalKeyboard: true,
     worldVisible: () => ui?.blocking.peek() !== "map",
     ...(postcard ? { postcard: postcard.initial } : {}),

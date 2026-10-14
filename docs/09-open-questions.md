@@ -201,10 +201,57 @@ The agent appends to lists 2 and 3 and never blocks work waiting for answers.
 | 110 | **Underground planning will record a deterministic route-opportunity graph within each layer.** Edges distinguish walking, climbing, flooded routes, construction gaps and gates; approved descents remain the only shelf exceptions | Distinct chambers need usable relationships, but automatic walkable corridors would remove the need for bridges, lifts and defended chokepoints. The graph is planned work for 1.8–1.9, not an implemented navigation promise | Underground chamber/route generation and topology tests |
 | 111 | **A rare underground river passage may override near-fluid cave suppression only inside that river feature's owned carve envelope.** Its level, bed and closed walls belong to the same feature; ambient cave noise receives no exception | River continuity can create strong travel landmarks without leaking reservoirs into unrelated caves. This is future 1.5/1.8 work and must pass fluid-breach tests | River feature envelope and cave suppression rules |
 | 112 | **Ordinary ground uses broader forms and larger connected gentle areas; stronger micro-relief is localized.** This is the owner's explicit 9 October correction after seeing excessive small-scale noise. Regional extremes, world dimensions and underground layout remain intact | Towns and supply routes need usable stretches of ground, and major formations need quieter surrounding space to read at their intended scale. Validate with matched images and local step/slope/patch metrics. Existing distant LOD0–6 specification remains required in phase 1.4 | 04 §6/§11, regional height recipes and field sampling; 04 §13.5 already specifies far LOD |
+| 113 | **Ibara's neighbour-variation check uses ordinary thorn bases in XZ, directed focal-height denominators, scalar inclination and unsigned bend amplitude.** Exact nearest-distance ties choose the lower unsigned ID; landmarks have a separate census. Keep the 95% bar and retain raw comparison operands | Independent review found the current strict metric defensible, with conventions implicit in the prose. Recording them before tuning preserves the measured failures and makes future results reproducible. The check measures local variation in proportions and bending while heading remains a separate orientation field | 04 §8.5 and the terrain-report metric/receipt contract; do not change conventions merely to raise scores |
 
 ---
 
+**2026-10-10 · Postcard support and composition.**
+
+| # | Decision | Why | To reverse |
+|---|---|---|---|
+| 114 | **Eye-level postcard clearance distinguishes the supporting floor from an obstruction.** With validated walking support, ground cells whose top is at or below the supporting voxel top do not fail the five-metre central test; elevated terrain, walls, features and fluids still do. Ground remains in first-hit/coverage/sky data. The 30–45% horizon band applies to the current aerial vista composition, not every eye-level forest view; level and slightly upward eye-level framing are permitted | An independent synthetic audit showed that an otherwise clear flat floor fails at every existing HELL-1 pitch: the 4.25° view reports 38 nearby ground hits, and a lower-central ray reaches its support plane at 3.635 m. The old validator also made a vista-qualified composition rule universal. This correction lets ordinary flat ground be photographed without moving the eye off its walkable +1.62 m position. Eye/body safety, actual nearby obstruction rejection, scene-content checks, 50-view search budget and all HELL score/R2 requirements remain | 04 §14.3; camera preflight/final checks and regression fixtures. Review actual images after changing this interpretation; never count excluded floor as transparent or fabricate visibility |
+
+---
+
+**2026-10-12 · Camera ranking and image review.**
+
+| # | Decision | Why | To reverse |
+|---|---|---|---|
+| 115 | **Extra composition proxies rank/refine cameras and remain visible diagnostics; geometric validation determines whether an ungraded image can be captured.** A completed bounded search may retain its best geometrically valid view with failed contour/family diagnostics. All §8.5 content, primitive calibration, seed score bars and mandatory HELL R2 = 2 still govern phase acceptance | The actual 50-view run found 16 geometrically valid cameras but rejected every one through added proxies. View 33 had a complete visible dominant contour but six border samples still blocked it. Its actual image then received a candid provisional 13/20, R2 = 1; that is useful evidence for improvement. Exact shape measurements also show a valid hooked thorn whose curl was hidden and compressed to about five pixels by the view. Keep optimization and source-bound completed-search reuse, allow images to be inspected, and preserve the strict final visual judgment | 04 §14.3 and HELL resolver/ranking tests. Restore a hard proxy only with evidence that it expresses an actual specification requirement; retain failure receipts and never silently convert an ungraded camera into a visual pass |
+
+---
+
+**2026-10-12 · Keep slow capture evidence distinct from performance acceptance.**
+
+| # | Decision | Why | To reverse |
+|---|---|---|---|
+| 116 | **A bounded diagnostic capture may continue to 300 seconds after recording the original 180-second timing failure.** The standard capture test keeps its deadline and failed receipt. The diagnostic waits for the entire unchanged chunk set and records timing flags/stages; no partial world is photographed. Images remain ungraded until normal visual review | The selected 1,306-chunk cold view still times out after 1,120 completions, with no application error. Section 15 explicitly defers performance budgets to phase 1.10, so repeatedly discarding the unfinished capture prevents the quality work those budgets must preserve. A separate bounded profiling/image run can expose the bottleneck without claiming that the 60-second target or 180-second operational test passed | 04 §14.3; out-only diagnostic harness and receipts. No change to production rendering, ordinary play, standard test deadlines, camera safety/content, primitive calibration or mandatory HELL scores. Keep the original failed run and report the slow capture as a known performance issue |
+
+---
+
+### 12 October 2026 · Short terminal points
+
+| # | Decision | Why | To reverse |
+|---|---|---|---|
+| 117 | **Ordinary intact non-arch main thorn sweeps use an absolute 1.5 m maximum below radius 0.7 m.** Use the existing interpolated-profile exponent clamp, preserving the spine, height, lean, base radius and full-length 0.45 m endpoint. Broken mains, branches, debris, arches and landmarks retain the previous proportional allowance | A complete caldera image exposed a seven-voxel terminal chain despite passing the older 4%-of-length radius proxy. The tighter profile shortens the witnessed chain to four voxels; fresh calibrated full-world review prefers it and improves R9 from 0 to 1. The body widens too, so neighbouring silhouettes still require review. This does not pass R2 or the HELL quality gate, and a radius limit is not a universal voxel-width proof | 04 §8.5; `features/ibara/shape.ts` and its focused readability regressions. Restore the previous proportional default for these mains, regenerate golden data and re-review affected views. Do not clip the endpoint or change other families to undo this choice |
+
+---
+
+### 12 October 2026 · Supported regional destinations
+
+| # | Decision | Why | To reverse |
+|---|---|---|---|
+| 118 | **A regional postcard whose refreshed aerial pose fails may use an actual supported ground eye at the retained X/Z.** Set the eye to validated feet +1.62 m; changing the camera kind alone never establishes walking support. Preserve the declared heading, radius, FOV and safety/content bars, record every failed proposal, and require native pixels before adopting the repaired view | The source023 refresh finds a 204.709 m P12-hellscape solid bound, exposing the stale bound used by its old aerial placement. Two above-bound aerial proposals fail the sky gate. At the original X/Z, four-corner support finds feet 24 m/eye 25.62 m and one fixed 9°-down grid passes; the lake separately passes at 10° down. Geometry and both native repair images pass scoped root/peer review; neither repair grants HELL/R2 or phase acceptance | Catalogue pose/evidence and `out/phase13/tip-camera-refresh/` receipts. Restore an aerial destination only with current source-bound clearance and reviewed native pixels; do not lower bounds, widen FOV or relabel a floating eye to undo this choice |
+
+### 14 October 2026 · Visible branches in accepted clusters
+
+| # | Decision | Why | To reverse |
+|---|---|---|---|
+| 119 | **Allocate ordinary intact thorn branches using a stochastically rounded 35% quota over each final accepted cluster.** When the quota is positive, reserve its tallest eligible member, then use the original seeded packing order. Tiny cohorts may receive zero; preserve the existing branch-count draw and excluded families | Independent draws left the dominant accepted forms unbranched even when the region-wide percentage passed. The reviewed quota gives the forest and caldera clearer attached forks while preserving IDs, positions, population and all non-branch parameters. This introduces intentional height correlation rather than independent per-thorn incidence. Three-seed whole-region bands still pass with the unchanged denominator. It is an incremental improvement, not completion of the mandatory HELL visual bars | 04 §8.5 and `features/ibara/cells.ts`. Restore independent draws for this cohort, regenerate golden data and repeat affected image/report checks. Do not change population, report denominator or passing bars to reverse the policy |
+
 ## 3. Parking lot
+
+- **M1.3 calibration consistency (14 October 2026):** two independent current-material primitive-control reviews score 9/20, exceeding the fixed ≤8 anchor rule. Both are invalid; keep the threshold and mandatory HELL bars unchanged. The source/receipt audit finds the fixture conformant (uniform 96 m height, 12 m radius, 64 m grid); interpretation remains unresolved. Keep both invalid reviews and do not seek additional reviewers for this candidate. Paired image preferences can support an incremental release but cannot establish phase acceptance. Evidence: `reports/phase-1-3-strata-contrast.md`.
 
 - Seasonal modifiers ("the Long Winter": a season with twice the winter)
 - Player-built monuments recorded in the Ledger of Kings

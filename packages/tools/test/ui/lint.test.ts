@@ -25,10 +25,10 @@ describe("hostile UI inputs", () => {
   it("rejects unknown and future controls at SSR and string use", () => {
     expect(
       inspectSsr(
-        '<button data-ui="tools.postcard"></button><span data-text-id="invented.label"></span>',
+        '<button data-ui="tools.lod"></button><span data-text-id="invented.label"></span>',
       ).errors,
     ).toHaveLength(2);
-    expect(() => t("tools.postcard")).toThrow();
+    expect(() => t("tools.lod")).toThrow();
   });
   it("rejects missing substitutions", () => {
     expect(() => t("toast.fly")).toThrow();
@@ -38,7 +38,7 @@ describe("hostile UI inputs", () => {
     expect(
       scanTs(
         "src/ui/screens/bad.tsx",
-        `const x=<div style={{color:'#ffffff',width:'25px'}}><Text id="tools.postcard"/></div>`,
+        `const x=<div style={{color:'#ffffff',width:'25px'}}><Text id="tools.lod"/></div>`,
       ).map((row) => row.rule),
     ).toEqual(["inline-color", "inline-screen-pixels", "unknown-or-future-id"]);
   });
@@ -53,15 +53,25 @@ describe("hostile UI inputs", () => {
   });
   it("uses the same phase boundary in browser, SSR and strings", () => {
     const policy = auditPolicy();
-    expect(policy.phase).toBe("1.2");
-    for (const id of ["title.play", "title.world", "map.teleport", "unit.km"]) {
+    expect(policy.phase).toBe("1.3");
+    for (const id of [
+      "title.play",
+      "title.world",
+      "map.teleport",
+      "unit.km",
+      "tools.postcard",
+      "tools.view",
+      "view.normal",
+      "view.clay",
+      "view.features",
+    ]) {
       expect(policy.currentIds).toContain(id);
       expect(currentId(id)).toBe(true);
       expect(inspectSsr(`<button data-ui="${id}"></button>`).errors).toEqual(
         [],
       );
     }
-    for (const id of ["tools.postcard", "tools.view", "invented.label"]) {
+    for (const id of ["tools.lod", "invented.label"]) {
       expect(policy.currentIds).not.toContain(id);
       expect(currentId(id)).toBe(false);
       expect(

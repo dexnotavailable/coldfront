@@ -1,0 +1,232 @@
+{
+  "schema": 1,
+  "sourceSha256": "ce47d436603d54492afa705148ae73cd5a5225493e0e6bbb8487c7942919ad42",
+  "method": "Original pre-decision114 full grid; hash of pixel, containing voxel, block, owner and distance only (integer observations).",
+  "cases": [
+    {
+      "name": "flat-up",
+      "pitch": -5,
+      "field": "flat",
+      "firstHitCount": 1024,
+      "voxelHitSha256": "79a5a4c27288585ade38df487b697f71d79e35f85cd19d0b2d17b61f953fb5bc",
+      "counts": {
+        "skyFraction": 1280,
+        "featureFraction": 0,
+        "waterFraction": 0,
+        "targetFraction": 0,
+        "lavaFraction": 0,
+        "fissureFraction": 0,
+        "targetFissureFraction": 0,
+        "targetLavaFraction": 0
+      },
+      "visibleFeatureIds": [],
+      "visibleLavaOwners": [],
+      "oldCentralClear": true
+    },
+    {
+      "name": "flat-level",
+      "pitch": 0,
+      "field": "flat",
+      "firstHitCount": 1152,
+      "voxelHitSha256": "165ae2eec7b7cd3cc95029b8cdd313bdc9ddde940e26d65ab330c0884e3d3df1",
+      "counts": {
+        "skyFraction": 1152,
+        "featureFraction": 0,
+        "waterFraction": 0,
+        "targetFraction": 0,
+        "lavaFraction": 0,
+        "fissureFraction": 0,
+        "targetFissureFraction": 0,
+        "targetLavaFraction": 0
+      },
+      "visibleFeatureIds": [],
+      "visibleLavaOwners": [],
+      "oldCentralClear": true
+    },
+    {
+      "name": "flat-4.25",
+      "pitch": 4.25,
+      "field": "flat",
+      "firstHitCount": 1280,
+      "voxelHitSha256": "6a6d6be9ea20d49b979420ebc5b4c434d0eefd7dba1d1707f900a7f63847d68b",
+      "counts": {
+        "skyFraction": 1024,
+        "featureFraction": 0,
+        "waterFraction": 0,
+        "targetFraction": 0,
+        "lavaFraction": 0,
+        "fissureFraction": 0,
+        "targetFissureFraction": 0,
+        "targetLavaFraction": 0
+      },
+      "visibleFeatureIds": [],
+      "visibleLavaOwners": [],
+      "oldCentralClear": false
+    },
+    {
+      "name": "flat-7",
+      "pitch": 7,
+      "field": "flat",
+      "firstHitCount": 1344,
+      "voxelHitSha256": "330eea77da7b573a93f2e4ce5ac509edcd71094b7612683f6ce417fc73f81aae",
+      "counts": {
+        "skyFraction": 960,
+        "featureFraction": 0,
+        "waterFraction": 0,
+        "targetFraction": 0,
+        "lavaFraction": 0,
+        "fissureFraction": 0,
+        "targetFissureFraction": 0,
+        "targetLavaFraction": 0
+      },
+      "visibleFeatureIds": [],
+      "visibleLavaOwners": [],
+      "oldCentralClear": false
+    },
+    {
+      "name": "flat-9",
+      "pitch": 9,
+      "field": "flat",
+      "firstHitCount": 1408,
+      "voxelHitSha256": "d4283186e78387511d9e6ad9a28636f24580d68f4fb14f548481eb46f25b972f",
+      "counts": {
+        "skyFraction": 896,
+        "featureFraction": 0,
+        "waterFraction": 0,
+        "targetFraction": 0,
+        "lavaFraction": 0,
+        "fissureFraction": 0,
+        "targetFissureFraction": 0,
+        "targetLavaFraction": 0
+      },
+      "visibleFeatureIds": [],
+      "visibleLavaOwners": [],
+      "oldCentralClear": false
+    },
+    {
+      "name": "wall-level",
+      "pitch": 0,
+      "field": "wall",
+      "firstHitCount": 1952,
+      "voxelHitSha256": "970744401f315865af09c980c8741422491269ff191c2e2be0710bc4ab54601b",
+      "counts": {
+        "skyFraction": 352,
+        "featureFraction": 1440,
+        "waterFraction": 0,
+        "targetFraction": 1440,
+        "lavaFraction": 0,
+        "fissureFraction": 0,
+        "targetFissureFraction": 0,
+        "targetLavaFraction": 0
+      },
+      "visibleFeatureIds": [99],
+      "visibleLavaOwners": [],
+      "oldCentralClear": false
+    },
+    {
+      "name": "wall-4.25",
+      "pitch": 4.25,
+      "field": "wall",
+      "firstHitCount": 1996,
+      "voxelHitSha256": "bed8f9170ea7548f42621f3d724ad44d45e3309b1fb0bfd3dd8125165b04169e",
+      "counts": {
+        "skyFraction": 308,
+        "featureFraction": 1328,
+        "waterFraction": 0,
+        "targetFraction": 1328,
+        "lavaFraction": 0,
+        "fissureFraction": 0,
+        "targetFissureFraction": 0,
+        "targetLavaFraction": 0
+      },
+      "visibleFeatureIds": [99],
+      "visibleLavaOwners": [],
+      "oldCentralClear": false
+    },
+    {
+      "name": "raised-4.25",
+      "pitch": 4.25,
+      "field": "raised",
+      "firstHitCount": 1280,
+      "voxelHitSha256": "c37a021a81f8a2511582170aced85ba168f5f82a8233ff5099a4d7f4b29101cd",
+      "counts": {
+        "skyFraction": 1024,
+        "featureFraction": 0,
+        "waterFraction": 0,
+        "targetFraction": 0,
+        "lavaFraction": 0,
+        "fissureFraction": 0,
+        "targetFissureFraction": 0,
+        "targetLavaFraction": 0
+      },
+      "visibleFeatureIds": [],
+      "visibleLavaOwners": [],
+      "oldCentralClear": false
+    },
+    {
+      "name": "tagged-floor",
+      "pitch": 4.25,
+      "field": "tagged-floor",
+      "firstHitCount": 1280,
+      "voxelHitSha256": "2e6da0c330bff93743612e67433bfbbfb9c6db8b76f246adc42c3edbd8518dd8",
+      "counts": {
+        "skyFraction": 1024,
+        "featureFraction": 298,
+        "waterFraction": 0,
+        "targetFraction": 298,
+        "lavaFraction": 0,
+        "fissureFraction": 0,
+        "targetFissureFraction": 0,
+        "targetLavaFraction": 0
+      },
+      "visibleFeatureIds": [99],
+      "visibleLavaOwners": [],
+      "oldCentralClear": false
+    },
+    {
+      "name": "water",
+      "pitch": 4.25,
+      "field": "water",
+      "firstHitCount": 1280,
+      "voxelHitSha256": "e85b3bdaf8e8455ced9bd0c2189080f1211da81a1ee60138d96822eccac8d131",
+      "counts": {
+        "skyFraction": 1024,
+        "featureFraction": 0,
+        "waterFraction": 298,
+        "targetFraction": 0,
+        "lavaFraction": 0,
+        "fissureFraction": 0,
+        "targetFissureFraction": 0,
+        "targetLavaFraction": 0
+      },
+      "visibleFeatureIds": [],
+      "visibleLavaOwners": [],
+      "oldCentralClear": false
+    },
+    {
+      "name": "lava",
+      "pitch": 4.25,
+      "field": "lava",
+      "firstHitCount": 1280,
+      "voxelHitSha256": "352b1cbf99ece8b48f23988889e6b0cb1679cc1b2d8d941e864453340c957435",
+      "counts": {
+        "skyFraction": 1024,
+        "featureFraction": 0,
+        "waterFraction": 0,
+        "targetFraction": 0,
+        "lavaFraction": 298,
+        "fissureFraction": 298,
+        "targetFissureFraction": 298,
+        "targetLavaFraction": 0
+      },
+      "visibleFeatureIds": [],
+      "visibleLavaOwners": [
+        {
+          "source": "fissure",
+          "bodyId": 7
+        }
+      ],
+      "oldCentralClear": false
+    }
+  ]
+}

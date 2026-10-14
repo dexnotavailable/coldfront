@@ -1,10 +1,29 @@
+import { BLOCK_REGISTRY } from "../blocks/registry.js";
+import { IBARA_CELL_SIZE, IBARA_MAX_REACH } from "../features/ibara/cells.js";
 import { createNoise2Sample } from "../noise/opensimplex2.js";
 import {
+  allowsMainFloatingFeature,
+  createCrumbCleanup,
+} from "../worldgen/main/crumb-cleanup.js";
+import {
   collectMainTrees,
+  createMainIbaraField,
   MAIN_TREE_MAX_RISE,
   MAIN_TREE_RADIUS,
+  mainFeatureCacheStats,
+  mayContainIbara,
+  prepareIbaraSampler,
+  prepareMainIbara,
+  resolveMainFluids,
   sampleMainVoxel,
+  suppressMainSolid,
 } from "../worldgen/main/features.js";
+import {
+  createPrimitiveIbaraBatch,
+  PRIMITIVE_IBARA_HEIGHT,
+  PRIMITIVE_IBARA_RADIUS,
+} from "../worldgen/main/ibara-primitive.js";
+import { createIbaraAnalytic } from "../worldgen/main/ibara-volcanic.js";
 import {
   createMainField,
   MAIN_COLUMN_LAYOUT,
@@ -26,10 +45,17 @@ import {
   surfaceWeights,
 } from "../worldplan/geometry.js";
 import { hydrateWorldPlan } from "../worldplan/query.js";
-import { WORLD_MAX_XZ, WORLD_MIN_XZ } from "./constants.js";
+import {
+  WORLD_MAX_XZ,
+  WORLD_MAX_Y,
+  WORLD_MIN_XZ,
+  WORLD_MIN_Y,
+} from "./constants.js";
 import { REGION_IDS, SURFACE_REGIONS } from "./regions.js";
 import type {
+  CleanupCacheStats,
   SkyInput,
+  VoxelSample,
   WorldAreaSampler,
   WorldBounds,
   WorldContext,
@@ -61,6 +87,18 @@ function checkBounds(bounds: XZBounds): void {
     bounds.minZ >= WORLD_MAX_XZ
   )
     throw new RangeError("Area does not intersect the canonical frame");
+}
+function checkSpacing(spacing: number, main: boolean): void {
+  if (
+    !Number.isFinite(spacing) ||
+    spacing <= 0 ||
+    (main && (spacing < 1 || spacing > 64))
+  )
+    throw new RangeError(
+      main
+        ? "Unsupported Ibara sample spacing"
+        : "Sample spacing must be finite and positive",
+    );
 }
 function skyFrom(
   columnHeight: number,
@@ -124,8 +162,9 @@ export function createWorldContext(options: WorldContextOptions): WorldContext {
   if (!Number.isInteger(seed) || seed < -2147483648 || seed > 4294967295)
     throw new RangeError("World seed must be a32-bit word");
   if (options.kind === "test") {
-    const prepareArea = (bounds: XZBounds): WorldAreaSampler => {
+    const prepareArea = (bounds: XZBounds, spacing = 1): WorldAreaSampler => {
       checkBounds(bounds);
+      checkSpacing(spacing, false);
       const trees = collectTestTrees(
         seed,
         bounds.minX,
@@ -253,17 +292,81 @@ export function createWorldContext(options: WorldContextOptions): WorldContext {
   if (options.plan.seed !== seed)
     throw new Error("Plan seed differs from world request");
   const plan = hydrateWorldPlan(options.plan);
-  const field = createMainField(options.plan, options.plan.sites.bridges);
+  const field = createMainField(
+    options.plan,
+    options.plan.sites.bridges,
+    options.plan.ibara,
+  );
+  const volcanic = field.ibara;
+  if (!volcanic) throw new Error("Main plan has no volcanic field");
+  if (
+    options.variant !== undefined &&
+    options.variant !== "production" &&
+    options.variant !== "primitive"
+  )
+    throw new Error("Unknown generation variant");
+  const primitive = options.variant === "primitive";
+  const features = primitive ? null : createMainIbaraField(field);
+  const environment = {
+    seed,
+    surfaceAt: volcanic.height,
+    weightAt: createIbaraAnalytic(seed).weight,
+  };
+  const featureStats = (references: number) =>
+    features
+      ? mainFeatureCacheStats(features, references)
+      : {
+          geometryCells: 0,
+          geometryCellLimit: 0,
+          placementCells: 0,
+          placementCellLimit: 0,
+          cachedInstances: 0,
+          preparedInstanceReferences: references,
+        };
   const workspace = createGeometryWorkspace();
   const anchorWeights = createRegionWeights();
-  const prepareArea = (bounds: XZBounds): WorldAreaSampler => {
+  interface RawArea extends WorldAreaSampler {
+    refill(
+      x: number,
+      y: number,
+      z: number,
+      out: VoxelSample,
+      column?: Float64Array,
+    ): VoxelSample;
+    readonly localColumnBytes: number;
+  }
+  // Private raw areas are independent of the requesting rectangle. The cleaner
+  // must never recurse through prepareArea or classify with its feature batch.
+  const prepareRawArea = (bounds: XZBounds, spacing = 1): RawArea => {
     checkBounds(bounds);
+    checkSpacing(spacing, true);
     const trees = collectMainTrees(field, bounds);
+    const ibara = mayContainIbara(bounds)
+      ? features
+        ? prepareMainIbara(volcanic, features, bounds, spacing)
+        : prepareIbaraSampler(
+            volcanic,
+            environment.weightAt,
+            createPrimitiveIbaraBatch(environment, bounds, spacing),
+            spacing,
+          )
+      : undefined;
     const local = field.createColumn();
     return {
       kind: "main",
       seed,
       columns: MAIN_COLUMN_LAYOUT,
+      featureCacheStats: () => featureStats(ibara?.batch.instances.length ?? 0),
+      localColumnBytes: local.byteLength,
+      refill: (x, y, z, out, column) =>
+        resolveMainFluids(
+          x,
+          y,
+          z,
+          out,
+          column ?? field.sampleColumn(x, z, local),
+          ibara,
+        ),
       createColumn: field.createColumn,
       sampleColumn: field.sampleColumn,
       sampleVoxel: (x, y, z, out, column) =>
@@ -274,10 +377,11 @@ export function createWorldContext(options: WorldContextOptions): WorldContext {
           out,
           column ?? field.sampleColumn(x, z, local),
           trees,
+          ibara,
         ),
       skyInput: (x, z, out, column) => {
         const c = column ?? field.sampleColumn(x, z, local);
-        return skyFrom(
+        skyFrom(
           Number(c[MainColumn.Height]),
           Number(c[MainColumn.WaterLevel]),
           x,
@@ -285,6 +389,131 @@ export function createWorldContext(options: WorldContextOptions): WorldContext {
           trees,
           out,
         );
+        if (ibara && inFrame(x, z)) {
+          const lava = ibara.sampleLava
+            ? ibara.sampleLava(x, z, ibara.lavaSample)
+            : volcanic.lavaQuery(x, z, ibara.lavaSample);
+          out.highestFilterY = Math.max(out.highestFilterY, lava.level);
+          for (const thorn of ibara.batch.instances) {
+            const b = thorn.bounds;
+            if (x >= b.minX && x <= b.maxX && z >= b.minZ && z <= b.maxZ)
+              out.highestFilterY = Math.max(out.highestFilterY, b.maxY);
+          }
+          out.highestFilterY = Math.min(WORLD_MAX_Y, out.highestFilterY);
+        }
+        return out;
+      },
+    };
+  };
+  const RAW_AREA_LIMIT = 8;
+  const RAW_COLUMN_LIMIT = 1024;
+  const rawAreas = new Map<string, RawArea>();
+  // Columns deliberately hold no area reference: evicting an area cannot leave
+  // its potentially large feature batch hidden in this separate column LRU.
+  const rawColumns = new Map<string, Float64Array>();
+  const rawColumn = (ix: number, iz: number): Float64Array => {
+    const key = `${ix},${iz}`;
+    let column = rawColumns.get(key);
+    if (column) rawColumns.delete(key);
+    else column = field.sampleColumn(ix + 0.5, iz + 0.5, field.createColumn());
+    rawColumns.set(key, column);
+    if (rawColumns.size > RAW_COLUMN_LIMIT) {
+      const oldest = rawColumns.keys().next().value;
+      if (oldest !== undefined) rawColumns.delete(oldest);
+    }
+    return column;
+  };
+  const rawArea = (ix: number, iz: number): RawArea => {
+    const ox = Math.floor(ix / 32) * 32;
+    const oz = Math.floor(iz / 32) * 32;
+    const key = `${ox},${oz}`;
+    let area = rawAreas.get(key);
+    if (area) rawAreas.delete(key);
+    else
+      area = prepareRawArea({
+        minX: ox + 0.5,
+        minZ: oz + 0.5,
+        maxX: ox + 31.5,
+        maxZ: oz + 31.5,
+      });
+    rawAreas.set(key, area);
+    if (rawAreas.size > RAW_AREA_LIMIT) {
+      const oldest = rawAreas.keys().next().value;
+      if (oldest !== undefined) rawAreas.delete(oldest);
+    }
+    return area;
+  };
+  const rawVoxel: VoxelSample = { density: 0, block: 0, fluid: 0 };
+  const sampleRaw = (ix: number, iy: number, iz: number): VoxelSample =>
+    rawArea(ix, iz).sampleVoxel(
+      ix + 0.5,
+      iy + 0.5,
+      iz + 0.5,
+      rawVoxel,
+      rawColumn(ix, iz),
+    );
+  const cleanup = createCrumbCleanup({
+    rawSolidAt: (ix, iy, iz) =>
+      Boolean(BLOCK_REGISTRY[sampleRaw(ix, iy, iz).block]?.solid),
+    // Current complete ground is a height field; all later features are additive.
+    // Every in-frame centre below it has a solid vertical path to its owner's
+    // bottom. Future cave/carver integration must replace or disable this proof.
+    provenSolidBelow: (ix, iz) => Number(rawColumn(ix, iz)[MainColumn.Height]),
+    allowsFloating: (ix, iy, iz) => {
+      const voxel = sampleRaw(ix, iy, iz);
+      // Ibara owns all current nonzero feature IDs, including overhangs beyond
+      // its regional footprint. No underground floating features exist yet.
+      const featureId = voxel.featureId ?? 0;
+      return allowsMainFloatingFeature({
+        region: featureId
+          ? "hellscape"
+          : (REGION_IDS[Number(rawColumn(ix, iz)[MainColumn.DominantRegion])] ??
+            "plains"),
+        layer: "surface",
+        featureId,
+      });
+    },
+  });
+  const cleanupCacheStats = (): CleanupCacheStats => {
+    let rawColumnBufferBytes = 0,
+      rawAreaColumnBufferBytes = 0,
+      rawPreparedInstanceReferences = 0;
+    for (const column of rawColumns.values())
+      rawColumnBufferBytes += column.byteLength;
+    for (const area of rawAreas.values()) {
+      rawAreaColumnBufferBytes += area.localColumnBytes;
+      rawPreparedInstanceReferences +=
+        area.featureCacheStats?.().preparedInstanceReferences ?? 0;
+    }
+    return {
+      ...cleanup.statistics(),
+      rawAreas: rawAreas.size,
+      rawAreaLimit: RAW_AREA_LIMIT,
+      rawColumns: rawColumns.size,
+      rawColumnLimit: RAW_COLUMN_LIMIT,
+      rawColumnBufferBytes,
+      rawAreaColumnBufferBytes,
+      rawPreparedInstanceReferences,
+    };
+  };
+  const prepareArea = (bounds: XZBounds, spacing = 1): WorldAreaSampler => {
+    const raw = prepareRawArea(bounds, spacing);
+    if (spacing !== 1) return raw;
+    return {
+      ...raw,
+      cleanupCacheStats,
+      sampleVoxel(x, y, z, out, column) {
+        raw.sampleVoxel(x, y, z, out, column);
+        // Negative raw samples are already empty with the correct owned fluid.
+        // A zero at a removed cell's subvoxel surface must also become negative.
+        if (
+          out.density >= 0 &&
+          cleanup.removed(Math.floor(x), Math.floor(y), Math.floor(z))
+        ) {
+          suppressMainSolid(out);
+          raw.refill(x, y, z, out, column);
+        }
+        return out;
       },
     };
   };
@@ -300,6 +529,8 @@ export function createWorldContext(options: WorldContextOptions): WorldContext {
     plan,
     regions: SURFACE_REGIONS,
     columns: MAIN_COLUMN_LAYOUT,
+    featureCacheStats: () => featureStats(0),
+    cleanupCacheStats,
     spawn: Object.freeze({
       x: first.x,
       y: Math.ceil(first.surfaceY - 0.5),
@@ -400,6 +631,72 @@ export function createWorldContext(options: WorldContextOptions): WorldContext {
           out.maxSolidY,
           expanded.maxSurfaceY + MAIN_TREE_MAX_RISE,
         );
+      }
+      if (mayContainIbara(bounds)) {
+        if (!features) {
+          const expanded: WorldBounds = {
+            minSurfaceY: 0,
+            maxSurfaceY: 0,
+            maxSolidY: 0,
+            maxFluidY: -Infinity,
+          };
+          field.surfaceBounds(
+            {
+              minX: bounds.minX - PRIMITIVE_IBARA_RADIUS,
+              minZ: bounds.minZ - PRIMITIVE_IBARA_RADIUS,
+              maxX: bounds.maxX + PRIMITIVE_IBARA_RADIUS,
+              maxZ: bounds.maxZ + PRIMITIVE_IBARA_RADIUS,
+            },
+            expanded,
+          );
+          out.maxSolidY = Math.min(
+            WORLD_MAX_Y,
+            Math.max(
+              out.maxSolidY,
+              expanded.maxSurfaceY + PRIMITIVE_IBARA_HEIGHT,
+            ),
+          );
+          return out;
+        }
+        const cellsX =
+          Math.floor((bounds.maxX + IBARA_MAX_REACH) / IBARA_CELL_SIZE) -
+          Math.floor((bounds.minX - IBARA_MAX_REACH) / IBARA_CELL_SIZE) +
+          1;
+        const cellsZ =
+          Math.floor((bounds.maxZ + IBARA_MAX_REACH) / IBARA_CELL_SIZE) -
+          Math.floor((bounds.minZ - IBARA_MAX_REACH) / IBARA_CELL_SIZE) +
+          1;
+        if (cellsX * cellsZ <= 256) {
+          for (const thorn of features.collect(
+            { ...bounds, minY: WORLD_MIN_Y, maxY: WORLD_MAX_Y },
+            1,
+          ))
+            out.maxSolidY = Math.max(out.maxSolidY, thorn.bounds.maxY);
+        } else {
+          const expanded: WorldBounds = {
+            minSurfaceY: 0,
+            maxSurfaceY: 0,
+            maxSolidY: 0,
+            maxFluidY: -Infinity,
+          };
+          field.surfaceBounds(
+            {
+              minX: bounds.minX - IBARA_MAX_REACH,
+              minZ: bounds.minZ - IBARA_MAX_REACH,
+              maxX: bounds.maxX + IBARA_MAX_REACH,
+              maxZ: bounds.maxZ + IBARA_MAX_REACH,
+            },
+            expanded,
+          );
+          // Arch controls reach 1.6*350m; polygon padding, fillets,
+          // displacement and 32m LOD thickening fit within the 768m envelope.
+          // Roots/debris may anchor anywhere in the expanded footprint.
+          out.maxSolidY = Math.max(
+            out.maxSolidY,
+            expanded.maxSurfaceY + IBARA_MAX_REACH,
+          );
+        }
+        out.maxSolidY = Math.min(WORLD_MAX_Y, out.maxSolidY);
       }
       return out;
     },

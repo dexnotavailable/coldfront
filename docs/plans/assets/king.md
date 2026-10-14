@@ -67,3 +67,10 @@ Brief one code-generated King avatar: a square, toothed crown above the existing
 - Read-only inspection only: no files changed, code executed for validation, renders produced, assets completed or visual quality verified. Root judges the brief; the later implementation owner must render and inspect actual pixels.
 
 Prepared by the Astra design route in Dexflow. This is a design brief, not proof of a completed asset.
+
+
+## Prototype appearance checkpoint — 9 October 2026
+
+Pass 04 received an independent appearance pass within its isolated fixture after all 30 full-resolution frames and 11 comparison strips were opened. Crown identity and the rear/rear-quarter cloak silhouette meet the normal 24 m brief; front views remain naturally crown-led. Side views are thin and panel-like, dark neutral trim reduces cape/body separation, and fine folds remain close-view detail. No definite new seam or clipping defect was found in the supplied samples.
+
+The source has 14 passing focused tests; sampled motion bounds and clearance pass without changing the crown, body, base palette or resource counts (34 meshes, 408 triangles, 9,216 texture bytes). The reviewer verified all 41 new images, 170 earlier images and the preserved failed attempts. Full-rate playback, distant/cover cases beyond this pass, production wind, local lighting/contact shadows, regional terrain and actual game integration remain open. This checkpoint does not replace those original brief requirements or claim a finished live King.

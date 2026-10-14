@@ -132,7 +132,31 @@ describe("height atlas", () => {
         bounds: { minX: -22528, maxX: 22528, minZ: -22528, maxZ: 22528 },
       },
     });
-    expect(() => parseAtlas(["--mode", "features"])).toThrow(/phase 1.3/);
+    expect(parseAtlas(["--mode", "features"])).toMatchObject({
+      world: "main",
+      request: { mode: "features", layer: "surface" },
+    });
+    expect(
+      parseAtlas([
+        "--world",
+        "main",
+        "--layer",
+        "surface",
+        "--mode",
+        "features",
+      ]),
+    ).toMatchObject({
+      world: "main",
+      request: { mode: "features", layer: "surface" },
+    });
+    expect(() => parseAtlas(["--mode", "unknown"])).toThrow(/Mode/);
+    expect(() => parseAtlas(["--world", "test", "--mode", "features"])).toThrow(
+      /WorldPlan/,
+    );
+    for (const layer of ["upper_deep", "undercrown", "maw", "pit"])
+      expect(() =>
+        parseAtlas(["--layer", layer, "--mode", "features"]),
+      ).toThrow(/surface-only/);
     expect(() => parseAtlas(["--region", "hellscape"])).toThrow(/Unsupported/);
     expect(() =>
       renderAtlas(small(0, 0, 2, 4), createTestWorldSource(1)),
