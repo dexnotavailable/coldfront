@@ -5,11 +5,11 @@
       "id": "outline-ghost",
       "rows": ["hud.outline", "hud.ghost"],
       "image": "fixtures/ui/world-outline-ghost.jpg",
-      "imageSha256": "a19491ecbc9d674494de14b46a965071005bff567a397f8d7ad2746b19135a58",
+      "imageSha256": "2eab0bf500fb77871720753f20e692112248df43adc8010ac71e08f0b9d66cc5",
       "telemetry": "fixtures/ui/world-outline-ghost.json",
-      "telemetrySha256": "1e89a02bcbc61e28c0328232ee9814e2ca7a858c7880e6c84ef6b8c8a710e2da",
+      "telemetrySha256": "82ce9bac2d84e16a41b76125eb898398c675b5d00b253abd5ae0ceb09da26a78",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "ea9f5b986bf75fcdf09fd319de5115923f01908048463d957782623d5eb92ae8",
+      "runReceiptSha256": "6313ccaa84e59bb69020844621e3e185bcf8a060ccd050b614b50e2f5db5ed1a",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -18,6 +18,10 @@
         {
           "path": "packages/client/src/dev/test-scenes.ts",
           "sha256": "1ab3207179b29a58d332e8e2d6c8812382e3d151d83110cb7068e0061f5409c2"
+        },
+        {
+          "path": "packages/client/src/engine/assets/smithy-parts.ts",
+          "sha256": "5800705927608ca12d1e29668870b8d1f32185997522f5dce76d687808079e7e"
         },
         {
           "path": "packages/client/src/engine/avatar.ts",
@@ -138,6 +142,10 @@
         {
           "path": "packages/client/src/game/world-save.ts",
           "sha256": "1d29327cfc05be763b83e0cc72e8c92a833ce66aa518f0b9e32bec5cbc2e9171"
+        },
+        {
+          "path": "packages/shared/src/assets/structures/early-smithy.ts",
+          "sha256": "5360261b50895d2f3e00bdb6a10cab466df7dc573c0f99a3032b0cdf8952392d"
         },
         {
           "path": "packages/shared/src/assets/structures/watchtower.ts",
@@ -373,8 +381,8 @@
         "format": "jpeg",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
-        "sourceImage": "out/engine/hud-watchtower-library-9ccc495/outline-ghost.png",
-        "sourceImageSha256": "08e8192095713f8a88bdbed6d9a0cada3f74d5723d8747a614ce609531bb13fc",
+        "sourceImage": "out/engine/hud-smithy-library-0f45efa/outline-ghost.png",
+        "sourceImageSha256": "ecfeba01bac486c53c99c76233ef68ee8243ec5b3e1270065e73ba9ae471bf1d",
         "quality": 85,
         "width": 1280,
         "height": 720,
@@ -385,11 +393,11 @@
       "id": "silhouette",
       "rows": ["hud.silhouette"],
       "image": "fixtures/ui/world-silhouette.jpg",
-      "imageSha256": "b2942ab4189d65a3b0a83cc61cc78288e1ebf255ae1881f2ea34a41fcd524930",
+      "imageSha256": "89116132349497fe0caac8d36678fb0509ac8e4a70a9ecefae3e7f9fcbd812bf",
       "telemetry": "fixtures/ui/world-silhouette.json",
-      "telemetrySha256": "98db01db98d39c5367db2fa56b172a1469d940790e7e6733aaf6d2c50b932e85",
+      "telemetrySha256": "45a9830b23f075412727e81aafd7b76754b613a69025d2c8725fbc272c801d19",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "ea9f5b986bf75fcdf09fd319de5115923f01908048463d957782623d5eb92ae8",
+      "runReceiptSha256": "6313ccaa84e59bb69020844621e3e185bcf8a060ccd050b614b50e2f5db5ed1a",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -398,6 +406,10 @@
         {
           "path": "packages/client/src/dev/test-scenes.ts",
           "sha256": "1ab3207179b29a58d332e8e2d6c8812382e3d151d83110cb7068e0061f5409c2"
+        },
+        {
+          "path": "packages/client/src/engine/assets/smithy-parts.ts",
+          "sha256": "5800705927608ca12d1e29668870b8d1f32185997522f5dce76d687808079e7e"
         },
         {
           "path": "packages/client/src/engine/avatar.ts",
@@ -518,6 +530,10 @@
         {
           "path": "packages/client/src/game/world-save.ts",
           "sha256": "1d29327cfc05be763b83e0cc72e8c92a833ce66aa518f0b9e32bec5cbc2e9171"
+        },
+        {
+          "path": "packages/shared/src/assets/structures/early-smithy.ts",
+          "sha256": "5360261b50895d2f3e00bdb6a10cab466df7dc573c0f99a3032b0cdf8952392d"
         },
         {
           "path": "packages/shared/src/assets/structures/watchtower.ts",
@@ -753,8 +769,8 @@
         "format": "jpeg",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
-        "sourceImage": "out/engine/hud-watchtower-library-9ccc495/silhouette.png",
-        "sourceImageSha256": "1f189b28c123ab4c9ed6cc4eac725c026790899160bccbc699802dee3ed86f35",
+        "sourceImage": "out/engine/hud-smithy-library-0f45efa/silhouette.png",
+        "sourceImageSha256": "88844641018a73a5431a1402f32ac81a9ae83e02690dfe9a514942612861215c",
         "quality": 85,
         "width": 1280,
         "height": 720,

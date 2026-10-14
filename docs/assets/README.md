@@ -24,3 +24,22 @@ npm test -- packages/shared/test/assets/watchtower.test.ts
 ```
 
 Placement, rotation, foundations and saves; brace presentation; construction and structural support; NPC navigation; staffing, sight and networking remain future integration work.
+
+## Early smithy
+
+`player_smithy_early_01`, revision 2: a 604-voxel timber and masonry workshop with a three-terrace roof, an open chimney and a cold ash bed. Its separate presentation helper supplies the door leaves, anvil and bench.
+
+- [Model and integer sampler](../../packages/shared/src/assets/structures/early-smithy.ts): internal exports `EARLY_SMITHY`, `sampleEarlySmithy` and `smithyRoofY`.
+- [Presentation helper](../../packages/client/src/engine/assets/smithy-parts.ts): `SmithyParts` owns its meshes, depth copies, materials and textures; call `dispose()` when finished.
+- [Seven geometry tests](../../packages/shared/test/assets/early-smithy.test.ts) and [three presentation/camera tests](../../packages/tools/test/assets/smithy-parts.test.ts).
+- [Historical construction brief](../plans/assets/smithy.md) and [reviewed cold-hearth evidence](../reports/smithy-hearth-study.md).
+
+Coordinates are local metres, Y up, entrance facing -Z, pivot `[0, 0, 0]`. The floor is Y=0 and the foundation occupies Y=-1. The integer sampler returns Air outside its bounds; exported cells are frozen and ordered Y/Z/X. No new registry ID, dependency or generation rule is introduced.
+
+A future renderer must provide solved local-coordinate skylight to `SmithyParts`, position its group, call `syncDepth()` after transformations and pass world-Y cuts to `setCut()`. The default all-sky sampler and static open-door pose are study conveniences. Lighting is sampled at construction; moving doors and changing light require future integration work. Presentation pieces do not supply collision.
+
+The pending-functional-parts state and construction brief are historical study records. The machine-specific capture helper remains in the isolated study. The library is unregistered: placement, construction, structural validation, functional stations, recipes, fire, heat, fuel, interaction, collision and NPC navigation remain future work.
+
+```text
+npm test -- packages/shared/test/assets/early-smithy.test.ts packages/tools/test/assets/smithy-parts.test.ts
+```
