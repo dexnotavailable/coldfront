@@ -237,7 +237,7 @@ describe("world session boundaries", () => {
       }
       const expectedBytes =
         2 *
-          (96 * 96 * 96 * 7 +
+          (96 * 96 * 96 * 5 +
             CHUNK_VOLUME * 2 +
             HALO_VOLUME * 22 +
             34 * 34 * 8 * 8) +
