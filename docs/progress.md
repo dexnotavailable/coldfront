@@ -2,7 +2,7 @@
 
 **Current milestone:** 1 · The World
 **Current phase:** 1.3 · Terrain toolkit + Ibara (visual corrections and final release checks)
-**Playable link:** [dex.place/coldfront](https://dex.place/coldfront/) · [Interface gallery](https://dex.place/coldfront/?gallery) · [Merged increment #8](https://github.com/dexnotavailable/coldfront/pull/8). Live game commit: `ecc26af` (generation 4, verified terrain-review cache correction; current saves retained). The unrelated `coldfront.pages.dev` site is not this game's preview.
+**Playable link:** [dex.place/coldfront](https://dex.place/coldfront/) · [Interface gallery](https://dex.place/coldfront/?gallery) · [Current PR #9](https://github.com/dexnotavailable/coldfront/pull/9). Live game commit: `ecc26af` (generation 4, verified terrain-review cache correction; current saves retained). The unrelated `coldfront.pages.dev` site is not this game's preview.
 **Agent guide:** `AGENTS.md` (Codex and Claude Code both follow it). **Interface:** only what `docs/11-interface-catalogue.md` lists.
 
 ## Status board
