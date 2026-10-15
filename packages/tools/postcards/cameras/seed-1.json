@@ -29,8 +29,8 @@
     "worldKind": "main",
     "seed": 1,
     "worldgenVersion": 4,
-    "sourceHash": "676c1dee2fe6e97007d306b08f8efeb1381c9d9510f701f4558f22721f2116cb",
-    "resolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
+    "sourceHash": "d3b3ba428e1cb77cf60526dadf2f85a01d2cd6c3837e35a5b5dd140c4b8ce9ee",
+    "resolverHash": "70b4e582db392b2876c45c1839a44a0e0515e595c32087fbd13707a080606f4d",
     "cameras": [
       {
         "id": "P12-plains",
@@ -49,8 +49,8 @@
         },
         "hours": 17.25,
         "radius": 320,
-        "terrainUpperBound": 77.42162596700211,
         "ungraded": true,
+        "terrainUpperBound": 77.42162596700211,
         "validation": {
           "eyeClear": true,
           "walkable": false,
@@ -74,8 +74,7 @@
           "visibleLavaOwners": [],
           "passed": true
         },
-        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
-        "score": 107.40243055555555
+        "validatedByResolverHash": "70b4e582db392b2876c45c1839a44a0e0515e595c32087fbd13707a080606f4d"
       },
       {
         "id": "P12-tundra",
@@ -94,8 +93,8 @@
         },
         "hours": 17.25,
         "radius": 320,
-        "terrainUpperBound": 87.8070935664046,
         "ungraded": true,
+        "terrainUpperBound": 87.8070935664046,
         "validation": {
           "eyeClear": true,
           "walkable": false,
@@ -119,8 +118,7 @@
           "visibleLavaOwners": [],
           "passed": true
         },
-        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
-        "score": 107.11597222222223
+        "validatedByResolverHash": "70b4e582db392b2876c45c1839a44a0e0515e595c32087fbd13707a080606f4d"
       },
       {
         "id": "P12-mountains",
@@ -163,8 +161,7 @@
           "visibleLavaOwners": [],
           "passed": true
         },
-        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
-        "score": 110.00572916666667
+        "validatedByResolverHash": "70b4e582db392b2876c45c1839a44a0e0515e595c32087fbd13707a080606f4d"
       },
       {
         "id": "P12-desert",
@@ -183,8 +180,8 @@
         },
         "hours": 17.25,
         "radius": 320,
-        "terrainUpperBound": 89.62728642766626,
         "ungraded": true,
+        "terrainUpperBound": 89.62728642766626,
         "validation": {
           "eyeClear": true,
           "walkable": false,
@@ -208,8 +205,7 @@
           "visibleLavaOwners": [],
           "passed": true
         },
-        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
-        "score": 107.05520833333334
+        "validatedByResolverHash": "70b4e582db392b2876c45c1839a44a0e0515e595c32087fbd13707a080606f4d"
       },
       {
         "id": "P12-boneyard",
@@ -252,8 +248,7 @@
           "visibleLavaOwners": [],
           "passed": true
         },
-        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
-        "score": 114.159375
+        "validatedByResolverHash": "70b4e582db392b2876c45c1839a44a0e0515e595c32087fbd13707a080606f4d"
       },
       {
         "id": "P12-jungle",
@@ -272,8 +267,8 @@
         },
         "hours": 17.25,
         "radius": 320,
-        "terrainUpperBound": 96.61860924112953,
         "ungraded": true,
+        "terrainUpperBound": 96.61860924112953,
         "validation": {
           "eyeClear": true,
           "walkable": false,
@@ -297,8 +292,7 @@
           "visibleLavaOwners": [],
           "passed": true
         },
-        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
-        "score": 107.22013888888888
+        "validatedByResolverHash": "70b4e582db392b2876c45c1839a44a0e0515e595c32087fbd13707a080606f4d"
       },
       {
         "id": "P12-swamp",
@@ -317,8 +311,8 @@
         },
         "hours": 17.25,
         "radius": 320,
-        "terrainUpperBound": 31.5000001,
         "ungraded": true,
+        "terrainUpperBound": 31.5000001,
         "validation": {
           "eyeClear": true,
           "walkable": false,
@@ -342,8 +336,7 @@
           "visibleLavaOwners": [],
           "passed": true
         },
-        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
-        "score": 107.58472222222221
+        "validatedByResolverHash": "70b4e582db392b2876c45c1839a44a0e0515e595c32087fbd13707a080606f4d"
       },
       {
         "id": "P12-lake",
@@ -362,8 +355,8 @@
         },
         "hours": 17.25,
         "radius": 320,
-        "terrainUpperBound": 73.52252278315905,
         "ungraded": true,
+        "terrainUpperBound": 73.52252278315905,
         "validation": {
           "eyeClear": true,
           "walkable": false,
@@ -387,8 +380,7 @@
           "visibleLavaOwners": [],
           "passed": true
         },
-        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
-        "score": 100.9484375
+        "validatedByResolverHash": "70b4e582db392b2876c45c1839a44a0e0515e595c32087fbd13707a080606f4d"
       },
       {
         "id": "P12-twilight",
@@ -407,8 +399,8 @@
         },
         "hours": 17.25,
         "radius": 320,
-        "terrainUpperBound": 102.12347786770265,
         "ungraded": true,
+        "terrainUpperBound": 102.12347786770265,
         "validation": {
           "eyeClear": true,
           "walkable": false,
@@ -432,8 +424,7 @@
           "visibleLavaOwners": [],
           "passed": true
         },
-        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
-        "score": 107.07256944444444
+        "validatedByResolverHash": "70b4e582db392b2876c45c1839a44a0e0515e595c32087fbd13707a080606f4d"
       },
       {
         "id": "P12-hellscape",
@@ -476,8 +467,7 @@
           "visibleLavaOwners": [],
           "passed": true
         },
-        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
-        "score": 114.98819444444445
+        "validatedByResolverHash": "70b4e582db392b2876c45c1839a44a0e0515e595c32087fbd13707a080606f4d"
       },
       {
         "id": "P12-shardfields",
@@ -496,8 +486,8 @@
         },
         "hours": 17.25,
         "radius": 320,
-        "terrainUpperBound": 104.14965036151753,
         "ungraded": true,
+        "terrainUpperBound": 104.14965036151753,
         "validation": {
           "eyeClear": true,
           "walkable": false,
@@ -521,8 +511,7 @@
           "visibleLavaOwners": [],
           "passed": true
         },
-        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
-        "score": 107.27222222222223
+        "validatedByResolverHash": "70b4e582db392b2876c45c1839a44a0e0515e595c32087fbd13707a080606f4d"
       },
       {
         "id": "P12-isles",
@@ -541,8 +530,8 @@
         },
         "hours": 17.25,
         "radius": 320,
-        "terrainUpperBound": 61.617688759478035,
         "ungraded": true,
+        "terrainUpperBound": 61.617688759478035,
         "validation": {
           "eyeClear": true,
           "walkable": false,
@@ -566,8 +555,7 @@
           "visibleLavaOwners": [],
           "passed": true
         },
-        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
-        "score": 107.31996527777777
+        "validatedByResolverHash": "70b4e582db392b2876c45c1839a44a0e0515e595c32087fbd13707a080606f4d"
       },
       {
         "id": "P12-nadir",
@@ -586,8 +574,8 @@
         },
         "hours": 17.25,
         "radius": 320,
-        "terrainUpperBound": 356.34586664820415,
         "ungraded": true,
+        "terrainUpperBound": 356.34586664820415,
         "validation": {
           "eyeClear": true,
           "walkable": false,
@@ -611,8 +599,7 @@
           "visibleLavaOwners": [],
           "passed": true
         },
-        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
-        "score": 106.99878472222223
+        "validatedByResolverHash": "70b4e582db392b2876c45c1839a44a0e0515e595c32087fbd13707a080606f4d"
       },
       {
         "id": "P12-blackwater",
@@ -631,8 +618,8 @@
         },
         "hours": 17.25,
         "radius": 320,
-        "terrainUpperBound": 18,
         "ungraded": true,
+        "terrainUpperBound": 18,
         "validation": {
           "eyeClear": true,
           "walkable": false,
@@ -656,8 +643,7 @@
           "visibleLavaOwners": [],
           "passed": true
         },
-        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
-        "score": 108.53090277777777
+        "validatedByResolverHash": "70b4e582db392b2876c45c1839a44a0e0515e595c32087fbd13707a080606f4d"
       },
       {
         "id": "P12-rim",
@@ -676,8 +662,8 @@
         },
         "hours": 17.25,
         "radius": 320,
-        "terrainUpperBound": 629.5000001,
         "ungraded": true,
+        "terrainUpperBound": 629.5000001,
         "validation": {
           "eyeClear": true,
           "walkable": false,
@@ -701,8 +687,7 @@
           "visibleLavaOwners": [],
           "passed": true
         },
-        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
-        "score": 104.69409722222223
+        "validatedByResolverHash": "70b4e582db392b2876c45c1839a44a0e0515e595c32087fbd13707a080606f4d"
       },
       {
         "id": "P12-frost",
@@ -721,8 +706,8 @@
         },
         "hours": 17.25,
         "radius": 320,
-        "terrainUpperBound": 629.5000001,
         "ungraded": true,
+        "terrainUpperBound": 629.5000001,
         "validation": {
           "eyeClear": true,
           "walkable": false,
@@ -746,8 +731,7 @@
           "visibleLavaOwners": [],
           "passed": true
         },
-        "validatedByResolverHash": "659cc060701cc54e4b16632c31f9ce0563fdb4411c471429db5e2a4ebaac4063",
-        "score": 107.55
+        "validatedByResolverHash": "70b4e582db392b2876c45c1839a44a0e0515e595c32087fbd13707a080606f4d"
       }
     ]
   },
@@ -756,8 +740,8 @@
     "worldKind": "main",
     "seed": 1,
     "worldgenVersion": 4,
-    "sourceHash": "676c1dee2fe6e97007d306b08f8efeb1381c9d9510f701f4558f22721f2116cb",
-    "resolverHash": "a3c9265c37c247ffb5d70506028f2609138012683fb3ccd27786e61d2538e47c",
+    "sourceHash": "d3b3ba428e1cb77cf60526dadf2f85a01d2cd6c3837e35a5b5dd140c4b8ce9ee",
+    "resolverHash": "5527e4674f0933442f710ffc9bef1132a81aa7bce588ba7448965c5ae9754ad6",
     "variant": "production",
     "cameras": [
       {
@@ -816,17 +800,17 @@
           "eyeClear": true,
           "walkable": true,
           "centralClear": true,
-          "skyFraction": 0.3836805555555556,
-          "featureFraction": 0.2404513888888889,
+          "skyFraction": 0.3919270833333333,
+          "featureFraction": 0.2322048611111111,
           "waterFraction": 0,
           "horizonFraction": 0.56247338021354,
           "sunOffsetDegrees": 96.53691551217547,
           "sunElevationDegrees": 11.33313571163032,
-          "highestVisibleSample": 110.48534581332089,
-          "altitudeAboveHighestSample": -79.86534581332089,
+          "highestVisibleSample": 114.26129732618409,
+          "altitudeAboveHighestSample": -83.64129732618409,
           "rayColumns": 64,
           "rayRows": 36,
-          "targetFraction": 0.2404513888888889,
+          "targetFraction": 0.2322048611111111,
           "visibleFeatureIds": [
             10198277, 10198295, 10263874, 10263878, 10263888, 10263889,
             10263893, 10263895, 10263900, 10263908, 10263910, 10264072,
@@ -846,7 +830,7 @@
           ],
           "passed": true
         },
-        "validatedByResolverHash": "a3c9265c37c247ffb5d70506028f2609138012683fb3ccd27786e61d2538e47c"
+        "validatedByResolverHash": "5527e4674f0933442f710ffc9bef1132a81aa7bce588ba7448965c5ae9754ad6"
       },
       {
         "id": "HELL-2",
@@ -882,22 +866,22 @@
           "eyeClear": true,
           "walkable": true,
           "centralClear": true,
-          "skyFraction": 0.3719618055555556,
-          "featureFraction": 0.5099826388888888,
+          "skyFraction": 0.3758680555555556,
+          "featureFraction": 0.5134548611111112,
           "waterFraction": 0,
           "horizonFraction": 0.38690178862577407,
           "sunOffsetDegrees": 143.5929563708954,
           "sunElevationDegrees": 11.33313571163032,
-          "highestVisibleSample": 192.49184224945768,
-          "altitudeAboveHighestSample": -68.87184224945767,
+          "highestVisibleSample": 182.87163365029016,
+          "altitudeAboveHighestSample": -59.25163365029016,
           "rayColumns": 64,
           "rayRows": 36,
-          "targetFraction": 0.5099826388888888,
+          "targetFraction": 0.5134548611111112,
           "visibleFeatureIds": [],
-          "lavaFraction": 0.05381944444444445,
+          "lavaFraction": 0.055121527777777776,
           "fissureFraction": 0,
           "targetFissureFraction": 0,
-          "targetLavaFraction": 0.05251736111111111,
+          "targetLavaFraction": 0.05381944444444445,
           "visibleLavaOwners": [
             {
               "source": "caldera",
@@ -910,15 +894,15 @@
           ],
           "passed": true
         },
-        "validatedByResolverHash": "a3c9265c37c247ffb5d70506028f2609138012683fb3ccd27786e61d2538e47c"
+        "validatedByResolverHash": "5527e4674f0933442f710ffc9bef1132a81aa7bce588ba7448965c5ae9754ad6"
       }
     ],
     "manualRetention": {
       "ungraded": true,
       "selectorSearch": false,
-      "hell1": "Published view050 retained exactly, verified genuine676 fixed-grid validation.",
-      "hell2": "Published candidate48 retained exactly, verified genuine676 fixed-grid validation; no addition.",
-      "validationEvidence": "Two existing676 proofs with78 exact recorded dependencies each; original resolver identity preserved. No new search or visual pass."
+      "hell1": "Installed view050 held exactly; fresh selected-generation fixed-grid validation.",
+      "hell2": "Installed candidate48 held exactly; genuine selected-generation fixed-grid proof reused with original resolver identity.",
+      "validationEvidence": "Geometry only. No search, timing, visual, seed2/3 or formal phase acceptance."
     }
   },
   "phase13Primitive": {

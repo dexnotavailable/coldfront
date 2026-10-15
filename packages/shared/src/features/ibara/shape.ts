@@ -271,6 +271,66 @@ function profile(
   }
   return radius;
 }
+/** Keep the proportional body through station 231/256. Only the terminal
+ * 25 table intervals receive a monotone splice to the stronger published tip.
+ * The exact stations bracketing 1.5m retain that tip's interpolation. All
+ * knuckles end before this support, so both source profiles taper here.
+ * This runs once during construction; sampling still reads the same table. */
+function localizeMainTip(
+  radii: Float64Array,
+  radius: number,
+  exponent: number,
+  length: number,
+  id: number,
+): void {
+  if (length <= 1.5) return;
+  const last = PROFILE_SAMPLES - 1,
+    station = (1 - 1.5 / length) * last,
+    tipStart = Math.floor(station),
+    i = Math.min(last - 1, tipStart);
+  // Test the actual table at the limit, in sweepRadius's operand order.
+  // Inverting that crossing to a length can round an exact 1.5 m tail upward.
+  if (
+    Number(radii[i]) +
+      (Number(radii[i + 1]) - Number(radii[i])) * (station - i) >=
+    0.7
+  )
+    return;
+  const bodyEnd = Math.ceil(0.9 * last);
+  const tipExponent = safeExponent(radius, exponent, length, id, 1.5);
+  const strong = (i: number): number =>
+    profile(radius, tipExponent, i / last, id, false);
+  const bodyRadius = Number(radii[bodyEnd]),
+    tipRadius = strong(tipStart),
+    intervals = tipStart - bodyEnd;
+  if (!(intervals > 0 && bodyRadius > tipRadius))
+    throw new RangeError(
+      `Thorn ${id} cannot localize its tip within the terminal tenth: body=${bodyRadius}, tip=${tipRadius}, intervals=${intervals}`,
+    );
+  const bodySlope = (Number(radii[bodyEnd + 1]) - bodyRadius) * intervals,
+    tipSlope = (tipRadius - strong(tipStart - 1)) * intervals;
+  // Nonpositive Hermite slopes with alpha+beta <= 3 give a monotone taper.
+  // One common reduction preserves their relative shape without a flat collar.
+  const slopeScale = Math.min(
+    1,
+    (3 * (bodyRadius - tipRadius)) / (-bodySlope - tipSlope),
+  );
+  for (let i = bodyEnd + 1; i < tipStart; i++) {
+    const u = (i - bodyEnd) / intervals,
+      u2 = u * u,
+      u3 = u2 * u;
+    const joined =
+      (2 * u3 - 3 * u2 + 1) * bodyRadius +
+      (u3 - 2 * u2 + u) * bodySlope * slopeScale +
+      (-2 * u3 + 3 * u2) * tipRadius +
+      (u3 - u2) * tipSlope * slopeScale;
+    radii[i] = Math.max(
+      Number(radii[i]),
+      Math.min(strong(i), Math.max(tipRadius, Math.min(bodyRadius, joined))),
+    );
+  }
+  for (let i = tipStart; i <= last; i++) radii[i] = strong(i);
+}
 function mainCurves(
   p: ThornParameters,
   environment: IbaraEnvironment,
@@ -403,7 +463,7 @@ function sweep(
   arch = false,
   roughness = true,
   preparedSpine?: Spine,
-  maximumThinLength?: number,
+  localizeThinTip = false,
 ): ThornSweep {
   const spine = preparedSpine ?? featureSpine(curves, diagnostics);
   if (spine.capped)
@@ -412,7 +472,7 @@ function sweep(
     );
   const profileExponent = arch
     ? exponent
-    : safeExponent(radius, exponent, spine.length, p.id, maximumThinLength);
+    : safeExponent(radius, exponent, spine.length, p.id);
   const radii = new Float64Array(PROFILE_SAMPLES);
   let maxRadius = 0;
   for (let i = 0; i < PROFILE_SAMPLES; i++) {
@@ -426,6 +486,9 @@ function sweep(
     radii[i] = r;
     maxRadius = Math.max(maxRadius, r);
   }
+  // The splice stays below its unchanged body anchor, preserving maxRadius.
+  if (localizeThinTip)
+    localizeMainTip(radii, radius, exponent, spine.length, p.id);
   const trig = new Float64Array(2);
   detSinCos(Math.PI / p.facets, trig);
   const outerRadius = maxRadius / Number(trig[1]);
@@ -508,8 +571,8 @@ export function instantiateThorn(
     p.arch,
     true,
     provisional,
-    // Only intact ordinary mains tighten the proportional tip allowance.
-    !p.landmark && !p.broken && !p.arch ? 1.5 : undefined,
+    // Only intact ordinary mains receive the localized absolute tip treatment.
+    !p.landmark && !p.broken && !p.arch,
   );
   const sweeps: ThornSweep[] = [main],
     debris: ThornSweep[] = [],
