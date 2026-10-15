@@ -1,6 +1,6 @@
 # Localized thorn-tip study · 15 October 2026
 
-**Selected and integrated into the working branch; not published.** Local comparisons and the complete caldera pair favor the slimmer body, while the complete forest comparison is a tie for the fresh reviewer. This is a limited silhouette improvement, not a broader terrain-quality gain or completion of phase 1.3. Release checks are pending. Live remains `65799bd`, generation `676c1de…`.
+**Published as `b8bac6af2bd6c0ad75bf3599bdc39a5f85eb259d` at [dex.place/coldfront](https://dex.place/coldfront/).** Local comparisons and the complete caldera pair favor the slimmer body, while the complete forest comparison is a tie for the fresh reviewer. This is a limited silhouette improvement, not a broader terrain-quality gain or completion of phase 1.3. The exact clean build, production journey, CI and public HTTP readback pass. The new-generation CPU benchmark remains pending.
 
 ![Caldera comparison: baseline left, selected right](../postcards/wip/ibara.jpg)
 
@@ -16,7 +16,7 @@ Placement, IDs, random draws, spines, branches, debris, rubble, other thorn fami
 
 ## Source and local evidence
 
-The initial owned study is `D:/Dex/Temp/coldfront-local-tip-25df4e4`, based on `25df4e436f85cc8525be1fe45cef2a792af43db6`. Its pre-fix shape SHA256 is `eb351f6c1eedd77eb021bb7d0f68b9e91125d2e7a3021a70fd65641a68966f7b`. That executed study remains frozen. The repaired four-file source/test change described below is now copied exactly into the canonical working branch; golden and release checks remain pending.
+The initial owned study is `D:/Dex/Temp/coldfront-local-tip-25df4e4`, based on `25df4e436f85cc8525be1fe45cef2a792af43db6`. Its pre-fix shape SHA256 is `eb351f6c1eedd77eb021bb7d0f68b9e91125d2e7a3021a70fd65641a68966f7b`. That executed study remains frozen. The repaired four-file source/test change described below is copied exactly into the canonical branch; the completed golden and release checks are recorded below.
 
 - **100 tests across three files pass**, including forbidden tokens and the existing frozen family, branch, spine and 1,872-cell terminal-connectivity checks. Shared source/test types pass. A formatting failure is retained; its repair changes multiline layout and two trailing call-argument commas only.
 - A separate fixed replay of 26 saved generation-676 short specimens makes 52 baseline/candidate constructions with zero environment queries. All complete instances match exactly. This is not universal parameter coverage.
@@ -72,7 +72,7 @@ New-tree originals: `out/short-tip-caldera/runs/before/capture/2026-10-15T10-53-
 
 The four selected source/test files are copied exactly from the repair worktree. Golden regeneration completes in 46.106 s: all 342 sample addresses and their order stay fixed, all 150 TEST records are exact, and 25 MAIN Ibara records change. Generation version remains 4; compatibility follows the new content hash.
 
-The full suite passes **854 tests in 101 files** (272.87 s raw, 275.971 s wrapper). After camera and HUD evidence promotion, 30 focused tests pass; `npm run check` passes in 27.523 s, complete UI lint in 5.585 s and the production build in 6.851 s. UI lint reports 106 gallery states, zero current rows missing and 23 binding rows. This is not the clean-checkout or final production-tour result, which remain pending.
+The full suite passes **854 tests in 101 files** (272.87 s raw, 275.971 s wrapper). After camera and HUD evidence promotion, 30 focused tests pass; `npm run check` passes in 27.523 s, complete UI lint in 5.585 s and the production build in 6.851 s. UI lint reports 106 gallery states, zero current rows missing and 23 binding rows. Separate exact-commit clean installation/default build passes in 9.772 s, and the site build in 1.995 s.
 
 All 18 installed production destinations keep their exact poses and stable metadata. One fresh plan supplies 16 P12 grids and a new HELL-1 grid; HELL-2 reuses its genuine repaired-source validation with 78 matching dependencies. All runtime validations pass in 21.149 s. Old derived scores/search claims are removed. Formatting preserves parsed JSON exactly; the installed catalogue SHA256 is `0eb292f65d2325984c7694286498d2cbe91e46d9c3a07f8301c3ba075f697d39`. TEST and the historical primitive subtree remain unchanged; the latter is not claimed as current calibration evidence.
 
@@ -84,6 +84,18 @@ Canonical evidence: `out/phase13/local-tip-splice-integration/`, including `gold
 
 ## What remains
 
-The selected source is integrated but not yet released. Complete the exact clean build, production journey, CI/publication checks and new-generation CPU benchmark. Preserve both caldera timing failures. No further forest camera or parameter sweep is selected.
+The selected source is live. Complete the new-generation CPU benchmark. Preserve both caldera timing failures. No further forest camera or parameter sweep is selected.
 
-There is no new formal rubric score. The unchanged mandatory HELL bars, primitive-control calibration and seed-1–3 visual acceptance remain open. The completed checks above support this limited increment; they do not close those phase requirements. The previous generation-676 benchmark remains current for the live build, not for the new source awaiting publication.
+There is no new formal rubric score. The unchanged mandatory HELL bars, primitive-control calibration and seed-1–3 visual acceptance remain open. The completed checks above support this limited increment; they do not close those phase requirements. The previous generation-676 benchmark is historical and does not measure this new live source.
+
+## Verified publication
+
+[PR #17](https://github.com/dexnotavailable/coldfront/pull/17) publishes the exact tested source. [CI 38731183515](https://github.com/dexnotavailable/coldfront/actions/runs/38731183515) passes, including golden hashes in Chromium, Firefox and WebKit. The physical clean checkout is `D:/Dex/Temp/coldfront-clean-phase13-b8bac6a`.
+
+The fourteen-stage local production journey passes in **292.346 s**. Root and independent Astra open all fourteen originals. Placement, immediate quit/play and reload persistence, breaking, walking, Ibara view modes, HELL-1 travel, Escape and continued flying after an injected malformed catalogue pass. There are zero application errors, external requests or bad responses; four ReadPixels warnings remain. Browser and server cleanup pass. Independent hashing verifies 191 source files in both canonical and execution checkouts, all 326 distribution files, 53 evidence bindings and all fourteen images. This is bounded local acceptance, not a fresh all-region tour or formal HELL grade.
+
+The Tools screenshot shows only the catalogue labels: Tools, Go to region, Ibara, Time of day, 12.0 h, Clock runs, View, Normal, Clay, Features, Fog, Shadows, Chunk borders, Wireframe, Fly, Fly speed, ×1, Postcard mode, Interface gallery and Clear my edits. Spacing and clipping checks pass at 1280×720. The malformed-catalogue case correctly omits Go to postcard. This adds no whole-gallery or multiple-size claim beyond the separate HUD checks above.
+
+Publication receipt `cfc1cccf-871c-40aa-9fc4-0b45fbb6bd5d` names release `D:/Dex/GameDev/Deploy/COLDFRONT/releases/b8bac6af2bd6-32ff8eb5602e798ea51f`. At **2026-10-15 12:27:23 UTC**, public HTTP readback matches all eleven selected entry/version/catalogue/JavaScript/CSS/font hashes and isolation headers. Public-browser play remains separately unavailable. Generation identity is now `4:d3b3ba428e1cb77cf60526dadf2f85a01d2cd6c3837e35a5b5dd140c4b8ce9ee`; older edits stay stored separately.
+
+Private release evidence is under `out/phase13/local-tip-release/`: `runs/2026-10-15T12-11-45.206Z/receipt.json`, its fourteen PNGs, `root-image-review.json`, `independent-review/acceptance.md`, `independent-review/integrity.json`, `root-ci.json` and `public-readback.json`. Earlier failed runs and executed seals remain unchanged.
