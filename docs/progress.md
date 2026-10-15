@@ -21,7 +21,9 @@
 | 1.10 Polish + performance | ☐ | |
 
 ## Current session
-**14 October 2026 · Codex · `codex/phase-1-3-next-assets-20261014`**
+**15 October 2026 · Codex · `codex/phase-1-3-remaining-content-20261014`**
+
+**Optional King adapter:** the reviewed crown/cloak and fourteen unchanged tests are connected through a narrow optional Avatar path. The ordinary two-argument avatar remains plain: 88 comparisons against the untouched clean baseline match geometry, materials, all copy matrices and controller state. Eleven current-renderer captures complete in 17.819 s with zero application errors and complete cleanup; root and fresh Astra open all eleven originals and four refreshed HUD images. Independent arithmetic verifies all 1,122 copy matrices with maximum error 0. **851 tests / 101 files pass** in 224.08 s; check/build pass in 22.495/5.142 s. Exact clean/site builds, CI and production journey follow before publication. There is no live King selector or spawn, production wind or full-rate playback claim. Generation 676, terrain scores and benchmark remain unchanged. [Evidence](reports/king-adapter-integration.md).
 
 **House library adoption:** the reviewed 498-voxel house, static door presentation helper and nine existing tests enter the library as four unchanged files. The fresh study passes all nine focused tests, four type checks, formatting and two current-renderer captures in 3.841 s. Root and Astra open both originals, which exactly match the accepted closed/open views, plus four fresh HUD images with 93 source bindings per case. **837 tests / 99 files pass** in 284.89 s; check/build pass in 17.943/3.015 s. The house remains unregistered; placement, functional rooms/hearths, interaction, collision and navigation are future work. Live `36f85b2`, saves, terrain scores and benchmark remain unchanged. [Library](assets/README.md) · [Evidence](reports/house-door-wolf-stance-studies.md#house-library-adoption-14-october-2026).
 

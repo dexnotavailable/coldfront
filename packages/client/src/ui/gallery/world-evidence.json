@@ -5,11 +5,11 @@
       "id": "outline-ghost",
       "rows": ["hud.outline", "hud.ghost"],
       "image": "fixtures/ui/world-outline-ghost.jpg",
-      "imageSha256": "f12dab88a7b4877db66b8e2ccf31e526d7c25c18b2cad05538c3741d44421950",
+      "imageSha256": "f10f9259cbf3c2d8b5e5f07d2c8550358b973c24735d0b8e35f8d2a1f3d9ce1e",
       "telemetry": "fixtures/ui/world-outline-ghost.json",
-      "telemetrySha256": "b7dec6cd26d1c3d1cb4e16fb05a489e3c68143afa7216cf3bfece488d585c417",
+      "telemetrySha256": "37114bca7f275b1ec16310d990f65fd7799cdeff72d6f64155de1a4068eda15f",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "b37df24463803def6b7213a55535f84c654b90ba06f6a4344ac88d1ff1a741df",
+      "runReceiptSha256": "e7bc3e8c3eb7d7e1d0ca1007899f594a8e445650c06b34f1e09fa91827052117",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -29,7 +29,7 @@
         },
         {
           "path": "packages/client/src/engine/avatar.ts",
-          "sha256": "2f3dd2b96d98fb2fcea620a3d6557bc5dd41078157f0519a117f9e2d6c829242"
+          "sha256": "71773415db90b7f2876eae183966c92f18479be2d28d4d78d3a7c2222a099b45"
         },
         {
           "path": "packages/client/src/engine/block-sample-cache.ts",
@@ -54,6 +54,10 @@
         {
           "path": "packages/client/src/engine/ibara-effects.ts",
           "sha256": "e7eae28b2b3c92aad81ceb50a875880c3f9334162cc9c7ac5db6f583fb4ef2e1"
+        },
+        {
+          "path": "packages/client/src/engine/king-avatar.ts",
+          "sha256": "215bb9ea07564d4cb7024ba4b57e1c5df8b4433ceeb96a57e63b80a26719e2cf"
         },
         {
           "path": "packages/client/src/engine/motion.ts",
@@ -389,8 +393,8 @@
         "format": "jpeg",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
-        "sourceImage": "out/engine/hud-house-library-a115d6d/outline-ghost.png",
-        "sourceImageSha256": "cbafe3e6a2846a4c5e3926e203991f5e6b17b6ecb021e4d0a4a7e82c2da2b2dc",
+        "sourceImage": "out/engine/hud-king-integration-57fc80d/outline-ghost.png",
+        "sourceImageSha256": "feea1b6364800e4b7368c21ade12455182da95c009b4af48d082f45b99eb9511",
         "quality": 85,
         "width": 1280,
         "height": 720,
@@ -401,11 +405,11 @@
       "id": "silhouette",
       "rows": ["hud.silhouette"],
       "image": "fixtures/ui/world-silhouette.jpg",
-      "imageSha256": "1180e117c01953ab23f520bf0b8933f68bd1c20bab90e2e2e6b22bbf47bc5abb",
+      "imageSha256": "92cc76c87335fd8b82e47bb13769cd7698da3db8780f115c585f2d1e525b69f4",
       "telemetry": "fixtures/ui/world-silhouette.json",
-      "telemetrySha256": "825e83e4ef8fa503eac66ad0ada81a1b3a088a70c17037fa45aae6e7f1a3731e",
+      "telemetrySha256": "c01b0e7d038b77d9c2d5f34fc9678c987009111f1c604071a51cccdededd6408",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "b37df24463803def6b7213a55535f84c654b90ba06f6a4344ac88d1ff1a741df",
+      "runReceiptSha256": "e7bc3e8c3eb7d7e1d0ca1007899f594a8e445650c06b34f1e09fa91827052117",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -425,7 +429,7 @@
         },
         {
           "path": "packages/client/src/engine/avatar.ts",
-          "sha256": "2f3dd2b96d98fb2fcea620a3d6557bc5dd41078157f0519a117f9e2d6c829242"
+          "sha256": "71773415db90b7f2876eae183966c92f18479be2d28d4d78d3a7c2222a099b45"
         },
         {
           "path": "packages/client/src/engine/block-sample-cache.ts",
@@ -450,6 +454,10 @@
         {
           "path": "packages/client/src/engine/ibara-effects.ts",
           "sha256": "e7eae28b2b3c92aad81ceb50a875880c3f9334162cc9c7ac5db6f583fb4ef2e1"
+        },
+        {
+          "path": "packages/client/src/engine/king-avatar.ts",
+          "sha256": "215bb9ea07564d4cb7024ba4b57e1c5df8b4433ceeb96a57e63b80a26719e2cf"
         },
         {
           "path": "packages/client/src/engine/motion.ts",
@@ -785,8 +793,8 @@
         "format": "jpeg",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
-        "sourceImage": "out/engine/hud-house-library-a115d6d/silhouette.png",
-        "sourceImageSha256": "74dac29066bb2cdbd609025918e44f551732a7cf5c191d30ae74608cb1d680e5",
+        "sourceImage": "out/engine/hud-king-integration-57fc80d/silhouette.png",
+        "sourceImageSha256": "93d746b7247a4fc5dbc2c272131941292b494391f4216957ae75385ffb33fe62",
         "quality": 85,
         "width": 1280,
         "height": 720,
