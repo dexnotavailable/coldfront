@@ -1,6 +1,6 @@
 # Localized thorn-tip study · 15 October 2026
 
-**Published as `b8bac6af2bd6c0ad75bf3599bdc39a5f85eb259d` at [dex.place/coldfront](https://dex.place/coldfront/).** Local comparisons and the complete caldera pair favor the slimmer body, while the complete forest comparison is a tie for the fresh reviewer. This is a limited silhouette improvement, not a broader terrain-quality gain or completion of phase 1.3. The exact clean build, production journey, CI and public HTTP readback pass. The new-generation CPU benchmark remains pending.
+**Published as `b8bac6af2bd6c0ad75bf3599bdc39a5f85eb259d` at [dex.place/coldfront](https://dex.place/coldfront/).** Local comparisons and the complete caldera pair favor the slimmer body, while the complete forest comparison is a tie for the fresh reviewer. This is a limited silhouette improvement, not a broader terrain-quality gain or completion of phase 1.3. The exact clean build, production journey, CI and public HTTP readback pass. The new-generation CPU benchmark is complete, as recorded below.
 
 ![Caldera comparison: baseline left, selected right](../postcards/wip/ibara.jpg)
 
@@ -84,7 +84,7 @@ Canonical evidence: `out/phase13/local-tip-splice-integration/`, including `gold
 
 ## What remains
 
-The selected source is live. Complete the new-generation CPU benchmark. Preserve both caldera timing failures. No further forest camera or parameter sweep is selected.
+The selected source is live and its default CPU benchmark is complete. Preserve both caldera timing failures. No further forest camera or parameter sweep is selected.
 
 There is no new formal rubric score. The unchanged mandatory HELL bars, primitive-control calibration and seed-1–3 visual acceptance remain open. The completed checks above support this limited increment; they do not close those phase requirements. The previous generation-676 benchmark is historical and does not measure this new live source.
 
@@ -99,3 +99,13 @@ The Tools screenshot shows only the catalogue labels: Tools, Go to region, Ibara
 Publication receipt `cfc1cccf-871c-40aa-9fc4-0b45fbb6bd5d` names release `D:/Dex/GameDev/Deploy/COLDFRONT/releases/b8bac6af2bd6-32ff8eb5602e798ea51f`. At **2026-10-15 12:27:23 UTC**, public HTTP readback matches all eleven selected entry/version/catalogue/JavaScript/CSS/font hashes and isolation headers. Public-browser play remains separately unavailable. Generation identity is now `4:d3b3ba428e1cb77cf60526dadf2f85a01d2cd6c3837e35a5b5dd140c4b8ce9ee`; older edits stay stored separately.
 
 Private release evidence is under `out/phase13/local-tip-release/`: `runs/2026-10-15T12-11-45.206Z/receipt.json`, its fourteen PNGs, `root-image-review.json`, `independent-review/acceptance.md`, `independent-review/integrity.json`, `root-ci.json` and `public-readback.json`. Earlier failed runs and executed seals remain unchanged.
+
+## Current-generation CPU benchmark
+
+The full default run on the exact live `b8bac6a` source finishes with exit 0 after **47.2 minutes**: 2828.180 s in the raw receipt and 2829.152 s including its wrapper. It runs alone on Node 22.23.3 / Windows / Ryzen 9 7950X. The independently authored reducer verifies all 124 summaries, 62 shared source files, eight harness files and the complete 2,400 regular / 960 LOD1 / 150 dense sample set. Dense visibility, stage sums and dark-submerged guards pass.
+
+Median/p95 milliseconds are **42.040/474.856** for generation, **13.077/19.425** for lighting and **5.707/8.421** for meshing. Dense generation is **594.161/1127.289**; the complete dense pipeline, including neighbourhood preparation, is **4562.551/11640.284**. Six aggregate kernel metrics remain over the informational phase 1.10 targets. The cold plan takes 2195.8463 ms and retains 19,922,960 typed-buffer bytes. [The progress table](../progress.md) records the remaining metrics.
+
+This does not measure client worker reuse, transfers, uploads, rendering or Radeon FPS, and is not a controlled speedup comparison with the earlier generation-676 run. The isolated column-filter optimization is not present in this measurement.
+
+Raw evidence: `D:/Dex/Temp/coldfront-clean-phase13-b8bac6a/out/step4/bench-gen-2026-10-15T12-31-14.951Z.json`, SHA256 `9fc4dcc1e321c626a1f5b6294dbbf5f7a46c47c093eae6c1f65de27e065e7fb7`. Canonical wrapper, reducer log and independent audit are in `out/phase13/local-tip-benchmark/`.
