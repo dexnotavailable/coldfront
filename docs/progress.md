@@ -21,7 +21,11 @@
 | 1.10 Polish + performance | ☐ | |
 
 ## Current session
-**16 October 2026 · Codex · `codex/phase-1-3-camera-clearance-20261016`**
+**16 October 2026 · Codex · `codex/phase-1-3-hook-framing-20261016`**
+
+**Framing integration checks pass:** all 868 tests in 103 files complete in 307.879 s. Check, complete UI lint and build pass in 15.803 / 5.789 / 2.157 s. Independent catalogue review verifies 1,007 hashes, the single changed destination and preservation of the other seventeen, TEST and historical primitive data. Root opens the new before/after sheet; all WIP images total 934,240 bytes. Exact clean-build and production-release verification remain pending; live remains `f63d965`.
+
+**Selected HELL-1 framing, not yet published:** one analytically fixed 9.48-degree yaw turn brings the existing left hook completely into frame. Eye position, pitch, FOV, time, radius, terrain and rendering remain unchanged. The ordinary fixed grid passes all gates with 170,662 voxel calls; the full Normal capture loads **1,328/1,328 chunks in 124.415 s**, within 180 s, with zero errors and complete cleanup. Root opens the old/new originals and prefers the new view; fresh blind Astra also prefers it for the complete hook and clearer separation of rooted forms, while retaining the loss of some right-side fissure emphasis. The ungraded camera and truthful retention metadata are promoted for repository checks. No formal rubric, seed-2/3 or phase acceptance is claimed. [Evidence](reports/hell1-hook-framing.md).
 
 **Camera clearance optimization published as `f63d965`:** the camera now reuses its final-position terrain height within one frame, retaining every adjusted-position query, the sixteenth-adjustment check and 85-degree cap. All **868 tests / 103 files pass in 291.640 s**, plus 24 focused tests, client/tools types and final formatting. Four fresh HUD images pass root/independent Astra review and 327 hash checks. Final `check`, complete UI lint and build pass in **16.866 / 5.769 / 3.724 s**; UI lint reports 106 states, zero missing rows and 23 bindings. No cross-frame cache, camera rule, generator, view distance or rendering effect changes. [Measurement and limits](reports/camera-clearance-cost.md).
 
