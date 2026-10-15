@@ -21,7 +21,9 @@
 | 1.10 Polish + performance | ☐ | |
 
 ## Current session
-**15 October 2026 · Codex · `codex/phase-1-3-remaining-content-20261014`**
+**15 October 2026 · Codex · `codex/phase-1-3-after-king-20261015`**
+
+**Thorn station/voxel diagnostic, closed:** a fixed 32-metre strip of preserved main owner 10264208 passes 42,570 exact production/instrumented comparisons. The continuous sample brackets have no qualifying inward events; raw voxel occupancy has 79, supporting block-grid stepping in seven complete directions. There are 133 alternate-station occupancy witnesses, but none meets the predeclared repeated-ridge criterion; all also reduce the original signed noise contribution. The single 5.985 s run uses 173,931 calls within its 187,050 cap. Independent review verifies the saved hashes, counts, witnesses and classifications. No sampler fix, broader search, new render or terrain grade follows; photographed ridge causation remains unresolved. Live `65799bd`, saves and benchmark are unchanged. [Evidence](reports/thorn-station-voxel-study.md).
 
 **Optional King adapter, published:** live `65799bd` includes the reviewed crown/cloak and fourteen unchanged tests through a narrow optional Avatar path. The ordinary player remains plain: 88 comparisons against the untouched baseline match geometry, materials, copies and controller state. Root and fresh Astra open eleven King originals and four HUD images; independent arithmetic verifies 1,122 copy matrices with maximum error 0. **851 tests / 101 files**, check/build, exact clean/site builds and three-browser CI pass. The exact production journey passes all fourteen stages in **209.594 s**; root and Astra open all fourteen originals and verify 191 source / 326 distribution / 245 evidence files. Publication receipt `8be70e0f-7fb5-41d0-abf3-e73910e641c2` and eleven public hash/header checks pass at **06:57:44.744 UTC**. Generation 676 and saves remain compatible. No live King selector/spawn, production wind, full-rate playback, new terrain score or FPS gain is claimed. [Evidence](reports/king-adapter-integration.md).
 
