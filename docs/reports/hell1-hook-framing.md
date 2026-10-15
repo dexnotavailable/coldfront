@@ -57,3 +57,23 @@ Publication receipt `91e32c0c-7d92-45b0-a709-4709c3841c29` promotes the exact ru
 ## Next calibration step
 
 A separate current-source primitive preflight passes once at the established control pose: one plan, one 64×36 grid, 127,356 voxel calls, no failed gates and a closed worker, in 6.881 s overall. Its output under `out/phase13/current-primitive-preflight-20261016/runs/2026-10-15T20-24-35.053Z-a132ba94-0de1-4e0c-9aa2-9f6ea3f0fdd6/` is private, ungraded data. No installed catalogue changes. A current control capture is still needed; neither this geometry pass nor a new source binding erases the two earlier failed control grades.
+
+## First formal review of the selected view
+
+The current-source control capture subsequently completes all 1,823 chunks in 88.312 s, within the 180 s gate. The operation takes 91.668 s, with zero errors and complete cleanup. Root opens it and the previous control. A decoded RGBA comparison finds only seventeen changed pixels out of 921,600, with maximum channel difference three: this is no material visual improvement to the control. The earlier two failed 9/20 reviews remain intact for their original candidate inputs.
+
+The genuinely changed HELL-1 composition receives one fresh image-only formal review. Root and Astra open the two-image sheet and originals, without supplying the reviewer code, history or root scores. Root scores the candidate 16/20 and the control 8/20. Blind scores are candidate **16/20**, **R2 = 2**, and control **7/20**. The score of record is therefore **16/20**, with no zero on R1–R4 and a valid calibration for this review. No second reviewer is used to seek a different score.
+
+The candidate meets the seed-1 image bar. The review still identifies repetitive ribs and bright edges on the giant thorn, weak geological weathering, abrupt base collars and small scattered ground fragments. R10 covers visible routes only; regional numerical walkability is not established by these images. HELL-2, the remaining seeds and whole-region checks still determine phase acceptance. The installed catalogue remains labelled ungraded until deliberate phase acceptance promotion; this review makes no additional runtime edit.
+
+Evidence: `out/phase13/current-primitive-capture-20261016/runs/2026-10-15T20-31-55.776Z-de90f988-e851-4362-8899-855fd95edfd9/` contains the capture and pixel comparison. `out/phase13/hook-first-formal-20261016/` contains the anonymous sheet/originals, blind review and root decision. This replaces no historical score or failed review.
+
+## HELL-2 first formal assessment of the later taper
+
+A bounded evidence audit identifies the later selected localized-taper HELL-2 image (`768ca3d4…9505`) as a genuinely changed candidate since the failed-control strata review (`afa385ca…19ea`). Its subsequent reviews were preference comparisons, not formal grades. Root therefore supplies it once to the same image-only critic, retaining that critic's existing control score of 7 without regrading the anchor.
+
+Root opens the original and the two-image sheet. HELL-2 scores **13/20 root**, **15/20 blind**, both **R2 = 2**. The score of record is **13/20**, below the mandatory 16-point bar. Both assessments identify the nearly level rim, uniform walls and regular terraces as the largest weakness: the caldera resembles a cylindrical excavation. Bases are obscured by the foreground shelf; geological weathering, contact lighting and fine voxel surfaces also remain weak. R10 establishes only visible rim routes.
+
+This is reused visual evidence, not a fresh production capture. The uninstrumented image originates from the d3b3 source-server diagnostic at `D:/Dex/Temp/coldfront-local-tip-short-25df4e4/out/short-tip-caldera/runs/after/capture/2026-10-15T10-59-22.468Z-3b94477b-a197-425f-8f8b-7cd3ba94d76b/`. All 1,624 chunks completed in 242.677 s; its original 180 s failure and exit 1 remain. The later gully study's baseline reproduces its PNG exactly. A bounded source/pose audit supports reuse through f63; root confirms the only package change from f63 to live ff73 is the catalogue, whose entire HELL-2 member is identical. Neither the rejected gully candidate nor the invalid old formal score is promoted.
+
+Eligibility and root compatibility receipts are under `out/phase13/hell2-formal-eligibility-20261016/`; the first formal review is under `out/phase13/hell2-first-formal-20261016/`. The next investigation distinguishes actual caldera geometry from clipping or incomplete world presentation before selecting a macro terrain correction. No new generator change or additional render has been made from this critique.
