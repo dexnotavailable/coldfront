@@ -243,6 +243,10 @@ export function createIbaraBatch(
 ): IbaraBatch {
   const ordered = instances.slice().sort(compareThorns);
   const coarse = ordered.map(() => new Map<string, number>());
+  // Per thorn: last gx, gy, gz, spacing and distance (40 bytes). Spacing 0
+  // marks the initial empty slot; supported spacings start at 1. The existing
+  // Map still owns every miss and its 4096-entry clear policy.
+  const lastCoarse = new Float64Array(narrowBand ? ordered.length * 5 : 0);
   const work: IbaraWorkspace = createIbaraWorkspace(),
     candidate = createIbaraSample();
   const diagnostics = { coarseSamples: 0, exactSamples: 0, capsuleRejects: 0 };
@@ -263,15 +267,31 @@ export function createIbaraBatch(
       const gx = Math.round(x / 4) * 4,
         gy = Math.round(y / 4) * 4,
         gz = Math.round(z / 4) * 4;
-      const key = `${gx},${gy},${gz},${spacing}`;
-      const grid = coarse[i] as Map<string, number>;
-      let value = grid.get(key);
-      if (value === undefined) {
-        sampleThorn(thorn, gx, gy, gz, spacing, candidate, work);
-        value = candidate.distance;
-        if (grid.size >= 4096) grid.clear();
-        grid.set(key, value);
-        diagnostics.coarseSamples++;
+      const last = i * 5;
+      let value: number;
+      if (
+        Number(lastCoarse[last + 3]) === spacing &&
+        Number(lastCoarse[last]) === gx &&
+        Number(lastCoarse[last + 1]) === gy &&
+        Number(lastCoarse[last + 2]) === gz
+      ) {
+        value = Number(lastCoarse[last + 4]);
+      } else {
+        const key = `${gx},${gy},${gz},${spacing}`;
+        const grid = coarse[i] as Map<string, number>;
+        const cached = grid.get(key);
+        if (cached === undefined) {
+          sampleThorn(thorn, gx, gy, gz, spacing, candidate, work);
+          value = candidate.distance;
+          if (grid.size >= 4096) grid.clear();
+          grid.set(key, value);
+          diagnostics.coarseSamples++;
+        } else value = cached;
+        lastCoarse[last] = gx;
+        lastCoarse[last + 1] = gy;
+        lastCoarse[last + 2] = gz;
+        lastCoarse[last + 3] = spacing;
+        lastCoarse[last + 4] = value;
       }
       if (value > 4.6 + thorn.fillet) {
         const thickening =

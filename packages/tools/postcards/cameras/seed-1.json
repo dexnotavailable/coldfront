@@ -29,7 +29,7 @@
     "worldKind": "main",
     "seed": 1,
     "worldgenVersion": 4,
-    "sourceHash": "d3b3ba428e1cb77cf60526dadf2f85a01d2cd6c3837e35a5b5dd140c4b8ce9ee",
+    "sourceHash": "b7facdfdcb615938ecfc1e693c6b7cbe16494ca1a80b2c67ef7e59689b261794",
     "resolverHash": "70b4e582db392b2876c45c1839a44a0e0515e595c32087fbd13707a080606f4d",
     "cameras": [
       {
@@ -740,7 +740,7 @@
     "worldKind": "main",
     "seed": 1,
     "worldgenVersion": 4,
-    "sourceHash": "d3b3ba428e1cb77cf60526dadf2f85a01d2cd6c3837e35a5b5dd140c4b8ce9ee",
+    "sourceHash": "b7facdfdcb615938ecfc1e693c6b7cbe16494ca1a80b2c67ef7e59689b261794",
     "resolverHash": "5527e4674f0933442f710ffc9bef1132a81aa7bce588ba7448965c5ae9754ad6",
     "variant": "production",
     "cameras": [
@@ -900,8 +900,8 @@
     "manualRetention": {
       "ungraded": true,
       "selectorSearch": false,
-      "hell1": "Installed view050 held exactly; fresh selected-generation fixed-grid validation.",
-      "hell2": "Installed candidate48 held exactly; genuine selected-generation fixed-grid proof reused with original resolver identity.",
+      "hell1": "Installed HELL-1 pose held exactly; fresh current-generation fixed-grid validation.",
+      "hell2": "Installed HELL-2 pose held exactly; fresh current-generation fixed-grid validation.",
       "validationEvidence": "Geometry only. No search, timing, visual, seed2/3 or formal phase acceptance."
     }
   },

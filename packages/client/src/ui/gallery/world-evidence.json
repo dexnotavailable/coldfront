@@ -5,11 +5,11 @@
       "id": "outline-ghost",
       "rows": ["hud.outline", "hud.ghost"],
       "image": "fixtures/ui/world-outline-ghost.jpg",
-      "imageSha256": "a19491ecbc9d674494de14b46a965071005bff567a397f8d7ad2746b19135a58",
+      "imageSha256": "19fce4862f2b2432cba7e7b602b4fe672c86d6191379b98151b8f0b3ff839c57",
       "telemetry": "fixtures/ui/world-outline-ghost.json",
-      "telemetrySha256": "a1e5068742fd80878a0fe861be85463509d6c660c9e99c8e8cd3d796bafcc411",
+      "telemetrySha256": "b5782521092c6c7c29572e3e31c3122bd9ea3d28fc3d0f827e52b03937cc679a",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "b171054a833f9c8b4f37160cd7f8043c3fb42f6036e095c1d1ab2ca2a169343d",
+      "runReceiptSha256": "94eb2e892f06e7b22ff17c8c32d18b10090fe6d40afcf24c605da288f0bea34a",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -177,7 +177,7 @@
         },
         {
           "path": "packages/shared/src/features/ibara/field.ts",
-          "sha256": "12fd2daa7a161f91303572be715e876119646df7719b8ac244a859eb31885f36"
+          "sha256": "cad9a1ee7bb34543a00d18eaf54e51f9417163e9715ebb34d3f6833e0c1e0543"
         },
         {
           "path": "packages/shared/src/features/ibara/neighbour-contrast.ts",
@@ -393,8 +393,8 @@
         "format": "jpeg",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
-        "sourceImage": "out/engine/hud-local-tip-splice-2026-10-15T11-25-00-803Z-03488b/outline-ghost.png",
-        "sourceImageSha256": "56ccca6bdb30efcdf6a38f33b0d75812371a796742b733e79e869ff572c9c483",
+        "sourceImage": "out/engine/hud-coarse-last-2026-10-15T15-52-37-298Z-d56a36/outline-ghost.png",
+        "sourceImageSha256": "b2ed9eff683a4e31bdad74ca03b734da1553d1b6ccb78932e2491270ba771f2c",
         "quality": 85,
         "width": 1280,
         "height": 720,
@@ -405,11 +405,11 @@
       "id": "silhouette",
       "rows": ["hud.silhouette"],
       "image": "fixtures/ui/world-silhouette.jpg",
-      "imageSha256": "ff45618dc36ac48812bc80d05ccb2d1087f54e65ac1bc64fd1cfc67e2a09e307",
+      "imageSha256": "f4a1313b2a9691c9562b4254c0d79f2d18adb15b42e3f803bb72949c48d8e6bc",
       "telemetry": "fixtures/ui/world-silhouette.json",
-      "telemetrySha256": "cbfadcda94b2c43bbd0ffae45e50f77dc7b6399363a2c5f151ee7d403e094f00",
+      "telemetrySha256": "79333afb5c4400915ceba2e6c08636e76089dfea7bcef1bffd2eb43cf1980375",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "b171054a833f9c8b4f37160cd7f8043c3fb42f6036e095c1d1ab2ca2a169343d",
+      "runReceiptSha256": "94eb2e892f06e7b22ff17c8c32d18b10090fe6d40afcf24c605da288f0bea34a",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -577,7 +577,7 @@
         },
         {
           "path": "packages/shared/src/features/ibara/field.ts",
-          "sha256": "12fd2daa7a161f91303572be715e876119646df7719b8ac244a859eb31885f36"
+          "sha256": "cad9a1ee7bb34543a00d18eaf54e51f9417163e9715ebb34d3f6833e0c1e0543"
         },
         {
           "path": "packages/shared/src/features/ibara/neighbour-contrast.ts",
@@ -793,8 +793,8 @@
         "format": "jpeg",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
-        "sourceImage": "out/engine/hud-local-tip-splice-2026-10-15T11-25-00-803Z-03488b/silhouette.png",
-        "sourceImageSha256": "8bfaee4af191ba255f336facc470844263cfc0e094196b0806bbcfef1f576ded",
+        "sourceImage": "out/engine/hud-coarse-last-2026-10-15T15-52-37-298Z-d56a36/silhouette.png",
+        "sourceImageSha256": "ceb8540e0dad7b2af9f7fbd941ea86424389b3ce69aebf0545baaec4a5a41ab0",
         "quality": 85,
         "width": 1280,
         "height": 720,
