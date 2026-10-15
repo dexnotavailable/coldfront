@@ -5,11 +5,11 @@
       "id": "outline-ghost",
       "rows": ["hud.outline", "hud.ghost"],
       "image": "fixtures/ui/world-outline-ghost.jpg",
-      "imageSha256": "dd9264dfedeb5dbbe898a406b9caa61fc0f79a6b67d10bc75be347427c12d68a",
+      "imageSha256": "a19491ecbc9d674494de14b46a965071005bff567a397f8d7ad2746b19135a58",
       "telemetry": "fixtures/ui/world-outline-ghost.json",
-      "telemetrySha256": "cd7a743b1c37275d48d736846c1da839b18a27f2953402e7fdbfc8925a2e7493",
+      "telemetrySha256": "9da055b30674a3fda314085ae5fa30de1ef6b0a95355ac4d65c3802f105a6189",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "7b9bf11e776536ae86a496109f32b06af71daf21d96545f68bd82d1d1513e03a",
+      "runReceiptSha256": "849b26432194df6997cdb2e092efe191a044406166f5d6082fd88a3f688b8bad",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -46,6 +46,18 @@
         {
           "path": "packages/client/src/engine/effects.ts",
           "sha256": "91b046d290e39381d7e6140637f02a2bf950f4fa5801303603bc062823b5c4e5"
+        },
+        {
+          "path": "packages/client/src/engine/far-terrain-renderer.ts",
+          "sha256": "cc805307cb3f8b11cb56eaac77e6ff2f97b63d5759aeffc28de9671c3d08db07"
+        },
+        {
+          "path": "packages/client/src/engine/far-terrain-selection.ts",
+          "sha256": "6329e5d6abd8745e3242b33b30f7cadf7bbfc5051d6fe9e85cd79b3e9a970a2c"
+        },
+        {
+          "path": "packages/client/src/engine/far-terrain-store.ts",
+          "sha256": "55547174753ee3e6e836be78142dd3ce827df56ce807c534c75fa0f3e43444c7"
         },
         {
           "path": "packages/client/src/engine/ibara-atmosphere.ts",
@@ -110,6 +122,10 @@
         {
           "path": "packages/client/src/game/camera.ts",
           "sha256": "1f84b0161fdc579e6e35b970d67bda0c0be165dc5c03a80895522d0a823afc41"
+        },
+        {
+          "path": "packages/client/src/game/command-camera.ts",
+          "sha256": "76ee1ff3a017f4231c6ffc4712a27c00e80b4a8cef62e07331c5e883160f7c06"
         },
         {
           "path": "packages/client/src/game/controller.ts",
@@ -216,6 +232,10 @@
           "sha256": "6ecc01a82d1e7d66747810d4cab55bfff116c08a12a46051bfb3041ebb75f05c"
         },
         {
+          "path": "packages/shared/src/meshing/columns.ts",
+          "sha256": "5b604695377475ea5d7df4c430f3d5e877f385bbc7adcad89e85c109b5c364d2"
+        },
+        {
           "path": "packages/shared/src/meshing/greedy.ts",
           "sha256": "7df88615c8bc29887c2b2c51ab995b0fe741876569fdbf2f01f1b161467cc0c1"
         },
@@ -289,15 +309,39 @@
         },
         {
           "path": "packages/shared/src/world/types.ts",
-          "sha256": "6eb333377c6cd1eeb034a57fddacf9d729b2942d95b7d2e3989578363c7c1814"
+          "sha256": "57aef8379ea936c1cc95ef6bd19b29103e60753bc6f9a893c1082336bbadf4ea"
         },
         {
           "path": "packages/shared/src/world/world-context.ts",
-          "sha256": "2f6f79ce21552223640ce4f73c74ea247da2d96c884c821d328e8d7982e1c926"
+          "sha256": "58932c7fe5c9eba09fc08a6d19928921338d46c205fbd17002443dd16c32eb2b"
         },
         {
           "path": "packages/shared/src/worldgen/chunk.ts",
           "sha256": "f55a51f5d9f3fb81723f863a7a1f0bb5b3cf931447c34d09675753b8ab1e2234"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/bands.ts",
+          "sha256": "db1288917183ed23ba49d6450def35baf40b44662c5dd496d5fa41e5f6b257ea"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/columns.ts",
+          "sha256": "30b8d0feef656b2092a86cef2a0bb89d36ebd11b700c5eac9d8651a6789bf392"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/coordinates.ts",
+          "sha256": "d9b39bf520359ebaf0c76757b852bbfaf17f61d75901f9eacd408062f3498f45"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/edits.ts",
+          "sha256": "cb8e41a3a5e9abaddda120d520304f7cd19f56a3973ee7e1108e309666fa30f2"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/index.ts",
+          "sha256": "fd86cdc8a7bd202f08b58afcfa6cdb397880354aa0e82bdd384a1427ab17e254"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/types.ts",
+          "sha256": "61134e5f70ddc34a7690afeeabb27c7d5ba136c7943dc4d3b13e9b3a079085f7"
         },
         {
           "path": "packages/shared/src/worldgen/main/chunk.ts",
@@ -309,7 +353,7 @@
         },
         {
           "path": "packages/shared/src/worldgen/main/features.ts",
-          "sha256": "31b58f7f524ed6fdac98a7692e2ef19d0376b1c555cf76837e8367bcfa7307e7"
+          "sha256": "a5ab87051e80698ac11b1c33d2a8a9a17766ea4fdecc9efaca9315dd63f9a470"
         },
         {
           "path": "packages/shared/src/worldgen/main/ibara-ground.ts",
@@ -393,8 +437,8 @@
         "format": "jpeg",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
-        "sourceImage": "out/engine/hud-camera-clearance-2026-10-15T18-22-32-584Z-eab935/outline-ghost.png",
-        "sourceImageSha256": "0235100302335bddc7cb6255c4de402e892e0307635cb41e599b0012cc660efa",
+        "sourceImage": "out/engine/hud-phase14-foundation-2026-10-15T22-53-03-063Z-0cd4e7/outline-ghost.png",
+        "sourceImageSha256": "08e8192095713f8a88bdbed6d9a0cada3f74d5723d8747a614ce609531bb13fc",
         "quality": 85,
         "width": 1280,
         "height": 720,
@@ -405,11 +449,11 @@
       "id": "silhouette",
       "rows": ["hud.silhouette"],
       "image": "fixtures/ui/world-silhouette.jpg",
-      "imageSha256": "4aa4650291d009d73003ffa67928a08e0d4d87fce0d1c4a6550589f3e29515db",
+      "imageSha256": "89116132349497fe0caac8d36678fb0509ac8e4a70a9ecefae3e7f9fcbd812bf",
       "telemetry": "fixtures/ui/world-silhouette.json",
-      "telemetrySha256": "111427465443d7cf715e01c8f5b2d5de34b6ce6f70c9211985a13dfb38a32773",
+      "telemetrySha256": "38d68981792d8cc20287099f32c44aed68606acebf51b5deae86a9f78eee3674",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "7b9bf11e776536ae86a496109f32b06af71daf21d96545f68bd82d1d1513e03a",
+      "runReceiptSha256": "849b26432194df6997cdb2e092efe191a044406166f5d6082fd88a3f688b8bad",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -446,6 +490,18 @@
         {
           "path": "packages/client/src/engine/effects.ts",
           "sha256": "91b046d290e39381d7e6140637f02a2bf950f4fa5801303603bc062823b5c4e5"
+        },
+        {
+          "path": "packages/client/src/engine/far-terrain-renderer.ts",
+          "sha256": "cc805307cb3f8b11cb56eaac77e6ff2f97b63d5759aeffc28de9671c3d08db07"
+        },
+        {
+          "path": "packages/client/src/engine/far-terrain-selection.ts",
+          "sha256": "6329e5d6abd8745e3242b33b30f7cadf7bbfc5051d6fe9e85cd79b3e9a970a2c"
+        },
+        {
+          "path": "packages/client/src/engine/far-terrain-store.ts",
+          "sha256": "55547174753ee3e6e836be78142dd3ce827df56ce807c534c75fa0f3e43444c7"
         },
         {
           "path": "packages/client/src/engine/ibara-atmosphere.ts",
@@ -510,6 +566,10 @@
         {
           "path": "packages/client/src/game/camera.ts",
           "sha256": "1f84b0161fdc579e6e35b970d67bda0c0be165dc5c03a80895522d0a823afc41"
+        },
+        {
+          "path": "packages/client/src/game/command-camera.ts",
+          "sha256": "76ee1ff3a017f4231c6ffc4712a27c00e80b4a8cef62e07331c5e883160f7c06"
         },
         {
           "path": "packages/client/src/game/controller.ts",
@@ -616,6 +676,10 @@
           "sha256": "6ecc01a82d1e7d66747810d4cab55bfff116c08a12a46051bfb3041ebb75f05c"
         },
         {
+          "path": "packages/shared/src/meshing/columns.ts",
+          "sha256": "5b604695377475ea5d7df4c430f3d5e877f385bbc7adcad89e85c109b5c364d2"
+        },
+        {
           "path": "packages/shared/src/meshing/greedy.ts",
           "sha256": "7df88615c8bc29887c2b2c51ab995b0fe741876569fdbf2f01f1b161467cc0c1"
         },
@@ -689,15 +753,39 @@
         },
         {
           "path": "packages/shared/src/world/types.ts",
-          "sha256": "6eb333377c6cd1eeb034a57fddacf9d729b2942d95b7d2e3989578363c7c1814"
+          "sha256": "57aef8379ea936c1cc95ef6bd19b29103e60753bc6f9a893c1082336bbadf4ea"
         },
         {
           "path": "packages/shared/src/world/world-context.ts",
-          "sha256": "2f6f79ce21552223640ce4f73c74ea247da2d96c884c821d328e8d7982e1c926"
+          "sha256": "58932c7fe5c9eba09fc08a6d19928921338d46c205fbd17002443dd16c32eb2b"
         },
         {
           "path": "packages/shared/src/worldgen/chunk.ts",
           "sha256": "f55a51f5d9f3fb81723f863a7a1f0bb5b3cf931447c34d09675753b8ab1e2234"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/bands.ts",
+          "sha256": "db1288917183ed23ba49d6450def35baf40b44662c5dd496d5fa41e5f6b257ea"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/columns.ts",
+          "sha256": "30b8d0feef656b2092a86cef2a0bb89d36ebd11b700c5eac9d8651a6789bf392"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/coordinates.ts",
+          "sha256": "d9b39bf520359ebaf0c76757b852bbfaf17f61d75901f9eacd408062f3498f45"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/edits.ts",
+          "sha256": "cb8e41a3a5e9abaddda120d520304f7cd19f56a3973ee7e1108e309666fa30f2"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/index.ts",
+          "sha256": "fd86cdc8a7bd202f08b58afcfa6cdb397880354aa0e82bdd384a1427ab17e254"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/types.ts",
+          "sha256": "61134e5f70ddc34a7690afeeabb27c7d5ba136c7943dc4d3b13e9b3a079085f7"
         },
         {
           "path": "packages/shared/src/worldgen/main/chunk.ts",
@@ -709,7 +797,7 @@
         },
         {
           "path": "packages/shared/src/worldgen/main/features.ts",
-          "sha256": "31b58f7f524ed6fdac98a7692e2ef19d0376b1c555cf76837e8367bcfa7307e7"
+          "sha256": "a5ab87051e80698ac11b1c33d2a8a9a17766ea4fdecc9efaca9315dd63f9a470"
         },
         {
           "path": "packages/shared/src/worldgen/main/ibara-ground.ts",
@@ -793,8 +881,8 @@
         "format": "jpeg",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
-        "sourceImage": "out/engine/hud-camera-clearance-2026-10-15T18-22-32-584Z-eab935/silhouette.png",
-        "sourceImageSha256": "78c44642b6b341691ecdc5d9f0e3fe0f3ddb1bb5e24dc86a03aa01ca8a6bb82b",
+        "sourceImage": "out/engine/hud-phase14-foundation-2026-10-15T22-53-03-063Z-0cd4e7/silhouette.png",
+        "sourceImageSha256": "88844641018a73a5431a1402f32ac81a9ae83e02690dfe9a514942612861215c",
         "quality": 85,
         "width": 1280,
         "height": 720,

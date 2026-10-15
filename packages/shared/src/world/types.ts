@@ -1,6 +1,7 @@
 /** Public world contracts. Imports: world/types.ts, world/regions.ts,
  * world/world-context.ts and worldplan/index.ts. No runtime stand-ins. */
 import type { Aabb } from "../sdf/types.js";
+import type { PrepareFarArea } from "../worldgen/far/types.js";
 import type { GenerationVariant } from "./generation-variant.js";
 
 export type WorldKind = "main" | "test";
@@ -367,6 +368,8 @@ export interface CleanupCacheStats {
  * for a worker96x96 footprint and reuse in its voxel loops; do not clone it.
  * Other spacings agree at equal positions under the same feature LOD policy. */
 export interface WorldContext extends WorldAreaSampler {
+  /** Optional until an owner supplies certified far bands and owned fluid intervals. */
+  prepareFarArea?: PrepareFarArea;
   readonly worldgenVersion: number;
   readonly plan: WorldPlan | null;
   readonly regions: readonly RegionDefinition[];
