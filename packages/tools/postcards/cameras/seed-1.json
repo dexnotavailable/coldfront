@@ -755,9 +755,9 @@
           "z": 5417.5
         },
         "target": {
-          "x": 5705.6371182972825,
+          "x": 5713.843472103851,
           "y": 36.21927446565914,
-          "z": 5470.321479354219
+          "z": 5463.648201284286
         },
         "hours": 17.25,
         "radius": 512,
@@ -800,27 +800,27 @@
           "eyeClear": true,
           "walkable": true,
           "centralClear": true,
-          "skyFraction": 0.3919270833333333,
-          "featureFraction": 0.2322048611111111,
+          "skyFraction": 0.4136284722222222,
+          "featureFraction": 0.1931423611111111,
           "waterFraction": 0,
-          "horizonFraction": 0.56247338021354,
-          "sunOffsetDegrees": 96.53691551217547,
+          "horizonFraction": 0.5624733802135399,
+          "sunOffsetDegrees": 87.05691551217507,
           "sunElevationDegrees": 11.33313571163032,
-          "highestVisibleSample": 114.26129732618409,
-          "altitudeAboveHighestSample": -83.64129732618409,
+          "highestVisibleSample": 106.57138060956221,
+          "altitudeAboveHighestSample": -75.95138060956221,
           "rayColumns": 64,
           "rayRows": 36,
-          "targetFraction": 0.2322048611111111,
+          "targetFraction": 0.1931423611111111,
           "visibleFeatureIds": [
-            10198277, 10198295, 10263874, 10263878, 10263888, 10263889,
-            10263893, 10263895, 10263900, 10263908, 10263910, 10264072,
-            10264077, 10264082, 10264085, 10264097, 10264099, 10264104,
-            10264132, 10264208, 10264217, 10264231, 10329347, 10329348,
-            10329350, 10329352, 10329358, 10329366
+            10198277, 10198295, 10198304, 10263874, 10263878, 10263879,
+            10263888, 10263889, 10263893, 10263895, 10263900, 10263908,
+            10263910, 10264072, 10264077, 10264081, 10264082, 10264085,
+            10264090, 10264097, 10264099, 10264104, 10264132, 10264140,
+            10264208, 10264217, 10329347, 10329350, 10329352, 10329358, 10329366
           ],
-          "lavaFraction": 0.004340277777777778,
-          "fissureFraction": 0.004340277777777778,
-          "targetFissureFraction": 0.004340277777777778,
+          "lavaFraction": 0.00390625,
+          "fissureFraction": 0.00390625,
+          "targetFissureFraction": 0.00390625,
           "targetLavaFraction": 0,
           "visibleLavaOwners": [
             {
@@ -900,9 +900,9 @@
     "manualRetention": {
       "ungraded": true,
       "selectorSearch": false,
-      "hell1": "Installed HELL-1 pose held exactly; fresh current-generation fixed-grid validation.",
-      "hell2": "Installed HELL-2 pose held exactly; fresh current-generation fixed-grid validation.",
-      "validationEvidence": "Geometry only. No search, timing, visual, seed2/3 or formal phase acceptance."
+      "hell1": "One analytically fixed 9.48-degree yaw change; fresh current-generation grid and complete Normal image preferred in root and fresh blind A/B review.",
+      "hell2": "Installed HELL-2 pose held exactly with its prior current-generation fixed-grid validation.",
+      "validationEvidence": "HELL-1: one fixed grid and one complete Normal comparison; no selector search. HELL-2: retained prior geometry validation. No formal rubric, seed2/3 or phase acceptance."
     }
   },
   "phase13Primitive": {
