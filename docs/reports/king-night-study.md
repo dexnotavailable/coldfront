@@ -1,5 +1,7 @@
 # King neutral-trim night study
 
+This is the preserved isolated-study result. The later [optional Avatar adapter integration](king-adapter-integration.md) records current-source and release verification; live appearance selection remains unimplemented.
+
 The crown and outer cloak contour remain visible with neutral trim at night, while internal cloth detail is subdued. Root and independent Astra open all three new originals and select no appearance correction from this comparison. The King remains an isolated asset candidate; it is not integrated into the current game.
 
 The owned copy preserves the historical model, avatar adapter, renderer and fixture. At distance 24 m, tilt 55°, yaw 45°, FOV 40° and display time zero, it captures ordinary trim at night, neutral trim at noon, and neutral trim at night. Only trim and time of day differ. Both new control PNGs exactly match the retained historical originals.
