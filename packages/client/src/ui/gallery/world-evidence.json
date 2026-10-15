@@ -5,11 +5,11 @@
       "id": "outline-ghost",
       "rows": ["hud.outline", "hud.ghost"],
       "image": "fixtures/ui/world-outline-ghost.jpg",
-      "imageSha256": "19fce4862f2b2432cba7e7b602b4fe672c86d6191379b98151b8f0b3ff839c57",
+      "imageSha256": "dd9264dfedeb5dbbe898a406b9caa61fc0f79a6b67d10bc75be347427c12d68a",
       "telemetry": "fixtures/ui/world-outline-ghost.json",
-      "telemetrySha256": "b5782521092c6c7c29572e3e31c3122bd9ea3d28fc3d0f827e52b03937cc679a",
+      "telemetrySha256": "cd7a743b1c37275d48d736846c1da839b18a27f2953402e7fdbfc8925a2e7493",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "94eb2e892f06e7b22ff17c8c32d18b10090fe6d40afcf24c605da288f0bea34a",
+      "runReceiptSha256": "7b9bf11e776536ae86a496109f32b06af71daf21d96545f68bd82d1d1513e03a",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -109,7 +109,7 @@
         },
         {
           "path": "packages/client/src/game/camera.ts",
-          "sha256": "868588103d6471af603ceb961400ebb4a2d0fea8fb2bca75fe337c9b279546ff"
+          "sha256": "1f84b0161fdc579e6e35b970d67bda0c0be165dc5c03a80895522d0a823afc41"
         },
         {
           "path": "packages/client/src/game/controller.ts",
@@ -393,8 +393,8 @@
         "format": "jpeg",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
-        "sourceImage": "out/engine/hud-coarse-last-2026-10-15T15-52-37-298Z-d56a36/outline-ghost.png",
-        "sourceImageSha256": "b2ed9eff683a4e31bdad74ca03b734da1553d1b6ccb78932e2491270ba771f2c",
+        "sourceImage": "out/engine/hud-camera-clearance-2026-10-15T18-22-32-584Z-eab935/outline-ghost.png",
+        "sourceImageSha256": "0235100302335bddc7cb6255c4de402e892e0307635cb41e599b0012cc660efa",
         "quality": 85,
         "width": 1280,
         "height": 720,
@@ -405,11 +405,11 @@
       "id": "silhouette",
       "rows": ["hud.silhouette"],
       "image": "fixtures/ui/world-silhouette.jpg",
-      "imageSha256": "f4a1313b2a9691c9562b4254c0d79f2d18adb15b42e3f803bb72949c48d8e6bc",
+      "imageSha256": "4aa4650291d009d73003ffa67928a08e0d4d87fce0d1c4a6550589f3e29515db",
       "telemetry": "fixtures/ui/world-silhouette.json",
-      "telemetrySha256": "79333afb5c4400915ceba2e6c08636e76089dfea7bcef1bffd2eb43cf1980375",
+      "telemetrySha256": "111427465443d7cf715e01c8f5b2d5de34b6ce6f70c9211985a13dfb38a32773",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "94eb2e892f06e7b22ff17c8c32d18b10090fe6d40afcf24c605da288f0bea34a",
+      "runReceiptSha256": "7b9bf11e776536ae86a496109f32b06af71daf21d96545f68bd82d1d1513e03a",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -509,7 +509,7 @@
         },
         {
           "path": "packages/client/src/game/camera.ts",
-          "sha256": "868588103d6471af603ceb961400ebb4a2d0fea8fb2bca75fe337c9b279546ff"
+          "sha256": "1f84b0161fdc579e6e35b970d67bda0c0be165dc5c03a80895522d0a823afc41"
         },
         {
           "path": "packages/client/src/game/controller.ts",
@@ -793,8 +793,8 @@
         "format": "jpeg",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
-        "sourceImage": "out/engine/hud-coarse-last-2026-10-15T15-52-37-298Z-d56a36/silhouette.png",
-        "sourceImageSha256": "ceb8540e0dad7b2af9f7fbd941ea86424389b3ce69aebf0545baaec4a5a41ab0",
+        "sourceImage": "out/engine/hud-camera-clearance-2026-10-15T18-22-32-584Z-eab935/silhouette.png",
+        "sourceImageSha256": "78c44642b6b341691ecdc5d9f0e3fe0f3ddb1bb5e24dc86a03aa01ca8a6bb82b",
         "quality": 85,
         "width": 1280,
         "height": 720,

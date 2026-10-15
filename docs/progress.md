@@ -21,7 +21,13 @@
 | 1.10 Polish + performance | ☐ | |
 
 ## Current session
-**16 October 2026 · Codex · `codex/phase-1-3-root-grounding-20261016`**
+**16 October 2026 · Codex · `codex/phase-1-3-camera-clearance-20261016`**
+
+**Camera clearance work in verification:** the camera normally queried terrain height twice at its final position in a single frame. The candidate reuses that same-frame result and still samples every adjusted position, including the sixteenth adjustment and 85-degree cap. All **868 tests / 103 files pass in 291.640 s**, as do the earlier 24 focused tests, client/tools types and final formatting. The initial formatting-only failure remains recorded. Four fresh HUD images pass root/independent Astra review and 327 hash checks, and their six evidence files are promoted. Final `check`, complete UI lint and build pass in **16.866 / 5.769 / 3.724 s**; UI lint reports 106 states, zero missing rows and 23 bindings. Native camera/cut and production verification remain pending. No cross-frame cache, camera rule, generator, view distance or rendering effect changes. This source is not yet live. [Measurement and limits](reports/camera-clearance-cost.md).
+
+**A real synchronous cost, with a bounded scope:** at the saved Ibara Escape camera position with chunks deliberately absent, one real `ChunkStore.surface` call takes 506.514 ms and its exact repeat 2.675 ms; both return height24 and each scans183 voxels. The seed-1 plan is reused, generation workers are mocked and never requested, and no GPU is involved. This demonstrates a CPU stall in that forced fallback condition. It does not establish ordinary browser incidence, Radeon FPS, or that same-frame reuse fixes the large first-call cost. Surface currently prepares its point area even when chunks are resident; the existing conservative-bound API is a possible later exact alternative, but its own feature preparation cost remains unmeasured.
+
+**Anatomy audit complete:** all required thorn mechanisms have active production paths. The bounded current-camera check finds one intact hooked owner among the28 saved HELL-1 parents, but its projected main/return is clipped by the left frame edge. It stops as limited absence, after one plan and38 charged operations, with zero rays or renders. This supplies no missing-shape defect or new R2 grade; another generator tweak is not selected from it.
 
 **Basalt-layer experiment closed:** the repaired control comparison produces fourteen opened originals and passes its exact material-isolation checks, but fresh blind review prefers the existing material. The candidate's broad bands read as wrapped stripes. It is rejected without a full-caldera render, placement expansion or further tuning. The two earlier fixture-accounting failures and their independent diagnosis remain preserved. The next source audit targets a substantive terrain-shape issue, rather than another variation of this shader. [Closure and evidence](reports/basalt-layer-study.md).
 
