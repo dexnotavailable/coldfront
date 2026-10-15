@@ -4,7 +4,7 @@ Regional appearance refinement is parked by the owner. This checkpoint adds dorm
 
 ## Verification
 
-- Integrated shared sampler and pure Command controller: `npm test`, 921 tests / 111 files, 261.517 s. The later far-client addition passes 20 targeted tests / four files, both type checks and lint. No aggregate full-suite count is inferred from these separate runs.
+- Exact pushed foundation `182e2d58ad58ac7f36df8ec2dda49c92aa386b71`: `npm test`, 941 tests / 115 files, 269.954 s. This full run includes the shared sampler, pure Command controller, far client and refreshed HUD evidence. Both type checks and lint pass. The exact clean checkout also passes `npm ci` and the default production build on Node 22.23.3 in 81.486 s.
 - `npm run build` passes. The first `npm run check` correctly rejects stale world-HUD evidence after shared source changes. Fresh local Chromium captures, inspection and exact candidate promotion restore the check pass; the guard is unchanged.
 - Saved failures include canopy shrink/disappearance, camera height/roof/edge-timing regressions, and coarsening to an unavailable parent that erased ready children. Independent assertions remain intact after repair.
 - A bounded generated-Ibara fixture preserves LOD0/1 sample bytes under coarse-first and near-first preparation. This does not establish full-region equivalence or save compatibility by itself.
