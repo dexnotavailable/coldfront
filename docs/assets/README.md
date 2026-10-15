@@ -2,6 +2,19 @@
 
 These assets are source data for future gameplay integration. They are not registered or spawned in the playable world.
 
+## Optional King appearance
+
+The existing `Avatar` constructor accepts an optional third argument with `kind: "king"`, `kingdomColor` and `kingdomAccent`; optional skin/hair colors retain the normal defaults when absent. Calls with two arguments remain plain. No live caller currently selects the King appearance.
+
+- [Crown, cloak and pose recipe](../../packages/client/src/engine/king-avatar.ts).
+- [Optional adapter](../../packages/client/src/engine/avatar.ts).
+- [Eight attachment tests](../../packages/tools/test/assets/king-avatar.test.ts) and [six motion tests](../../packages/tools/test/assets/king-cloak-motion.test.ts).
+- [Current integration evidence and limits](../reports/king-adapter-integration.md).
+
+Call `setWind()` with the shared world-space wind input when that owner is connected; it defaults to still air. Pose updates use the existing display clock and body state. Attachments participate in the existing silhouette, expanded-outline and depth copies. `Avatar.dispose()` releases their generated textures and the host-owned mesh resources. Crown and cloak have no collision, reach or movement authority.
+
+Live appearance selection, production wind delivery, equipment and class systems remain future work. The fixed-time wall proof forces silhouette visibility and does not validate automatic occlusion selection. The historical brief's proposed values are superseded where the reviewed recipe differs; it is not a new costume requirement.
+
 ## Early watchtower
 
 `player-watchtower-early-01`, revision 1: a stone footing, timber frame, five block-stair flights and a lookout platform 25 metres above the surrounding ground.

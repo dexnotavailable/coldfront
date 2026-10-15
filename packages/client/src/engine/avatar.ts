@@ -9,6 +9,11 @@ import {
   MeshLambertMaterial,
 } from "three";
 import type { BodyState } from "../game/controller.js";
+import {
+  attachKing,
+  type KingAppearance,
+  type KingWind,
+} from "./king-avatar.js";
 import { ease } from "./motion.js";
 
 const pixel = 1.8 / 32;
@@ -30,11 +35,21 @@ export class Avatar {
   private stepOffset = 0;
   private stepTime = 0;
   private armStart = -10000;
-  constructor(steel: ColorRepresentation, ink: ColorRepresentation) {
-    const skin = new MeshLambertMaterial({ color: new Color("#c09b78") }),
+  private readonly king: ReturnType<typeof attachKing> | undefined;
+  private wind: KingWind = { x: 0, z: 0, strength: 0 };
+  constructor(
+    steel: ColorRepresentation,
+    ink: ColorRepresentation,
+    appearance?: KingAppearance,
+  ) {
+    const skin = new MeshLambertMaterial({
+        color: new Color(appearance?.skin ?? "#c09b78"),
+      }),
       coat = new MeshLambertMaterial({ color: new Color("#46596a") }),
       pants = new MeshLambertMaterial({ color: new Color("#303d48") }),
-      hair = new MeshLambertMaterial({ color: new Color("#403a32") });
+      hair = new MeshLambertMaterial({
+        color: new Color(appearance?.hair ?? "#403a32"),
+      });
     const part = (
       w: number,
       h: number,
@@ -77,6 +92,13 @@ export class Avatar {
       part(4, 12, 4, arm ? coat : pants, pivot, 0, -6);
       if (arm) part(4.05, 3, 4.05, skin, pivot, 0, -10.5);
     }
+    this.king =
+      appearance?.kind === "king"
+        ? attachKing(
+            { root: this.group, head: this.head, limbs: this.limbs, part },
+            appearance,
+          )
+        : undefined;
     const silhouetteMaterial = new MeshBasicMaterial({
       color: steel,
       toneMapped: false,
@@ -105,6 +127,10 @@ export class Avatar {
       this.depth.add(depth);
       this.copies.push({ original, silhouette, outline, depth });
     }
+  }
+  /** Visual-only input from the shared wind owner; defaults to still air. */
+  setWind(wind: KingWind): void {
+    this.wind = wind;
   }
   swing(displayMs: number): void {
     this.armStart = displayMs;
@@ -159,6 +185,7 @@ export class Avatar {
     if (swing >= 0 && swing < 1)
       (this.limbs[1] as Group).rotation.x = -Math.sin(swing * Math.PI) * 1.5;
     this.head.rotation.y = -(body.headYaw - body.yaw);
+    this.king?.update(body, displayMs, this.wind);
     this.group.updateMatrixWorld(true);
     for (const c of this.copies) {
       c.silhouette.matrix.copy(c.original.matrixWorld);
@@ -173,6 +200,7 @@ export class Avatar {
     }
   }
   dispose(): void {
+    this.king?.dispose();
     const materials = new Set(this.all.map((m) => m.material));
     for (const m of this.all) m.geometry.dispose();
     for (const m of materials) if (!Array.isArray(m)) m.dispose();

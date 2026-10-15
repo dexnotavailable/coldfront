@@ -2,7 +2,7 @@
 
 **Current milestone:** 1 · The World
 **Current phase:** 1.3 · Terrain toolkit + Ibara (visual corrections and final release checks)
-**Playable link:** [dex.place/coldfront](https://dex.place/coldfront/) · [Interface gallery](https://dex.place/coldfront/?gallery) · [Release PR #10](https://github.com/dexnotavailable/coldfront/pull/10). Live game commit: `36f85b2` (generation 4, lower worker memory and fewer terrain matrix calculations; current saves retained). The unrelated `coldfront.pages.dev` site is not this game's preview.
+**Playable link:** [dex.place/coldfront](https://dex.place/coldfront/) · [Interface gallery](https://dex.place/coldfront/?gallery) · [Release PR #15](https://github.com/dexnotavailable/coldfront/pull/15). Live game commit: `65799bd` (generation 4, optional King appearance capability with the normal player still plain; current saves retained). The unrelated `coldfront.pages.dev` site is not this game's preview.
 **Agent guide:** `AGENTS.md` (Codex and Claude Code both follow it). **Interface:** only what `docs/11-interface-catalogue.md` lists.
 
 ## Status board
@@ -11,7 +11,7 @@
 |---|---|---|
 | 1.1 Foundations | ✓ Complete, with recorded limits | 190 tests, check/build, clean Node22 build, complete UI lint and all-three-browser CI pass; accepted images/tools/save fixes published as d4c4c49. Public-site browser launch remains unavailable. |
 | 1.2 World plan | ✓ Complete, with recorded limits | Runtime, three-seed geography, atlas/slice, all-region travel and sixteen ungraded postcards accepted; 310 tests, check/build, complete UI lint, clean Node22 build and all-three-browser CI pass. Live as 18a975d. [Phase plan](plans/phase-1-2.md). |
-| 1.3 Terrain toolkit + Ibara | In progress | [Reviewed integration plan](plans/phase-1-3.md); generation `676c1de…` is live as `36f85b2`, with fewer terrain matrix calculations, lower terrain-worker memory, clearer thorn strata and a corrected review-tool cache. Tests, check/build, exact clean/site builds, production journey, CI and public HTTP pass. No new formal score: two primitive-control grades of 9 fail the unchanged ≤8 calibration gate. Earlier a82 scores 16/15 remain historical. Seeds 2–3 and mandatory HELL acceptance remain open; six aggregate CPU metrics exceed later targets. |
+| 1.3 Terrain toolkit + Ibara | In progress | [Reviewed integration plan](plans/phase-1-3.md); generation `676c1de…` is live as `65799bd`, retaining the terrain/worker improvements and adding the optional King adapter. Tests, check/build, exact clean/site builds, production journey, CI and public HTTP pass. No new formal score: two primitive-control grades of 9 fail the unchanged ≤8 calibration gate. Earlier a82 scores 16/15 remain historical. Seeds 2–3 and mandatory HELL acceptance remain open; six aggregate CPU metrics exceed later targets. |
 | 1.4 Far terrain | ☐ Specified, not implemented | LOD0–LOD6, full-height column tiles beyond LOD1, ~16 km maximum reach at altitude; acceptance includes at least 5 km of real terrain. 04 §13.5 / roadmap 1.4. |
 | 1.5 Kurogane + Selva | ☐ | |
 | 1.6 Fantasy regions | ☐ | |
@@ -21,7 +21,9 @@
 | 1.10 Polish + performance | ☐ | |
 
 ## Current session
-**14 October 2026 · Codex · `codex/phase-1-3-next-assets-20261014`**
+**15 October 2026 · Codex · `codex/phase-1-3-remaining-content-20261014`**
+
+**Optional King adapter, published:** live `65799bd` includes the reviewed crown/cloak and fourteen unchanged tests through a narrow optional Avatar path. The ordinary player remains plain: 88 comparisons against the untouched baseline match geometry, materials, copies and controller state. Root and fresh Astra open eleven King originals and four HUD images; independent arithmetic verifies 1,122 copy matrices with maximum error 0. **851 tests / 101 files**, check/build, exact clean/site builds and three-browser CI pass. The exact production journey passes all fourteen stages in **209.594 s**; root and Astra open all fourteen originals and verify 191 source / 326 distribution / 245 evidence files. Publication receipt `8be70e0f-7fb5-41d0-abf3-e73910e641c2` and eleven public hash/header checks pass at **06:57:44.744 UTC**. Generation 676 and saves remain compatible. No live King selector/spawn, production wind, full-rate playback, new terrain score or FPS gain is claimed. [Evidence](reports/king-adapter-integration.md).
 
 **House library adoption:** the reviewed 498-voxel house, static door presentation helper and nine existing tests enter the library as four unchanged files. The fresh study passes all nine focused tests, four type checks, formatting and two current-renderer captures in 3.841 s. Root and Astra open both originals, which exactly match the accepted closed/open views, plus four fresh HUD images with 93 source bindings per case. **837 tests / 99 files pass** in 284.89 s; check/build pass in 17.943/3.015 s. The house remains unregistered; placement, functional rooms/hearths, interaction, collision and navigation are future work. Live `36f85b2`, saves, terrain scores and benchmark remain unchanged. [Library](assets/README.md) · [Evidence](reports/house-door-wolf-stance-studies.md#house-library-adoption-14-october-2026).
 
@@ -330,7 +332,7 @@ The following records describe the completed phase 1.1 tooling and acceptance.
 - The build reports a large main chunk (about 1,056 kB, 281 kB gzip); optimization follows measurements. The current check has 79 warnings and two information notes, with no errors. Most warnings are controlled test/gallery assertions and motion CSS overrides.
 - The documented Pages name was corrected: coldfront.pages.dev belongs to another website. Ordinary build remains compatible with Pages; the actual release uses the owner's existing site mount.
 
-## Try this (live verified increment `36f85b2`)
+## Try this (live verified increment `65799bd`)
 
 1. Open [COLDFRONT](https://dex.place/coldfront/), choose **Kaldmark** and press **Play**. Walk with **W A S D**; zoom with the wheel, turn with **← →**, and tilt with **↑ ↓**.
 2. Double-tap **Space** to fly. Use **Space** to rise and **Shift** to descend. Double-tap **W** to sprint when playing in a window.
@@ -341,7 +343,7 @@ The following records describe the completed phase 1.1 tooling and acceptance.
 7. In **F4 → Go to region**, visit **Ibara** and compare **Normal**, **Clay** and **Features**. Open **F4 → Go to postcard** and choose **Ibara 2** for the forest or **Ibara 3** for the caldera. Look for the clearer horizontal rock layers on broad thorn faces, alongside the existing forks. Loading is slow; the caldera foreground and roots still need work. Press **Escape** to return to the overhead view.
 8. Open the map with **M**, choose a spot and travel. In **F4**, use **Go to region** to compare Shirogane, Kurogane and the Sundered Isles. Discovery cards appear once per saved world identity. Switch to the test world from the title for the smaller sandbox.
 
-For the new content work, inspect the [asset library](assets/README.md), [house review](reports/house-door-wolf-stance-studies.md#house-library-adoption-14-october-2026) and [smithy review](reports/smithy-hearth-study.md). These buildings are not yet placed in the live game.
+For the new content work, inspect the [asset library](assets/README.md) and [King integration review](reports/king-adapter-integration.md). The ordinary player stays plain until King selection is connected; the reviewed buildings are not yet placed in the live game.
 
 Local development: run **npm ci**, then **npm run dev** and open the printed address.
 
