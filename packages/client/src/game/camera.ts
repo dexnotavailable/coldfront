@@ -197,16 +197,14 @@ export class OverheadCamera {
         Math.cos(yaw) * this.distance * Math.cos((tilt * Math.PI) / 180),
     });
     let p = place(this.tilt);
+    let height = surface(p.x, p.z, this.cut.height);
     // Safety clearance is a hard floor; requested distance is never changed.
-    for (
-      let i = 0;
-      i < 16 && p.y < surface(p.x, p.z, this.cut.height) + 6 && this.tilt < 85;
-      i++
-    ) {
+    for (let i = 0; i < 16 && p.y < height + 6 && this.tilt < 85; i++) {
       this.tilt = Math.min(85, this.tilt + 3);
       p = place(this.tilt);
+      height = surface(p.x, p.z, this.cut.height);
     }
-    const lift = Math.max(0, surface(p.x, p.z, this.cut.height) + 6 - p.y);
+    const lift = Math.max(0, height + 6 - p.y);
     p.y += lift;
     this.focus.y += lift;
     this.position = p;
