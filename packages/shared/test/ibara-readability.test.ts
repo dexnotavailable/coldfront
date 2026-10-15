@@ -444,7 +444,133 @@ const tipEnvironment = {
 const shapeHash = (value: unknown): string =>
   createHash("sha256").update(JSON.stringify(value)).digest("hex");
 
+// Exact seed-1 cell (47,5) owner from the 2026-10-15 production failure witness.
+// parameters.json SHA256: 32599518c9c7b4e5d2e03545cf029cab7e12633dd0765ae5ec8aa7da1d8948a8.
+// Coordinates and all shape fields are preserved; construction queried none
+// of the real environment callbacks, so the regression rejects any such call.
+const shortTipWitness: ThornParameters = {
+  id: 8761096,
+  cellX: 47,
+  cellZ: 5,
+  cluster: 0,
+  index: 7,
+  base: [8997.790169223104, 59.775272638574556, 925.2278029062845],
+  height: 12.47084544089819,
+  baseRadius: 1.9449975206618593,
+  flowX: -0.16527325055945818,
+  flowZ: -0.9862478150290171,
+  leanDegrees: 6.817410878719727,
+  bend: 2.74313696184254,
+  sCurve: true,
+  hooked: false,
+  broken: false,
+  breakT: 0.4832940995926037,
+  branchCount: 0,
+  facets: 3,
+  facetiness: 0.7819145880639553,
+  twist: 1.8921791688574119,
+  phase: 5.431290971983959,
+  exponent: 1.3020923062693328,
+  core: "basalt",
+  crust: "none",
+  nearLava: false,
+  landmark: false,
+  arch: false,
+  archSpan: 112.39618771709502,
+};
+
 describe("ordinary intact main-tip readability", () => {
+  it("preserves the real short owner when the inverse tail length rounds above its exact limit", () => {
+    const unexpectedEnvironmentQuery = (): never => {
+      throw new Error("The saved short owner made no environment queries");
+    };
+    const thorn = instantiateThorn(shortTipWitness, {
+      seed: 1,
+      surfaceAt: unexpectedEnvironmentQuery,
+      weightAt: unexpectedEnvironmentQuery,
+      lavaAt: unexpectedEnvironmentQuery,
+    });
+    const main = thorn.sweeps[0];
+    if (!main) throw new Error("Missing short witness main sweep");
+    expect(thorn.parameters).toBe(shortTipWitness);
+    expect(main.spine.length).toBe(14.503502740388427);
+    expect(main.thinTipLength).toBe(1.5000000000000002);
+    expect(sweepRadius(main, 1 - 1.5 / main.spine.length)).toBe(0.7);
+    // Whole baseline instance, with typed arrays encoded as plain arrays in
+    // the saved witness. The expected digest comes only from that saved data.
+    expect(
+      createHash("sha256")
+        .update(
+          JSON.stringify(thorn, (_, value) =>
+            value instanceof Float64Array ? Array.from(value) : value,
+          ),
+        )
+        .digest("hex"),
+    ).toBe("2c3d9c029a66ad6e3a645c61d2282bf69762360d06d7a5317c4b60ce6c66bb74");
+  });
+
+  it("restores the proportional body exactly and confines the correction to the terminal tenth", () => {
+    for (const change of [
+      {},
+      { id: 8891417, height: 80, bend: 12, baseRadius: 8, sCurve: true },
+      { height: 160, bend: 56, baseRadius: 11.2, leanDegrees: 65 },
+    ]) {
+      const parameters = { ...longTipWitness, ...change };
+      const main = instantiateThorn(parameters, tipEnvironment).sweeps[0];
+      // The landmark flag leaves these authored cubics exact and selects the
+      // retained proportional profile. It is a shape reference, not placement.
+      const proportional = instantiateThorn(
+        { ...parameters, landmark: true },
+        tipEnvironment,
+      ).sweeps[0];
+      if (!main || !proportional) throw new Error("Missing profile reference");
+      expect(main.spine).toEqual(proportional.spine);
+      expect(main.profileExponent).toBe(proportional.profileExponent);
+      expect(main.radii).toHaveLength(257);
+      expect(main.radii.slice(0, 232)).toEqual(
+        proportional.radii.slice(0, 232),
+      );
+      let changed = 0;
+      for (let i = 232; i < 257; i++) {
+        expect(Number(main.radii[i])).toBeGreaterThanOrEqual(
+          Number(proportional.radii[i]),
+        );
+        expect(Number(main.radii[i])).toBeLessThan(Number(main.radii[i - 1]));
+        if (main.radii[i] !== proportional.radii[i]) changed++;
+      }
+      expect(changed).toBeGreaterThan(0);
+      expect(main.thinTipLength).toBeLessThanOrEqual(1.5 + 1e-9);
+      expect(
+        sweepRadius(main, 1 - 1.5 / main.spine.length),
+      ).toBeGreaterThanOrEqual(0.7);
+      expect(sweepRadius(main, 1)).toBe(0.45);
+    }
+  });
+
+  it("never exceeds the published witness profile and retains its exact terminal stations", () => {
+    const main = instantiateThorn(longTipWitness, tipEnvironment).sweeps[0];
+    // Published closeup case.json freezes this stronger-table exponent. Using
+    // the excluded family selects it unchanged, independently of the splice.
+    const published = instantiateThorn(
+      { ...longTipWitness, landmark: true, exponent: 0.8049466229794777 },
+      tipEnvironment,
+    ).sweeps[0];
+    if (!main || !published) throw new Error("Missing published tip reference");
+    expect(main.spine).toEqual(published.spine);
+    const firstTerminalStation = Math.floor(
+      (1 - 1.5 / main.spine.length) * 256,
+    );
+    expect(main.radii.slice(firstTerminalStation)).toEqual(
+      published.radii.slice(firstTerminalStation),
+    );
+    for (let i = 0; i < 257; i++)
+      expect(Number(main.radii[i])).toBeLessThanOrEqual(
+        Number(published.radii[i]),
+      );
+    expect(Number(main.radii[128])).toBeLessThan(Number(published.radii[128]));
+    expect(main.thinTipLength).toBe(published.thinTipLength);
+  });
+
   it("caps the actual interpolated tail at 1.5 m across ordinary main shapes without clipping", () => {
     for (const change of [
       {},
@@ -514,7 +640,7 @@ describe("ordinary intact main-tip readability", () => {
       }),
     ).toBe("d17922e6d3bd3f8de8f5d512be4e28a93dbbad0777b1c9bc58d7389b7c706284");
     // Exact branch objects do not guarantee unchanged exposure at their union
-    // with a widened main. The native image review owns that separate check.
+    // with a changed main. The native image review owns that separate check.
   });
 
   it("shortens the saved seven-voxel terminal stair chain without disconnecting it", () => {

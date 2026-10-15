@@ -44,6 +44,7 @@ export interface ThornSweep {
   readonly spine: Spine;
   readonly radii: Float64Array;
   readonly maxRadius: number;
+  /** Body exponent; intact ordinary mains can have a localized terminal splice. */
   readonly profileExponent: number;
   /** Measured from the actual interpolated radius table, in local spine metres. */
   readonly thinTipLength: number;

@@ -21,7 +21,9 @@
 | 1.10 Polish + performance | ☐ | |
 
 ## Current session
-**15 October 2026 · Codex · `codex/phase-1-3-after-king-20261015`**
+**15 October 2026 · Codex · `codex/phase-1-3-terrain-next-20261015`**
+
+**Localized thorn tips selected; release verification in progress:** the reviewed source and rounding-guard repair are integrated. The full suite passes **854 tests / 101 files**; 30 focused checks after camera/HUD promotion, `check`, complete UI lint and build also pass. All 18 production destinations retain their poses with current geometry evidence. Root and independent Astra open four HUD images and six regenerated atlas/slice images. Local comparisons and the complete caldera pair modestly favor the slimmer taper; the forest review ties. Both caldera captures load all 1,624 chunks in 232.897 / 242.677 s and retain their failed 180 s checks. All three complete terrain reports pass and their saved data is audited (80,056 instances / 177,892 sweeps). Clean build, final production tour, new-generation benchmark and publication remain pending. No broader terrain-quality gain, new score, FPS gain or phase pass is claimed. Live `65799bd` is unchanged. [Evidence and limits](reports/local-tip-splice-study.md).
 
 **Thorn station/voxel diagnostic, closed:** a fixed 32-metre strip of preserved main owner 10264208 passes 42,570 exact production/instrumented comparisons. The continuous sample brackets have no qualifying inward events; raw voxel occupancy has 79, supporting block-grid stepping in seven complete directions. There are 133 alternate-station occupancy witnesses, but none meets the predeclared repeated-ridge criterion; all also reduce the original signed noise contribution. The single 5.985 s run uses 173,931 calls within its 187,050 cap. Independent review verifies the saved hashes, counts, witnesses and classifications. No sampler fix, broader search, new render or terrain grade follows; photographed ridge causation remains unresolved. Live `65799bd`, saves and benchmark are unchanged. [Evidence](reports/thorn-station-voxel-study.md).
 

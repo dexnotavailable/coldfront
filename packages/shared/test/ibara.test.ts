@@ -997,6 +997,8 @@ describe("production sweep guards on analytic volcanic stand-ins", () => {
                 0.35 * p.baseRadius,
               );
             }
+            if (!p.landmark && !p.broken && !p.arch)
+              expect(main.thinTipLength).toBeLessThanOrEqual(1.5 + 1e-9);
             for (const sweep of [...thorn.sweeps, ...thorn.debris]) {
               expect(sweep.spine.capped).toBe(false);
               expect(sweep.spine.segments).toBeLessThanOrEqual(24);
