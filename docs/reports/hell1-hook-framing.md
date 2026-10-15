@@ -1,6 +1,6 @@
 # HELL-1 hook framing
 
-One fixed yaw adjustment is selected for the HELL-1 postcard after a complete image comparison. It makes an existing hooked formation readable without changing terrain. The catalogue change is under repository verification and is not yet live.
+One fixed yaw adjustment is selected for the HELL-1 postcard after a complete image comparison. It makes an existing hooked formation readable without changing terrain. The catalogue change is published as `ff73f12` at [dex.place/coldfront](https://dex.place/coldfront/).
 
 ## Why this view
 
@@ -46,4 +46,14 @@ Canonical evidence root: `out/phase13/anatomy-audit-20261016/reframe-decision/`.
 - Blind review: canonical `out/phase13/hook-framing-pixel-review/review.md`; anonymous mapping remains private.
 - Promotion backup and receipt: `promotion/`. All other catalogue entries, TEST data and the historical primitive subtree remain unchanged. Three internal retention descriptions are updated to distinguish this fresh HELL-1 evidence from retained HELL-2 validation.
 
-All 868 tests in 103 files pass in 307.879 s. Check, complete UI lint and build pass in 15.803 / 5.789 / 2.157 s. Independent catalogue review passes 1,007 hash comparisons and confirms that only HELL-1's target and fresh validation changed, alongside three declared retention descriptions. The clean build and exact production release checks remain required before publication. The rejected ground-blend, material and earlier camera-search studies remain closed.
+All 868 tests in 103 files pass in 307.879 s. Check, complete UI lint and build pass in 15.803 / 5.789 / 2.157 s. Independent catalogue review passes 1,007 hash comparisons and confirms that only HELL-1's target and fresh validation changed, alongside three declared retention descriptions. The rejected ground-blend, material and earlier camera-search studies remain closed.
+
+The exact clean Node 22 install/default build/site build pass in 6.680 / 3.551 / 2.125 s, total 12.381 s. An initial shell wrapper split its scalar install argument and failed before installation; that receipt remains in `out/clean-build/`, while the corrected explicit-array run is recorded in `out/clean-build-v2/`. No build rule changed.
+
+The fourteen-stage local production journey passes in a 278.578 s receipt interval, with zero errors, bad responses or external requests, four retained ReadPixels warnings and complete cleanup. Root and fresh Astra open all fourteen original screenshots. Independent review verifies 1,300 input hashes, 35 checks and fourteen image hashes. Placement, immediate replay/reload persistence, breaking, movement, Ibara modes, the selected HELL-1 trip, Escape and malformed-catalogue continued play all pass. Existing HUD, atlas/slice and camera-cut evidence is reused with matching source hashes, without claiming fresh captures or continuous motion. CI [38800043314](https://github.com/dexnotavailable/coldfront/actions/runs/38800043314) passes including all three browser goldens.
+
+Publication receipt `91e32c0c-7d92-45b0-a709-4709c3841c29` promotes the exact runtime. Public HTTP readback at 20:27 UTC verifies eleven file hashes and isolation headers. `out/phase13/hook-framing-release/` holds the seals, journey, independent review and public readback. Public browser gameplay remains separately unavailable. No formal terrain score, FPS gain or phase completion follows.
+
+## Next calibration step
+
+A separate current-source primitive preflight passes once at the established control pose: one plan, one 64×36 grid, 127,356 voxel calls, no failed gates and a closed worker, in 6.881 s overall. Its output under `out/phase13/current-primitive-preflight-20261016/runs/2026-10-15T20-24-35.053Z-a132ba94-0de1-4e0c-9aa2-9f6ea3f0fdd6/` is private, ungraded data. No installed catalogue changes. A current control capture is still needed; neither this geometry pass nor a new source binding erases the two earlier failed control grades.
