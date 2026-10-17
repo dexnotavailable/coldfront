@@ -521,6 +521,7 @@ A played unit is always seen from above, by **Overhead**: the Command camera of 
 - **The map** (D7) is flat and always north-up. Left drag pans. The wheel zooms toward the cursor, continuously as in C1, from the whole world on screen down to 1 m per pixel. W A S D pan.
 - **The free camera** (owner tool, D12) is an avatar in creative mode (B4): it walks, flies, breaks and places with endless blocks, seen in Overhead with its wider limits (C4). It is the only body in Milestone 1.
 - **King's view in Milestone 1** is the Command camera of C1 with nothing to select: Tab switches between it and the free camera. Going in, the Command camera centres on the free camera (with the cut set as C2 says when it was under cover). Coming back, the free camera stands on what is drawn at the focus.
+  A cut cap is a visualization, not a new physical platform. If the drawn focus lacks real body clearance, resolve a collision-safe destination in that focus column using the existing bounded destination rules; never spawn inside or remove hidden solids. If no safe destination exists, keep Command view and the avatar unchanged. Water retains the ordinary swimming rules. This exception does not alter a habitable drawn destination (decision 123).
 - **Postcard mode** is specified in `04-terrain.md` §14.3.
 
 **Where play starts.**
