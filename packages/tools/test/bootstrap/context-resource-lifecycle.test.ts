@@ -95,6 +95,8 @@ type Internal = {
   terrain: ReturnType<typeof createTerrainMaterials>;
   drawnEffectTextures: Set<Texture>;
   waterDepthTarget: WebGLRenderTarget;
+  farWaterDepthTarget: WebGLRenderTarget;
+  farPreparationTarget: WebGLRenderTarget;
   sun: SunLight;
   bloom: BloomEffect;
   postPass: EffectPass;
@@ -225,6 +227,8 @@ describe("lost-context resource ownership (CPU event proof; native matrix is sep
     if (!terrainMaterial) throw new Error("Missing terrain material");
     f.own(terrainMaterial, "terrain/shadow material");
     f.own(f.internals.waterDepthTarget, "water target");
+    f.own(f.internals.farWaterDepthTarget, "far water target");
+    f.own(f.internals.farPreparationTarget, "far preparation target");
     f.internals.sun.shadow.map = new WebGLRenderTarget(16, 16);
     f.own(f.internals.sun.shadow.map, "shadow target");
     f.own(f.internals.composer.inputBuffer, "composer input");
@@ -240,7 +244,9 @@ describe("lost-context resource ownership (CPU event proof; native matrix is sep
     f.renderer.onLost = () => expect(f.disposed).toContain("post material");
     try {
       f.loss();
-      expect(f.disposed).toHaveLength(13);
+      expect(f.disposed).toHaveLength(15);
+      expect(f.disposed).toContain("far water target");
+      expect(f.disposed).toContain("far preparation target");
       expect(bloomDispose).toHaveBeenCalledTimes(1);
       expect(f.wrongGeneration).toEqual([]);
       expect(geometry.getAttribute("position").array).toBe(positions);

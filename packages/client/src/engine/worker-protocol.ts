@@ -1,5 +1,12 @@
 import type { ChunkMesh } from "../../../shared/src/meshing/greedy.js";
 import type { WorldPlanData } from "../../../shared/src/world/types.js";
+import type {
+  FarLimits,
+  FarStatistics,
+  FarTileMesh,
+  FarTileRequest,
+  FarTileRuns,
+} from "../../../shared/src/worldgen/far/types.js";
 import type { WorldSession } from "../contracts/game-ui.js";
 import type { BlockSampleCacheStats } from "./block-sample-cache.js";
 export interface Address {
@@ -24,7 +31,40 @@ export interface WorkerFeatureCacheStats {
   readonly cachedInstances: number;
   readonly preparedInstanceReferences: number;
 }
+export interface FarWorkerRequest extends FarTileRequest {
+  readonly type: "far";
+  /** Pool-wide ID, independent of a FarTerrainStore's local ID. */
+  readonly id: number;
+  readonly world: WorldSession;
+  readonly priority: number;
+  readonly postcard: boolean;
+}
+export interface WorkerFarCacheStats {
+  /** Edit maps/slabs are JS objects; these counts are not heap-byte estimates. */
+  readonly editCount: number;
+  readonly retainedTiles: number;
+  readonly typedArrayBytes: number;
+}
+export interface FarTileResult extends FarTileRequest {
+  readonly type: "far";
+  readonly world: WorldSession;
+  readonly id: number;
+  readonly runs: FarTileRuns;
+  readonly mesh: FarTileMesh;
+  readonly timings: Readonly<{ generate: number; mesh: number }>;
+  /** Retained worker arrays only. Transferred runs/mesh are owned by the caller. */
+  readonly cacheBytes: number;
+  readonly blockSampleCacheStats?: BlockSampleCacheStats;
+  readonly featureCacheStats?: WorkerFeatureCacheStats;
+  readonly farCacheStats: WorkerFarCacheStats;
+}
+export interface WorkerFarCapacityFailure {
+  readonly capacity: keyof FarLimits;
+  readonly limit: number;
+  readonly statistics: Readonly<FarStatistics>;
+}
 export type WorkerRequest =
+  | FarWorkerRequest
   | {
       readonly type: "init";
       readonly world: WorldSession;
@@ -63,6 +103,7 @@ export interface ChunkResult {
 export type WorkerStage = "generating" | "generated" | "lighting" | "meshing";
 export type WorkerResponse =
   | ChunkResult
+  | FarTileResult
   | { readonly type: "ready"; readonly world: WorldSession }
   | {
       readonly type: "progress";
@@ -75,6 +116,9 @@ export type WorkerResponse =
       readonly world: WorldSession;
       readonly id: number;
       readonly message: string;
+      /** Present for far task errors, including the exact request revision. */
+      readonly far?: FarTileRequest;
+      readonly capacity?: WorkerFarCapacityFailure;
     };
 export function chunkKey(a: Address): string {
   return `${a.cx},${a.cy},${a.cz}`;
@@ -95,4 +139,27 @@ export function meshTransfers(mesh: ChunkMesh): ArrayBuffer[] {
         p.indices.buffer,
       ] as ArrayBuffer[],
   );
+}
+/** Far outputs alone cross ownership; aliases appear only once in the list. */
+export function farTransfers(
+  runs: FarTileRuns,
+  mesh: FarTileMesh,
+): ArrayBuffer[] {
+  const buffers = [
+    runs.offsets.buffer,
+    runs.words.buffer,
+    ...[...mesh.parts, ...mesh.skirts.flat()].flatMap((part) => [
+      part.positions.buffer,
+      part.normals.buffer,
+      part.expansions.buffer,
+      part.surfaces.buffer,
+      part.featureIdParts.buffer,
+      part.indices.buffer,
+    ]),
+  ];
+  return [...new Set(buffers)].map((buffer) => {
+    if (!(buffer instanceof ArrayBuffer))
+      throw new Error("Far output must own a transferable ArrayBuffer");
+    return buffer;
+  });
 }

@@ -1,15 +1,22 @@
 import {
   Color,
+  DirectionalLight,
   FogExp2,
   HemisphereLight,
   PerspectiveCamera,
   Plane,
   Scene,
   Vector3,
+  WebGLRenderTarget,
 } from "three";
 import { SunLight } from "three/addons/lights/SunLight.js";
 import { Sky } from "three/addons/objects/Sky.js";
 import type { ToolState } from "../../../client/src/contracts/game-ui.js";
+import type { ChunkStore } from "../../../client/src/engine/chunk-store.js";
+import type {
+  FarWorld,
+  FarWorldView,
+} from "../../../client/src/engine/far-world.js";
 import {
   IbaraAtmosphere,
   type WorldAtmosphereSource,
@@ -17,6 +24,7 @@ import {
 import type { WorldRenderer } from "../../../client/src/engine/renderer.js";
 import { makeBody } from "../../../client/src/game/controller.js";
 import type { Point } from "../../../client/src/game/raycast.js";
+import type { LayerId } from "../../../shared/src/world/types.js";
 
 const point = { x: 5670.5, y: 30.62, z: 5459.5 };
 const focus = {
@@ -24,6 +32,89 @@ const focus = {
   y: 25.863978448565145,
   z: 5471.297624843125,
 };
+/** Empty job/render seam for the runtime transaction tests. Selection and
+ * lifecycle are represented; actual far jobs/batches have separate coverage. */
+export function createFarWorldFixture(
+  near: ChunkStore,
+  layer: LayerId = "surface",
+): FarWorld {
+  const camera = new PerspectiveCamera(40, 1, 200, 16000);
+  let selected = false,
+    disposed = false,
+    suspended = false,
+    restoring = false,
+    frozen = false;
+  const isReady = () => selected && !disposed && !suspended && !restoring;
+  const far = {
+    near,
+    layer,
+    camera,
+    get worldId() {
+      return near.world.id;
+    },
+    get reach() {
+      return camera.far;
+    },
+    get ready() {
+      return isReady();
+    },
+    error: null,
+    async select(view: FarWorldView, freeze = false) {
+      if (disposed) throw new Error("Far fixture disposed");
+      camera.position.set(view.position.x, view.position.y, view.position.z);
+      camera.lookAt(view.target.x, view.target.y, view.target.z);
+      camera.fov = view.fov;
+      camera.aspect = view.aspect;
+      camera.far = view.reach ?? 16000;
+      camera.updateProjectionMatrix();
+      camera.updateMatrixWorld();
+      selected = true;
+      frozen = freeze;
+    },
+    stream() {},
+    drain() {
+      if (!suspended && !disposed) restoring = false;
+      return 0;
+    },
+    assertPrepared() {
+      if (!isReady()) throw new Error("Far fixture not prepared");
+    },
+    setPresentation() {},
+    unfreeze() {
+      frozen = false;
+    },
+    suspend() {
+      suspended = true;
+    },
+    resume() {
+      suspended = false;
+    },
+    contextLost() {
+      restoring = true;
+    },
+    get telemetry() {
+      return {
+        requested: 0,
+        awaitingUpload: 0,
+        prepared: 0,
+        failed: 0,
+        visible: [],
+        ready: isReady(),
+        layer,
+        reach: camera.far,
+        targetTiles: 0,
+        lod: [0, 0, 0, 0, 0, 0, 0],
+        frozen,
+        restoring,
+        error: null,
+      };
+    },
+    dispose() {
+      disposed = true;
+    },
+  };
+  return far as unknown as FarWorld;
+}
 /** Real update/setWorld/setView/prepareView/setTime methods and Three state;
  * only GPU drawing and unrelated avatar/effects work are stubbed. */
 export function createAtmosphereRenderer(
@@ -62,6 +153,15 @@ export function createAtmosphereRenderer(
     atmosphere,
     camera,
     scene,
+    farScene: new Scene(),
+    farCamera: new PerspectiveCamera(40, 1, 200, 16000),
+    farResources: new Map(),
+    activeFar: null,
+    farSun: new DirectionalLight(),
+    farAmbient: new HemisphereLight(),
+    farFog: new FogExp2(0xaab5b4, 0.0001),
+    farWaterDepthTarget: new WebGLRenderTarget(1, 1),
+    farPreparationTarget: new WebGLRenderTarget(128, 72),
     sky,
     sun,
     ambient,
@@ -113,10 +213,13 @@ export function createAtmosphereRenderer(
     },
     composer: { passes: [], render: observe },
     renderer: {
+      autoClear: true,
       getPixelRatio: () => 1,
       shadowMap: {},
       getRenderTarget: () => null,
       setRenderTarget() {},
+      clear() {},
+      clearDepth() {},
       render() {
         observe();
         if (failDraw) throw new Error("destination draw failed");

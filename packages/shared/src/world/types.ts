@@ -1,6 +1,7 @@
 /** Public world contracts. Imports: world/types.ts, world/regions.ts,
  * world/world-context.ts and worldplan/index.ts. No runtime stand-ins. */
 import type { Aabb } from "../sdf/types.js";
+import type { PrepareFarArea } from "../worldgen/far/types.js";
 import type { GenerationVariant } from "./generation-variant.js";
 
 export type WorldKind = "main" | "test";
@@ -362,11 +363,31 @@ export interface CleanupCacheStats {
   readonly rawAreaColumnBufferBytes: number;
   readonly rawPreparedInstanceReferences: number;
 }
+/** Source-owned visibility authority for the unedited, in-frame surface base. */
+export interface FarVisibilityCertificate {
+  readonly layer: "surface";
+  /** True certifies an opaque, cavity-free base below the conservative surface
+   * band. Additive features cannot open it. Disable the SAME source flag used
+   * by far base-run generation when subterranean carvers invalidate this proof. */
+  readonly solidBase: boolean;
+  /** Existing recipe/LOD allowance shared with far sampling; not a claim of
+   * active 3D displacement. Keep max(2s, A+16) as the lower padding. */
+  readonly displacement: number;
+}
 /** Context point queries equal prepared queries at the default spacing of 1.
  * prepareArea caches deterministic features for a closed rectangle. Build it once
  * for a worker96x96 footprint and reuse in its voxel loops; do not clone it.
  * Other spacings agree at equal positions under the same feature LOD policy. */
 export interface WorldContext extends WorldAreaSampler {
+  /** Optional until an owner supplies certified far bands and owned fluid intervals. */
+  prepareFarArea?: PrepareFarArea;
+  /** Optional source authority for visibility only, never a truncated run band.
+   * Absent/false/other-layer certificates require full-height conservative boxes.
+   * conservativeBounds must include feature extents at every supported far LOD. */
+  farVisibilityCertificate?(
+    layer: LayerId,
+    bounds: XZBounds,
+  ): Readonly<FarVisibilityCertificate> | null;
   readonly worldgenVersion: number;
   readonly plan: WorldPlan | null;
   readonly regions: readonly RegionDefinition[];

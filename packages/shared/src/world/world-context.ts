@@ -1,6 +1,7 @@
-import { BLOCK_REGISTRY } from "../blocks/registry.js";
+import { BLOCK_REGISTRY, Block } from "../blocks/registry.js";
 import { IBARA_CELL_SIZE, IBARA_MAX_REACH } from "../features/ibara/cells.js";
 import { createNoise2Sample } from "../noise/opensimplex2.js";
+import { createFarArea } from "../worldgen/far/bands.js";
 import {
   allowsMainFloatingFeature,
   createCrumbCleanup,
@@ -27,18 +28,23 @@ import { createIbaraAnalytic } from "../worldgen/main/ibara-volcanic.js";
 import {
   createMainField,
   MAIN_COLUMN_LAYOUT,
+  MAX_FINE_RELIEF,
   MainColumn,
+  mainTerrainMaterial,
 } from "../worldgen/main/surface.js";
 import {
   Column,
   collectTestTrees,
   createColumnSample,
+  createVoxelSample as createTestVoxelSample,
   sampleTestColumn,
   sampleTestVoxel,
   TEST_POND,
+  testTerrainMaterial,
   testWorldSpawn,
 } from "../worldgen/test-world.js";
 import { WORLDGEN_VERSION } from "../worldgen/version.js";
+import { bridgeIntersects } from "../worldplan/bridges.js";
 import {
   createGeometryWorkspace,
   createRegionWeights,
@@ -50,10 +56,12 @@ import {
   WORLD_MAX_Y,
   WORLD_MIN_XZ,
   WORLD_MIN_Y,
+  WORLDSTONE_CEILING,
 } from "./constants.js";
 import { REGION_IDS, SURFACE_REGIONS } from "./regions.js";
 import type {
   CleanupCacheStats,
+  FarVisibilityCertificate,
   SkyInput,
   VoxelSample,
   WorldAreaSampler,
@@ -157,6 +165,19 @@ const TEST_NOISE_BOUND =
   1e-8;
 const TEST_LOW = Math.min(-4, 9 - 17.8 * TEST_NOISE_BOUND);
 const TEST_HIGH = Math.max(11.75, 9 + 17.8 * TEST_NOISE_BOUND);
+// One source of truth for both generated base runs and exposed-surface culling.
+// Current ground is opaque and monotone with additive features only. When a
+// source adds underground voids, disable its flag here for BOTH consumers.
+const TEST_FAR_SOURCE: Readonly<FarVisibilityCertificate> = Object.freeze({
+  layer: "surface",
+  solidBase: true,
+  displacement: 0,
+});
+const MAIN_FAR_SOURCE: Readonly<FarVisibilityCertificate> = Object.freeze({
+  layer: "surface",
+  solidBase: true,
+  displacement: MAX_FINE_RELIEF,
+});
 export function createWorldContext(options: WorldContextOptions): WorldContext {
   const { seed } = options;
   if (!Number.isInteger(seed) || seed < -2147483648 || seed > 4294967295)
@@ -240,6 +261,79 @@ export function createWorldContext(options: WorldContextOptions): WorldContext {
         return pointArea(x, z).skyInput(x, z, out, column);
       },
       prepareArea,
+      farVisibilityCertificate: (layer) =>
+        layer === TEST_FAR_SOURCE.layer ? TEST_FAR_SOURCE : null,
+      prepareFarArea(bounds, options) {
+        checkBounds(bounds);
+        checkSpacing(options.spacing, false);
+        const farNoise = createNoise2Sample();
+        const area = {
+          columns: TEST_LAYOUT,
+          createColumn: createColumnSample,
+          sampleColumn: (x: number, z: number, out: Float64Array) =>
+            sampleTestColumn(seed, x, z, out, farNoise),
+        };
+        const trees = collectTestTrees(
+          seed,
+          bounds.minX,
+          bounds.minZ,
+          bounds.maxX,
+          bounds.maxZ,
+        );
+        const sampledTrees =
+          options.spacing >= 8
+            ? []
+            : trees.map((tree) => ({ ...tree, trunkRadius: 0 }));
+        const farVoxel = createTestVoxelSample();
+        return createFarArea({
+          area,
+          options,
+          trees,
+          terrainHeightIndices: [Column.Height],
+          displacement: TEST_FAR_SOURCE.displacement,
+          solidBase: TEST_FAR_SOURCE.solidBase,
+          featureBounds: trees.map((tree) => ({
+            minX: tree.x - tree.crownRadius,
+            maxX: tree.x + tree.crownRadius,
+            minZ: tree.z - tree.crownRadius,
+            maxZ: tree.z + tree.crownRadius,
+            minY: tree.baseY,
+            maxY: tree.crownY + tree.crownHeight,
+          })),
+          surfaceBounds(_bounds, out) {
+            out.minSurfaceY = TEST_LOW;
+            out.maxSurfaceY = TEST_HIGH;
+            out.maxSolidY = TEST_HIGH;
+            out.maxFluidY = 0;
+            return out;
+          },
+          materialAt: (y, column) =>
+            testTerrainMaterial(y, column.terrainValues),
+          sample(x, y, z, out, column) {
+            sampleTestVoxel(
+              seed,
+              x,
+              y,
+              z,
+              farVoxel,
+              column.terrainValues,
+              sampledTrees,
+            );
+            out.density = farVoxel.density;
+            out.block = farVoxel.block;
+            out.fluid = farVoxel.fluid;
+            out.featureId = 0;
+            out.featureT = 0;
+            return out;
+          },
+          fluids(_x, _z, column, out) {
+            const top = Number(column.values[Column.WaterLevel]),
+              bottom = Number(column.values[Column.Height]);
+            if (Number.isFinite(top) && top > bottom)
+              out.push({ bottom, top, block: Block.Water });
+          },
+        });
+      },
       surfaceWeights: (_x, _z, out) => {
         out.count = 0;
         out.ids.fill(255);
@@ -596,6 +690,90 @@ export function createWorldContext(options: WorldContextOptions): WorldContext {
       return pointArea(x, z).skyInput(x, z, out, column);
     },
     prepareArea,
+    // Peak adjustment over a mixed natural/bridge column needs its own lower
+    // visibility proof. Keep these footprints fully conservative meanwhile.
+    farVisibilityCertificate: (layer, bounds) =>
+      layer === MAIN_FAR_SOURCE.layer &&
+      !plan.sites.bridges.some((bridge) => bridgeIntersects(bridge, bounds))
+        ? MAIN_FAR_SOURCE
+        : null,
+    prepareFarArea(bounds, options) {
+      checkBounds(bounds);
+      checkSpacing(options.spacing, true);
+      const area = {
+        columns: MAIN_COLUMN_LAYOUT,
+        createColumn: field.createColumn,
+        sampleColumn: field.sampleColumn,
+      };
+      const trees = collectMainTrees(field, bounds);
+      const sampledTrees =
+        options.spacing >= 8
+          ? []
+          : trees.map((tree) => ({ ...tree, trunkRadius: 0 }));
+      const ibara = mayContainIbara(bounds)
+        ? features
+          ? prepareMainIbara(volcanic, features, bounds, options.spacing)
+          : prepareIbaraSampler(
+              volcanic,
+              environment.weightAt,
+              createPrimitiveIbaraBatch(environment, bounds, options.spacing),
+              options.spacing,
+            )
+        : undefined;
+      const featureBounds = [
+        ...(ibara?.batch.instances.map((feature) => feature.bounds) ?? []),
+        ...trees.map((tree) => ({
+          minX: tree.x - tree.crownRadius,
+          maxX: tree.x + tree.crownRadius,
+          minZ: tree.z - tree.crownRadius,
+          maxZ: tree.z + tree.crownRadius,
+          minY: tree.baseY,
+          maxY: tree.crownY + tree.crownHeight,
+        })),
+      ];
+      return createFarArea({
+        area,
+        options,
+        trees,
+        featureBounds,
+        terrainHeightIndices: [MainColumn.Height, MainColumn.NaturalHeight],
+        displacement: MAIN_FAR_SOURCE.displacement,
+        // Current source has monotone ground and additive features only. This
+        // proof must be disabled/replaced when actual underground carvers ship.
+        solidBase: MAIN_FAR_SOURCE.solidBase,
+        surfaceBounds: field.surfaceBounds,
+        materialAt: (y, column) =>
+          y < WORLDSTONE_CEILING
+            ? Block.Worldstone
+            : mainTerrainMaterial(y, column.terrainValues),
+        sample: (x, y, z, out, column) =>
+          sampleMainVoxel(x, y, z, out, column.values, sampledTrees, ibara, {
+            column: column.terrainValues,
+            heightDelta: column.heightDelta,
+          }),
+        fluids(x, z, column, out) {
+          const top = Number(column.values[MainColumn.WaterLevel]),
+            bottom = Number(column.values[MainColumn.Height]);
+          if (ibara) {
+            const lava = ibara.sampleLava
+              ? ibara.sampleLava(x, z, ibara.lavaSample)
+              : volcanic.lavaQuery(x, z, ibara.lavaSample);
+            if (
+              lava.kind === "lava" &&
+              lava.bodyId !== 0 &&
+              lava.level > lava.bed
+            )
+              out.push({
+                bottom: lava.bed,
+                top: lava.level,
+                block: Block.Lava,
+              });
+          }
+          if (Number.isFinite(top) && top > bottom)
+            out.push({ bottom, top, block: Block.Water });
+        },
+      });
+    },
     surfaceWeights: (x, z, out) => surfaceWeights(seed, x, z, out, workspace),
     waterQuery: field.waterQuery,
     conservativeBounds: (bounds, out) => {

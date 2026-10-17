@@ -2,7 +2,7 @@ import {
   BloomEffect,
   EffectComposer,
   EffectPass,
-  RenderPass,
+  Pass,
   ToneMappingEffect,
   ToneMappingMode,
 } from "postprocessing";
@@ -13,6 +13,7 @@ import {
   Color,
   type ColorRepresentation,
   DepthTexture,
+  DirectionalLight,
   EdgesGeometry,
   FogExp2,
   Frustum,
@@ -35,18 +36,32 @@ import {
   type Texture,
   UnsignedIntType,
   Vector3,
+  Vector4,
   WebGLRenderer,
   WebGLRenderTarget,
 } from "three";
 import { SunLight } from "three/addons/lights/SunLight.js";
 import { Sky } from "three/addons/objects/Sky.js";
 import type { MeshPart } from "../../../shared/src/meshing/greedy.js";
+import type { LayerId, WorldBounds } from "../../../shared/src/world/types.js";
 import type { ToolState } from "../contracts/game-ui.js";
 import type { BodyState } from "../game/controller.js";
 import type { BlockHit, Point } from "../game/raycast.js";
 import { Avatar } from "./avatar.js";
+import type { ChunkStore } from "./chunk-store.js";
 import { CutCap } from "./cut-cap.js";
 import { BlockEffects } from "./effects.js";
+import { FarCutCaps } from "./far-cut-cap.js";
+import { FarTerrainCoverage } from "./far-terrain-coverage.js";
+import type { FarGpuPreparation } from "./far-terrain-renderer.js";
+import type { NearCoverageColumn } from "./far-terrain-selection.js";
+import {
+  columnFitsNearDepth,
+  DEFAULT_FAR_REACH,
+  FAR_NEAR_PLANE,
+  FarWorld,
+  renderOrigin,
+} from "./far-world.js";
 import {
   IbaraAtmosphere,
   ibaraFogDensity,
@@ -77,6 +92,27 @@ interface RenderChunk {
   readonly geometries: BufferGeometry[];
   readonly gpuBytes: number;
   readonly fluid: Mesh | null;
+  readonly result: ChunkResult;
+  readonly drawnParts: Set<number>;
+  readonly partCount: number;
+}
+interface FarResources {
+  readonly world: FarWorld;
+  readonly terrain: ReturnType<typeof createTerrainMaterials>;
+  readonly coverage: FarTerrainCoverage;
+  readonly caps: FarCutCaps;
+}
+/** Same input-buffer convention as postprocessing's public RenderPass. */
+class TerrainPass extends Pass {
+  constructor(
+    private readonly draw: (target: WebGLRenderTarget | null) => void,
+  ) {
+    super("Near and far terrain");
+    this.needsSwap = false;
+  }
+  override render(_renderer: WebGLRenderer, input: WebGLRenderTarget): void {
+    this.draw(this.renderToScreen ? null : input);
+  }
 }
 /** EffectPass owns its fullscreen scene through the supported protected API.
  * Release GPU bindings without disposing the pass/effect subscription graph. */
@@ -114,6 +150,29 @@ export class WorldRenderer {
   readonly scene = new Scene();
   readonly depthScene = new Scene();
   readonly marks = new Scene();
+  readonly farScene = new Scene();
+  readonly farCamera = new PerspectiveCamera(
+    40,
+    1,
+    FAR_NEAR_PLANE,
+    DEFAULT_FAR_REACH,
+  );
+  private readonly farResources = new Map<FarWorld, FarResources>();
+  private activeFar: FarWorld | null = null;
+  private readonly farSun = new DirectionalLight();
+  private readonly farAmbient = new HemisphereLight();
+  // Initial geometric checkpoint: preserve near calibration, reveal kilometre
+  // geometry through mild distance fog. Runtime aerial perspective follows later.
+  private readonly farFog = new FogExp2(0xaab5b4, 0.0001);
+  private readonly farWaterDepthTarget = new WebGLRenderTarget(1, 1, {
+    depthBuffer: true,
+    stencilBuffer: false,
+    depthTexture: new DepthTexture(1, 1, UnsignedIntType),
+  });
+  private readonly farPreparationTarget = new WebGLRenderTarget(128, 72, {
+    depthBuffer: true,
+    stencilBuffer: true,
+  });
   readonly avatar: Avatar;
   readonly effects = new BlockEffects();
   readonly rayPoint = new Vector3();
@@ -216,13 +275,15 @@ export class WorldRenderer {
     this.sun.shadow.normalBias = 0.025;
     this.scene.add(this.sun, this.ambient);
     this.scene.fog = this.fog;
+    this.farScene.add(this.farSun, this.farAmbient);
+    this.farScene.fog = this.farFog;
     this.setSkyUniform("cloudDensity", 0);
     this.sky.scale.setScalar(4500);
     this.setSkyUniform("turbidity", 3);
     this.setSkyUniform("rayleigh", 1.5);
     this.setSkyUniform("mieCoefficient", 0.004);
     this.setSkyUniform("mieDirectionalG", 0.8);
-    this.scene.add(this.sky);
+    this.farScene.add(this.sky);
     this.sky.material.uniforms.uDay = this.skyDay;
     this.sky.material.uniforms.uIbara = this.skyIbara;
     this.sky.material.uniforms.uIbaraZenith = this.skyIbaraZenith;
@@ -291,7 +352,9 @@ export class WorldRenderer {
       frameBufferType: HalfFloatType,
       multisampling: 0,
     });
-    this.composer.addPass(new RenderPass(this.scene, this.camera));
+    this.composer.addPass(
+      new TerrainPass((target) => this.drawTerrain(target)),
+    );
     const bloom = new BloomEffect({
       intensity: 0.2,
       luminanceThreshold: TERRAIN_BLOOM_THRESHOLD,
@@ -317,6 +380,8 @@ export class WorldRenderer {
   private lost = (event: Event): void => {
     event.preventDefault();
     this.contextLost = true;
+    for (const resource of this.farResources.values())
+      resource.world.contextLost();
     this.terrain.uniforms.waterDepthReady.value = 0;
     this.releaseContextBindings();
     this.onLost();
@@ -335,7 +400,12 @@ export class WorldRenderer {
         this.terrain.texture,
         ...this.drawnEffectTextures,
       ]);
-    for (const scene of [this.scene, this.depthScene, this.marks])
+    for (const scene of [
+      this.scene,
+      this.depthScene,
+      this.marks,
+      this.farScene,
+    ])
       scene.traverse((object) => {
         if (object instanceof InstancedMesh) {
           const morphTexture = object.morphTexture;
@@ -362,6 +432,13 @@ export class WorldRenderer {
     for (const texture of textures) texture.dispose();
     this.drawnEffectTextures.clear();
     this.waterDepthTarget.dispose();
+    this.farWaterDepthTarget.dispose();
+    this.farPreparationTarget.dispose();
+    for (const resource of this.farResources.values()) {
+      resource.coverage.mask.value.dispose();
+      resource.terrain.uniforms.waterDepthReady.value = 0;
+      for (const material of resource.terrain.materials) material.dispose();
+    }
     this.sun.shadow.dispose();
     this.composer.inputBuffer.dispose();
     this.composer.outputBuffer.dispose();
@@ -376,6 +453,8 @@ export class WorldRenderer {
     // The target object survives context loss, but its GPU depth does not.
     this.shadowMapInvalid = true;
     this.renderer.shadowMap.needsUpdate = true;
+    for (const resource of this.farResources.values())
+      resource.coverage.mask.value.needsUpdate = true;
     this.onRestored();
   };
   resize(): void {
@@ -389,6 +468,11 @@ export class WorldRenderer {
     const waterSize = this.terrain.uniforms.waterDepthSize.value;
     this.renderer.getDrawingBufferSize(waterSize);
     this.waterDepthTarget.setSize(waterSize.x, waterSize.y);
+    this.farWaterDepthTarget.setSize(waterSize.x, waterSize.y);
+    for (const resource of this.farResources.values()) {
+      resource.terrain.uniforms.waterDepthSize.value.copy(waterSize);
+      resource.terrain.uniforms.waterDepthReady.value = 0;
+    }
     this.terrain.uniforms.waterDepthReady.value = 0;
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
@@ -403,6 +487,7 @@ export class WorldRenderer {
     const group = new Group(),
       depth = new Group(),
       geometries: BufferGeometry[] = [];
+    const drawnParts = new Set<number>();
     let bytes = 0,
       fluid: Mesh | null = null;
     group.position.set(
@@ -424,6 +509,9 @@ export class WorldRenderer {
         part.featureIdParts.byteLength +
         part.indices.byteLength;
       const mesh = new Mesh(g, this.terrain.materials[index]);
+      mesh.onAfterRender = () => {
+        drawnParts.add(index);
+      };
       mesh.castShadow = index < 2 || index === 4;
       mesh.receiveShadow = true;
       group.add(mesh);
@@ -485,6 +573,10 @@ export class WorldRenderer {
       geometries,
       gpuBytes: bytes + 32768,
       fluid,
+      result,
+      drawnParts,
+      partCount: result.mesh.parts.filter((part) => part.indices.length > 0)
+        .length,
     });
     group.visible = depth.visible = result.world.id === this.worldId;
     cap.mesh.visible &&= result.world.id === this.worldId;
@@ -510,6 +602,7 @@ export class WorldRenderer {
     // not discard an in-progress blend after a failed travel transaction.
     if (this.atmosphere) this.setTime(this.airHours);
     this.ibaraEffects?.setWorld(worldId);
+    this.useFar(this.activeFar);
     for (const chunk of this.chunks.values()) {
       const active = chunk.worldId === worldId;
       chunk.group.visible = chunk.depth.visible = active;
@@ -521,14 +614,314 @@ export class WorldRenderer {
   }
   removeWorld(worldId: number): void {
     this.atmosphere?.remove(worldId);
+    for (const world of this.farResources.keys())
+      if (world.worldId === worldId) this.releaseFar(world);
     for (const key of [...this.chunks.keys()])
       if (key.startsWith(`${worldId}:`))
         this.remove(key.slice(key.indexOf(":") + 1), worldId);
   }
+  createFarWorld(near: ChunkStore, layer: LayerId = "surface"): FarWorld {
+    const coverage = new FarTerrainCoverage();
+    const terrain = createTerrainMaterials(this.clip, {
+      mode: "far",
+      shared: this.terrain,
+      coverage,
+    });
+    const caps = new FarCutCaps({
+      color: this.colors.cap,
+      coverage,
+      origin: this.terrain.uniforms.origin,
+    });
+    let world: FarWorld;
+    try {
+      world = new FarWorld(near, layer, {
+        materials: terrain.materials,
+        caps,
+        onNearCoverage: (columns) => coverage.update(columns),
+        prepareGpu: (probe) => this.prepareFarGpu(world, probe),
+      });
+    } catch (error) {
+      caps.dispose();
+      terrain.dispose();
+      coverage.dispose();
+      throw error;
+    }
+    terrain.uniforms.waterDepth.value = this.farWaterDepthTarget.depthTexture;
+    terrain.uniforms.waterDepthSize.value.copy(
+      this.terrain.uniforms.waterDepthSize.value,
+    );
+    this.farResources.set(world, { world, terrain, caps, coverage });
+    this.farScene.add(world.renderer.group);
+    world.renderer.group.visible = false;
+    return world;
+  }
+  useFar(world: FarWorld | null): void {
+    if (world && !this.farResources.has(world))
+      throw new Error("Unknown far world");
+    this.activeFar = world;
+    for (const resource of this.farResources.values())
+      resource.world.renderer.group.visible =
+        resource.world === world && world.worldId === this.worldId;
+  }
+  releaseFar(world: FarWorld): void {
+    const resource = this.farResources.get(world);
+    if (!resource) return;
+    if (this.activeFar === world) this.activeFar = null;
+    this.farScene.remove(world.renderer.group);
+    world.dispose();
+    resource.caps.dispose();
+    resource.terrain.dispose();
+    resource.coverage.dispose();
+    this.farResources.delete(world);
+  }
+  private nearCoverage(near: ChunkStore): NearCoverageColumn[] {
+    if (near.world.id !== this.worldId) return [];
+    const columns = new Map<string, { cx: number; cz: number }>();
+    for (const chunk of near.chunks.values())
+      columns.set(`${chunk.address.cx},${chunk.address.cz}`, chunk.address);
+    const result: NearCoverageColumn[] = [];
+    for (const { cx, cz } of columns.values()) {
+      const bounds: WorldBounds = {
+        minSurfaceY: 0,
+        maxSurfaceY: 0,
+        maxSolidY: 0,
+        maxFluidY: 0,
+      };
+      near.context.conservativeBounds(
+        {
+          minX: cx * 32,
+          minZ: cz * 32,
+          maxX: (cx + 1) * 32,
+          maxZ: (cz + 1) * 32,
+        },
+        bounds,
+      );
+      let low = Math.max(-48, Math.floor((bounds.minSurfaceY - 3) / 32));
+      let high = Math.min(
+        31,
+        Math.floor(
+          Math.max(bounds.maxSurfaceY, bounds.maxSolidY, bounds.maxFluidY) / 32,
+        ),
+      );
+      for (const edit of near.edits.values())
+        if (Math.floor(edit.x / 32) === cx && Math.floor(edit.z / 32) === cz) {
+          low = Math.min(low, Math.floor(edit.y / 32));
+          high = Math.max(high, Math.floor(edit.y / 32));
+        }
+      // If the cut exposes a deeper band, never mask it with surface-only chunks.
+      if (Number.isFinite(this.cut))
+        low = Math.max(-48, Math.min(low, Math.floor(this.cut / 32)));
+      let complete = true;
+      for (let cy = low; cy <= high; cy++) {
+        const key = `${cx},${cy},${cz}`;
+        const stored = near.chunks.get(key);
+        const drawn = this.chunks.get(`${near.world.id}:${key}`);
+        if (
+          !stored?.result ||
+          stored.state !== "visible" ||
+          stored.result.revision !== stored.revision ||
+          !drawn ||
+          drawn.result !== stored.result ||
+          !drawn.group.visible ||
+          drawn.drawnParts.size !== drawn.partCount
+        ) {
+          complete = false;
+          break;
+        }
+      }
+      if (!complete) continue;
+      const column: NearCoverageColumn = {
+        minX: cx * 32,
+        maxX: (cx + 1) * 32,
+        minZ: cz * 32,
+        maxZ: (cz + 1) * 32,
+        minY: low * 32,
+        maxY: Math.min((high + 1) * 32, this.cut),
+        ready: true,
+        drawn: true,
+      };
+      if (
+        column.maxY >= column.minY &&
+        columnFitsNearDepth(column, this.camera)
+      )
+        result.push(column);
+    }
+    return result;
+  }
+  private syncFarView(cut = this.cut): void {
+    this.farCamera.position.copy(this.camera.position);
+    this.farCamera.quaternion.copy(this.camera.quaternion);
+    this.farCamera.fov = this.camera.fov;
+    this.farCamera.aspect = this.camera.aspect;
+    this.farCamera.near = FAR_NEAR_PLANE;
+    this.farCamera.far = this.activeFar?.reach ?? DEFAULT_FAR_REACH;
+    this.farCamera.updateProjectionMatrix();
+    this.farCamera.updateMatrixWorld();
+    const origin = renderOrigin(this.camera.position);
+    this.terrain.uniforms.origin.value.set(origin.x, origin.y, origin.z);
+    this.activeFar?.setPresentation(
+      origin,
+      cut,
+      this.nearCoverage(this.activeFar.near),
+    );
+  }
+  /** Staging crosses a real synchronous draw boundary, including empty tiles.
+   * A private target and full public state restoration preserve the source view. */
+  private prepareFarGpu(world: FarWorld, probe: FarGpuPreparation): void {
+    if (this.contextLost)
+      throw new Error("WebGL context lost during far preparation");
+    const resource = this.farResources.get(world);
+    if (!resource) throw new Error("Far preparation owner missing");
+    const target = this.renderer.getRenderTarget();
+    const viewport = this.renderer.getViewport(new Vector4());
+    const scissor = this.renderer.getScissor(new Vector4());
+    const scissorTest = this.renderer.getScissorTest();
+    const autoClear = this.renderer.autoClear;
+    const origin = this.terrain.uniforms.origin.value.clone();
+    const waterReady = resource.terrain.uniforms.waterDepthReady.value;
+    const clipHeight = this.clip.constant;
+    const uniformCut = this.terrain.uniforms.cut.value;
+    const skyPosition = this.sky.position.clone();
+    const shadowAuto = this.renderer.shadowMap.autoUpdate;
+    const shadowUpdate = this.renderer.shadowMap.needsUpdate;
+    const visibility = [...this.farResources.values()].map((entry) => ({
+      group: entry.world.renderer.group,
+      visible: entry.world.renderer.group.visible,
+    }));
+    const culling = probe.batches.map((batch) => ({
+      batch,
+      value: batch.frustumCulled,
+    }));
+    try {
+      const nextOrigin = renderOrigin(world.camera.position);
+      world.renderer.setOrigin(nextOrigin.x, nextOrigin.y, nextOrigin.z);
+      this.terrain.uniforms.origin.value.set(
+        nextOrigin.x,
+        nextOrigin.y,
+        nextOrigin.z,
+      );
+      for (const entry of visibility)
+        entry.group.visible = entry.group === probe.group;
+      for (const entry of culling) entry.batch.frustumCulled = false;
+      resource.terrain.uniforms.waterDepthReady.value = 0;
+      // A candidate's first plan and private draw use its cut even while a
+      // different source view remains active on the visible framebuffer.
+      this.clip.constant = Number.isFinite(world.cutHeight)
+        ? world.cutHeight
+        : 100000;
+      this.terrain.uniforms.cut.value = this.clip.constant;
+      this.sky.position.copy(world.camera.position);
+      this.renderer.shadowMap.autoUpdate = false;
+      this.renderer.shadowMap.needsUpdate = false;
+      this.renderer.autoClear = true;
+      this.renderer.setScissorTest(false);
+      this.renderer.setRenderTarget(this.farPreparationTarget);
+      this.renderer.render(this.farScene, world.camera);
+      const gl = this.renderer.getContext();
+      if (gl.isContextLost() || gl.getError() !== gl.NO_ERROR)
+        throw new Error("Far geometry GPU preparation failed");
+    } finally {
+      resource.terrain.uniforms.waterDepthReady.value = waterReady;
+      this.clip.constant = clipHeight;
+      this.terrain.uniforms.cut.value = uniformCut;
+      for (const entry of visibility) entry.group.visible = entry.visible;
+      for (const entry of culling) entry.batch.frustumCulled = entry.value;
+      this.terrain.uniforms.origin.value.copy(origin);
+      this.sky.position.copy(skyPosition);
+      this.renderer.shadowMap.autoUpdate = shadowAuto;
+      this.renderer.shadowMap.needsUpdate = shadowUpdate;
+      this.renderer.autoClear = autoClear;
+      this.renderer.setRenderTarget(target);
+      this.renderer.setViewport(viewport);
+      this.renderer.setScissor(scissor);
+      this.renderer.setScissorTest(scissorTest);
+    }
+  }
+  private drawTerrain(target: WebGLRenderTarget | null): void {
+    const background = this.scene.background;
+    const autoClear = this.renderer.autoClear;
+    try {
+      this.renderer.autoClear = false;
+      this.scene.background = null;
+      this.renderer.setRenderTarget(target);
+      this.renderer.clear(true, true, true);
+      this.renderer.render(this.farScene, this.farCamera);
+      this.renderer.clearDepth();
+      this.renderer.render(this.scene, this.camera);
+    } finally {
+      this.scene.background = background;
+      this.renderer.autoClear = autoClear;
+    }
+  }
+  private prepareFarWaterDepth(): void {
+    const resource = this.activeFar && this.farResources.get(this.activeFar);
+    if (!resource) return;
+    const uniforms = resource.terrain.uniforms;
+    uniforms.waterDepthReady.value = 0;
+    const target = this.renderer.getRenderTarget();
+    const autoClear = this.renderer.autoClear;
+    const background = this.farScene.background;
+    const sky = this.sky.visible;
+    const saved = new Map<
+      Material,
+      { colorWrite: boolean; visible: boolean }
+    >();
+    for (const material of resource.terrain.materials)
+      saved.set(material, {
+        colorWrite: material.colorWrite,
+        visible: material.visible,
+      });
+    // Keep the original vertex/fragment hooks: overrideMaterial would lose
+    // batching transforms, coverage discard, cutout alpha and cap occupancy.
+    this.activeFar?.renderer.group.traverse((object) => {
+      if (!(object instanceof Mesh)) return;
+      for (const material of Array.isArray(object.material)
+        ? object.material
+        : [object.material]) {
+        if (!saved.has(material))
+          saved.set(material, {
+            colorWrite: material.colorWrite,
+            visible: material.visible,
+          });
+        material.colorWrite = false;
+      }
+    });
+    try {
+      for (const index of [2, 3]) {
+        const material = resource.terrain.materials[index];
+        if (material) material.visible = false;
+      }
+      this.sky.visible = false;
+      this.farScene.background = null;
+      this.renderer.autoClear = true;
+      waterDepthRange(
+        this.farCamera.near,
+        this.farCamera.far,
+        uniforms.waterDepthLinearize.value,
+      );
+      this.renderer.setRenderTarget(this.farWaterDepthTarget);
+      this.renderer.render(this.farScene, this.farCamera);
+    } finally {
+      for (const [material, value] of saved) {
+        material.colorWrite = value.colorWrite;
+        material.visible = value.visible;
+      }
+      this.sky.visible = sky;
+      this.farScene.background = background;
+      this.renderer.setRenderTarget(target);
+      this.renderer.autoClear = autoClear;
+    }
+    uniforms.waterDepthReady.value = 1;
+  }
   /** Draw every destination mesh into an offscreen target before atomic commit.
    * Compile alone does not upload vertex/index buffers. This preserves the visible
    * source framebuffer and detects a lost context or failed destination draw. */
-  prepareView(worldId: number, position: Point, focus: Point): void {
+  prepareView(
+    worldId: number,
+    position: Point,
+    focus: Point,
+    far = this.activeFar,
+  ): void {
     if (this.contextLost)
       throw new Error("WebGL context lost during view preparation");
     const oldWorld = this.worldId,
@@ -538,7 +931,9 @@ export class WorldRenderer {
       oldWaterDepthReady = this.terrain.uniforms.waterDepthReady.value,
       restoreAir = this.atmosphere?.checkpoint(),
       oldAirSnap = this.airSnap,
-      oldAirSnapView = this.airSnapView;
+      oldAirSnapView = this.airSnapView,
+      oldFar = this.activeFar,
+      oldFarCut = oldFar?.cutHeight ?? this.cut;
     const target = new WebGLRenderTarget(128, 72, {
       depthBuffer: true,
       stencilBuffer: true,
@@ -554,12 +949,15 @@ export class WorldRenderer {
       // texture belonging to the source view; normal render refreshes it first.
       this.terrain.uniforms.waterDepthReady.value = 0;
       this.setWorld(worldId);
+      this.useFar(far);
       this.setView(position, focus, true);
       this.terrain.uniforms.origin.value.set(
         Math.floor(position.x / 1024) * 1024,
         0,
         Math.floor(position.z / 1024) * 1024,
       );
+      this.syncFarView();
+      this.prepareFarWaterDepth();
       this.ibaraEffects?.update(
         this.terrain.uniforms.display.value,
         this.cut,
@@ -580,7 +978,7 @@ export class WorldRenderer {
       for (const item of screenPasses) item.pass.renderToScreen = false;
       this.composer.render(0);
       this.renderer.setRenderTarget(target);
-      this.renderer.render(this.scene, this.camera);
+      this.drawTerrain(target);
       this.renderer.render(this.depthScene, this.camera);
       this.renderer.render(this.marks, this.camera);
       const gl = this.renderer.getContext();
@@ -597,7 +995,9 @@ export class WorldRenderer {
       this.camera.quaternion.copy(oldQuaternion);
       this.camera.updateMatrixWorld();
       this.terrain.uniforms.origin.value.copy(oldOrigin);
+      this.useFar(oldFar);
       this.setWorld(oldWorld);
+      this.syncFarView(oldFarCut);
       if (restoreAir) {
         restoreAir();
         // Reapply the saved blend at the unchanged display time without
@@ -621,6 +1021,7 @@ export class WorldRenderer {
     this.sky.position.copy(this.camera.position);
     this.camera.lookAt(focus.x, focus.y, focus.z);
     this.camera.updateMatrixWorld();
+    this.syncFarView();
     if (this.atmosphere) {
       this.airSnap ||= this.airSnapView || settleAtmosphere;
       this.airSnapView = false;
@@ -658,11 +1059,9 @@ export class WorldRenderer {
     this.terrain.uniforms.cut.value = this.clip.constant;
     this.terrain.uniforms.display.value = displayMs;
     this.terrain.uniforms.origin.value.set(
-      Math.floor((this.postcard ? this.camera.position.x : body.x) / 1024) *
-        1024,
+      Math.floor(this.camera.position.x / 1024) * 1024,
       0,
-      Math.floor((this.postcard ? this.camera.position.z : body.z) / 1024) *
-        1024,
+      Math.floor(this.camera.position.z / 1024) * 1024,
     );
     const bodyDistance = Math.hypot(
       this.camera.position.x - body.x,
@@ -697,6 +1096,9 @@ export class WorldRenderer {
       c.border.visible = tools.chunkBorders && c.worldId === this.worldId;
     }
     for (const m of this.terrain.materials) m.wireframe = tools.wireframe;
+    for (const resource of this.farResources.values())
+      for (const material of resource.terrain.materials)
+        material.wireframe = tools.wireframe;
     this.fogEnabled = tools.fog;
     this.fog.density = tools.fog ? 0.004 : 0;
     this.sun.shadow.intensity = tools.shadows ? 1 : 0;
@@ -779,6 +1181,15 @@ export class WorldRenderer {
       ? 0.004 + (ibaraFogDensity(this.camera.position.y) - 0.004) * weight
       : 0;
     this.scene.background = this.fog.color;
+    this.farScene.background = this.fog.color;
+    this.farFog.color.copy(this.fog.color);
+    this.farFog.density = this.fogEnabled ? 0.0001 : 0;
+    this.farSun.position.copy(this.sun.position);
+    this.farSun.color.copy(this.sun.color);
+    this.farSun.intensity = this.sun.intensity;
+    this.farAmbient.color.copy(this.ambient.color);
+    this.farAmbient.groundColor.copy(this.ambient.groundColor);
+    this.farAmbient.intensity = this.ambient.intensity;
     this.terrain.uniforms.night.value = 1 - day;
   }
   setHud(visible: boolean): void {
@@ -800,6 +1211,7 @@ export class WorldRenderer {
     this.ibaraEffects?.setMode(this.viewMode ?? "normal", active);
     this.camera.fov = active ? 70 : 40;
     this.camera.updateProjectionMatrix();
+    this.syncFarView();
     this.resize();
   }
   compile(): void {
@@ -850,6 +1262,7 @@ export class WorldRenderer {
     }
     try {
       this.renderer.compile(this.scene, this.camera);
+      this.renderer.compile(this.farScene, this.farCamera);
       this.renderer.compile(this.depthScene, this.camera);
       this.renderer.compile(this.marks, this.camera);
       this.ready = true;
@@ -862,6 +1275,8 @@ export class WorldRenderer {
   render(): void {
     if (!this.ready || this.contextLost) return;
     this.renderer.info.reset();
+    this.syncFarView();
+    this.prepareFarWaterDepth();
     this.prepareWaterDepth();
     this.composer.render(0);
     this.shadowMapInvalid = false;
@@ -939,6 +1354,18 @@ export class WorldRenderer {
   get statistics(): { draws: number; triangles: number; memory: number } {
     let memory = this.terrain.texture.image.data?.byteLength ?? 0;
     memory += this.waterDepthTarget.width * this.waterDepthTarget.height * 8;
+    memory +=
+      this.farWaterDepthTarget.width * this.farWaterDepthTarget.height * 8;
+    memory +=
+      this.farPreparationTarget.width * this.farPreparationTarget.height * 8;
+    for (const resource of this.farResources.values()) {
+      const stats = resource.world.renderer.statistics(
+        this.renderer.extensions.has("WEBGL_multi_draw"),
+      );
+      // Geometry has both CPU recovery arrays and a GPU copy; retained runs are CPU only.
+      memory += stats.geometryBytes * 2 + stats.runBytes;
+      memory += resource.coverage.mask.value.image.data?.byteLength ?? 0;
+    }
     memory += this.ibaraEffects.statistics.memory;
     for (const c of this.chunks.values()) memory += c.gpuBytes;
     return {
@@ -959,6 +1386,7 @@ export class WorldRenderer {
     );
   }
   dispose(): void {
+    for (const world of [...this.farResources.keys()]) this.releaseFar(world);
     this.atmosphere?.clear();
     this.drawnEffectTextures?.forEach((texture) => {
       texture.dispose();
@@ -981,6 +1409,8 @@ export class WorldRenderer {
     this.sky.geometry.dispose();
     this.sky.material.dispose();
     this.waterDepthTarget.dispose();
+    this.farWaterDepthTarget.dispose();
+    this.farPreparationTarget.dispose();
     this.composer.dispose();
     this.renderer.dispose();
   }

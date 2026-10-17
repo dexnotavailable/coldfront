@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { WorldSession } from "../../../client/src/contracts/game-ui.js";
+import type { FarWorld } from "../../../client/src/engine/far-world.js";
 import type { VoxelEdit } from "../../../client/src/engine/worker-protocol.js";
 import type { WorldPostcard } from "../../../client/src/game/postcard.js";
 import { Block } from "../../../shared/src/blocks/registry.js";
@@ -99,54 +100,60 @@ vi.mock("../../../client/src/game/world-map.js", () => ({
   topRegions: () => [],
   regionAt: () => null,
 }));
-vi.mock("../../../client/src/engine/chunk-store.js", () => ({
-  ChunkStore: class {
-    edits = new Map<number, VoxelEdit>();
-    chunks = new Map();
-    uploads = [];
-    workers = { queues: { generate: 0, light: 0, mesh: 0 } };
-    workTotals = { generate: 0, light: 0, mesh: 0 };
-    memoryBytes = 0;
-    queueSize = 0;
-    constructor(
-      readonly world: WorldSession,
-      readonly context: WorldContext,
-      _plan: unknown,
-      edits: VoxelEdit[],
-    ) {
-      edits.forEach((edit, i) => {
-        this.edits.set(i, edit);
-      });
-    }
-    get = (x: number, y: number, z: number) =>
-      [...this.edits.values()].find(
-        (edit) => edit.x === x && edit.y === y && edit.z === z,
-      )?.block ?? (y < 0 ? Block.Stone : Block.Air);
-    surface = () => 0;
-    lightAt() {
-      return 0;
-    }
-    async requestView() {
-      await probe.hold;
-      return [];
-    }
-    async requestCamera(view: WorldPostcard) {
-      probe.views.push(view);
-      await probe.hold;
-      return [];
-    }
-    hasView() {
-      return probe.uploaded;
-    }
-    async settled() {}
-    retain() {
-      return [];
-    }
-    suspendWorkers() {}
-    async resumeWorkers() {}
-    dispose() {}
-  },
-}));
+vi.mock(
+  "../../../client/src/engine/chunk-store.js",
+  async (importOriginal) => ({
+    ...(await importOriginal<
+      typeof import("../../../client/src/engine/chunk-store.js")
+    >()),
+    ChunkStore: class {
+      edits = new Map<number, VoxelEdit>();
+      chunks = new Map();
+      uploads = [];
+      workers = { queues: { generate: 0, light: 0, mesh: 0 } };
+      workTotals = { generate: 0, light: 0, mesh: 0 };
+      memoryBytes = 0;
+      queueSize = 0;
+      constructor(
+        readonly world: WorldSession,
+        readonly context: WorldContext,
+        _plan: unknown,
+        edits: VoxelEdit[],
+      ) {
+        edits.forEach((edit, i) => {
+          this.edits.set(i, edit);
+        });
+      }
+      get = (x: number, y: number, z: number) =>
+        [...this.edits.values()].find(
+          (edit) => edit.x === x && edit.y === y && edit.z === z,
+        )?.block ?? (y < 0 ? Block.Stone : Block.Air);
+      surface = () => 0;
+      lightAt() {
+        return 0;
+      }
+      async requestView() {
+        await probe.hold;
+        return [];
+      }
+      async requestCamera(view: WorldPostcard) {
+        probe.views.push(view);
+        await probe.hold;
+        return [];
+      }
+      hasView() {
+        return probe.uploaded;
+      }
+      async settled() {}
+      retain() {
+        return [];
+      }
+      suspendWorkers() {}
+      async resumeWorkers() {}
+      dispose() {}
+    },
+  }),
+);
 
 // Actual renderer atmosphere methods, with only GPU/effects seams replaced.
 // The runtime itself decides which candidate/store to propagate and when.
@@ -155,12 +162,32 @@ vi.mock("../../../client/src/engine/renderer.js", async (importOriginal) => {
     await importOriginal<
       typeof import("../../../client/src/engine/renderer.js")
     >();
-  const { createAtmosphereRenderer } = await import(
+  const { createAtmosphereRenderer, createFarWorldFixture } = await import(
     "./ibara-atmosphere-fixture.js"
   );
   return {
     WorldRenderer: function RendererFixture() {
       const f = createAtmosphereRenderer(WorldRenderer);
+      const farWorlds = new Set<FarWorld>();
+      // This suite exercises real atmosphere transactions; far worker jobs and
+      // GPU batches remain an explicit empty lifecycle seam, as near jobs do.
+      f.renderer.createFarWorld = (near, layer = "surface") => {
+        const far = createFarWorldFixture(near, layer);
+        farWorlds.add(far);
+        return far;
+      };
+      f.renderer.useFar = (far) => {
+        Object.assign(f.renderer, { activeFar: far });
+      };
+      f.renderer.releaseFar = (far) => {
+        if (
+          (f.renderer as unknown as { activeFar: FarWorld | null })
+            .activeFar === far
+        )
+          f.renderer.useFar(null);
+        far.dispose();
+        farWorlds.delete(far);
+      };
       probe.renderer = f.renderer;
       probe.snapshot = f.snapshot;
       Object.defineProperty(f.renderer, "statistics", {
@@ -178,7 +205,10 @@ vi.mock("../../../client/src/engine/renderer.js", async (importOriginal) => {
         origin: { x: 0, y: 10, z: 0 },
         direction: { x: 0, y: -1, z: 0 },
       });
-      f.renderer.dispose = () => f.atmosphere.clear();
+      f.renderer.dispose = () => {
+        for (const far of [...farWorlds]) f.renderer.releaseFar(far);
+        f.atmosphere.clear();
+      };
       return f.renderer;
     },
   };
@@ -192,7 +222,11 @@ import {
 const handles: GameHandle[] = [];
 async function boot(seed = 1) {
   const game = createGameHandle(
-    { style: { removeProperty() {} } } as unknown as HTMLCanvasElement,
+    {
+      clientWidth: 1280,
+      clientHeight: 720,
+      style: { removeProperty() {} },
+    } as unknown as HTMLCanvasElement,
     {
       colors: { ink: "#000", steel: "#aaa", cap: "#222" },
       keyboardLocked: () => false,
@@ -225,6 +259,7 @@ beforeEach(() => {
   probe.failPreparation = false;
   vi.stubGlobal("requestAnimationFrame", () => 1);
   vi.stubGlobal("cancelAnimationFrame", () => {});
+  vi.stubGlobal("devicePixelRatio", 1);
   vi.stubGlobal("localStorage", { getItem: () => null, setItem() {} });
 });
 afterEach(async () => {

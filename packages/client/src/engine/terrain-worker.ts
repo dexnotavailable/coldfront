@@ -9,6 +9,7 @@ import {
   relightEdits,
   solveLight,
 } from "../../../shared/src/lighting/flood.js";
+import { meshFarTile } from "../../../shared/src/meshing/columns.js";
 import { meshChunk } from "../../../shared/src/meshing/greedy.js";
 import {
   CHUNK_VOLUME,
@@ -27,6 +28,9 @@ import type {
 } from "../../../shared/src/world/types.js";
 import { createWorldContext } from "../../../shared/src/world/world-context.js";
 import type { VoxelChunk } from "../../../shared/src/worldgen/chunk.js";
+import { generateFarTile } from "../../../shared/src/worldgen/far/columns.js";
+import { FarEditIndex } from "../../../shared/src/worldgen/far/edits.js";
+import { FarCapacityError } from "../../../shared/src/worldgen/far/types.js";
 import { generateWorldChunk } from "../../../shared/src/worldgen/main/chunk.js";
 import type { WorldSession } from "../contracts/game-ui.js";
 import { sameSession } from "../game/session.js";
@@ -36,6 +40,8 @@ import {
   type Address,
   chunkKey,
   editKey,
+  type FarWorkerRequest,
+  farTransfers,
   meshTransfers,
   type VoxelEdit,
   type WorkerFeatureCacheStats,
@@ -56,6 +62,8 @@ interface LitCache {
 let world: WorldSession | null = null;
 let context: WorldContext;
 const edits = new Map<number, number>();
+const farEdits = new Map<number, VoxelEdit>();
+let farEditIndex: FarEditIndex | null = null;
 const columns = new Map<string, ColumnCache>();
 const volumes = new Map<string, LitCache>();
 const blockSamples = new BlockSampleCache();
@@ -196,6 +204,8 @@ function applyEdit(edit: VoxelEdit): void {
   if (!insideFrame(edit.x, edit.y, edit.z))
     throw new RangeError("Edit outside world frame");
   edits.set(editKey(edit.x, edit.y, edit.z), edit.block);
+  farEdits.set(editKey(edit.x, edit.y, edit.z), { ...edit });
+  farEditIndex = null;
   for (const [key, cached] of volumes) {
     const x = edit.x - cached.address.cx * 32 + 32,
       y = edit.y - cached.address.cy * 32 + 32,
@@ -261,6 +271,30 @@ function generate(request: Extract<WorkerRequest, { type: "chunk" }>): void {
       }
   const mesh = meshChunk(cache.chunk.haloBlocks, light, cache.chunk.featureIds),
     t3 = performance.now();
+  const { cacheBytes, blockSampleCacheStats, featureCacheStats } =
+    retainedStatistics();
+  const result: WorkerResponse = {
+    type: "chunk",
+    world: request.world,
+    id: request.id,
+    address: request.address,
+    revision: request.revision,
+    blocks: core,
+    light: coreLight,
+    mesh,
+    regionColor: regionColor(request.address),
+    timings: { generate: t1 - t0, light: t2 - t1, mesh: t3 - t2 },
+    cacheBytes,
+    blockSampleCacheStats,
+    ...(featureCacheStats ? { featureCacheStats } : {}),
+  };
+  self.postMessage(result, {
+    transfer: [core.buffer, coreLight.buffer, ...meshTransfers(mesh)],
+  });
+}
+/** Exact retained-array accounting shared by both result types. Far runs and
+ * mesh arrays leave the worker, and edit maps/slabs are not typed arrays. */
+function retainedStatistics() {
   const blockSampleCacheStats = blockSamples.statistics();
   let cacheBytes = emissions.byteLength + blockSampleCacheStats.typedArrayBytes;
   for (const column of columns.values())
@@ -281,24 +315,57 @@ function generate(request: Extract<WorkerRequest, { type: "chunk" }>): void {
       featureCacheStats?(): WorkerFeatureCacheStats;
     }
   ).featureCacheStats?.();
-  const result: WorkerResponse = {
-    type: "chunk",
-    world: request.world,
-    id: request.id,
-    address: request.address,
-    revision: request.revision,
-    blocks: core,
-    light: coreLight,
-    mesh,
-    regionColor: regionColor(request.address),
-    timings: { generate: t1 - t0, light: t2 - t1, mesh: t3 - t2 },
-    cacheBytes,
-    blockSampleCacheStats,
-    ...(featureCacheStats ? { featureCacheStats } : {}),
-  };
-  self.postMessage(result, {
-    transfer: [core.buffer, coreLight.buffer, ...meshTransfers(mesh)],
-  });
+  return { cacheBytes, blockSampleCacheStats, featureCacheStats };
+}
+function generateFar(request: FarWorkerRequest): void {
+  const progress = (stage: "generating" | "generated" | "meshing") =>
+    self.postMessage({
+      type: "progress",
+      world: request.world,
+      id: request.id,
+      stage,
+    } satisfies WorkerResponse);
+  progress("generating");
+  const t0 = performance.now();
+  farEditIndex ??= new FarEditIndex(farEdits.values());
+  const runs = generateFarTile(
+    context,
+    {
+      address: request.address,
+      layer: request.layer,
+      revision: request.revision,
+    },
+    farEditIndex,
+  );
+  const t1 = performance.now();
+  progress("generated");
+  progress("meshing");
+  const mesh = meshFarTile(runs);
+  const t2 = performance.now();
+  const { cacheBytes, blockSampleCacheStats, featureCacheStats } =
+    retainedStatistics();
+  self.postMessage(
+    {
+      type: "far",
+      world: request.world,
+      id: request.id,
+      address: request.address,
+      layer: request.layer,
+      revision: request.revision,
+      runs,
+      mesh,
+      timings: { generate: t1 - t0, mesh: t2 - t1 },
+      cacheBytes,
+      blockSampleCacheStats,
+      ...(featureCacheStats ? { featureCacheStats } : {}),
+      farCacheStats: {
+        editCount: farEdits.size,
+        retainedTiles: 0,
+        typedArrayBytes: 0,
+      },
+    } satisfies WorkerResponse,
+    { transfer: farTransfers(runs, mesh) },
+  );
 }
 function regionColor(address: Address): readonly [number, number, number] {
   if (!context.regions.length) return [98, 118, 68];
@@ -341,22 +408,45 @@ self.onmessage = (event: MessageEvent<WorkerRequest>) => {
         });
       world = message.world;
       edits.clear();
+      farEdits.clear();
+      farEditIndex = null;
       columns.clear();
       volumes.clear();
       blockSamples.clear();
-      for (const edit of message.edits)
+      for (const edit of message.edits) {
         edits.set(editKey(edit.x, edit.y, edit.z), edit.block);
+        farEdits.set(editKey(edit.x, edit.y, edit.z), { ...edit });
+      }
       self.postMessage({ type: "ready", world } satisfies WorkerResponse);
     } else if (sameSession(world, message.world)) {
       if (message.type === "edit") applyEdit(message.edit);
+      else if (message.type === "far") generateFar(message);
       else generate(message);
     }
   } catch (error) {
     self.postMessage({
       type: "error",
       world: message.world,
-      id: message.type === "chunk" ? message.id : -1,
+      id: message.type === "chunk" || message.type === "far" ? message.id : -1,
       message: error instanceof Error ? error.message : String(error),
+      ...(message.type === "far"
+        ? {
+            far: {
+              address: message.address,
+              layer: message.layer,
+              revision: message.revision,
+            },
+          }
+        : {}),
+      ...(error instanceof FarCapacityError
+        ? {
+            capacity: {
+              capacity: error.capacity,
+              limit: error.limit,
+              statistics: error.statistics,
+            },
+          }
+        : {}),
     } satisfies WorkerResponse);
   }
 };

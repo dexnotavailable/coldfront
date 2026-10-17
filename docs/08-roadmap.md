@@ -69,6 +69,9 @@ The goal: Big Globe-class terrain for the whole of Kaldmark, walkable in the bro
 - **Done when:** HELL-1 and HELL-2 pass (including R2 = 2 and the blind review) on seeds 1–3, and the thorn numbers in the terrain report fall inside the pass bands in `04-terrain.md` §8.5.
 
 ### 1.4 Far terrain
+
+**Owner sequencing decision, 16 October 2026:** start this phase now. Regional appearance refinement and the outstanding 1.3 visual bars are deferred to separate lanes; they are not marked passed. Preserve the accepted terrain baseline while building distance, LOD, cameras and settings. Decision 121 records this sequencing change.
+
 - **Build:**
   - LOD0–LOD6: a 3D chunk grid for LOD0–1 and a 2D quadtree of full-height column tiles for LOD2+, in `BatchedMesh`, with screen-space-error selection; far tiles rebuilt from edits
   - column meshing at zero crossings for LOD2+; skirts; the vertical band rules
