@@ -432,6 +432,8 @@ The lens is a 40° vertical field of view, whatever the window's shape; resizing
 
 **Rays.** Several rules below ask for "the ground point under the cursor". That is where the ray through the cursor first meets something drawn: terrain, water, a building, or the cut face (C2). If it meets nothing within `4 × d` (the cursor is on the sky, or the hit is far off near the horizon), use the point where it crosses the level plane at the focus's height, and if that is also farther than `4 × d`, the point at `4 × d` along that direction.
 
+For camera anchoring and clearance, "drawn" means the currently visible terrain geometry after cut, coverage and placement-pop masks. A collidable cutout block such as leaves uses its geometric envelope: decorative texture holes do not make the physical block empty. Non-collidable decorative cutouts do not supply camera ground. Water and cut faces retain their explicit surfaces. This is a geometry query, not a claim of pixel-exact alpha picking (decision 124).
+
 **Panning** moves the focus across the ground, relative to the yaw (W moves toward the top of the screen).
 - **Keys:** speed = `1.0 × d` per second *(tune)*, so the ground crosses the screen at the same rate at any zoom. Shift multiplies it by 2.5. The speed climbs in a straight line from nothing to full in 120 ms and falls back in 80 ms. Diagonals aren't faster.
 - **Screen edge** (fullscreen only): the cursor within 8 px of an edge for 150 ms starts a pan at the key speed. Corners pan diagonally. It pauses while the cursor is over a panel or a drag is in progress.
