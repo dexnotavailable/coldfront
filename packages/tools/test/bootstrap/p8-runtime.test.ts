@@ -3,10 +3,13 @@ import type {
   TerrainViewMode,
   WorldSession,
 } from "../../../client/src/contracts/game-ui.js";
+import type { ChunkStore } from "../../../client/src/engine/chunk-store.js";
+import type { FarWorld } from "../../../client/src/engine/far-world.js";
 import type { VoxelEdit } from "../../../client/src/engine/worker-protocol.js";
 import type { WorldPostcard } from "../../../client/src/game/postcard.js";
 import { Block } from "../../../shared/src/blocks/registry.js";
 import type {
+  LayerId,
   WorldContext,
   WorldContextOptions,
   WorldIdentity,
@@ -20,6 +23,12 @@ const probe = vi.hoisted(() => ({
   scheduling: [] as boolean[],
   edits: [] as VoxelEdit[],
   hold: null as Promise<void> | null,
+  requestStarted: null as (() => void) | null,
+  graphicsEvents: null as {
+    lose(): void;
+    restore(): void;
+    activeFar(): FarWorld | null;
+  } | null,
   uploaded: true,
   failPreparation: false,
   capture: 0,
@@ -88,77 +97,122 @@ vi.mock("../../../client/src/game/world-map.js", () => ({
   topRegions: () => [],
   regionAt: () => null,
 }));
-vi.mock("../../../client/src/engine/chunk-store.js", () => ({
-  ChunkStore: class {
-    edits = new Map<number, VoxelEdit>();
-    chunks = new Map();
-    uploads = [];
-    workers = { queues: { generate: 0, light: 0, mesh: 0 } };
-    workTotals = { generate: 0, light: 0, mesh: 0 };
-    memoryBytes = 0;
-    queueSize = 0;
-    constructor(
-      readonly world: WorldSession,
-      readonly context: WorldContext,
-      _plan: unknown,
-      edits: VoxelEdit[],
-    ) {
-      edits.forEach((edit, i) => {
-        this.edits.set(i, edit);
-      });
-    }
-    get = (x: number, y: number, z: number) =>
-      [...this.edits.values()].find(
-        (edit) => edit.x === x && edit.y === y && edit.z === z,
-      )?.block ?? (y < 0 ? Block.Stone : Block.Air);
-    surface = () => 0;
-    lightAt() {
-      return 0;
-    }
-    async requestView(
-      _x?: number,
-      _y?: number,
-      _z?: number,
-      _radius?: number,
-      _includeColumn?: unknown,
-      postcard = false,
-    ) {
-      probe.scheduling.push(postcard);
-      await probe.hold;
-      return [];
-    }
-    async requestCamera(view: WorldPostcard, postcard = false) {
-      probe.scheduling.push(postcard);
-      probe.views.push(view);
-      await probe.hold;
-      return [];
-    }
-    hasView() {
-      return probe.uploaded;
-    }
-    async settled() {}
-    retain() {
-      return [];
-    }
-    suspendWorkers() {}
-    async resumeWorkers() {}
-    dispose() {}
-  },
-}));
+vi.mock(
+  "../../../client/src/engine/chunk-store.js",
+  async (importOriginal) => ({
+    ...(await importOriginal<
+      typeof import("../../../client/src/engine/chunk-store.js")
+    >()),
+    ChunkStore: class {
+      edits = new Map<number, VoxelEdit>();
+      chunks = new Map();
+      uploads = [];
+      workers = { queues: { generate: 0, light: 0, mesh: 0 } };
+      workTotals = { generate: 0, light: 0, mesh: 0 };
+      memoryBytes = 0;
+      queueSize = 0;
+      constructor(
+        readonly world: WorldSession,
+        readonly context: WorldContext,
+        _plan: unknown,
+        edits: VoxelEdit[],
+      ) {
+        edits.forEach((edit, i) => {
+          this.edits.set(i, edit);
+        });
+      }
+      get = (x: number, y: number, z: number) =>
+        [...this.edits.values()].find(
+          (edit) => edit.x === x && edit.y === y && edit.z === z,
+        )?.block ?? (y < 0 ? Block.Stone : Block.Air);
+      surface = () => 0;
+      lightAt() {
+        return 0;
+      }
+      async requestView(
+        _x?: number,
+        _y?: number,
+        _z?: number,
+        _radius?: number,
+        _includeColumn?: unknown,
+        postcard = false,
+      ) {
+        probe.scheduling.push(postcard);
+        probe.requestStarted?.();
+        await probe.hold;
+        return [];
+      }
+      async requestCamera(view: WorldPostcard, postcard = false) {
+        probe.scheduling.push(postcard);
+        probe.views.push(view);
+        await probe.hold;
+        return [];
+      }
+      hasView() {
+        return probe.uploaded;
+      }
+      async settled() {}
+      retain() {
+        return [];
+      }
+      suspendWorkers() {}
+      async resumeWorkers() {}
+      dispose() {}
+    },
+  }),
+);
 vi.mock("../../../client/src/engine/renderer.js", async () => {
   const { IbaraEffects } = await import(
     "../../../client/src/engine/ibara-effects.js"
   );
-  const { Plane } = await import("three");
+  const { PerspectiveCamera, Plane } = await import("three");
+  const { createFarWorldFixture } = await import(
+    "./ibara-atmosphere-fixture.js"
+  );
   return {
     WorldRenderer: class {
-      camera = { position: { x: 0, y: 10, z: 0 }, fov: 40 };
+      camera = new PerspectiveCamera(40, 1, 0.2, 1600);
+      contextLost = false;
+      onLost = () => {};
+      onRestored = () => {};
+      activeFar: FarWorld | null = null;
+      farWorlds = new Set<FarWorld>();
       statistics = { draws: 0, triangles: 0, memory: 0 };
       effects = { reset() {}, placementActive: () => false };
       ibara = new IbaraEffects(new Plane());
       mode: TerrainViewMode = "normal";
       postcard = false;
       world = 0;
+      constructor() {
+        this.camera.position.set(0, 10, 0);
+        // The runtime receives the same loss/restore callbacks as the real
+        // renderer. GPU allocation remains mocked in this transaction fixture.
+        probe.graphicsEvents = {
+          activeFar: () => this.activeFar,
+          lose: () => {
+            this.contextLost = true;
+            for (const far of this.farWorlds) far.contextLost();
+            this.onLost();
+          },
+          restore: () => {
+            this.contextLost = false;
+            this.onRestored();
+          },
+        };
+      }
+      createFarWorld(near: ChunkStore, layer: LayerId = "surface") {
+        const far = createFarWorldFixture(near, layer);
+        this.farWorlds.add(far);
+        return far;
+      }
+      useFar(far: FarWorld | null) {
+        this.activeFar = far;
+      }
+      releaseFar(far: FarWorld) {
+        if (this.activeFar === far) this.activeFar = null;
+        far.dispose();
+        this.farWorlds.delete(far);
+      }
       setViewMode(mode: TerrainViewMode) {
         this.mode = mode;
         probe.modes.push(mode);
@@ -168,23 +222,28 @@ vi.mock("../../../client/src/engine/renderer.js", async () => {
         this.camera.fov = on ? 70 : 40;
       }
       setView(position: { x: number; y: number; z: number }) {
-        this.camera.position = { ...position };
+        this.camera.position.set(position.x, position.y, position.z);
       }
       prepareView(
         worldId: number,
         position: { x: number; y: number; z: number },
+        _focus: { x: number; y: number; z: number },
+        far = this.activeFar,
       ) {
         if (probe.failPreparation) throw new Error("GPU preparation failed");
         const oldPosition = { ...this.camera.position },
-          oldWorld = this.world;
+          oldWorld = this.world,
+          oldFar = this.activeFar;
         // Match the real offscreen boundary: draw preparation temporarily selects
         // destination effects, then restores source camera and its effect selection.
         try {
           this.setWorld(worldId);
+          this.useFar(far);
           this.setView(position);
           this.update();
         } finally {
           this.setWorld(oldWorld);
+          this.useFar(oldFar);
           this.setView(oldPosition);
           this.update();
         }
@@ -218,6 +277,7 @@ vi.mock("../../../client/src/engine/renderer.js", async () => {
       compile() {}
       setHud() {}
       dispose() {
+        for (const far of [...this.farWorlds]) this.releaseFar(far);
         this.ibara.dispose();
       }
       async capturePng() {
@@ -248,7 +308,11 @@ const camera = (
 });
 async function boot(options: Partial<GameOptions> = {}) {
   const game = createGameHandle(
-    { style: { removeProperty() {} } } as unknown as HTMLCanvasElement,
+    {
+      clientWidth: 1280,
+      clientHeight: 720,
+      style: { removeProperty() {} },
+    } as unknown as HTMLCanvasElement,
     {
       colors: { ink: "#000", steel: "#aaa", cap: "#222" },
       keyboardLocked: () => false,
@@ -274,12 +338,15 @@ beforeEach(() => {
     probe.scheduling.length =
       0;
   probe.hold = null;
+  probe.requestStarted = null;
+  probe.graphicsEvents = null;
   probe.uploaded = true;
   probe.failPreparation = false;
   probe.capture = 0;
   probe.draws.length = 0;
   vi.stubGlobal("requestAnimationFrame", () => 1);
   vi.stubGlobal("cancelAnimationFrame", () => {});
+  vi.stubGlobal("devicePixelRatio", 1);
 });
 afterEach(async () => {
   probe.hold = null;
@@ -287,6 +354,47 @@ afterEach(async () => {
   vi.unstubAllGlobals();
 });
 describe("P8 runtime transaction boundary (GPU and jobs mocked)", () => {
+  it("finishes context recovery when a replacement session commits over its suspended source", async () => {
+    const game = await boot();
+    const source = game.port.read().world;
+    if (!source) throw new Error("Missing loaded fixture world");
+    let release!: () => void;
+    probe.hold = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const requested = new Promise<void>((resolve) => {
+      probe.requestStarted = resolve;
+    });
+    game.port.apply({ type: "start", seed: 2, worldKind: "main" });
+    await requested;
+    probe.requestStarted = null;
+    const events = probe.graphicsEvents;
+    if (!events) throw new Error("Missing renderer context callbacks");
+    // The public loading snapshot intentionally hides world. The renderer
+    // still retains this exact source, suspended by the real start transaction.
+    expect(events.activeFar()?.worldId).toBe(source.id);
+    expect(events.activeFar()?.ready).toBe(false);
+    events.lose();
+    expect(game.port.read().graphics).toBe("lost");
+    events.restore();
+    expect(game.port.read().graphics).toBe("rebuilding");
+    // Let restoration observe the still-current, suspended source before the
+    // held destination finishes. No private runtime fields are replaced.
+    await Promise.resolve();
+    await Promise.resolve();
+    release();
+    probe.hold = null;
+    await game.ready();
+    expect(game.port.read().world?.identity.seed).toBe(2);
+    expect(game.port.read().world?.id).not.toBe(source.id);
+    await vi.waitFor(
+      () => {
+        expect(game.port.read().graphics).toBe("available");
+        expect(game.telemetry().ready).toBe(true);
+      },
+      { timeout: 250, interval: 10 },
+    );
+  });
   it("tags only postcard preparation while ordinary world startup keeps priority scheduling", async () => {
     const game = await boot();
     expect(probe.scheduling.length).toBeGreaterThan(0);

@@ -4,9 +4,11 @@ import type {
   WorldSession,
 } from "../../../client/src/contracts/game-ui.js";
 import type {
+  ChunkStore,
   ChunkViewPlan,
   StoredChunk,
 } from "../../../client/src/engine/chunk-store.js";
+import type { FarWorld } from "../../../client/src/engine/far-world.js";
 import type {
   Address,
   ChunkResult,
@@ -18,6 +20,7 @@ import {
 } from "../../../client/src/game/world-save.js";
 import { createUiController } from "../../../client/src/ui/controller.js";
 import type {
+  LayerId,
   WorldContext,
   WorldPlanData,
 } from "../../../shared/src/world/types.js";
@@ -93,188 +96,241 @@ vi.mock("../../../client/src/game/input.js", () => ({
     }
   },
 }));
-vi.mock("../../../client/src/engine/chunk-store.js", () => ({
-  ChunkStore: class {
-    poolActive = true;
-    disposed = false;
-    chunks = new Map<string, StoredChunk>();
-    uploads: ChunkResult[] = [];
-    edits = new Map<string, VoxelEdit>();
-    workers = { queues: { generate: 0, light: 0, mesh: 0 }, memoryBytes: 0 };
-    memoryBytes = 0;
-    queueSize = 0;
-    workTotals = { generate: 0, light: 0, mesh: 0 };
-    constructor(
-      readonly world: WorldSession,
-      readonly context: WorldContext,
-      _plan: WorldPlanData | null,
-      saved: readonly VoxelEdit[],
-    ) {
-      fixture.pools++;
-      fixture.maxPools = Math.max(fixture.maxPools, fixture.pools);
-      for (const edit of saved)
-        this.edits.set(`${edit.x},${edit.y},${edit.z}`, edit);
-      fixture.stores.push(this);
-    }
-    get seed() {
-      return this.world.identity.seed;
-    }
-    hasView(addresses: readonly Address[], uploaded = false) {
-      return (
-        !uploaded ||
-        addresses.every((a) =>
-          fixture.validUploaded.has(`${a.cx},${a.cy},${a.cz}`),
-        )
-      );
-    }
-    get = (x: number, y: number, z: number) =>
-      this.edits.get(`${x},${y},${z}`)?.block ?? (y < 6 ? 3 : 0);
-    surface = () => 6;
-    lightAt() {
-      return 0xffff;
-    }
-    async requestView() {
-      await fixture.viewGate;
-      return [];
-    }
-    async settled() {}
-    async requestCamera() {
-      return this.requestView();
-    }
-    planView(): ChunkViewPlan {
-      if (fixture.planFailure) throw new Error("fixture plan failure");
-      const addresses = fixture.capturePlan;
-      const plan = {
-        world: this.world,
-        addresses,
-        jobs: addresses.map((a, d) => ({ a, d })),
-      };
-      fixture.plans.push(plan);
-      return plan;
-    }
-    planCamera() {
-      return this.planView();
-    }
-    async requestPlannedView(plan: ChunkViewPlan) {
-      fixture.requestedPlans.push(plan);
-      await fixture.viewGate;
-      if (fixture.workerFailure)
-        throw new Error("fixture missing chunk failed");
-      for (const address of plan.addresses) {
-        const key = `${address.cx},${address.cy},${address.cz}`;
-        if (this.chunks.has(key)) continue;
-        const result = {
-          address,
-          world: this.world,
-          revision: 0,
-        } as ChunkResult;
-        this.chunks.set(key, {
-          address,
-          result,
-          revision: 0,
-          state: "meshing",
-          touched: 0,
-        });
-        this.uploads.push(result);
-      }
-      return plan.addresses;
-    }
-    retain(addresses: readonly Address[]) {
-      const keep = new Set(addresses.map((a) => `${a.cx},${a.cy},${a.cz}`)),
-        removed: string[] = [];
-      fixture.retained.push([...keep]);
-      for (const key of this.chunks.keys())
-        if (!keep.has(key)) {
-          this.chunks.delete(key);
-          removed.push(key);
-        }
-      return removed;
-    }
-    suspendWorkers() {
-      if (this.poolActive) {
-        this.poolActive = false;
-        fixture.pools--;
-      }
-    }
-    async resumeWorkers() {
-      if (!this.poolActive && !this.disposed) {
-        this.poolActive = true;
+vi.mock(
+  "../../../client/src/engine/chunk-store.js",
+  async (importOriginal) => ({
+    ...(await importOriginal<
+      typeof import("../../../client/src/engine/chunk-store.js")
+    >()),
+    ChunkStore: class {
+      poolActive = true;
+      disposed = false;
+      chunks = new Map<string, StoredChunk>();
+      uploads: ChunkResult[] = [];
+      edits = new Map<string, VoxelEdit>();
+      workers = { queues: { generate: 0, light: 0, mesh: 0 }, memoryBytes: 0 };
+      memoryBytes = 0;
+      queueSize = 0;
+      workTotals = { generate: 0, light: 0, mesh: 0 };
+      constructor(
+        readonly world: WorldSession,
+        readonly context: WorldContext,
+        _plan: WorldPlanData | null,
+        saved: readonly VoxelEdit[],
+      ) {
         fixture.pools++;
         fixture.maxPools = Math.max(fixture.maxPools, fixture.pools);
+        for (const edit of saved)
+          this.edits.set(`${edit.x},${edit.y},${edit.z}`, edit);
+        fixture.stores.push(this);
       }
-    }
-    evict() {
-      return [];
-    }
-    edit(edit: VoxelEdit) {
-      this.edits.set(`${edit.x},${edit.y},${edit.z}`, edit);
-    }
-    dispose() {
-      this.suspendWorkers();
-      this.disposed = true;
-    }
-  },
-}));
-vi.mock("../../../client/src/engine/renderer.js", () => ({
-  WorldRenderer: class {
-    camera = { position: { x: 0, y: 24, z: 24 }, fov: 40 };
-    viewMode: TerrainViewMode = "normal";
-    statistics = { draws: 0, triangles: 0, memory: 0 };
-    effects = {
-      placementActive: () => false,
-      placed() {},
-      broken() {},
-      reset() {},
-    };
-    avatar = { step() {}, swing() {} };
-    setView(position: { x: number; y: number; z: number }) {
-      this.camera.position = { ...position };
-    }
-    pointerRay() {
-      return {
-        origin: { x: 0.5, y: 24, z: -2.5 },
-        direction: { x: 0, y: -1, z: 0 },
+      get seed() {
+        return this.world.identity.seed;
+      }
+      hasView(addresses: readonly Address[], uploaded = false) {
+        return (
+          !uploaded ||
+          addresses.every((a) =>
+            fixture.validUploaded.has(`${a.cx},${a.cy},${a.cz}`),
+          )
+        );
+      }
+      get = (x: number, y: number, z: number) =>
+        this.edits.get(`${x},${y},${z}`)?.block ?? (y < 6 ? 3 : 0);
+      surface = () => 6;
+      lightAt() {
+        return 0xffff;
+      }
+      async requestView() {
+        await fixture.viewGate;
+        return [];
+      }
+      async settled() {}
+      async requestCamera() {
+        return this.requestView();
+      }
+      planView(): ChunkViewPlan {
+        if (fixture.planFailure) throw new Error("fixture plan failure");
+        const addresses = fixture.capturePlan;
+        const plan = {
+          world: this.world,
+          addresses,
+          jobs: addresses.map((a, d) => ({ a, d })),
+        };
+        fixture.plans.push(plan);
+        return plan;
+      }
+      planCamera() {
+        return this.planView();
+      }
+      async requestPlannedView(plan: ChunkViewPlan) {
+        fixture.requestedPlans.push(plan);
+        await fixture.viewGate;
+        if (fixture.workerFailure)
+          throw new Error("fixture missing chunk failed");
+        for (const address of plan.addresses) {
+          const key = `${address.cx},${address.cy},${address.cz}`;
+          if (this.chunks.has(key)) continue;
+          const result: ChunkResult = {
+            type: "chunk",
+            id: this.chunks.size,
+            address,
+            world: this.world,
+            revision: 0,
+            blocks: new Uint16Array(32768),
+            light: new Uint16Array(32768),
+            mesh: {
+              parts: [],
+              quads: 0,
+              skirts: {
+                positions: new Float32Array(),
+                normals: new Int8Array(),
+                expansions: new Int8Array(),
+                packedPositions: new Float32Array(),
+                surfaces: new Float32Array(),
+                featureIdParts: new Uint16Array(),
+                indices: new Uint32Array(),
+              },
+            },
+            regionColor: [100, 100, 100],
+            timings: { generate: 0, light: 0, mesh: 0 },
+            cacheBytes: 0,
+          };
+          this.chunks.set(key, {
+            address,
+            result,
+            revision: 0,
+            state: "meshing",
+            touched: 0,
+          });
+          this.uploads.push(result);
+        }
+        return plan.addresses;
+      }
+      retain(addresses: readonly Address[]) {
+        const keep = new Set(addresses.map((a) => `${a.cx},${a.cy},${a.cz}`)),
+          removed: string[] = [];
+        fixture.retained.push([...keep]);
+        for (const key of this.chunks.keys())
+          if (!keep.has(key)) {
+            this.chunks.delete(key);
+            removed.push(key);
+          }
+        return removed;
+      }
+      suspendWorkers() {
+        if (this.poolActive) {
+          this.poolActive = false;
+          fixture.pools--;
+        }
+      }
+      async resumeWorkers() {
+        if (!this.poolActive && !this.disposed) {
+          this.poolActive = true;
+          fixture.pools++;
+          fixture.maxPools = Math.max(fixture.maxPools, fixture.pools);
+        }
+      }
+      evict() {
+        return [];
+      }
+      edit(edit: VoxelEdit) {
+        this.edits.set(`${edit.x},${edit.y},${edit.z}`, edit);
+      }
+      dispose() {
+        this.suspendWorkers();
+        this.disposed = true;
+      }
+    },
+  }),
+);
+vi.mock("../../../client/src/engine/renderer.js", async () => {
+  const { PerspectiveCamera } = await import("three");
+  const { createFarWorldFixture } = await import(
+    "../bootstrap/ibara-atmosphere-fixture.js"
+  );
+  return {
+    WorldRenderer: class {
+      camera = new PerspectiveCamera(40, 1, 0.2, 1600);
+      contextLost = false;
+      activeFar: FarWorld | null = null;
+      farWorlds = new Set<FarWorld>();
+      viewMode: TerrainViewMode = "normal";
+      statistics = { draws: 0, triangles: 0, memory: 0 };
+      effects = {
+        placementActive: () => false,
+        placed() {},
+        broken() {},
+        reset() {},
       };
-    }
-    setPostcard(active: boolean) {
-      this.camera.fov = active ? 70 : 40;
-    }
-    setViewMode(mode: TerrainViewMode) {
-      this.viewMode = mode;
-    }
-    setHud() {}
-    setWorld() {}
-    removeWorld() {}
-    prepareView() {
-      fixture.prepareCalls++;
-      if (fixture.prepareFailure)
-        throw new Error("fixture GPU preparation failed");
-    }
-    compile() {}
-    render() {
-      if (fixture.drawFailure) throw new Error("fixture final draw failed");
-    }
-    async capturePng() {
-      this.render();
-      this.render();
-      fixture.captures++;
-      return new Blob(["unit-test renderer seam; not image evidence"], {
-        type: "image/png",
-      });
-    }
-    update() {}
-    upload(result: ChunkResult) {
-      const key = `${result.address.cx},${result.address.cy},${result.address.cz}`;
-      fixture.uploaded.push(key);
-      fixture.validUploaded.add(key);
-    }
-    remove(key: string) {
-      fixture.removed.push(key);
-      fixture.validUploaded.delete(key);
-    }
-    dispose() {}
-  },
-}));
+      avatar = { step() {}, swing() {} };
+      constructor() {
+        this.camera.position.set(0, 24, 24);
+      }
+      createFarWorld(near: ChunkStore, layer: LayerId = "surface") {
+        const far = createFarWorldFixture(near, layer);
+        this.farWorlds.add(far);
+        return far;
+      }
+      useFar(far: FarWorld | null) {
+        this.activeFar = far;
+      }
+      releaseFar(far: FarWorld) {
+        if (this.activeFar === far) this.activeFar = null;
+        far.dispose();
+        this.farWorlds.delete(far);
+      }
+      setView(position: { x: number; y: number; z: number }) {
+        this.camera.position.set(position.x, position.y, position.z);
+      }
+      pointerRay() {
+        return {
+          origin: { x: 0.5, y: 24, z: -2.5 },
+          direction: { x: 0, y: -1, z: 0 },
+        };
+      }
+      setPostcard(active: boolean) {
+        this.camera.fov = active ? 70 : 40;
+      }
+      setViewMode(mode: TerrainViewMode) {
+        this.viewMode = mode;
+      }
+      setHud() {}
+      setWorld() {}
+      removeWorld() {}
+      prepareView() {
+        fixture.prepareCalls++;
+        if (fixture.prepareFailure)
+          throw new Error("fixture GPU preparation failed");
+      }
+      compile() {}
+      render() {
+        if (fixture.drawFailure) throw new Error("fixture final draw failed");
+      }
+      async capturePng() {
+        this.render();
+        this.render();
+        fixture.captures++;
+        return new Blob(["unit-test renderer seam; not image evidence"], {
+          type: "image/png",
+        });
+      }
+      update() {}
+      upload(result: ChunkResult) {
+        const key = `${result.address.cx},${result.address.cy},${result.address.cz}`;
+        fixture.uploaded.push(key);
+        fixture.validUploaded.add(key);
+      }
+      remove(key: string) {
+        fixture.removed.push(key);
+        fixture.validUploaded.delete(key);
+      }
+      dispose() {
+        for (const far of [...this.farWorlds]) this.releaseFar(far);
+      }
+    },
+  };
+});
 
 import {
   createGameHandle,
@@ -333,6 +389,7 @@ beforeEach(async () => {
   fixture.planFailure = fixture.workerFailure = false;
   storage = new StorageFixture();
   vi.stubGlobal("indexedDB", storage.factory);
+  vi.stubGlobal("devicePixelRatio", 1);
   vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
     const id = ++fixture.nextFrame;
     fixture.frames.set(id, callback);
@@ -344,15 +401,18 @@ beforeEach(async () => {
   vi.spyOn(console, "error").mockImplementation((error) =>
     fixture.errors.push(error),
   );
-  game = createGameHandle({} as HTMLCanvasElement, {
-    colors: { ink: "black", steel: "white", cap: "black" },
-    keyboardLocked: () => false,
-    onWindowedSprint: () => {},
-    build: { version: "test", commit: "test" },
-    cacheTag: "fixture",
-    externalKeyboard: true,
-    worldVisible: () => fixture.worldVisible,
-  });
+  game = createGameHandle(
+    { clientWidth: 1280, clientHeight: 720 } as HTMLCanvasElement,
+    {
+      colors: { ink: "black", steel: "white", cap: "black" },
+      keyboardLocked: () => false,
+      onWindowedSprint: () => {},
+      build: { version: "test", commit: "test" },
+      cacheTag: "fixture",
+      externalKeyboard: true,
+      worldVisible: () => fixture.worldVisible,
+    },
+  );
   game.port.apply({ type: "input-scope", scope: "world" });
   await start();
 });

@@ -17,6 +17,16 @@ const browser = await chromium.launch({
 const errors: string[] = [],
   warnings: string[] = [],
   results: unknown[] = [];
+interface NativeTurnEvent {
+  type: string;
+  code: string;
+  repeat: boolean;
+  isTrusted: boolean;
+  eventTimeStamp: number;
+  performanceNow: number;
+  yaw: number | null;
+  animationRenders: number | null;
+}
 const telemetry = (page: Page) =>
   page.evaluate(
     () =>
@@ -29,6 +39,24 @@ async function open(scene = ""): Promise<Page> {
     deviceScaleFactor: 1,
   });
   const page = await context.newPage();
+  // A literal script avoids TSX's named-function helpers crossing into the
+  // browser. Observe real input only; never dispatch or modify game events.
+  await page.addInitScript({
+    content: `
+window.__cfHudTurnEvents = [];
+for (const type of ["keydown", "keyup"]) {
+  window.addEventListener(type, (event) => {
+    if (event.code !== "ArrowRight" || window.__cfHudTurnEvents.length >= 8) return;
+    const now = performance.now(), state = window.__cf?.telemetry;
+    window.__cfHudTurnEvents.push({ type: event.type, code: event.code,
+      repeat: event.repeat, isTrusted: event.isTrusted,
+      eventTimeStamp: event.timeStamp, performanceNow: now,
+      yaw: state?.camera.yaw ?? null,
+      animationRenders: state?.rendering.animationRenders ?? null });
+  }, true);
+}
+`,
+  });
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("console", (message) => {
     if (message.type() === "error") errors.push(message.text());
@@ -73,12 +101,70 @@ async function image(page: Page, name: string, time: number): Promise<Buffer> {
 }
 try {
   const page = await open();
-  await page.keyboard.down("ArrowRight");
-  await page.waitForTimeout(70);
-  await page.keyboard.up("ArrowRight");
+  const downQueuedAt = performance.now();
+  // A delayed keydown acknowledgement must not lengthen a requested 70 ms tap.
+  // Attach rejection handling immediately, then queue real keyup independently.
+  const down = page.keyboard.down("ArrowRight").then(
+    () => ({ ok: true as const }),
+    (error: unknown) => ({ ok: false as const, error }),
+  );
+  let upQueuedAt = 0,
+    delivered = false;
+  try {
+    await new Promise<void>((resolve) => setTimeout(resolve, 70));
+    upQueuedAt = performance.now();
+    const up = page.keyboard.up("ArrowRight").then(
+      () => ({ ok: true as const }),
+      (error: unknown) => ({ ok: false as const, error }),
+    );
+    const acknowledgements = await Promise.all([down, up]);
+    for (const acknowledgement of acknowledgements)
+      if (!acknowledgement.ok) throw acknowledgement.error;
+    delivered = true;
+  } finally {
+    if (!delivered) await page.keyboard.up("ArrowRight").catch(() => {});
+  }
   await page.waitForTimeout(260);
   await page.keyboard.press("Digit8");
   const pose = await telemetry(page);
+  const nativeEvents = await page.evaluate<NativeTurnEvent[]>(
+    "window.__cfHudTurnEvents ?? []",
+  );
+  const nativeIntervalMs =
+    nativeEvents.length === 2
+      ? Number(nativeEvents[1]?.eventTimeStamp) -
+        Number(nativeEvents[0]?.eventTimeStamp)
+      : null;
+  const tapProof = {
+    requestedMs: 70,
+    downQueuedAt,
+    upQueuedAt,
+    queuedIntervalMs: upQueuedAt - downQueuedAt,
+    nativeIntervalMs,
+    nativeEvents,
+    poseBeforeAssertion: pose,
+  };
+  await writeFile(
+    resolve(output, "turn-tap-proof.json"),
+    `${JSON.stringify(tapProof, null, 2)}\n`,
+  );
+  assert.deepEqual(
+    nativeEvents.map((event) => event.type),
+    ["keydown", "keyup"],
+  );
+  assert(
+    nativeEvents.every(
+      (event) =>
+        event.code === "ArrowRight" && event.isTrusted && !event.repeat,
+    ),
+  );
+  assert(
+    nativeIntervalMs !== null &&
+      Number.isFinite(nativeIntervalMs) &&
+      nativeIntervalMs > 0 &&
+      nativeIntervalMs < 200,
+    `The browser did not receive a real short tap: ${nativeIntervalMs} ms`,
+  );
   assert(Math.abs(pose.camera.distance - 24) < 0.01);
   assert(Math.abs(pose.camera.yaw - 45) < 0.1);
   const c = projectCamera(pose),

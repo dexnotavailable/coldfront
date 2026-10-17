@@ -39,6 +39,8 @@ function fixture() {
     camera = new PerspectiveCamera(70, 16 / 9, 0.2, 1600),
     sky = new Sky(),
     scene = new Scene(),
+    farScene = new Scene(),
+    farCamera = new PerspectiveCamera(70, 16 / 9, 200, 16000),
     depthScene = new Scene(),
     marks = new Scene();
   terrain.uniforms.waterDepth.value = waterDepthTarget.depthTexture;
@@ -62,6 +64,8 @@ function fixture() {
     setRenderTarget(target: WebGLRenderTarget | null) {
       state.target = target;
     },
+    clear() {},
+    clearDepth() {},
     render(drawing: Scene) {
       calls.push({
         scene: drawing,
@@ -113,6 +117,14 @@ function fixture() {
       camera,
       sky,
       scene,
+      farScene,
+      farCamera,
+      farResources: new Map(),
+      activeFar: null,
+      farWaterDepthTarget: new WebGLRenderTarget(1, 1, {
+        depthTexture: new DepthTexture(1, 1, UnsignedIntType),
+      }),
+      farPreparationTarget: new WebGLRenderTarget(128, 72),
       depthScene,
       marks,
       chunks,

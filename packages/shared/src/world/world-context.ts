@@ -44,6 +44,7 @@ import {
   testWorldSpawn,
 } from "../worldgen/test-world.js";
 import { WORLDGEN_VERSION } from "../worldgen/version.js";
+import { bridgeIntersects } from "../worldplan/bridges.js";
 import {
   createGeometryWorkspace,
   createRegionWeights,
@@ -60,6 +61,7 @@ import {
 import { REGION_IDS, SURFACE_REGIONS } from "./regions.js";
 import type {
   CleanupCacheStats,
+  FarVisibilityCertificate,
   SkyInput,
   VoxelSample,
   WorldAreaSampler,
@@ -163,6 +165,19 @@ const TEST_NOISE_BOUND =
   1e-8;
 const TEST_LOW = Math.min(-4, 9 - 17.8 * TEST_NOISE_BOUND);
 const TEST_HIGH = Math.max(11.75, 9 + 17.8 * TEST_NOISE_BOUND);
+// One source of truth for both generated base runs and exposed-surface culling.
+// Current ground is opaque and monotone with additive features only. When a
+// source adds underground voids, disable its flag here for BOTH consumers.
+const TEST_FAR_SOURCE: Readonly<FarVisibilityCertificate> = Object.freeze({
+  layer: "surface",
+  solidBase: true,
+  displacement: 0,
+});
+const MAIN_FAR_SOURCE: Readonly<FarVisibilityCertificate> = Object.freeze({
+  layer: "surface",
+  solidBase: true,
+  displacement: MAX_FINE_RELIEF,
+});
 export function createWorldContext(options: WorldContextOptions): WorldContext {
   const { seed } = options;
   if (!Number.isInteger(seed) || seed < -2147483648 || seed > 4294967295)
@@ -246,6 +261,8 @@ export function createWorldContext(options: WorldContextOptions): WorldContext {
         return pointArea(x, z).skyInput(x, z, out, column);
       },
       prepareArea,
+      farVisibilityCertificate: (layer) =>
+        layer === TEST_FAR_SOURCE.layer ? TEST_FAR_SOURCE : null,
       prepareFarArea(bounds, options) {
         checkBounds(bounds);
         checkSpacing(options.spacing, false);
@@ -273,8 +290,8 @@ export function createWorldContext(options: WorldContextOptions): WorldContext {
           options,
           trees,
           terrainHeightIndices: [Column.Height],
-          displacement: 0,
-          solidBase: true,
+          displacement: TEST_FAR_SOURCE.displacement,
+          solidBase: TEST_FAR_SOURCE.solidBase,
           featureBounds: trees.map((tree) => ({
             minX: tree.x - tree.crownRadius,
             maxX: tree.x + tree.crownRadius,
@@ -673,6 +690,13 @@ export function createWorldContext(options: WorldContextOptions): WorldContext {
       return pointArea(x, z).skyInput(x, z, out, column);
     },
     prepareArea,
+    // Peak adjustment over a mixed natural/bridge column needs its own lower
+    // visibility proof. Keep these footprints fully conservative meanwhile.
+    farVisibilityCertificate: (layer, bounds) =>
+      layer === MAIN_FAR_SOURCE.layer &&
+      !plan.sites.bridges.some((bridge) => bridgeIntersects(bridge, bounds))
+        ? MAIN_FAR_SOURCE
+        : null,
     prepareFarArea(bounds, options) {
       checkBounds(bounds);
       checkSpacing(options.spacing, true);
@@ -713,10 +737,10 @@ export function createWorldContext(options: WorldContextOptions): WorldContext {
         trees,
         featureBounds,
         terrainHeightIndices: [MainColumn.Height, MainColumn.NaturalHeight],
-        displacement: MAX_FINE_RELIEF,
+        displacement: MAIN_FAR_SOURCE.displacement,
         // Current source has monotone ground and additive features only. This
         // proof must be disabled/replaced when actual underground carvers ship.
-        solidBase: true,
+        solidBase: MAIN_FAR_SOURCE.solidBase,
         surfaceBounds: field.surfaceBounds,
         materialAt: (y, column) =>
           y < WORLDSTONE_CEILING

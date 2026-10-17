@@ -1,8 +1,24 @@
 {
+  "far": {
+    "requested": 0,
+    "awaitingUpload": 0,
+    "prepared": 6,
+    "failed": 0,
+    "visible": [61424, 61777],
+    "ready": true,
+    "layer": "surface",
+    "reach": 16000,
+    "targetTiles": 2,
+    "lod": [0, 0, 2, 0, 0, 0, 0],
+    "frozen": false,
+    "restoring": false,
+    "cut": null,
+    "error": null
+  },
   "postcard": null,
   "rendering": {
     "visible": true,
-    "animationRenders": 12,
+    "animationRenders": 11,
     "hiddenFrames": 0
   },
   "mapReports": [],
@@ -39,7 +55,7 @@
     "flying": false,
     "walkDistance": 0,
     "stepRise": 0,
-    "yaw": 0.5472133245274192,
+    "yaw": 0.5428862345745905,
     "headYaw": 0.5404195883339316
   },
   "target": {
@@ -65,14 +81,14 @@
     "y": 6,
     "z": -3
   },
-  "loaded": 148,
+  "loaded": 516,
   "queued": 0,
   "ready": true,
-  "displayTimeMs": 1183.2999999999997,
+  "displayTimeMs": 1466.625,
   "editCount": 0,
   "lastAction": null,
   "lastEdit": null,
-  "worldTimeSeconds": 1201.2832999999994,
+  "worldTimeSeconds": 1201.5999499999996,
   "rendered": {
     "outline": true,
     "silhouette": false,

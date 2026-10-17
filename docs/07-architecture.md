@@ -105,7 +105,7 @@ These apply to anything whose output must match across machines: world generatio
 ## 5. Data model
 
 ### Blocks
-- `uint16` IDs. **Append-only from Milestone 2:** never renumber or reuse IDs once saved edits refer to them. During Milestone 1 the registry may change, and saved edits are wiped when the registry or worldgen hash changes.
+- `uint16` IDs. **Append-only from Milestone 2:** never renumber or reuse IDs once saved edits refer to them. During Milestone 1 the registry may change, and saved edits are invalidated when the registry or worldgen hash changes. The only exception is the explicitly approved, one-way version/hash save migration in `04-terrain.md` §3: it requires compatible registry/terrain semantics, preserves the old record, and does not change world or cache identity. No pair is enabled by the migration mechanism itself.
 - Block properties:
   - name
   - render type: opaque / cutout / translucent / fluid

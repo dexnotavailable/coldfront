@@ -394,6 +394,14 @@ export class FarTerrainStore<Handle> {
   contextRestored(): void {
     if (!this.stopped) this.lost = false;
   }
+  /** Current selection/revision authority; retained historical failures and
+   * explicitly retried revisions must not become permanent runtime errors. */
+  get currentFailure(): Error | null {
+    for (const tile of this.tiles.values())
+      if (tile.wanted && tile.failedRevision === tile.revision && tile.error)
+        return tile.error;
+    return null;
+  }
   get status(): FarStoreStatus {
     const tiles = [...this.tiles.values()];
     return {

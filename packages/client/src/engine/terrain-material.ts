@@ -15,6 +15,10 @@ import {
 import { BLOCK_REGISTRY, Block } from "../../../shared/src/blocks/registry.js";
 import { generateTextureArray } from "../../../shared/src/blocks/textures/recipes.js";
 import { IBARA_STRATA } from "../../../shared/src/worldgen/main/ibara-material.js";
+import {
+  FAR_NEAR_COVERAGE_GLSL,
+  type FarTerrainCoverage,
+} from "./far-terrain-coverage.js";
 
 export type TerrainViewMode = "normal" | "clay" | "features";
 export const TERRAIN_VIEW_MODES = { normal: 0, clay: 1, features: 2 } as const;
@@ -56,6 +60,21 @@ export interface TerrainUniforms {
   readonly waterDepthLinearize: IUniform<Vector2>;
   readonly waterDepthReady: IUniform<number>;
 }
+export interface TerrainMaterials {
+  readonly materials: MeshLambertMaterial[];
+  readonly uniforms: TerrainUniforms;
+  readonly texture: DataArrayTexture;
+  /** A far set borrows its near set's texture and presentation uniforms. */
+  readonly ownsTexture: boolean;
+  /** Disposes this set's materials and only an owned texture. Idempotent. */
+  dispose(): void;
+}
+export interface FarTerrainMaterialOptions {
+  readonly mode: "far";
+  readonly shared: Pick<TerrainMaterials, "texture" | "uniforms">;
+  /** Borrowed; the world-session owner disposes this after materials and caps. */
+  readonly coverage: FarTerrainCoverage;
+}
 /** Positive view distance =1/(x+depth*y), matching a perspective depth buffer. */
 export function waterDepthRange(
   near: number,
@@ -71,11 +90,7 @@ export function waterDepthRange(
     throw new RangeError("Invalid water depth camera range");
   return out.set(1 / near, 1 / far - 1 / near);
 }
-export function createTerrainMaterials(clip: Plane): {
-  materials: MeshLambertMaterial[];
-  uniforms: TerrainUniforms;
-  texture: DataArrayTexture;
-} {
+function createTerrainTexture(): DataArrayTexture {
   const pixels = generateTextureArray(),
     texture = new DataArrayTexture(
       pixels.data,
@@ -88,6 +103,14 @@ export function createTerrainMaterials(clip: Plane): {
   texture.minFilter = LinearMipmapLinearFilter;
   texture.generateMipmaps = true;
   texture.needsUpdate = true;
+  return texture;
+}
+/** Omit options for the unchanged packed near shader; far uses direct positions. */
+export function createTerrainMaterials(
+  clip: Plane,
+  options?: FarTerrainMaterialOptions,
+): TerrainMaterials {
+  const texture = options?.shared.texture ?? createTerrainTexture();
   const uniforms: TerrainUniforms = {
     viewMode: { value: 0 },
     tiles: { value: texture },
@@ -103,6 +126,22 @@ export function createTerrainMaterials(clip: Plane): {
     waterDepthLinearize: { value: new Vector2() },
     waterDepthReady: { value: 0 },
   };
+  if (options) {
+    const shared = options.shared.uniforms;
+    // Presentation state is one source of truth. Water belongs to its own pass:
+    // never alias the near target, coefficients, dimensions or ready flag.
+    Object.assign(uniforms, {
+      viewMode: shared.viewMode,
+      tiles: shared.tiles,
+      cut: shared.cut,
+      display: shared.display,
+      night: shared.night,
+      origin: shared.origin,
+      pop: shared.pop,
+      popActive: shared.popActive,
+      pixelScale: shared.pixelScale,
+    });
+  }
   const emission = {
     value: BLOCK_REGISTRY.map(
       (block) =>
@@ -126,7 +165,7 @@ export function createTerrainMaterials(clip: Plane): {
       clipShadows: true,
     });
     material.customProgramCacheKey = () =>
-      `coldfront-terrain-r186-v3-ibara-class-${kind}${kind === 0 ? "-strata-v3-contrast" : kind === 4 ? "-filtered-lava-v1-continuum29-v1" : ""}`;
+      `coldfront-terrain-r186-v3-ibara-class-${kind}${kind === 0 ? "-strata-v3-contrast" : kind === 4 ? "-filtered-lava-v1-continuum29-v1" : ""}${options ? "-far-v1-coverage" : ""}`;
     material.onBeforeCompile = (shader) => {
       Object.assign(shader.uniforms, {
         uViewMode: uniforms.viewMode,
@@ -147,10 +186,11 @@ export function createTerrainMaterials(clip: Plane): {
       });
       if (kind === 4)
         shader.uniforms.uLavaEmissionGains = { value: lavaGainTable };
+      options?.coverage.bind(shader.uniforms);
       shader.vertexShader = shader.vertexShader.replace(
         "#include <common>",
         `#include <common>
-attribute float aPackedPosition;
+${options ? "" : "attribute float aPackedPosition;"}
 attribute vec3 aSurface;
 attribute vec3 aExpand;
 attribute vec2 aFeatureIdParts;
@@ -163,7 +203,24 @@ uniform vec3 uRenderOrigin;`,
       );
       shader.vertexShader = shader.vertexShader.replace(
         "#include <begin_vertex>",
-        `
+        options
+          ? `
+vec3 transformed = vec3(position);
+vec4 cfTerrainPosition = vec4(transformed,1.0);
+#ifdef USE_BATCHING
+cfTerrainPosition = batchingMatrix * cfTerrainPosition;
+#endif
+// Page translation is the render origin and the instance is tile-origin minus
+// render-origin. Subtract before adding local coordinates to keep world math
+// nearby; project_vertex alone applies the instance to the final position.
+vVoxelWorld = mat3(modelMatrix)*cfTerrainPosition.xyz + (modelMatrix[3].xyz-uRenderOrigin);
+// Three's defaultnormal_vertex already includes the batching normal transform.
+vVoxelNormal = inverseTransformDirection(transformedNormal,viewMatrix);
+vSurface = aSurface;
+vFeatureIdParts = aFeatureIdParts;
+${kind < 2 ? "transformed += aExpand * abs((modelViewMatrix * cfTerrainPosition).z) * uPixelScale;" : ""}
+`
+          : `
 float px = mod(aPackedPosition,64.0);
 float py = mod(floor(aPackedPosition/64.0),64.0);
 float pz = floor(aPackedPosition/4096.0);
@@ -198,7 +255,7 @@ varying vec3 vVoxelWorld;
 varying vec3 vVoxelNormal;
 varying vec3 vSurface;
 uniform vec3 uPop;
-uniform float uPopActive;
+uniform float uPopActive;${options ? `\n${FAR_NEAR_COVERAGE_GLSL}` : ""}
 highp uint cfFeatureId() {
   return uint(vFeatureIdParts.x) | (uint(vFeatureIdParts.y) << 16u);
 }
@@ -299,7 +356,7 @@ ${
       shader.fragmentShader = shader.fragmentShader.replace(
         "#include <map_fragment>",
         `
-vec3 absoluteWorld = vVoxelWorld + uRenderOrigin;
+vec3 absoluteWorld = vVoxelWorld + uRenderOrigin;${options ? "\nif(cfNearCovers((absoluteWorld-vVoxelNormal*0.001).xz)) discard;" : ""}
 ivec3 cell = ivec3(floor(absoluteWorld - vVoxelNormal*0.001));
 if(uPopActive>0.5 && all(equal(cell,ivec3(uPop)))) discard;
 uint hash = cfHash(cell);
@@ -411,5 +468,17 @@ gl_FragColor.rgb=mix(gl_FragColor.rgb,fogColor,clamp(max(distanceFog,heightFog),
     };
     return material;
   });
-  return { materials, uniforms, texture };
+  let disposed = false;
+  return {
+    materials,
+    uniforms,
+    texture,
+    ownsTexture: !options,
+    dispose() {
+      if (disposed) return;
+      disposed = true;
+      for (const material of materials) material.dispose();
+      if (!options) texture.dispose();
+    },
+  };
 }
