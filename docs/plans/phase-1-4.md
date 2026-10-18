@@ -27,7 +27,7 @@ Initial configurable tile ceilings are one million logical density evaluations, 
 ## Preservation and proof
 
 - Keep near LOD0/1 outputs and exact edits compatible where their algorithms are unchanged. Assess source-fingerprint/cache implications explicitly before integration; do not silently relabel historical validation or saved worlds.
-- Share the worker budget and the normal eight-part upload cap. High Command-camera altitude must not create holes through an incorrect near-coverage mask.
+- Share the worker budget and the normal eight-unit upload allowance. Each new nonempty geometry part consumes one unit; a counted page-replacement operation consumes one additional unit. Preflight against the remaining allowance before allocation, use the same accounting for context restoration, and report copied ranges/bytes separately. These are scheduling units, not individual GL buffer-upload counts. High Command-camera altitude must not create holes through an incorrect near-coverage mask.
 - Reuse Three r186 and the existing material calibration. Check the actual installed APIs and licences before adding takram; never read or copy the off-limits project sources listed in `10-prior-art.md`.
 - Local pinned Chromium remains the screenshot route. Public HTTP verification is available; the existing public-browser and IAB restrictions remain.
 - Phase 1.4 is not complete until the complete roadmap scope and distance/transition checks pass. Deferred regional taste scores are tracked separately under decision 121.
