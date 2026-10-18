@@ -32,17 +32,23 @@ import type {
   ToolState,
   WorldSession,
 } from "../contracts/game-ui.js";
-import { ChunkStore, type ChunkViewPlan } from "../engine/chunk-store.js";
+import {
+  ChunkStore,
+  type ChunkViewPlan,
+  drainChunkUploads,
+} from "../engine/chunk-store.js";
 import { blockIcon } from "../engine/effects.js";
+import {
+  DEFAULT_NEAR_REACH,
+  type FarWorld,
+  type FarWorldView,
+  FRAME_UPLOAD_PARTS,
+} from "../engine/far-world.js";
 import { ease, GameClocks } from "../engine/motion.js";
 import { PlanPreparation } from "../engine/prepare-plan.js";
 import { type WorldColors, WorldRenderer } from "../engine/renderer.js";
 import type { TerrainViewMode } from "../engine/terrain-material.js";
-import {
-  type Address,
-  chunkKey,
-  type VoxelEdit,
-} from "../engine/worker-protocol.js";
+import type { Address, VoxelEdit } from "../engine/worker-protocol.js";
 import { WORLD_BUTTONS, WORLD_CODES } from "./bindings.js";
 import { OverheadCamera } from "./camera.js";
 import {
@@ -109,6 +115,7 @@ export interface GameOptions {
   };
 }
 export interface GameTelemetry {
+  readonly far: FarWorld["telemetry"] | null;
   readonly postcard: PostcardRenderReport | null;
   readonly rendering: Readonly<{
     visible: boolean;
@@ -217,6 +224,8 @@ class GameRuntime implements GamePort {
   private readonly listeners = new Set<(event: GameEvent) => void>();
   private renderer: WorldRenderer | null = null;
   private store: ChunkStore | null = null;
+  private far: FarWorld | null = null;
+  private arrivingFar: FarWorld | null = null;
   private readonly persistence: EditPersistence;
   private input: WorldInput;
   private readonly clocks = new GameClocks();
@@ -614,21 +623,74 @@ class GameRuntime implements GamePort {
       preferred,
     );
   }
-  private uploadStore(store: ChunkStore, limit: number): void {
-    if (!this.renderer) return;
-    for (let i = 0; i < limit && store.uploads.length; i++) {
-      const result = store.uploads.shift();
-      if (!result) break;
-      const stored = store.chunks.get(chunkKey(result.address));
-      if (
-        !stored ||
-        stored.revision !== result.revision ||
-        !sameSession(store.world, result.world)
-      )
-        continue;
-      this.renderer.upload(result);
-      stored.state = "visible";
+  private uploadStore(store: ChunkStore, limit: number): number {
+    if (!this.renderer || this.renderer.contextLost) return 0;
+    return drainChunkUploads(store, limit, (result) =>
+      this.renderer?.upload(result),
+    );
+  }
+  private farView(
+    position: Point,
+    target: Point,
+    postcard: boolean,
+    cut = postcard ? Infinity : this.camera.cut.height,
+  ): FarWorldView {
+    return {
+      position,
+      target,
+      cut,
+      fov: postcard ? 70 : 40,
+      aspect:
+        Math.max(1, this.canvas.clientWidth) /
+        Math.max(1, this.canvas.clientHeight),
+      pixelHeight:
+        Math.max(1, this.canvas.clientHeight) *
+        (postcard ? 1 : Math.min(devicePixelRatio, 2)),
+    };
+  }
+  private async prepareFar(
+    store: ChunkStore,
+    position: Point,
+    target: Point,
+    postcard: boolean,
+    current: () => boolean,
+    cut: number,
+  ): Promise<FarWorld | null> {
+    const renderer = this.renderer;
+    if (!renderer || renderer.contextLost || !current()) return null;
+    const far = renderer.createFarWorld(store);
+    let retained = false;
+    try {
+      let generated = false;
+      const work = far
+        .select(this.farView(position, target, postcard, cut), true, postcard)
+        .then(() => {
+          generated = true;
+        });
+      // Navigation is bounded too. Infinity is reserved for a frozen postcard.
+      while (current() && !renderer.contextLost) {
+        far.drain(postcard ? Infinity : FRAME_UPLOAD_PARTS);
+        if (far.error) throw far.error;
+        if (generated && far.ready) break;
+        await new Promise<void>((resolve) =>
+          setTimeout(resolve, postcard ? 10 : 16),
+        );
+      }
+      if (!current() || renderer.contextLost) return null;
+      await work;
+      far.assertPrepared();
+      retained = true;
+      return far;
+    } finally {
+      if (!retained) renderer.releaseFar(far);
     }
+  }
+  private adoptFar(far: FarWorld, postcard: boolean): void {
+    const old = this.far;
+    this.far = far;
+    this.renderer?.useFar(far);
+    if (!postcard) far.unfreeze();
+    if (old && old !== far) this.renderer?.releaseFar(old);
   }
   private async prepareNear(
     store: ChunkStore,
@@ -665,7 +727,7 @@ class GameRuntime implements GamePort {
     if (failure) throw failure;
     while (store.uploads.length && current()) {
       this.uploadStore(store, 8);
-      await new Promise<void>((resolve) => setTimeout(resolve, 0));
+      await new Promise<void>((resolve) => setTimeout(resolve, 16));
     }
     if (!current()) return false;
     if (!store.hasView(addresses, true))
@@ -756,8 +818,10 @@ class GameRuntime implements GamePort {
     const current = () => request === this.worldRequest && !this.stopped;
     const oldStore = this.store,
       oldWorld = this.world,
-      oldMode = this.mode;
+      oldMode = this.mode,
+      oldFar = this.far;
     let candidate: ChunkStore | null = null;
+    let candidateFar: FarWorld | null = null;
     cancelAnimationFrame(this.frame);
     this.lifecycle = "loading";
     this.seed = seed >>> 0;
@@ -768,6 +832,7 @@ class GameRuntime implements GamePort {
       if (!skipSave) await this.saveCurrent();
       // Keep source geometry/pose, but release its worker resources before a
       // builder or candidate pool starts. At most one terrain pool is alive.
+      oldFar?.suspend();
       oldStore?.suspendWorkers();
       await this.persistence.open();
       if (!current()) return;
@@ -837,7 +902,8 @@ class GameRuntime implements GamePort {
       if (!this.renderer)
         this.renderer = new WorldRenderer(this.canvas, this.options.colors);
       this.renderer.setViewMode(this.tools.viewMode);
-      this.graphics = "available";
+      if (!this.renderer.contextLost && this.graphics !== "rebuilding")
+        this.graphics = "available";
       this.renderer.onLost = () => {
         this.graphics = "lost";
         this.input.release();
@@ -847,7 +913,11 @@ class GameRuntime implements GamePort {
       this.renderer.onRestored = () => {
         this.graphics = "rebuilding";
         this.emit({ type: "graphics-rebuilding" });
-        this.rebuildGraphics();
+        void this.rebuildGraphics().catch((error) => {
+          console.error(error);
+          this.lifecycle = "failed";
+          this.publish();
+        });
       };
       if (postcard && !postcard.identity && kind !== "test")
         throw new Error("TEST-1 postcard requires the test world");
@@ -866,8 +936,23 @@ class GameRuntime implements GamePort {
         : null;
       const prepared = postcard
         ? postcardPrepared !== null
-        : await this.prepareNear(candidate, body, 96, current, progress);
+        : await this.prepareNear(
+            candidate,
+            body,
+            DEFAULT_NEAR_REACH,
+            current,
+            progress,
+          );
       if (!prepared || !current()) return;
+      candidateFar = await this.prepareFar(
+        candidate,
+        postcard?.position ?? camera.position,
+        postcard?.target ?? camera.focus,
+        !!postcard,
+        current,
+        postcard ? Infinity : camera.cut.height,
+      );
+      if (!candidateFar || !current()) return;
       const renderStarted = performance.now();
       this.renderer.setPostcard(!!postcard);
       this.renderer.update(
@@ -892,10 +977,12 @@ class GameRuntime implements GamePort {
         world.id,
         postcard?.position ?? camera.position,
         postcard?.target ?? camera.focus,
+        candidateFar,
       );
       if (!current()) return;
       this.renderer.effects.reset();
       this.renderer.setWorld(world.id);
+      this.renderer.useFar(candidateFar);
       this.renderer.setView(
         postcard?.position ?? camera.position,
         postcard?.target ?? camera.focus,
@@ -919,11 +1006,19 @@ class GameRuntime implements GamePort {
       );
       this.renderer.render();
       this.renderer.render();
+      if (!current() || this.renderer.contextLost || !candidateFar.ready)
+        return;
       const renderMs = performance.now() - renderStarted;
       // No awaited operation after this point: pose, world and visible GPU set commit together.
       this.store = candidate;
       candidate = null;
+      this.adoptFar(candidateFar, !!postcard);
+      candidateFar = null;
       this.world = world;
+      // A restored candidate can replace a suspended source while its old
+      // rebuild loop is still waiting. The successful preparation/draw above
+      // belongs to this newly committed session and completes its recovery.
+      this.graphics = "available";
       this.postcards = [];
       void this.resolvePostcardCatalogue(world, request);
       this.viewpoints = viewpoints;
@@ -1000,18 +1095,22 @@ class GameRuntime implements GamePort {
         this.graphics = "unavailable";
       if (oldWorld && this.renderer) {
         this.renderer.setWorld(oldWorld.id);
+        this.renderer.useFar(oldFar);
         this.renderer.setPostcard(oldMode === "postcard");
         this.renderer.setView(this.camera.position, this.camera.focus);
         this.updatePicture(1);
       }
       this.publish();
     } finally {
+      if (candidateFar) this.renderer?.releaseFar(candidateFar);
       if (candidate) {
         this.renderer?.removeWorld(candidate.world.id);
         candidate.dispose();
       }
-      if (current() && this.store === oldStore && oldStore)
+      if (current() && this.store === oldStore && oldStore) {
         await oldStore.resumeWorkers();
+        oldFar?.resume();
+      }
     }
   }
   private upload(limit: number): void {
@@ -1024,7 +1123,12 @@ class GameRuntime implements GamePort {
       this.renderer.effects.placementActive(this.clocks.displayMs)
     )
       return;
-    this.uploadStore(this.store, limit);
+    const spent = this.uploadStore(this.store, limit);
+    this.far?.drain(
+      limit === Infinity && this.mode !== "postcard"
+        ? FRAME_UPLOAD_PARTS
+        : limit - spent,
+    );
   }
   private async resolvePostcardCatalogue(
     world: WorldSession,
@@ -1053,12 +1157,53 @@ class GameRuntime implements GamePort {
       }
     }
   }
-  private rebuildGraphics(): void {
+  private async rebuildGraphics(): Promise<void> {
     if (!this.renderer || !this.store) return;
-    for (const chunk of this.store.chunks.values())
-      if (chunk.result) this.renderer.upload(chunk.result);
+    const renderer = this.renderer,
+      store = this.store,
+      far = this.far;
+    const current = () =>
+      this.store === store &&
+      this.renderer === renderer &&
+      this.world?.id === store.world.id &&
+      !renderer.contextLost &&
+      !this.stopped;
+    // An edit may have been meshing when graphics were lost. Wait for the
+    // current near revisions before rebuilding, rather than treating discarded
+    // stale uploads as an empty, ready restore queue. A disposed source pool
+    // settles its requests; its rejection must not fail a replacement world.
+    try {
+      await store.settled();
+    } catch (error) {
+      if (!current()) return;
+      throw error;
+    }
+    if (!current()) return;
+    store.uploads.length = 0;
+    for (const chunk of store.chunks.values())
+      if (chunk.result) {
+        chunk.state = "meshing";
+        store.uploads.push(chunk.result);
+      }
+    while (current()) {
+      const spent = this.uploadStore(store, FRAME_UPLOAD_PARTS);
+      far?.drain(FRAME_UPLOAD_PARTS - spent);
+      if (!store.uploads.length && (!far || far.ready)) break;
+      if (far?.error) throw far.error;
+      await new Promise<void>((resolve) => setTimeout(resolve, 16));
+    }
+    if (!current()) return;
     this.renderer.setViewMode(this.tools.viewMode);
-    this.renderer.compile();
+    const focus =
+      this.mode === "postcard" && this.postcardView
+        ? this.postcardView.target
+        : this.camera.focus;
+    this.renderer.prepareView(
+      store.world.id,
+      this.renderer.camera.position,
+      focus,
+      far,
+    );
     this.renderer.render();
     this.graphics = "available";
     this.publish();
@@ -1106,10 +1251,39 @@ class GameRuntime implements GamePort {
         if (t >= 1) {
           this.cameraTransition = null;
           this.lastView = "";
+          if (this.arrivingFar) {
+            this.adoptFar(this.arrivingFar, false);
+            this.arrivingFar = null;
+          }
         }
       } else this.renderer?.setView(this.camera.position, this.camera.focus);
     }
-    this.upload(8);
+    if (
+      this.far &&
+      this.renderer &&
+      !this.navigation.pending &&
+      !this.pendingTransitions
+    ) {
+      const position = this.renderer.camera.position;
+      const direction = this.renderer.pointerRay(0, 0).direction;
+      this.far.stream(
+        this.farView(
+          position,
+          {
+            x: position.x + direction.x,
+            y: position.y + direction.y,
+            z: position.z + direction.z,
+          },
+          false,
+        ),
+      );
+    }
+    if (
+      this.graphics === "available" &&
+      !this.navigation.pending &&
+      !this.pendingTransitions
+    )
+      this.upload(FRAME_UPLOAD_PARTS);
     if (this.options.worldVisible?.() ?? true) {
       this.updatePicture(this.accumulator / PHYSICS.tick);
       this.renderer?.render();
@@ -1174,14 +1348,17 @@ class GameRuntime implements GamePort {
           this.body.x,
           this.body.y,
           this.body.z,
-          Math.max(96, Math.min(224, this.camera.distance * 1.3)),
+          Math.max(
+            DEFAULT_NEAR_REACH,
+            Math.min(224, this.camera.distance * 1.3),
+          ),
         )
         .catch(() => {});
       if (!this.cameraTransition)
         for (const key of this.store.evict(
           this.body.x,
           this.body.z,
-          Math.max(192, this.camera.distance * 1.6),
+          Math.max(DEFAULT_NEAR_REACH + 64, this.camera.distance * 1.6),
         ))
           this.renderer?.remove(key);
     }
@@ -1333,61 +1510,107 @@ class GameRuntime implements GamePort {
   }
   private async setPostcard(active: boolean): Promise<void> {
     if (!this.renderer || !this.store || this.lifecycle !== "ready") return;
+    const store = this.store,
+      renderer = this.renderer,
+      world = this.world;
+    const request = this.worldRequest;
+    const current = () =>
+      this.store === store &&
+      this.world === world &&
+      this.worldRequest === request &&
+      !this.stopped;
+    let candidateFar: FarWorld | null = null;
     this.input.release();
     this.mode = active ? "postcard" : "overhead";
     this.renderer.setPostcard(active);
     this.publish();
-    if (active) {
-      cancelAnimationFrame(this.frame);
-      await this.store.requestView(
-        this.body.x,
-        this.body.y,
-        this.body.z,
-        Math.max(96, this.camera.distance * 1.3),
-      );
-      await this.store.settled();
-      this.upload(Infinity);
-      this.updatePicture(1);
-      this.renderer.compile();
-      this.renderer.render();
-      this.renderer.render();
-    } else {
-      if (this.postcardView) {
-        const world = this.world,
-          store = this.store,
-          request = this.worldRequest;
-        const prepared = await this.prepareNear(
+    try {
+      if (active) {
+        cancelAnimationFrame(this.frame);
+        await this.store.requestView(
+          this.body.x,
+          this.body.y,
+          this.body.z,
+          Math.max(DEFAULT_NEAR_REACH, this.camera.distance * 1.3),
+        );
+        await this.store.settled();
+        // Freeze the exact far target before any unbounded capture uploads.
+        candidateFar = await this.prepareFar(
           store,
-          this.body,
-          Math.max(96, Math.min(224, this.camera.distance * 1.3)),
-          () =>
-            this.world === world &&
-            this.worldRequest === request &&
-            !this.stopped,
-        );
-        if (
-          !prepared ||
-          this.world !== world ||
-          this.worldRequest !== request ||
-          this.stopped
-        )
-          return;
-        this.postcardView = null;
-        this.postcardReport = null;
-        this.renderer.setView(this.camera.position, this.camera.focus, true);
-        this.updatePicture(1);
-        this.renderer.prepareView(
-          world?.id ?? 0,
-          this.camera.position,
+          renderer.camera.position,
           this.camera.focus,
+          true,
+          current,
+          Infinity,
         );
+        if (!candidateFar || !current()) return;
+        this.uploadStore(store, Infinity);
+        this.updatePicture(1);
+        renderer.prepareView(
+          store.world.id,
+          renderer.camera.position,
+          this.camera.focus,
+          candidateFar,
+        );
+        this.adoptFar(candidateFar, true);
+        candidateFar = null;
         this.renderer.render();
+        this.renderer.render();
+      } else {
+        if (this.postcardView) {
+          const prepared = await this.prepareNear(
+            store,
+            this.body,
+            Math.max(
+              DEFAULT_NEAR_REACH,
+              Math.min(224, this.camera.distance * 1.3),
+            ),
+            () =>
+              this.world === world &&
+              this.worldRequest === request &&
+              !this.stopped,
+          );
+          if (
+            !prepared ||
+            this.world !== world ||
+            this.worldRequest !== request ||
+            this.stopped
+          )
+            return;
+          candidateFar = await this.prepareFar(
+            store,
+            this.camera.position,
+            this.camera.focus,
+            false,
+            current,
+            this.camera.cut.height,
+          );
+          if (!candidateFar || !current()) return;
+          this.postcardView = null;
+          this.postcardReport = null;
+          this.renderer.setView(this.camera.position, this.camera.focus, true);
+          this.updatePicture(1);
+          this.renderer.prepareView(
+            world?.id ?? 0,
+            this.camera.position,
+            this.camera.focus,
+            candidateFar,
+          );
+          this.adoptFar(candidateFar, false);
+          candidateFar = null;
+          this.renderer.render();
+        } else this.far?.unfreeze();
+        this.lastView = "";
+        this.lastFrame = 0;
+        this.frame = requestAnimationFrame(this.animate);
       }
-      this.lastView = "";
-      this.lastFrame = 0;
-      this.frame = requestAnimationFrame(this.animate);
+      this.publish();
+    } finally {
+      if (candidateFar) {
+        renderer.useFar(this.far);
+        renderer.releaseFar(candidateFar);
+      }
     }
-    this.publish();
   }
   private async clear(world: WorldSession): Promise<void> {
     const request = this.worldRequest;
@@ -1418,6 +1641,8 @@ class GameRuntime implements GamePort {
     cancelAnimationFrame(this.frame);
     this.input.release();
     await this.saveCurrent();
+    if (this.far) this.renderer?.releaseFar(this.far);
+    this.far = null;
     this.store?.dispose();
     this.store = null;
     this.world = null;
@@ -1432,6 +1657,8 @@ class GameRuntime implements GamePort {
   }
   private cancelNavigation(): void {
     this.navigation.cancel();
+    if (this.arrivingFar) this.renderer?.releaseFar(this.arrivingFar);
+    this.arrivingFar = null;
     this.fade?.cancel();
     this.fade = null;
     this.canvas.style?.removeProperty("opacity");
@@ -1549,6 +1776,7 @@ class GameRuntime implements GamePort {
     this.input.setScope("inactive");
     const fromPosition = { ...this.camera.position },
       fromFocus = { ...this.camera.focus };
+    let candidateFar: FarWorld | null = null;
     try {
       const pose = this.destination(store, point.x, point.z);
       const body = makeBody(pose.x, pose.y, pose.z);
@@ -1564,7 +1792,10 @@ class GameRuntime implements GamePort {
         typeof matchMedia === "function" &&
         matchMedia("(prefers-reduced-motion: reduce)").matches;
       const glide = !reduced && distance < 3 * this.camera.requestedDistance;
-      const radius = Math.max(96, Math.min(224, camera.distance * 1.3));
+      const radius = Math.max(
+        DEFAULT_NEAR_REACH,
+        Math.min(224, camera.distance * 1.3),
+      );
       if (!(await this.prepareNear(store, body, radius, current)))
         return result(false);
       // A short camera glide keeps the source and each intervening near set.
@@ -1590,6 +1821,15 @@ class GameRuntime implements GamePort {
             return result(false);
         }
       if (!current()) return result(false);
+      candidateFar = await this.prepareFar(
+        store,
+        camera.position,
+        camera.focus,
+        false,
+        current,
+        camera.cut.height,
+      );
+      if (!candidateFar || !current()) return result(false);
       renderer.update(
         body,
         body,
@@ -1605,7 +1845,12 @@ class GameRuntime implements GamePort {
         true,
       );
       try {
-        renderer.prepareView(world.id, camera.position, camera.focus);
+        renderer.prepareView(
+          world.id,
+          camera.position,
+          camera.focus,
+          candidateFar,
+        );
       } finally {
         this.updatePicture(this.accumulator / PHYSICS.tick);
       }
@@ -1626,6 +1871,7 @@ class GameRuntime implements GamePort {
         glide ? fromFocus : camera.focus,
         !glide,
       );
+      if (!glide) renderer.useFar(candidateFar);
       renderer.update(
         body,
         body,
@@ -1640,6 +1886,11 @@ class GameRuntime implements GamePort {
         store,
       );
       renderer.render();
+      if (glide) {
+        if (this.arrivingFar) renderer.releaseFar(this.arrivingFar);
+        this.arrivingFar = candidateFar;
+      } else this.adoptFar(candidateFar, false);
+      candidateFar = null;
       this.body = body;
       this.previous = { ...body };
       this.camera = camera;
@@ -1680,6 +1931,10 @@ class GameRuntime implements GamePort {
       }
       throw error;
     } finally {
+      if (candidateFar) {
+        renderer.useFar(this.far);
+        renderer.releaseFar(candidateFar);
+      }
       this.navigation.finish(ticket);
       if (!this.navigation.pending) {
         this.input.release();
@@ -1735,6 +1990,7 @@ class GameRuntime implements GamePort {
       cancelAnimationFrame(this.frame);
       const oldPosition = { ...this.camera.position },
         oldFocus = { ...this.camera.focus };
+      let candidateFar: FarWorld | null = null;
       try {
         const preferred: SavedPose = {
           x: view.position.x,
@@ -1775,7 +2031,8 @@ class GameRuntime implements GamePort {
         body.yaw = body.headYaw = pose.yaw;
         body.flying = pose.flying;
         const camera = this.camera.destination(body, store.get, store.surface);
-        if (!(await this.prepareNear(store, body, 96, current))) return;
+        if (!(await this.prepareNear(store, body, DEFAULT_NEAR_REACH, current)))
+          return;
         const prepared = await this.loadPostcardChunks(
           store,
           view,
@@ -1784,6 +2041,15 @@ class GameRuntime implements GamePort {
           view.id === "TEST-1",
         );
         if (!prepared || !current()) return;
+        candidateFar = await this.prepareFar(
+          store,
+          view.position,
+          view.target,
+          true,
+          current,
+          Infinity,
+        );
+        if (!candidateFar || !current()) return;
         renderer.setPostcard(true);
         renderer.setViewMode(this.tools.viewMode);
         renderer.update(
@@ -1800,8 +2066,14 @@ class GameRuntime implements GamePort {
           store,
           true,
         );
-        renderer.prepareView(world.id, view.position, view.target);
+        renderer.prepareView(
+          world.id,
+          view.position,
+          view.target,
+          candidateFar,
+        );
         if (!current()) return;
+        renderer.useFar(candidateFar);
         renderer.setView(view.position, view.target, true);
         // Offscreen preparation restores source-camera effect/origin state.
         // Refresh it at the final eye before either draw or atomic publication.
@@ -1820,6 +2092,8 @@ class GameRuntime implements GamePort {
         );
         renderer.render();
         renderer.render();
+        this.adoptFar(candidateFar, true);
+        candidateFar = null;
         // No await between successful draw preparation and body/camera publication.
         this.body = body;
         this.previous = { ...body };
@@ -1847,6 +2121,10 @@ class GameRuntime implements GamePort {
         failure = error;
         throw error;
       } finally {
+        if (candidateFar) {
+          renderer.useFar(this.far);
+          renderer.releaseFar(candidateFar);
+        }
         this.navigation.finish(ticket);
         if (!committed && this.world === world && this.renderer === renderer) {
           renderer.setPostcard(false);
@@ -1892,6 +2170,7 @@ class GameRuntime implements GamePort {
           "Automatic postcards require an unedited generation profile",
         );
       const started = performance.now();
+      let candidateFar: FarWorld | null = null;
       try {
         this.cancelNavigation();
         // Capture takes over the view; the committed destination must not
@@ -1940,15 +2219,33 @@ class GameRuntime implements GamePort {
         );
         if (!prepared || !current())
           throw new Error("Postcard preparation cancelled");
+        candidateFar = await this.prepareFar(
+          store,
+          view.position,
+          view.target,
+          true,
+          current,
+          Infinity,
+        );
+        if (!candidateFar || !current())
+          throw new Error("Postcard far preparation cancelled");
         const renderStarted = performance.now();
         renderer.setView(view.position, view.target, true);
         this.target = this.ghost = null;
         this.occluded = false;
         this.updatePicture(1);
-        renderer.prepareView(world.id, view.position, view.target);
+        renderer.prepareView(
+          world.id,
+          view.position,
+          view.target,
+          candidateFar,
+        );
         if (!current()) throw new Error("Postcard preparation cancelled");
+        renderer.useFar(candidateFar);
         blob = await renderer.capturePng();
         if (!current()) throw new Error("Postcard changed during capture");
+        this.adoptFar(candidateFar, true);
+        candidateFar = null;
         this.postcardReport = {
           id: view.id,
           identity: world.identity,
@@ -1975,6 +2272,11 @@ class GameRuntime implements GamePort {
       } catch (error) {
         failure = error;
         throw error;
+      } finally {
+        if (candidateFar) {
+          renderer.useFar(this.far);
+          renderer.releaseFar(candidateFar);
+        }
       }
     });
     if (failure) throw failure;
@@ -1986,7 +2288,8 @@ class GameRuntime implements GamePort {
       !this.renderer ||
       this.lifecycle !== "ready" ||
       this.navigation.pending ||
-      this.pendingTransitions
+      this.pendingTransitions ||
+      !this.far?.ready
     )
       throw new Error("World is not ready for capture");
     return this.renderer.capturePng();
@@ -2001,15 +2304,85 @@ class GameRuntime implements GamePort {
       this.pendingTransitions
     )
       throw new Error("Still capture requires a ready world");
+    const resume = displayTimeMs === undefined && this.mode === "overhead";
+    cancelAnimationFrame(this.frame);
     if (displayTimeMs !== undefined) {
       cancelAnimationFrame(this.frame);
       this.clocks.displayMs = displayTimeMs;
     }
     await this.store.settled();
-    this.upload(Infinity);
+    // Freeze this still's actual lens/selection too; normal play never gets an
+    // unbounded far upload path through the capture helper.
+    const store = this.store,
+      renderer = this.renderer,
+      world = this.world;
+    const position = renderer.camera.position.clone();
+    const direction = renderer.pointerRay(0, 0).direction;
+    const target = {
+      x: position.x + direction.x,
+      y: position.y + direction.y,
+      z: position.z + direction.z,
+    };
+    const far = this.far ?? renderer.createFarWorld(store);
+    const created = far !== this.far;
+    let adopted = false;
+    try {
+      let generated = false;
+      const work = far
+        .select(
+          {
+            ...this.farView(position, target, this.mode === "postcard"),
+            fov: renderer.camera.fov,
+          },
+          true,
+          true,
+        )
+        .then(() => {
+          generated = true;
+        });
+      while (
+        this.store === store &&
+        this.world === world &&
+        !this.stopped &&
+        !renderer.contextLost
+      ) {
+        this.uploadStore(store, Infinity);
+        far.drain(Infinity);
+        if (far.error) throw far.error;
+        if (generated && far.ready) break;
+        await new Promise<void>((resolve) => setTimeout(resolve, 10));
+      }
+      if (
+        this.store !== store ||
+        this.world !== world ||
+        this.stopped ||
+        renderer.contextLost
+      )
+        throw new Error("Still preparation cancelled");
+      await work;
+      far.assertPrepared();
+      this.adoptFar(far, true);
+      adopted = true;
+    } finally {
+      if (!adopted && created) renderer.releaseFar(far);
+      if (!adopted && resume && this.store === store && !this.stopped) {
+        this.far?.unfreeze();
+        this.lastFrame = 0;
+        this.frame = requestAnimationFrame(this.animate);
+      }
+    }
     this.updatePicture(1);
-    const started = performance.now(),
+    const started = performance.now();
+    let blob: Blob;
+    try {
       blob = await this.renderer.capturePng();
+    } finally {
+      if (this.mode !== "postcard") this.far?.unfreeze();
+      if (resume && this.store === store && !this.stopped) {
+        this.lastFrame = 0;
+        this.frame = requestAnimationFrame(this.animate);
+      }
+    }
     if (this.mode === "postcard" && this.postcardReport) {
       const elapsed = performance.now() - started;
       this.postcardReport = {
@@ -2033,6 +2406,7 @@ class GameRuntime implements GamePort {
       dy = focus.y - position.y,
       dz = focus.z - position.z;
     return Object.freeze({
+      far: this.far?.telemetry ?? null,
       postcard: this.postcardReport
         ? structuredClone(this.postcardReport)
         : null,
@@ -2072,7 +2446,9 @@ class GameRuntime implements GamePort {
       ready:
         this.pendingTransitions === 0 &&
         !this.navigation.pending &&
-        this.lifecycle === "ready",
+        this.lifecycle === "ready" &&
+        this.graphics === "available" &&
+        (this.far?.ready ?? false),
       displayTimeMs: this.clocks.displayMs,
       editCount: this.store?.edits.size ?? 0,
       lastAction: this.actionRecord,

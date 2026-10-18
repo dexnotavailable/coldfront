@@ -432,6 +432,8 @@ The lens is a 40° vertical field of view, whatever the window's shape; resizing
 
 **Rays.** Several rules below ask for "the ground point under the cursor". That is where the ray through the cursor first meets something drawn: terrain, water, a building, or the cut face (C2). If it meets nothing within `4 × d` (the cursor is on the sky, or the hit is far off near the horizon), use the point where it crosses the level plane at the focus's height, and if that is also farther than `4 × d`, the point at `4 × d` along that direction.
 
+For camera anchoring and clearance, "drawn" means the currently visible terrain geometry after cut, coverage and placement-pop masks. A collidable cutout block such as leaves uses its geometric envelope: decorative texture holes do not make the physical block empty. Non-collidable decorative cutouts do not supply camera ground. Water and cut faces retain their explicit surfaces. This is a geometry query, not a claim of pixel-exact alpha picking (decision 124).
+
 **Panning** moves the focus across the ground, relative to the yaw (W moves toward the top of the screen).
 - **Keys:** speed = `1.0 × d` per second *(tune)*, so the ground crosses the screen at the same rate at any zoom. Shift multiplies it by 2.5. The speed climbs in a straight line from nothing to full in 120 ms and falls back in 80 ms. Diagonals aren't faster.
 - **Screen edge** (fullscreen only): the cursor within 8 px of an edge for 150 ms starts a pan at the key speed. Corners pan diagonally. It pauses while the cursor is over a panel or a drag is in progress.
@@ -521,6 +523,7 @@ A played unit is always seen from above, by **Overhead**: the Command camera of 
 - **The map** (D7) is flat and always north-up. Left drag pans. The wheel zooms toward the cursor, continuously as in C1, from the whole world on screen down to 1 m per pixel. W A S D pan.
 - **The free camera** (owner tool, D12) is an avatar in creative mode (B4): it walks, flies, breaks and places with endless blocks, seen in Overhead with its wider limits (C4). It is the only body in Milestone 1.
 - **King's view in Milestone 1** is the Command camera of C1 with nothing to select: Tab switches between it and the free camera. Going in, the Command camera centres on the free camera (with the cut set as C2 says when it was under cover). Coming back, the free camera stands on what is drawn at the focus.
+  A cut cap is a visualization, not a new physical platform. If the drawn focus lacks real body clearance, resolve a collision-safe destination in that focus column using the existing bounded destination rules; never spawn inside or remove hidden solids. If no safe destination exists, keep Command view and the avatar unchanged. Water retains the ordinary swimming rules. This exception does not alter a habitable drawn destination (decision 123).
 - **Postcard mode** is specified in `04-terrain.md` §14.3.
 
 **Where play starts.**

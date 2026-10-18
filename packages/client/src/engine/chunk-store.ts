@@ -1,6 +1,7 @@
 import { BLOCK_REGISTRY, Block } from "../../../shared/src/blocks/registry.js";
 import { voxelIndex } from "../../../shared/src/world/coordinates.js";
 import type {
+  LayerId,
   VoxelSample,
   WorldAreaSampler,
   WorldBounds,
@@ -11,6 +12,8 @@ import type { WorldSession } from "../contracts/game-ui.js";
 import { type PostcardView, postcardColumnVisible } from "../game/postcard.js";
 import { sameSession } from "../game/session.js";
 import { insideFrame } from "../game/world-save.js";
+import type { FarScheduler } from "./far-terrain-store.js";
+import { FarWorkerScheduler } from "./far-worker-scheduler.js";
 import { planBytes } from "./plan-transport.js";
 import { TerrainWorkers } from "./worker-pool.js";
 import {
@@ -45,6 +48,43 @@ export interface ChunkViewPlan {
   readonly world: WorldSession;
   readonly jobs: readonly ChunkViewJob[];
   readonly addresses: readonly Address[];
+}
+/** One atomic chunk consumes its actual nonempty parts from the shared budget.
+ * Stale results cost nothing; an oversized remainder stays queued, preserving
+ * its old drawn revision until the next frame can replace the whole chunk. */
+export function drainChunkUploads(
+  store: Pick<ChunkStore, "world" | "chunks" | "uploads">,
+  partBudget: number,
+  upload: (result: ChunkResult) => void,
+): number {
+  if (
+    (!Number.isInteger(partBudget) && partBudget !== Infinity) ||
+    partBudget < 0
+  )
+    throw new RangeError("Invalid near upload budget");
+  let spent = 0;
+  while (store.uploads.length) {
+    const result = store.uploads[0];
+    if (!result) break;
+    const stored = store.chunks.get(chunkKey(result.address));
+    if (
+      !stored ||
+      stored.revision !== result.revision ||
+      !sameSession(store.world, result.world)
+    ) {
+      store.uploads.shift();
+      continue;
+    }
+    const parts = result.mesh.parts.filter(
+      (part) => part.indices.length > 0,
+    ).length;
+    if (spent + parts > partBudget) break;
+    upload(result);
+    store.uploads.shift();
+    stored.state = "visible";
+    spent += parts;
+  }
+  return spent;
 }
 /** Exact ordered destination selection, without requesting or generating chunks. */
 export function planChunkView(
@@ -149,6 +189,43 @@ export class ChunkStore {
   private readonly voxel: VoxelSample = { density: 0, block: 0, fluid: 0 };
   private stopped = false;
   private suspended = false;
+  private readonly editListeners = new Set<(edit: VoxelEdit) => void>();
+  private readonly farSchedulers = new Set<{ dispose(): void }>();
+  subscribeEdits(listener: (edit: VoxelEdit) => void): () => void {
+    this.editListeners.add(listener);
+    return () => {
+      this.editListeners.delete(listener);
+    };
+  }
+  /** Bounded request adapter; ownership of the one terrain pool stays here.
+   * A source rollback can replace that pool without leaving far requests bound
+   * to disposed workers. Store-local request IDs never escape the adapter. */
+  createFarScheduler(layer: LayerId): FarScheduler & { dispose(): void } {
+    let pool = this.workers;
+    let scheduler = new FarWorkerScheduler(pool, layer);
+    let disposed = false;
+    const adapter: FarScheduler & { dispose(): void } = {
+      request: (request) => {
+        if (disposed || this.stopped || this.suspended)
+          return Promise.reject(new Error("Far scheduler unavailable"));
+        if (pool !== this.workers) {
+          scheduler.dispose();
+          pool = this.workers;
+          scheduler = new FarWorkerScheduler(pool, layer);
+        }
+        return scheduler.request(request);
+      },
+      cancel: (id) => scheduler.cancel(id),
+      dispose: () => {
+        if (disposed) return;
+        disposed = true;
+        scheduler.dispose();
+        this.farSchedulers.delete(adapter);
+      },
+    };
+    this.farSchedulers.add(adapter);
+    return adapter;
+  }
   suspendWorkers(): void {
     if (this.suspended || this.stopped) return;
     this.suspended = true;
@@ -462,6 +539,7 @@ export class ChunkStore {
     if (!BLOCK_REGISTRY[edit.block]) throw new RangeError("Unknown block edit");
     this.edits.set(editKey(edit.x, edit.y, edit.z), edit);
     this.workers.edit(edit);
+    for (const listener of this.editListeners) listener(edit);
     const cx = Math.floor(edit.x / 32),
       cy = Math.floor(edit.y / 32),
       cz = Math.floor(edit.z / 32);
@@ -548,6 +626,8 @@ export class ChunkStore {
   }
   dispose(): void {
     this.stopped = true;
+    for (const scheduler of [...this.farSchedulers]) scheduler.dispose();
+    this.editListeners.clear();
     this.workers.dispose();
     this.chunks.clear();
     this.uploads.length = 0;

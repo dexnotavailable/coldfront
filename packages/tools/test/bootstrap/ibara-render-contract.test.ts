@@ -139,6 +139,7 @@ describe("Ibara renderer contracts (CPU/source proof; real pixels are a separate
       Object.create(WorldRenderer.prototype) as object,
       {
         chunks,
+        farResources: new Map(),
         scene: new Scene(),
         depthScene: new Scene(),
         terrain,
@@ -295,6 +296,8 @@ describe("Ibara renderer contracts (CPU/source proof; real pixels are a separate
         terrain,
         ibaraEffects,
         scene,
+        farScene: new Scene(),
+        farCamera: new PerspectiveCamera(40, 1, 200, 16000),
         depthScene: new Scene(),
         marks: new Scene(),
         camera: new PerspectiveCamera(),

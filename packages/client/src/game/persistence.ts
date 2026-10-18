@@ -4,6 +4,10 @@ import type {
 } from "../../../shared/src/world/types.js";
 import type { VoxelEdit } from "../engine/worker-protocol.js";
 import {
+  type ApprovedSaveMigration,
+  previousSaveIdentity,
+} from "./save-compatibility.js";
+import {
   emptyWorldSave,
   parseWorldSave,
   type SavedPose,
@@ -17,8 +21,14 @@ export class EditPersistence {
   private operations: Promise<void> = Promise.resolve();
   private readonly unreadable = new Set<string>();
   private readonly memory = new Map<string, WorldSave>();
+  private readonly migration: ApprovedSaveMigration | undefined;
   blocked = false;
-  constructor(private readonly generation: string) {}
+  constructor(
+    private readonly generation: string,
+    migration?: ApprovedSaveMigration,
+  ) {
+    this.migration = migration ? Object.freeze({ ...migration }) : undefined;
+  }
   private target(target: Target): {
     identity: WorldIdentity;
     key: string;
@@ -69,10 +79,115 @@ export class EditPersistence {
       request.onerror = () => reject(request.error);
     });
   }
+  /** One transaction protects the conditional copy across database connections. */
+  private approvedWorld(
+    identity: WorldIdentity,
+    previous: WorldIdentity,
+    update?: (record: WorldSave) => WorldSave,
+  ): Promise<WorldSave> {
+    return new Promise((resolve, reject) => {
+      const tx = this.db?.transaction("worlds", "readwrite");
+      if (!tx) return reject(new Error("Saved data is unavailable"));
+      const store = tx.objectStore("worlds"),
+        key = worldKey(identity);
+      let result: WorldSave | undefined,
+        baseValidated = false,
+        failure: unknown;
+      const abort = (error: unknown): void => {
+        failure = error;
+        if (!baseValidated) this.unreadable.add(key);
+        try {
+          tx.abort();
+        } catch {
+          reject(error);
+        }
+      };
+      const guard = (action: () => void): void => {
+        try {
+          action();
+        } catch (error) {
+          abort(error);
+        }
+      };
+      tx.onerror = () => {
+        failure ??= tx.error;
+      };
+      tx.onabort = () => {
+        if (!baseValidated) this.unreadable.add(key);
+        reject(failure ?? tx.error ?? new Error("Save transaction aborted"));
+      };
+      tx.oncomplete = () => {
+        if (result) resolve(result);
+        else reject(new Error("Save transaction completed without a record"));
+      };
+      const read = (
+        entryKey: string,
+        consume: (present: boolean, value: unknown) => void,
+      ): void => {
+        const presence = store.getKey(entryKey);
+        presence.onerror = () => abort(presence.error);
+        presence.onsuccess = () =>
+          guard(() => {
+            if (presence.result === undefined) return consume(false, undefined);
+            const request = store.get(entryKey);
+            request.onerror = () => abort(request.error);
+            request.onsuccess = () =>
+              guard(() => {
+                if (request.result === undefined)
+                  throw new Error("Existing save contains undefined");
+                consume(true, request.result);
+              });
+          });
+      };
+      const finish = (saved: WorldSave, present: boolean): void => {
+        baseValidated = true;
+        result = update ? update(saved) : saved;
+        const request = !present
+          ? store.add(result, key)
+          : update
+            ? store.put(result, key)
+            : null;
+        if (request) request.onerror = () => abort(request.error);
+      };
+      const readPrevious = (): void => {
+        read(worldKey(previous), (present, value) => {
+          const saved = present
+            ? parseWorldSave(value, previous, false)
+            : emptyWorldSave(identity);
+          finish({ ...saved, identity: { ...identity } }, false);
+        });
+      };
+      guard(() =>
+        read(key, (present, value) => {
+          if (present)
+            return finish(parseWorldSave(value, identity, false), true);
+          if (identity.kind !== "test") return readPrevious();
+          read(
+            `${this.generation}:${identity.seed}`,
+            (legacyPresent, legacy) => {
+              if (legacyPresent)
+                finish(parseWorldSave(legacy, identity, true), false);
+              else readPrevious();
+            },
+          );
+        }),
+      );
+    });
+  }
   loadWorld(target: Target): Promise<WorldSave> {
     const { identity, key, legacy } = this.target(target);
+    const previous = legacy
+      ? null
+      : previousSaveIdentity(identity, this.generation, this.migration);
     return this.enqueue(async () => {
       try {
+        if (previous) {
+          const saved = await this.approvedWorld(identity, previous);
+          this.memory.set(key, saved);
+          this.unreadable.delete(key);
+          this.blocked = false;
+          return saved;
+        }
         let value = await this.readKey(key),
           allowLegacy = legacy;
         if (
@@ -104,12 +219,21 @@ export class EditPersistence {
     update: (record: WorldSave) => WorldSave,
   ): Promise<boolean> {
     const { identity, key, legacy } = this.target(target);
+    const previous = legacy
+      ? null
+      : previousSaveIdentity(identity, this.generation, this.migration);
     return this.enqueue(async () => {
       if (!this.db || this.unreadable.has(key)) {
         this.blocked = true;
         return false;
       }
       try {
+        if (previous) {
+          const saved = await this.approvedWorld(identity, previous, update);
+          this.memory.set(key, saved);
+          this.blocked = false;
+          return true;
+        }
         const next = update(this.memory.get(key) ?? emptyWorldSave(identity));
         const saved = await new Promise<boolean>((resolve) => {
           const tx = this.db?.transaction("worlds", "readwrite");

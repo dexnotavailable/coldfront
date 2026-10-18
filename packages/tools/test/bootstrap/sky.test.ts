@@ -35,6 +35,10 @@ function fixture(failDraw = false) {
       camera,
       sky,
       scene,
+      farScene: new Scene(),
+      farCamera: new PerspectiveCamera(40, 1, 200, 16000),
+      farResources: new Map(),
+      activeFar: null,
       depthScene: new Scene(),
       marks: new Scene(),
       chunks: new Map(),
@@ -49,8 +53,11 @@ function fixture(failDraw = false) {
         },
       },
       renderer: {
+        autoClear: true,
         getRenderTarget: () => null,
         setRenderTarget() {},
+        clear() {},
+        clearDepth() {},
         render() {
           observe();
           if (failDraw) throw new Error("Destination draw failed");

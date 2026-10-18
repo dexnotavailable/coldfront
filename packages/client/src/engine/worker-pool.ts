@@ -1,26 +1,58 @@
-import type { WorldPlanData } from "../../../shared/src/world/types.js";
+import type {
+  LayerId,
+  WorldPlanData,
+} from "../../../shared/src/world/types.js";
+import { farSpacing } from "../../../shared/src/worldgen/far/coordinates.js";
+import {
+  FarCapacityError,
+  type FarTileAddress,
+  type FarTileRequest,
+} from "../../../shared/src/worldgen/far/types.js";
 import type { WorldSession } from "../contracts/game-ui.js";
 import { sameSession } from "../game/session.js";
 import { clonePlanBuffers, planBytes } from "./plan-transport.js";
 import type {
   Address,
   ChunkResult,
+  FarTileResult,
+  FarWorkerRequest,
   VoxelEdit,
   WorkerRequest,
   WorkerResponse,
   WorkerStage,
 } from "./worker-protocol.js";
 
-interface Job {
+interface JobBase {
   id: number;
-  address: Address;
   revision: number;
   priority: number;
   postcard: boolean;
-  resolve: (result: ChunkResult) => void;
   reject: (error: Error) => void;
   progress: (stage: WorkerStage) => void;
 }
+interface ChunkJob extends JobBase {
+  type: "chunk";
+  address: Address;
+  resolve: (result: ChunkResult) => void;
+}
+interface FarJob extends JobBase {
+  type: "far";
+  address: FarTileAddress;
+  layer: LayerId;
+  cancelled: boolean;
+  resolve: (result: FarTileResult) => void;
+}
+type Job = ChunkJob | FarJob;
+type PostcardBatch =
+  | { type: "chunk"; cx: number; cy: number; cz: number; remaining: number }
+  | {
+      type: "far";
+      tx: number;
+      tz: number;
+      lod: number;
+      layer: LayerId;
+      remaining: number;
+    };
 interface Lane {
   worker: Worker;
   jobs: Job[];
@@ -28,7 +60,7 @@ interface Lane {
   cacheBytes: number;
   stage: WorkerStage;
   ready: boolean;
-  batch: { cx: number; cy: number; cz: number; remaining: number } | null;
+  batch: PostcardBatch | null;
   acknowledge(): void;
 }
 export function workerCount(concurrency: number): number {
@@ -38,6 +70,61 @@ export interface WorkerPoolOptions {
   readonly concurrency?: number;
   readonly shared?: boolean;
   readonly factory?: () => Worker;
+}
+export interface FarWorkerTicket {
+  readonly id: number;
+  readonly result: Promise<FarTileResult>;
+  cancel(): void;
+}
+export class FarWorkerCancelledError extends Error {
+  override readonly name = "AbortError";
+  constructor() {
+    super("Far tile request cancelled");
+  }
+}
+function sameFarRequest(a: FarTileRequest, b: FarTileRequest): boolean {
+  return (
+    a.layer === b.layer &&
+    a.revision === b.revision &&
+    a.address.tx === b.address.tx &&
+    a.address.tz === b.address.tz &&
+    a.address.lod === b.address.lod
+  );
+}
+function inBatch(job: Job, batch: PostcardBatch): boolean {
+  if (job.type === "chunk" && batch.type === "chunk")
+    return (
+      Math.floor(job.address.cx / 2) === batch.cx &&
+      job.address.cy === batch.cy &&
+      Math.floor(job.address.cz / 2) === batch.cz
+    );
+  return (
+    job.type === "far" &&
+    batch.type === "far" &&
+    Math.floor(job.address.tx / 2) === batch.tx &&
+    Math.floor(job.address.tz / 2) === batch.tz &&
+    job.address.lod === batch.lod &&
+    job.layer === batch.layer
+  );
+}
+function postcardBatch(job: Job): PostcardBatch | null {
+  if (!job.postcard || job.priority < 0) return null;
+  return job.type === "chunk"
+    ? {
+        type: "chunk",
+        cx: Math.floor(job.address.cx / 2),
+        cy: job.address.cy,
+        cz: Math.floor(job.address.cz / 2),
+        remaining: 3,
+      }
+    : {
+        type: "far",
+        tx: Math.floor(job.address.tx / 2),
+        tz: Math.floor(job.address.tz / 2),
+        lod: job.address.lod,
+        layer: job.layer,
+        remaining: 3,
+      };
 }
 export class TerrainWorkers {
   private readonly lanes: Lane[] = [];
@@ -122,14 +209,40 @@ export class TerrainWorkers {
         if (!job || message.id !== job.id) return;
         if (message.type === "progress") {
           lane.stage = message.stage;
-          job.progress(message.stage);
+          if (job.type !== "far" || !job.cancelled) job.progress(message.stage);
           return;
         }
         lane.current = null;
-        if (message.type === "error") job.reject(new Error(message.message));
-        else {
-          lane.cacheBytes = message.cacheBytes;
+        if (message.type !== "error") lane.cacheBytes = message.cacheBytes;
+        if (job.type === "far" && job.cancelled) {
+          // Cancellation settled its promise. The synchronous worker still had
+          // to finish before this lane could safely accept another job.
+        } else if (message.type === "error") {
+          if (
+            message.far &&
+            (job.type !== "far" || !sameFarRequest(job, message.far))
+          )
+            job.reject(new Error("Far error identity mismatch"));
+          else if (job.type === "far" && message.capacity)
+            job.reject(
+              new FarCapacityError(
+                message.capacity.capacity,
+                message.capacity.limit,
+                message.capacity.statistics,
+              ),
+            );
+          else job.reject(new Error(message.message));
+        } else if (job.type === "chunk" && message.type === "chunk") {
           job.resolve(message);
+        } else if (
+          job.type === "far" &&
+          message.type === "far" &&
+          sameFarRequest(job, message) &&
+          sameFarRequest(job, message.runs)
+        ) {
+          job.resolve(message);
+        } else {
+          job.reject(new Error("Terrain worker result identity mismatch"));
         }
         this.dispatch(lane);
         this.dispatchIdle();
@@ -177,6 +290,7 @@ export class TerrainWorkers {
     return new Promise((resolve, reject) => {
       const lane = this.affinity(address);
       lane.jobs.push({
+        type: "chunk",
         id: ++this.serial,
         address,
         revision,
@@ -190,6 +304,71 @@ export class TerrainWorkers {
       this.dispatch(lane);
     });
   }
+  /** All near/far jobs share the same IDs, lanes, priorities and worker cap. */
+  requestFar(request: Omit<FarWorkerRequest, "type" | "id">): FarWorkerTicket {
+    const id = ++this.serial;
+    let job: FarJob | undefined;
+    const result = new Promise<FarTileResult>((resolve, reject) => {
+      if (this.stopped) {
+        reject(this.stopped);
+        return;
+      }
+      if (!sameSession(this.world, request.world)) {
+        reject(new Error("Far request world session mismatch"));
+        return;
+      }
+      // Validate before putting a malformed address in the affinity queue.
+      farSpacing(request.address);
+      if (
+        !Number.isFinite(request.priority) ||
+        !Number.isSafeInteger(request.revision) ||
+        request.revision < 0
+      )
+        throw new RangeError("Invalid far request priority or revision");
+      job = {
+        type: "far",
+        id,
+        address: { ...request.address },
+        layer: request.layer,
+        revision: request.revision,
+        priority: request.priority,
+        postcard: request.postcard,
+        cancelled: false,
+        resolve,
+        reject,
+        progress: () => {},
+      };
+      const lane = this.affinity({
+        cx: request.address.tx,
+        cy: 0,
+        cz: request.address.tz,
+      });
+      lane.jobs.push(job);
+      lane.jobs.sort((a, b) => a.priority - b.priority || a.id - b.id);
+      this.dispatch(lane);
+    });
+    return {
+      id,
+      result,
+      cancel: () => {
+        if (job) this.cancelFar(job);
+      },
+    };
+  }
+  private cancelFar(job: FarJob): void {
+    if (job.cancelled) return;
+    for (const lane of this.lanes) {
+      const index = lane.jobs.indexOf(job);
+      if (lane.current !== job && index < 0) continue;
+      job.cancelled = true;
+      job.reject(new FarWorkerCancelledError());
+      if (index >= 0) lane.jobs.splice(index, 1);
+      // A running task is never terminated or replaced by cancellation.
+      this.dispatch(lane);
+      this.dispatchIdle();
+      return;
+    }
+  }
   private dispatch(lane: Lane): void {
     if (this.stopped || !lane.ready || lane.current) return;
     if (lane.jobs.length === 0) {
@@ -202,34 +381,39 @@ export class TerrainWorkers {
     const index =
       batch &&
       batch.remaining > 0 &&
-      lane.jobs.every((job) => job.postcard && job.priority >= 0)
-        ? lane.jobs.findIndex(
-            (job) =>
-              Math.floor(job.address.cx / 2) === batch.cx &&
-              job.address.cy === batch.cy &&
-              Math.floor(job.address.cz / 2) === batch.cz,
-          )
+      lane.jobs.every(
+        (job) => job.type === batch.type && job.postcard && job.priority >= 0,
+      )
+        ? lane.jobs.findIndex((job) => inBatch(job, batch))
         : -1;
     const job = lane.jobs.splice(index < 0 ? 0 : index, 1)[0] as Job;
     if (index >= 0 && batch) batch.remaining--;
-    else
-      lane.batch =
-        job.postcard && job.priority >= 0
-          ? {
-              cx: Math.floor(job.address.cx / 2),
-              cy: job.address.cy,
-              cz: Math.floor(job.address.cz / 2),
-              remaining: 3,
-            }
-          : null;
+    else lane.batch = postcardBatch(job);
     lane.current = job;
-    lane.worker.postMessage({
-      type: "chunk",
-      world: this.world,
-      id: job.id,
-      address: job.address,
-      revision: job.revision,
-    } satisfies WorkerRequest);
+    lane.stage = "generating";
+    try {
+      if (job.type === "chunk")
+        lane.worker.postMessage({
+          type: "chunk",
+          world: this.world,
+          id: job.id,
+          address: job.address,
+          revision: job.revision,
+        } satisfies WorkerRequest);
+      else
+        lane.worker.postMessage({
+          type: "far",
+          world: this.world,
+          id: job.id,
+          address: job.address,
+          layer: job.layer,
+          revision: job.revision,
+          priority: job.priority,
+          postcard: job.postcard,
+        } satisfies WorkerRequest);
+    } catch (error) {
+      this.fail(error instanceof Error ? error : new Error(String(error)));
+    }
   }
   private dispatchIdle(): void {
     // Wait for a completion so the initial request batch can establish locality.
@@ -256,12 +440,16 @@ export class TerrainWorkers {
   }
   edit(edit: VoxelEdit): void {
     if (this.stopped) return;
-    for (const lane of this.lanes)
-      lane.worker.postMessage({
-        type: "edit",
-        world: this.world,
-        edit,
-      } satisfies WorkerRequest);
+    try {
+      for (const lane of this.lanes)
+        lane.worker.postMessage({
+          type: "edit",
+          world: this.world,
+          edit,
+        } satisfies WorkerRequest);
+    } catch (error) {
+      this.fail(error instanceof Error ? error : new Error(String(error)));
+    }
   }
   get queued(): number {
     return this.lanes.reduce(

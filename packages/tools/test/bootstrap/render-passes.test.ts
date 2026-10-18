@@ -31,6 +31,8 @@ import type { MeshPart } from "../../../shared/src/meshing/greedy.js";
 function fixture() {
   const camera = new PerspectiveCamera(40, 1, 0.2, 1600),
     scene = new Scene(),
+    farScene = new Scene(),
+    farCamera = new PerspectiveCamera(40, 1, 200, 16000),
     depthScene = new Scene(),
     marks = new Scene(),
     avatar = new Avatar(0xaaaaaa, 0x222222),
@@ -71,6 +73,12 @@ function fixture() {
     {
       camera,
       scene,
+      farScene,
+      farCamera,
+      farResources: new Map(),
+      activeFar: null,
+      farWaterDepthTarget: new WebGLRenderTarget(1, 1),
+      farPreparationTarget: new WebGLRenderTarget(128, 72),
       depthScene,
       marks,
       avatar,

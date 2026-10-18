@@ -263,6 +263,10 @@ export function collectMainTrees(
   return trees;
 }
 /** Complete raw solid composition/material before cleanup and fluid occupancy. */
+export interface FarTerrainPolicy {
+  readonly column: Float64Array;
+  readonly heightDelta: number;
+}
 export function sampleMainSolid(
   x: number,
   y: number,
@@ -271,6 +275,7 @@ export function sampleMainSolid(
   column: Float64Array,
   trees: readonly TreeFeature[],
   ibara?: MainIbaraSampler<IbaraDensityBatch>,
+  far?: FarTerrainPolicy,
 ): VoxelSample {
   if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z))
     throw new RangeError("Voxel point must be finite");
@@ -294,9 +299,10 @@ export function sampleMainSolid(
     out.block = Block.Worldstone;
     return out;
   }
+  const terrainColumn = far?.column ?? column;
   const natural =
-    (Number(column[MainColumn.NaturalHeight]) - y) *
-    Number(column[MainColumn.DistanceScale]);
+    (Number(terrainColumn[MainColumn.NaturalHeight]) - y) *
+    Number(terrainColumn[MainColumn.DistanceScale]);
   const bridge = Math.min(
     Number(column[MainColumn.BridgeMargin]),
     Number(column[MainColumn.BridgeTop]) - y,
@@ -304,7 +310,7 @@ export function sampleMainSolid(
   out.density = Math.max(natural, bridge);
   out.block =
     natural > 0
-      ? mainTerrainMaterial(y, column)
+      ? mainTerrainMaterial(y, terrainColumn)
       : bridge > 0
         ? Block.Cobblestone
         : Block.Air;
@@ -314,6 +320,11 @@ export function sampleMainSolid(
     const ground = ibara.sampleGround
       ? ibara.sampleGround(x, y, z, column, ibara.groundSample)
       : ibara.ground.sample(x, y, z, ibara.groundSample);
+    if (far) {
+      ground.density +=
+        far.heightDelta * Number(column[MainColumn.DistanceScale]);
+      ground.surfaceY += far.heightDelta;
+    }
     out.density = ibara.batch.density(
       ground.density,
       x,
@@ -366,7 +377,10 @@ export function sampleMainSolid(
     // Surface tags are a skin; ash/vent crust never replaces the deep column.
     const tag =
       ground.surfaceY - y > 4 && ground.tag !== "base" ? "base" : ground.tag;
-    const material = ibaraGroundMaterial(tag, mainTerrainMaterial(y, column));
+    const material = ibaraGroundMaterial(
+      tag,
+      mainTerrainMaterial(y, terrainColumn),
+    );
     out.block = ibara.featureSample.featureId
       ? ibaraMaterial(x, y, z, material, ibara.featureSample, ground.surfaceY)
       : ground.tag === "base" && terrainBlock !== Block.Air
@@ -438,7 +452,8 @@ export function sampleMainVoxel(
   column: Float64Array,
   trees: readonly TreeFeature[],
   ibara?: MainIbaraSampler<IbaraDensityBatch>,
+  far?: FarTerrainPolicy,
 ): VoxelSample {
-  sampleMainSolid(x, y, z, out, column, trees, ibara);
+  sampleMainSolid(x, y, z, out, column, trees, ibara, far);
   return resolveMainFluids(x, y, z, out, column, ibara);
 }

@@ -5,11 +5,11 @@
       "id": "outline-ghost",
       "rows": ["hud.outline", "hud.ghost"],
       "image": "fixtures/ui/world-outline-ghost.jpg",
-      "imageSha256": "dd9264dfedeb5dbbe898a406b9caa61fc0f79a6b67d10bc75be347427c12d68a",
+      "imageSha256": "41b07d3b08d9d5787cd89de15dd9238e9404e83ce009ffd3d42a37ad35298189",
       "telemetry": "fixtures/ui/world-outline-ghost.json",
-      "telemetrySha256": "cd7a743b1c37275d48d736846c1da839b18a27f2953402e7fdbfc8925a2e7493",
+      "telemetrySha256": "0adf3d27fc4f01df5903fd9d80fc6537941e0ebe59675b7b5e7b289065d430af",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "7b9bf11e776536ae86a496109f32b06af71daf21d96545f68bd82d1d1513e03a",
+      "runReceiptSha256": "e2a99fa45278a46e5037960398c59d3359de5035be3da84386585f899867430a",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -37,7 +37,7 @@
         },
         {
           "path": "packages/client/src/engine/chunk-store.ts",
-          "sha256": "37e767e8fa1d35ae59d8537a7fbf6f01931382dddc878c9acbe669e1aad439ed"
+          "sha256": "937ab39acc91ee3bd5527989049f9e52ee1f338d83fa50950fda0230b61762b1"
         },
         {
           "path": "packages/client/src/engine/cut-cap.ts",
@@ -46,6 +46,38 @@
         {
           "path": "packages/client/src/engine/effects.ts",
           "sha256": "91b046d290e39381d7e6140637f02a2bf950f4fa5801303603bc062823b5c4e5"
+        },
+        {
+          "path": "packages/client/src/engine/far-cut-cap.ts",
+          "sha256": "1197dc344ec6a87b3acf7fe0af48c15311539ca16b5d0cc16a88452c197da38f"
+        },
+        {
+          "path": "packages/client/src/engine/far-terrain-coverage.ts",
+          "sha256": "3b6ef61c8e096d123f1433d5de082d6c7cf2675a596482e32621177a36abaf14"
+        },
+        {
+          "path": "packages/client/src/engine/far-terrain-renderer.ts",
+          "sha256": "cc805307cb3f8b11cb56eaac77e6ff2f97b63d5759aeffc28de9671c3d08db07"
+        },
+        {
+          "path": "packages/client/src/engine/far-terrain-selection.ts",
+          "sha256": "6329e5d6abd8745e3242b33b30f7cadf7bbfc5051d6fe9e85cd79b3e9a970a2c"
+        },
+        {
+          "path": "packages/client/src/engine/far-terrain-store.ts",
+          "sha256": "d302eb00c388dcda49c87aaeaf83d88ab0e044e4c5ea748dc1da886d01dc2034"
+        },
+        {
+          "path": "packages/client/src/engine/far-visibility-bounds.ts",
+          "sha256": "4a1e5e2f8e786a93dbef7899e7e6c4f27828d423cc484095ab13dd15b3470092"
+        },
+        {
+          "path": "packages/client/src/engine/far-worker-scheduler.ts",
+          "sha256": "b68af6d6ef7a239948d68bd3763c691694901b0303c7d9c73dc7319ef247358a"
+        },
+        {
+          "path": "packages/client/src/engine/far-world.ts",
+          "sha256": "de539995886dff8497a9ce0a14012fe5fdd60fb27145998750ead08e47509527"
         },
         {
           "path": "packages/client/src/engine/ibara-atmosphere.ts",
@@ -81,23 +113,23 @@
         },
         {
           "path": "packages/client/src/engine/renderer.ts",
-          "sha256": "70185e23175a9b1732c8e907385bd1e09c5fcaf69a709eacf3cda84c3c495bd4"
+          "sha256": "71c48c3e77601e1d674f13139ceb2e89a77d97e851549965962f3ade4961b44c"
         },
         {
           "path": "packages/client/src/engine/terrain-material.ts",
-          "sha256": "f1aa43a5d35380fc8afc7e70ff15c784479d93528814c2f1e5b018bda29ff03a"
+          "sha256": "a0e0b90b1a327c7f2bbd6555bb5579d6e232cd92f8e1bbd24a93b7cf45b7a603"
         },
         {
           "path": "packages/client/src/engine/terrain-worker.ts",
-          "sha256": "2e9b1bf7073b9f8ce4f8de7519390bd9c42ad5226f8baf32d324afa3fbf59fe0"
+          "sha256": "dbfd94929ba9c6f663dd0fd117e3fc139d6ce977141ea93eb78471d342b84157"
         },
         {
           "path": "packages/client/src/engine/worker-pool.ts",
-          "sha256": "204d52009d5280ae3c13197d46891933650ff32d8c598c758c76b0a1a07e20f5"
+          "sha256": "3d34c8f3e53035e6028241ddcf8cef817157f9e080b541cb0ad620dd639131f1"
         },
         {
           "path": "packages/client/src/engine/worker-protocol.ts",
-          "sha256": "a51e737834d931523922be5004e2dc8b8d079a0ac787789e7d66217470f72338"
+          "sha256": "f57413574864e6f8d8c83f0af958ccb162c3320edfb8ae04b40dee6e3fffc831"
         },
         {
           "path": "packages/client/src/engine/world-plan-cache.ts",
@@ -112,12 +144,16 @@
           "sha256": "1f84b0161fdc579e6e35b970d67bda0c0be165dc5c03a80895522d0a823afc41"
         },
         {
+          "path": "packages/client/src/game/command-camera.ts",
+          "sha256": "76ee1ff3a017f4231c6ffc4712a27c00e80b4a8cef62e07331c5e883160f7c06"
+        },
+        {
           "path": "packages/client/src/game/controller.ts",
           "sha256": "2f77e219babe674d86a2a44f208597daa178a6edf0e3bf4a10153ac67c2a3cd5"
         },
         {
           "path": "packages/client/src/game/create-game.ts",
-          "sha256": "4d0d6c05b40b5ed1cae86c35f0ac36577ab3d7292a1cc5a7ef75502f89fc5b49"
+          "sha256": "9788c1116ccd2f5ba2f8b8fbac031a10a97d81934094765398679ebafda2f03d"
         },
         {
           "path": "packages/client/src/game/destination.ts",
@@ -129,7 +165,7 @@
         },
         {
           "path": "packages/client/src/game/persistence.ts",
-          "sha256": "a5b141b0131ecba5ee1b22dd59f2f5e91114e838774334856cc9cd6b48b0c897"
+          "sha256": "34897b44ff1029e11474edd10fd35600121ffb018ffb4df879ec103f6eb3da9c"
         },
         {
           "path": "packages/client/src/game/postcard.ts",
@@ -138,6 +174,10 @@
         {
           "path": "packages/client/src/game/raycast.ts",
           "sha256": "a4e3dc19d1baa7a75cf436a2fdf3975d99fc4d0cfc9ddd7ddf7f55e3dff61df9"
+        },
+        {
+          "path": "packages/client/src/game/save-compatibility.ts",
+          "sha256": "bef825bd71479df3d3e08a8aa343de56bc402dcb0767e4b48b84a72a737e3d66"
         },
         {
           "path": "packages/client/src/game/session.ts",
@@ -216,6 +256,10 @@
           "sha256": "6ecc01a82d1e7d66747810d4cab55bfff116c08a12a46051bfb3041ebb75f05c"
         },
         {
+          "path": "packages/shared/src/meshing/columns.ts",
+          "sha256": "5b604695377475ea5d7df4c430f3d5e877f385bbc7adcad89e85c109b5c364d2"
+        },
+        {
           "path": "packages/shared/src/meshing/greedy.ts",
           "sha256": "7df88615c8bc29887c2b2c51ab995b0fe741876569fdbf2f01f1b161467cc0c1"
         },
@@ -289,15 +333,39 @@
         },
         {
           "path": "packages/shared/src/world/types.ts",
-          "sha256": "6eb333377c6cd1eeb034a57fddacf9d729b2942d95b7d2e3989578363c7c1814"
+          "sha256": "59242b90689580f08ad88c2b7ac3be037c521752caa5ab78372c2cda718b5c4c"
         },
         {
           "path": "packages/shared/src/world/world-context.ts",
-          "sha256": "2f6f79ce21552223640ce4f73c74ea247da2d96c884c821d328e8d7982e1c926"
+          "sha256": "ce82e343a4d27a3b8a6a5d91129852c4fcc398148797711ff367c031f52142f8"
         },
         {
           "path": "packages/shared/src/worldgen/chunk.ts",
           "sha256": "f55a51f5d9f3fb81723f863a7a1f0bb5b3cf931447c34d09675753b8ab1e2234"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/bands.ts",
+          "sha256": "db1288917183ed23ba49d6450def35baf40b44662c5dd496d5fa41e5f6b257ea"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/columns.ts",
+          "sha256": "30b8d0feef656b2092a86cef2a0bb89d36ebd11b700c5eac9d8651a6789bf392"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/coordinates.ts",
+          "sha256": "d9b39bf520359ebaf0c76757b852bbfaf17f61d75901f9eacd408062f3498f45"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/edits.ts",
+          "sha256": "cb8e41a3a5e9abaddda120d520304f7cd19f56a3973ee7e1108e309666fa30f2"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/index.ts",
+          "sha256": "fd86cdc8a7bd202f08b58afcfa6cdb397880354aa0e82bdd384a1427ab17e254"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/types.ts",
+          "sha256": "61134e5f70ddc34a7690afeeabb27c7d5ba136c7943dc4d3b13e9b3a079085f7"
         },
         {
           "path": "packages/shared/src/worldgen/main/chunk.ts",
@@ -309,7 +377,7 @@
         },
         {
           "path": "packages/shared/src/worldgen/main/features.ts",
-          "sha256": "31b58f7f524ed6fdac98a7692e2ef19d0376b1c555cf76837e8367bcfa7307e7"
+          "sha256": "a5ab87051e80698ac11b1c33d2a8a9a17766ea4fdecc9efaca9315dd63f9a470"
         },
         {
           "path": "packages/shared/src/worldgen/main/ibara-ground.ts",
@@ -393,8 +461,8 @@
         "format": "jpeg",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
-        "sourceImage": "out/engine/hud-camera-clearance-2026-10-15T18-22-32-584Z-eab935/outline-ghost.png",
-        "sourceImageSha256": "0235100302335bddc7cb6255c4de402e892e0307635cb41e599b0012cc660efa",
+        "sourceImage": "out/engine/hud-phase14-runtime-v2-2026-10-17T20-54-06-545Z-e8edd7/outline-ghost.png",
+        "sourceImageSha256": "639497690f99c35b6259ca389dae90cce8122f3e0772b8d4183484ee4cf5ada9",
         "quality": 85,
         "width": 1280,
         "height": 720,
@@ -405,11 +473,11 @@
       "id": "silhouette",
       "rows": ["hud.silhouette"],
       "image": "fixtures/ui/world-silhouette.jpg",
-      "imageSha256": "4aa4650291d009d73003ffa67928a08e0d4d87fce0d1c4a6550589f3e29515db",
+      "imageSha256": "196f0b0d7ed7c5e765fac132b0a5c5096dabdb6940ae0bbf4ea571701fbd1264",
       "telemetry": "fixtures/ui/world-silhouette.json",
-      "telemetrySha256": "111427465443d7cf715e01c8f5b2d5de34b6ce6f70c9211985a13dfb38a32773",
+      "telemetrySha256": "09183c78a8d3c675a24d77d9e7e8b273892f450986d8f2778b510448da19e730",
       "runReceipt": "fixtures/ui/world-run.json",
-      "runReceiptSha256": "7b9bf11e776536ae86a496109f32b06af71daf21d96545f68bd82d1d1513e03a",
+      "runReceiptSha256": "e2a99fa45278a46e5037960398c59d3359de5035be3da84386585f899867430a",
       "sources": [
         {
           "path": "packages/client/src/dev/harness.ts",
@@ -437,7 +505,7 @@
         },
         {
           "path": "packages/client/src/engine/chunk-store.ts",
-          "sha256": "37e767e8fa1d35ae59d8537a7fbf6f01931382dddc878c9acbe669e1aad439ed"
+          "sha256": "937ab39acc91ee3bd5527989049f9e52ee1f338d83fa50950fda0230b61762b1"
         },
         {
           "path": "packages/client/src/engine/cut-cap.ts",
@@ -446,6 +514,38 @@
         {
           "path": "packages/client/src/engine/effects.ts",
           "sha256": "91b046d290e39381d7e6140637f02a2bf950f4fa5801303603bc062823b5c4e5"
+        },
+        {
+          "path": "packages/client/src/engine/far-cut-cap.ts",
+          "sha256": "1197dc344ec6a87b3acf7fe0af48c15311539ca16b5d0cc16a88452c197da38f"
+        },
+        {
+          "path": "packages/client/src/engine/far-terrain-coverage.ts",
+          "sha256": "3b6ef61c8e096d123f1433d5de082d6c7cf2675a596482e32621177a36abaf14"
+        },
+        {
+          "path": "packages/client/src/engine/far-terrain-renderer.ts",
+          "sha256": "cc805307cb3f8b11cb56eaac77e6ff2f97b63d5759aeffc28de9671c3d08db07"
+        },
+        {
+          "path": "packages/client/src/engine/far-terrain-selection.ts",
+          "sha256": "6329e5d6abd8745e3242b33b30f7cadf7bbfc5051d6fe9e85cd79b3e9a970a2c"
+        },
+        {
+          "path": "packages/client/src/engine/far-terrain-store.ts",
+          "sha256": "d302eb00c388dcda49c87aaeaf83d88ab0e044e4c5ea748dc1da886d01dc2034"
+        },
+        {
+          "path": "packages/client/src/engine/far-visibility-bounds.ts",
+          "sha256": "4a1e5e2f8e786a93dbef7899e7e6c4f27828d423cc484095ab13dd15b3470092"
+        },
+        {
+          "path": "packages/client/src/engine/far-worker-scheduler.ts",
+          "sha256": "b68af6d6ef7a239948d68bd3763c691694901b0303c7d9c73dc7319ef247358a"
+        },
+        {
+          "path": "packages/client/src/engine/far-world.ts",
+          "sha256": "de539995886dff8497a9ce0a14012fe5fdd60fb27145998750ead08e47509527"
         },
         {
           "path": "packages/client/src/engine/ibara-atmosphere.ts",
@@ -481,23 +581,23 @@
         },
         {
           "path": "packages/client/src/engine/renderer.ts",
-          "sha256": "70185e23175a9b1732c8e907385bd1e09c5fcaf69a709eacf3cda84c3c495bd4"
+          "sha256": "71c48c3e77601e1d674f13139ceb2e89a77d97e851549965962f3ade4961b44c"
         },
         {
           "path": "packages/client/src/engine/terrain-material.ts",
-          "sha256": "f1aa43a5d35380fc8afc7e70ff15c784479d93528814c2f1e5b018bda29ff03a"
+          "sha256": "a0e0b90b1a327c7f2bbd6555bb5579d6e232cd92f8e1bbd24a93b7cf45b7a603"
         },
         {
           "path": "packages/client/src/engine/terrain-worker.ts",
-          "sha256": "2e9b1bf7073b9f8ce4f8de7519390bd9c42ad5226f8baf32d324afa3fbf59fe0"
+          "sha256": "dbfd94929ba9c6f663dd0fd117e3fc139d6ce977141ea93eb78471d342b84157"
         },
         {
           "path": "packages/client/src/engine/worker-pool.ts",
-          "sha256": "204d52009d5280ae3c13197d46891933650ff32d8c598c758c76b0a1a07e20f5"
+          "sha256": "3d34c8f3e53035e6028241ddcf8cef817157f9e080b541cb0ad620dd639131f1"
         },
         {
           "path": "packages/client/src/engine/worker-protocol.ts",
-          "sha256": "a51e737834d931523922be5004e2dc8b8d079a0ac787789e7d66217470f72338"
+          "sha256": "f57413574864e6f8d8c83f0af958ccb162c3320edfb8ae04b40dee6e3fffc831"
         },
         {
           "path": "packages/client/src/engine/world-plan-cache.ts",
@@ -512,12 +612,16 @@
           "sha256": "1f84b0161fdc579e6e35b970d67bda0c0be165dc5c03a80895522d0a823afc41"
         },
         {
+          "path": "packages/client/src/game/command-camera.ts",
+          "sha256": "76ee1ff3a017f4231c6ffc4712a27c00e80b4a8cef62e07331c5e883160f7c06"
+        },
+        {
           "path": "packages/client/src/game/controller.ts",
           "sha256": "2f77e219babe674d86a2a44f208597daa178a6edf0e3bf4a10153ac67c2a3cd5"
         },
         {
           "path": "packages/client/src/game/create-game.ts",
-          "sha256": "4d0d6c05b40b5ed1cae86c35f0ac36577ab3d7292a1cc5a7ef75502f89fc5b49"
+          "sha256": "9788c1116ccd2f5ba2f8b8fbac031a10a97d81934094765398679ebafda2f03d"
         },
         {
           "path": "packages/client/src/game/destination.ts",
@@ -529,7 +633,7 @@
         },
         {
           "path": "packages/client/src/game/persistence.ts",
-          "sha256": "a5b141b0131ecba5ee1b22dd59f2f5e91114e838774334856cc9cd6b48b0c897"
+          "sha256": "34897b44ff1029e11474edd10fd35600121ffb018ffb4df879ec103f6eb3da9c"
         },
         {
           "path": "packages/client/src/game/postcard.ts",
@@ -538,6 +642,10 @@
         {
           "path": "packages/client/src/game/raycast.ts",
           "sha256": "a4e3dc19d1baa7a75cf436a2fdf3975d99fc4d0cfc9ddd7ddf7f55e3dff61df9"
+        },
+        {
+          "path": "packages/client/src/game/save-compatibility.ts",
+          "sha256": "bef825bd71479df3d3e08a8aa343de56bc402dcb0767e4b48b84a72a737e3d66"
         },
         {
           "path": "packages/client/src/game/session.ts",
@@ -616,6 +724,10 @@
           "sha256": "6ecc01a82d1e7d66747810d4cab55bfff116c08a12a46051bfb3041ebb75f05c"
         },
         {
+          "path": "packages/shared/src/meshing/columns.ts",
+          "sha256": "5b604695377475ea5d7df4c430f3d5e877f385bbc7adcad89e85c109b5c364d2"
+        },
+        {
           "path": "packages/shared/src/meshing/greedy.ts",
           "sha256": "7df88615c8bc29887c2b2c51ab995b0fe741876569fdbf2f01f1b161467cc0c1"
         },
@@ -689,15 +801,39 @@
         },
         {
           "path": "packages/shared/src/world/types.ts",
-          "sha256": "6eb333377c6cd1eeb034a57fddacf9d729b2942d95b7d2e3989578363c7c1814"
+          "sha256": "59242b90689580f08ad88c2b7ac3be037c521752caa5ab78372c2cda718b5c4c"
         },
         {
           "path": "packages/shared/src/world/world-context.ts",
-          "sha256": "2f6f79ce21552223640ce4f73c74ea247da2d96c884c821d328e8d7982e1c926"
+          "sha256": "ce82e343a4d27a3b8a6a5d91129852c4fcc398148797711ff367c031f52142f8"
         },
         {
           "path": "packages/shared/src/worldgen/chunk.ts",
           "sha256": "f55a51f5d9f3fb81723f863a7a1f0bb5b3cf931447c34d09675753b8ab1e2234"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/bands.ts",
+          "sha256": "db1288917183ed23ba49d6450def35baf40b44662c5dd496d5fa41e5f6b257ea"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/columns.ts",
+          "sha256": "30b8d0feef656b2092a86cef2a0bb89d36ebd11b700c5eac9d8651a6789bf392"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/coordinates.ts",
+          "sha256": "d9b39bf520359ebaf0c76757b852bbfaf17f61d75901f9eacd408062f3498f45"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/edits.ts",
+          "sha256": "cb8e41a3a5e9abaddda120d520304f7cd19f56a3973ee7e1108e309666fa30f2"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/index.ts",
+          "sha256": "fd86cdc8a7bd202f08b58afcfa6cdb397880354aa0e82bdd384a1427ab17e254"
+        },
+        {
+          "path": "packages/shared/src/worldgen/far/types.ts",
+          "sha256": "61134e5f70ddc34a7690afeeabb27c7d5ba136c7943dc4d3b13e9b3a079085f7"
         },
         {
           "path": "packages/shared/src/worldgen/main/chunk.ts",
@@ -709,7 +845,7 @@
         },
         {
           "path": "packages/shared/src/worldgen/main/features.ts",
-          "sha256": "31b58f7f524ed6fdac98a7692e2ef19d0376b1c555cf76837e8367bcfa7307e7"
+          "sha256": "a5ab87051e80698ac11b1c33d2a8a9a17766ea4fdecc9efaca9315dd63f9a470"
         },
         {
           "path": "packages/shared/src/worldgen/main/ibara-ground.ts",
@@ -793,8 +929,8 @@
         "format": "jpeg",
         "encoder": "sharp",
         "encoderVersion": "0.35.5",
-        "sourceImage": "out/engine/hud-camera-clearance-2026-10-15T18-22-32-584Z-eab935/silhouette.png",
-        "sourceImageSha256": "78c44642b6b341691ecdc5d9f0e3fe0f3ddb1bb5e24dc86a03aa01ca8a6bb82b",
+        "sourceImage": "out/engine/hud-phase14-runtime-v2-2026-10-17T20-54-06-545Z-e8edd7/silhouette.png",
+        "sourceImageSha256": "cbf5156e004b692c020c5a8440ee98534c990429d9ef9cf032d38f6007a8ecd5",
         "quality": 85,
         "width": 1280,
         "height": 720,

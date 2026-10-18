@@ -152,6 +152,31 @@ describe("build and postcard boundaries", () => {
       const camera = sourceFingerprints(root);
       expect(camera.cacheTag).toBe(variant.cacheTag);
       expect(camera.releaseHash).not.toBe(resolver.releaseHash);
+      write(
+        "packages/client/src/game/save-compatibility.ts",
+        "one explicitly approved save-only pair",
+      );
+      const compatibility = sourceFingerprints(root);
+      expect(compatibility.cacheTag).toBe(camera.cacheTag);
+      expect(compatibility.releaseHash).not.toBe(camera.releaseHash);
+      write(
+        "packages/client/src/game/save-compatibility.ts",
+        "a different explicitly approved save-only pair",
+      );
+      const changedPair = sourceFingerprints(root);
+      expect(changedPair.cacheTag).toBe(compatibility.cacheTag);
+      expect(changedPair.releaseHash).not.toBe(compatibility.releaseHash);
+      write(
+        "packages/shared/src/worldgen/far/columns.ts",
+        "new far generation input",
+      );
+      const far = sourceFingerprints(root);
+      expect(far.cacheTag).not.toBe(changedPair.cacheTag);
+      write(
+        "packages/shared/src/worldgen/far/columns.ts",
+        "another far generation input",
+      );
+      expect(sourceFingerprints(root).cacheTag).not.toBe(far.cacheTag);
       expect(sourceFingerprints(root, "/coldfront/").cacheTag).toBe(
         sourceFingerprints(root).cacheTag,
       );
